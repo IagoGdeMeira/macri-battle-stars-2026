@@ -1,9 +1,3 @@
-Perfeito. Mantive exatamente o mesmo estilo dos seus documentos: direto, organizado, com emojis e separadores.
-
-Segue pronto para copiar e colar:
-
----
-
 # 🇧🇷 Macri Battle Stars - Estratégia de Testes
 
 A qualidade arquitetural do projeto depende diretamente da confiabilidade do núcleo do sistema. Por esse motivo, adotou-se uma estratégia de testes focada principalmente na validação da lógica interna do *ECS*, da orquestração do motor e das regras de jogo.
@@ -26,11 +20,11 @@ A camada de domínio é a prioridade máxima da estratégia de testes.
 
 Serão testados:
 
-> * Criação e destruição de entidades
-> * Adição e remoção de componentes
-> * Funcionamento de queries
-> * Integridade do armazenamento de componentes
-> * Execução isolada de sistemas base
+> - Criação e destruição de entidades
+> - Adição e remoção de componentes
+> - Funcionamento de queries
+> - Integridade do armazenamento de componentes
+> - Execução isolada de sistemas base
 
 Por não depender de *SDL*, esta camada pode ser testada de forma totalmente isolada.
 
@@ -43,10 +37,10 @@ A camada `engine` será testada para garantir o correto funcionamento da orquest
 
 O foco inicial será o **EventBus**, garantindo:
 
-> * Registro correto de assinantes
-> * Publicação de eventos
-> * Processamento determinístico da fila
-> * Ausência de chamadas inesperadas ou recursivas
+> - Registro correto de assinantes
+> - Publicação de eventos
+> - Processamento determinístico da fila
+> - Ausência de chamadas inesperadas ou recursivas
 
 Outros elementos como controle de tempo e agendamento de sistemas também poderão receber testes unitários conforme forem implementados.
 
@@ -61,11 +55,11 @@ A camada de jogo define as regras concretas do sistema.
 
 Serão testados:
 
-> * Sistemas de movimento
-> * Sistema de colisão
-> * Aplicação de dano
-> * Alterações de estado de entidades
-> * Reações a eventos
+> - Sistemas de movimento
+> - Sistema de colisão
+> - Aplicação de dano
+> - Alterações de estado de entidades
+> - Reações a eventos
 
 Esses testes validam o comportamento lógico das mecânicas implementadas.
 
@@ -76,10 +70,10 @@ Esses testes validam o comportamento lógico das mecânicas implementadas.
 
 Alguns aspectos do projeto não serão cobertos por testes automatizados:
 
-> * Renderização gráfica
-> * Integração direta com SDL
-> * Áudio
-> * Criação de janelas
+> - Renderização gráfica
+> - Integração direta com SDL
+> - Áudio
+> - Criação de janelas
 
 Esses elementos dependem diretamente da plataforma e serão verificados manualmente durante o desenvolvimento.
 
