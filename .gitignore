@@ -1,0 +1,26 @@
+# Build directories
+/build/
+/cmake-build-*/
+out/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+
+# Visual Studio
+.vs/
+*.vcxproj*
+*.sln
+*.user
+
+# VSCode
+.vscode/
+
+# Binaries
+*.exe
+*.so
+*.dylib
+
+# Test executables
+*_tests
