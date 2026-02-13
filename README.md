@@ -12,7 +12,7 @@ A proposta deste TCC é apresentar um projeto de jogo separado em camadas, crian
 Mais informações envolvendo aspectos específicos do projeto estarão disponíveis logo abaixo:
 
 > - 🗂 [Arquitetura em Camadas](src/README.md)
-> - ✉️ [Convenção de Commits](docs/commits.md)
+> - ✉️ [Convenção de Commits](docs/COMMITS.md)
 > - 📚 [Dependências Externas](external/README.md)
 > - 🛠 [Estratégia de Testes](tests/README.md)
 
