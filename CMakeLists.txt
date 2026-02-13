@@ -55,4 +55,6 @@ add_subdirectory(src/domain)
 add_subdirectory(src/engine)
 add_subdirectory(src/game)
 add_subdirectory(src/platform)
+
+include(CTest)
 add_subdirectory(tests)
