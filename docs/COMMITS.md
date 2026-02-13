@@ -39,3 +39,6 @@ refactor(core): reorganiza gerenciamento de estados
 - Seja **claro e direto**
 - Descreva *o que* foi feito, não *como*
 - Use escopo quando fizer sentido: `feat(ui)`, `fix(network)`
+
+---
+---
