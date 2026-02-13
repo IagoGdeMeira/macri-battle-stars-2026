@@ -7,9 +7,10 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest]
-        build_type: [Debug]
+        build_type: [Debug, Release]
 
     runs-on: ${{ matrix.os }}
 
@@ -17,21 +18,60 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies (Linux)
+      # ------------------------------------
+      # Install Ninja
+      # ------------------------------------
+
+      - name: Install Ninja (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt update
+          sudo apt install -y ninja-build
+
+      - name: Install Ninja (Windows)
+        if: runner.os == 'Windows'
+        run: choco install ninja
+
+      # ------------------------------------
+      # Install SDL dependencies (Linux only)
+      # ------------------------------------
+
+      - name: Install SDL dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
           sudo apt install -y \
             libsdl2-dev \
             libsdl2-image-dev \
             libsdl2-ttf-dev \
             libsdl2-mixer-dev
 
+      # ------------------------------------
+      # Cache CMake build directory
+      # ------------------------------------
+
+      - name: Cache build directory
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: ${{ runner.os }}-${{ matrix.build_type }}-${{ hashFiles('**/CMakeLists.txt') }}
+
+      # ------------------------------------
+      # Configure
+      # ------------------------------------
+
       - name: Configure CMake
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      # ------------------------------------
+      # Build
+      # ------------------------------------
 
       - name: Build
-        run: cmake --build build --config ${{ matrix.build_type }}
+        run: cmake --build build --parallel
+
+      # ------------------------------------
+      # Run tests
+      # ------------------------------------
 
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
