@@ -2,6 +2,9 @@ add_library(domain STATIC)
 
 target_sources(domain
     PRIVATE
+        src/ComponentManager.cpp
+        src/EntityManager.cpp
+        src/SignatureManager.cpp
         src/World.cpp
 )
 

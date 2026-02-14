@@ -1,5 +1,3 @@
-#include "ComponentStorage.h"
-
 #include <stdexcept>
 
 template <typename ComponentType>
@@ -16,7 +14,7 @@ void ComponentStorage<ComponentType>::add(Entity e, const ComponentType &compone
 template <typename ComponentType>
 void ComponentStorage<ComponentType>::remove(Entity e)
 {
-    if (!this->has(e)) return;
+    if (!this->has(e))return;
 
     size_t index = this->sparse[e.id];
     size_t last = this->components.size() - 1;
@@ -38,7 +36,7 @@ bool ComponentStorage<ComponentType>::has(Entity e) const
 {
     return e.id < this->sparse.size() &&
         this->sparse[e.id] < this->entities.size() &&
-        this->entities[this->sparse[e.id]].id == e.id;
+        this->entities[this->sparse[e.id]] == e;
 }
 
 template <typename ComponentType>

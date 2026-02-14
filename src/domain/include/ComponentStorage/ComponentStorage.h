@@ -1,10 +1,9 @@
 #ifndef component_storage_h
 #define component_storage_h
 
-#include "Entity.h"
-#include "IComponentStorage.h"
+#include "../Entity/Entity.h"
+#include "../IComponentStorage/IComponentStorage.h"
 
-#include <cstdint>
 #include <vector>
 
 template <typename ComponentType>
@@ -12,18 +11,16 @@ class ComponentStorage : public IComponentStorage
 {
 public:
     void add(Entity e, const ComponentType &component);
-
     void remove(Entity e) override;
 
     bool has(Entity e) const;
-
     ComponentType &get(Entity e);
 
     size_t size() const;
 
     std::vector<ComponentType> &getComponents();
     const std::vector<ComponentType> &getComponents() const;
-    
+
     const std::vector<Entity> &getEntities() const;
 
 private:

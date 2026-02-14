@@ -1,6 +1,11 @@
-#include "../include/World.h"
+#include "../include/World/World.h"
 
-Entity World::createEntity() { return Entity{ this->nextEntityId++ }; }
+Entity World::createEntity()
+{ return this->entities.create(); }
 
-void World::destroyEntity(Entity entity)
-{ for (auto &[_, storage] : this->storages) if (storage) storage->remove(entity); }
+void World::destroyEntity(Entity e)
+{
+    this->components.removeAll(e);
+    this->signatures.clear(e);
+    this->entities.destroy(e);
+}
