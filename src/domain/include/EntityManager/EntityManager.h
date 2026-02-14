@@ -15,9 +15,9 @@ public:
     bool isAlive(Entity e) const;
 
 private:
-    uint32_t nextId = 0;
-    std::vector<uint32_t> generations;
-    std::vector<uint32_t> freeIds;
+    size_t nextId = 0;
+    std::vector<size_t> generations;
+    std::vector<size_t> freeIds;
 };
 
 #endif // entity_manager_h

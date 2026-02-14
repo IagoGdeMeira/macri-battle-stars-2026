@@ -28,36 +28,31 @@ bool ComponentManager::has(Entity e) const
     return storage && storage->has(e);
 }
 
-template<typename Component>
-ComponentStorage<Component>* ComponentManager::findStorage()
+template <typename Component>
+ComponentStorage<Component> *findStorage()
 {
-    std::type_index index(typeid(Component));
-    auto it = this->storages.find(index);
-    if (it == this->storages.end()) return nullptr;
-    return static_cast<ComponentStorage<Component>*>(it->second.get());
+    size_t id = ComponentType::id<Component>();
+    if (id >= this->storages.size()) return nullptr;
+
+    return static_cast<ComponentStorage<Component> *>(this->storages[id].get());
 }
 
 template<typename Component>
 const ComponentStorage<Component>* ComponentManager::findStorage() const
 {
-    std::type_index index(typeid(Component));
-    auto it = this->storages.find(index);
-
-    if (it == this->storages.end()) return nullptr;
-    return static_cast<const ComponentStorage<Component>*>(it->second.get());
+    size_t id = ComponentType::id<Component>();
+    if (id >= this->storages.size()) return nullptr;
+    
+    return static_cast<ComponentStorage<Component> *>(this->storages[id].get());
 }
 
-template<typename Component>
-ComponentStorage<Component>* ComponentManager::getOrCreateStorage()
+template <typename Component>
+ComponentStorage<Component> *getOrCreateStorage()
 {
-    std::type_index index(typeid(Component));
+    size_t id = ComponentType::id<Component>();
 
-    auto it = this->storages.find(index);
-    if (it != this->storages.end())
-    { return static_cast<ComponentStorage<Component>*>(it->second.get()); }
+    if (id >= this->storages.size()) this->storages.resize(id + 1);
+    if (!this->storages[id]) this->storages[id] = std::make_unique<ComponentStorage<Component>>();
 
-    auto storage = std::make_unique<ComponentStorage<Component>>();
-    auto* ptr = storage.get();
-    this->storages[index] = std::move(storage);
-    return ptr;
+    return static_cast<ComponentStorage<Component> *>(this->storages[id].get());
 }

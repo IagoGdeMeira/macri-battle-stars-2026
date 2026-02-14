@@ -2,18 +2,11 @@
 
 template <typename Component>
 size_t SignatureManager::getComponentIndex()
+{ return ComponentType::id<Component>(); }
+
+template <typename... Indices>
+bool SignatureManager::match(Entity e, Indices... indices) const
 {
-    std::type_index index(typeid(Component));
-
-    auto it = this->typeToIndex.find(index);
-    if (it != this->typeToIndex.end()) return it->second;
-
-    size_t newIndex = this->nextComponentIndex++;
-    this->typeToIndex[index] = newIndex;
-
-    return newIndex;
+    const size_t indexArray[] = {static_cast<size_t>(indices)...};
+    return this->match(e, indexArray, sizeof...(indices));
 }
-
-template <typename... Indexes>
-bool SignatureManager::match(Entity e, Indexes... indexes) const
-{ return (this->hasComponent(e, indexes) && ...); }

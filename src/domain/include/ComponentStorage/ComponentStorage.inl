@@ -3,9 +3,9 @@
 template <typename ComponentType>
 void ComponentStorage<ComponentType>::add(Entity e, const ComponentType &component)
 {
-    if (e.id >= this->sparse.size()) this->sparse.resize(e.id + 1);
+    if (e.index()>= this->sparse.size()) this->sparse.resize(e.index() + 1);
 
-    this->sparse[e.id] = this->components.size();
+    this->sparse[e.index()] = this->components.size();
 
     this->entities.push_back(e);
     this->components.push_back(component);
@@ -16,7 +16,7 @@ void ComponentStorage<ComponentType>::remove(Entity e)
 {
     if (!this->has(e))return;
 
-    size_t index = this->sparse[e.id];
+    size_t index = this->sparse[e.index()];
     size_t last = this->components.size() - 1;
 
     if (index != last)
@@ -24,7 +24,7 @@ void ComponentStorage<ComponentType>::remove(Entity e)
         this->components[index] = std::move(this->components[last]);
         this->entities[index] = this->entities[last];
 
-        this->sparse[this->entities[index].id] = index;
+        this->sparse[this->entities[index].index()] = index;
     }
 
     this->components.pop_back();
@@ -34,16 +34,16 @@ void ComponentStorage<ComponentType>::remove(Entity e)
 template <typename ComponentType>
 bool ComponentStorage<ComponentType>::has(Entity e) const
 {
-    return e.id < this->sparse.size() &&
-        this->sparse[e.id] < this->entities.size() &&
-        this->entities[this->sparse[e.id]] == e;
+    return e.index() < this->sparse.size() &&
+        this->sparse[e.index()] < this->entities.size() &&
+        this->entities[this->sparse[e.index()]] == e;
 }
 
 template <typename ComponentType>
 ComponentType &ComponentStorage<ComponentType>::get(Entity e)
 {
     if (!this->has(e)) throw std::runtime_error("Component not found");
-    return this->components[this->sparse[e.id]];
+    return this->components[this->sparse[e.index()]];
 }
 
 template <typename ComponentType>

@@ -2,7 +2,7 @@
 
 Entity EntityManager::create()
 {
-    uint32_t id;
+    size_t id;
 
     if (!this->freeIds.empty())
     {
@@ -14,7 +14,6 @@ Entity EntityManager::create()
         id = this->nextId++;
         this->generations.resize(id + 1, 0);
     }
-
     return Entity{id, this->generations[id]};
 }
 
@@ -22,12 +21,12 @@ void EntityManager::destroy(Entity e)
 {
     if (!this->isAlive(e)) return;
 
-    ++this->generations[e.id];
-    this->freeIds.push_back(e.id);
+    ++this->generations[e.index()];
+    this->freeIds.push_back(e.index());
 }
 
 bool EntityManager::isAlive(Entity e) const
 {
-    if (e.id >= this->generations.size()) return false;
-    return this->generations[e.id] == e.generation;
+    if (e.index() >= this->generations.size()) return false;
+    return this->generations[e.index()] == e.gen();
 }

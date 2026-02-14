@@ -2,11 +2,11 @@
 #define component_manager_h
 
 #include "../ComponentStorage/ComponentStorage.h"
+#include "../ComponentType/ComponentType.h"
 #include "../Entity/Entity.h"
 
 #include <memory>
-#include <typeindex>
-#include <unordered_map>
+#include <vector>
 
 class ComponentManager
 {
@@ -32,7 +32,7 @@ public:
     void removeAll(Entity e);
 
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<IComponentStorage>> storages;
+    std::vector<std::unique_ptr<IComponentStorage>> storages;
 
     template <typename Component>
     ComponentStorage<Component> *getOrCreateStorage();
