@@ -1,6 +1,7 @@
 #ifndef entity_h
 #define entity_h
 
+#include <cstddef>
 #include <cstdint>
 
 class Entity

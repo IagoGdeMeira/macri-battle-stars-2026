@@ -5,6 +5,8 @@
 #include "../EntityManager/EntityManager.h"
 #include "../SignatureManager/SignatureManager.h"
 
+#include <algorithm>
+
 class World
 {
 public:

@@ -29,7 +29,7 @@ bool ComponentManager::has(Entity e) const
 }
 
 template <typename Component>
-ComponentStorage<Component> *findStorage()
+ComponentStorage<Component> *ComponentManager::findStorage()
 {
     size_t id = ComponentType::id<Component>();
     if (id >= this->storages.size()) return nullptr;
@@ -38,7 +38,7 @@ ComponentStorage<Component> *findStorage()
 }
 
 template<typename Component>
-const ComponentStorage<Component>* ComponentManager::findStorage() const
+const ComponentStorage<Component> *ComponentManager::findStorage() const
 {
     size_t id = ComponentType::id<Component>();
     if (id >= this->storages.size()) return nullptr;
@@ -47,7 +47,7 @@ const ComponentStorage<Component>* ComponentManager::findStorage() const
 }
 
 template <typename Component>
-ComponentStorage<Component> *getOrCreateStorage()
+ComponentStorage<Component> *ComponentManager::getOrCreateStorage()
 {
     size_t id = ComponentType::id<Component>();
 
