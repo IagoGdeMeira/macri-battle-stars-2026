@@ -3,4 +3,4 @@
 Entity World::createEntity() { return Entity{ this->nextEntityId++ }; }
 
 void World::destroyEntity(Entity entity)
-{ for (auto &[_, storage] : this->storages) storage->remove(entity); }
+{ for (auto &[_, storage] : this->storages) if (storage) storage->remove(entity); }

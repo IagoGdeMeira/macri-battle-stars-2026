@@ -28,12 +28,21 @@ public:
     template <typename ComponentType>
     ComponentType &getComponent(Entity entity);
 
+    template<typename... Components, typename Func>
+    void each(Func func);
+
 private:
     std::uint32_t nextEntityId = 1;
     std::unordered_map<std::type_index, std::unique_ptr<IComponentStorage>> storages;
 
     template <typename ComponentType>
-    ComponentStorage<ComponentType> *getStorage();
+    ComponentStorage<ComponentType> *findStorage();
+
+    template <typename ComponentType>
+    const ComponentStorage<ComponentType> *findStorage() const;
+
+    template <typename ComponentType>
+    ComponentStorage<ComponentType> *getOrCreateStorage();
 };
 
 #include "World.inl"

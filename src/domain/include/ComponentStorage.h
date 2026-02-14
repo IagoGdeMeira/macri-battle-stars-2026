@@ -5,7 +5,6 @@
 #include "IComponentStorage.h"
 
 #include <cstdint>
-#include <unordered_map>
 #include <vector>
 
 template <typename ComponentType>
@@ -20,13 +19,17 @@ public:
 
     ComponentType &get(Entity e);
 
-    const std::vector<ComponentType> &data() const { return this->components; }
-    const std::vector<Entity> &owners() const { return this->entities; }
+    size_t size() const;
+
+    std::vector<ComponentType> &getComponents();
+    const std::vector<ComponentType> &getComponents() const;
+    
+    const std::vector<Entity> &getEntities() const;
 
 private:
     std::vector<ComponentType> components;
     std::vector<Entity> entities;
-    std::unordered_map<std::uint32_t, size_t> entityToIndex;
+    std::vector<size_t> sparse;
 };
 
 #include "ComponentStorage.inl"
