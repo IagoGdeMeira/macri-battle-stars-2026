@@ -30,7 +30,7 @@ TEST_CASE_METHOD(
     "[unit][component_manager]")
 {
     Entity e = {0, 0};
-    Position p{10};
+    Position p{10, 0};
 
     manager.add<Position>(e, p);
     REQUIRE(manager.has<Position>(e));
