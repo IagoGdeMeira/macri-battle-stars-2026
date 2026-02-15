@@ -2,7 +2,6 @@
 #define entity_h
 
 #include <cstddef>
-#include <cstdint>
 
 class Entity
 {

@@ -1,6 +1,7 @@
 add_executable(domain_tests
     ComponentManagerTests.cpp
     EntityManagerTests.cpp
+    EntityTests.cpp
     WorldTests.cpp
 )
 
