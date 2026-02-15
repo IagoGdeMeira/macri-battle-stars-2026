@@ -22,6 +22,9 @@ public:
     template <typename Component>
     Component &getComponent(Entity e);
 
+    template <typename Component>
+    bool hasComponent(Entity e) const;
+
     template <typename... Components, typename Func>
     void each(Func func);
 

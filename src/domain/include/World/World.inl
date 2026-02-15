@@ -22,6 +22,10 @@ template <typename Component>
 Component &World::getComponent(Entity e)
 { return this->components.get<Component>(e); }
 
+template <typename Component>
+bool World::hasComponent(Entity e) const
+{ return this->components.has<Component>(e); }
+
 template <typename... Components, typename Func>
 void World::each(Func func)
 {
