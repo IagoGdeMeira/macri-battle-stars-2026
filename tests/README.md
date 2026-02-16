@@ -79,3 +79,24 @@ Esses elementos dependem diretamente da plataforma e serão verificados manualme
 
 ---
 ---
+
+## ⌨️ Comandos Úteis para Testes (Catch2)
+
+| Comando                                    | Descrição                                         |
+|--------------------------------------------|---------------------------------------------------|
+| `./tests`                                 | Executa todos os testes                           |
+| `./tests "[NomeDoCaso]"`                  | Executa apenas o caso de teste especificado        |
+| `./tests "[tag]"`                         | Executa todos os testes com a tag informada        |
+| `./tests -s`                              | Mostra todas as mensagens `std::cout`              |
+| `./tests -r compact`                      | Saída compacta dos resultados                      |
+| `./tests -l`                              | Lista todos os casos de teste disponíveis          |
+| `./tests -h`                              | Mostra todas as opções de linha de comando         |
+| `./tests --success`                       | Mostra também os testes que passaram               |
+| `./tests --durations yes`                 | Mostra o tempo de execução de cada teste           |
+| `./tests --break`                         | Para na primeira falha (útil para depuração)       |
+| `./tests --list-tags`                     | Lista todas as tags de testes                      |
+
+> Substitua `./tests` pelo caminho do executável de testes gerado no seu projeto.
+
+---
+---
