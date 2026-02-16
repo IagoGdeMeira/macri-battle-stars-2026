@@ -3,7 +3,9 @@
 template <typename ComponentType>
 void ComponentStorage<ComponentType>::add(Entity e, const ComponentType &component)
 {
-    if (e.index()>= this->sparse.size()) this->sparse.resize(e.index() + 1);
+    if (this->has(e)) throw std::runtime_error("Component already exists for entity");
+
+    if (e.index() >= this->sparse.size()) this->sparse.resize(e.index() + 1, ComponentStorage::INVALID);
 
     this->sparse[e.index()] = this->components.size();
 
@@ -29,13 +31,14 @@ void ComponentStorage<ComponentType>::remove(Entity e)
 
     this->components.pop_back();
     this->entities.pop_back();
+    this->sparse[e.index()] = ComponentStorage::INVALID;
 }
 
 template <typename ComponentType>
 bool ComponentStorage<ComponentType>::has(Entity e) const
 {
     return e.index() < this->sparse.size() &&
-        this->sparse[e.index()] < this->entities.size() &&
+        this->sparse[e.index()] != ComponentStorage::INVALID &&
         this->entities[this->sparse[e.index()]] == e;
 }
 

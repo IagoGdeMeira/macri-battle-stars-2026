@@ -4,6 +4,7 @@
 #include "../Entity/Entity.h"
 #include "../IComponentStorage/IComponentStorage.h"
 
+#include <limits>
 #include <vector>
 
 template <typename ComponentType>
@@ -24,6 +25,8 @@ public:
     const std::vector<Entity> &getEntities() const;
 
 private:
+    static constexpr size_t INVALID = std::numeric_limits<size_t>::max();
+
     std::vector<ComponentType> components;
     std::vector<Entity> entities;
     std::vector<size_t> sparse;

@@ -13,11 +13,12 @@ void ComponentManager::remove(Entity e)
     if (storage) storage->remove(e);
 }
 
-template<typename Component>
-Component& ComponentManager::get(Entity e)
+template <typename Component>
+Component &ComponentManager::get(Entity e)
 {
-    auto* storage = this->findStorage<Component>();
-    assert(storage);
+    auto *storage = this->findStorage<Component>();
+    if (!storage) throw std::runtime_error("Component storage not found");
+
     return storage->get(e);
 }
 
