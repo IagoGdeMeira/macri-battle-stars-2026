@@ -6,6 +6,7 @@
 #include "../SignatureManager/SignatureManager.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 class World
 {

@@ -9,8 +9,8 @@ struct Special {};
 
 TEST_CASE(
     "ComponentType returns same id for same type",
-    "[unit][component_type]")
-{
+    "[unit][component_type]"
+) {
     size_t id1 = ComponentType::id<Position>();
     size_t id2 = ComponentType::id<Position>();
 
@@ -19,8 +19,8 @@ TEST_CASE(
 
 TEST_CASE(
     "ComponentType returns different ids for different types",
-    "[unit][component_type]")
-{
+    "[unit][component_type]"
+) {
     size_t posId = ComponentType::id<Position>();
     size_t velId = ComponentType::id<Velocity>();
 
@@ -29,8 +29,8 @@ TEST_CASE(
 
 TEST_CASE(
     "ComponentType id remains stable across interleaved calls",
-    "[unit][component_type]")
-{
+    "[unit][component_type]"
+) {
     size_t pos1 = ComponentType::id<Position>();
     size_t vel1 = ComponentType::id<Velocity>();
     size_t pos2 = ComponentType::id<Position>();

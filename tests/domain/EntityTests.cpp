@@ -4,8 +4,8 @@
 
 TEST_CASE(
     "Entity exposes correct index and generation",
-    "[unit][entity]")
-{
+    "[unit][entity]"
+) {
     Entity e{42, 7};
 
     REQUIRE(e.index() == 42);
@@ -14,8 +14,8 @@ TEST_CASE(
 
 TEST_CASE(
     "Entities with same id and generation are equal",
-    "[unit][entity]")
-{
+    "[unit][entity]"
+) {
     Entity e1{3, 1};
     Entity e2{3, 1};
 
@@ -25,8 +25,8 @@ TEST_CASE(
 
 TEST_CASE(
     "Entities with different id are not equal",
-    "[unit][entity]")
-{
+    "[unit][entity]"
+) {
     Entity e1{1, 0};
     Entity e2{2, 0};
 
@@ -36,8 +36,8 @@ TEST_CASE(
 
 TEST_CASE(
     "Entities with different generation are not equal",
-    "[unit][entity]")
-{
+    "[unit][entity]"
+) {
     Entity e1{5, 0};
     Entity e2{5, 1};
 
@@ -47,8 +47,8 @@ TEST_CASE(
 
 TEST_CASE(
     "Copied Entity preserves identity",
-    "[unit][entity]")
-{
+    "[unit][entity]"
+) {
     Entity original{8, 2};
     Entity copy = original;
 
@@ -59,8 +59,8 @@ TEST_CASE(
 
 TEST_CASE(
     "Entity self comparison is always equal",
-    "[unit][entity]")
-{
+    "[unit][entity]"
+) {
     Entity e{10, 4};
 
     REQUIRE(e == e);

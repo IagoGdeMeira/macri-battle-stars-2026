@@ -2,86 +2,163 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-struct WorldFixture
-{
-    World world;
+struct Position { float x, y; };
+struct Velocity { float dx, dy; };
 
-    Entity createEntity() { return world.createEntity(); }
-
-    template <typename Component>
-    void add(Entity e, const Component &c) { world.addComponent<Component>(e, c); }
-};
-
-struct Position { int x, y; };
+struct WorldFixture { World world; };
 
 TEST_CASE_METHOD(
     WorldFixture,
-    "World::createEntity returns distinct entities",
-    "[unit][world]")
-{
-    Entity e1 = WorldFixture::createEntity();
-    Entity e2 = WorldFixture::createEntity();
+    "World creates and destroys entity correctly",
+    "[integration][world]"
+) {
+    Entity e = this->world.createEntity();
 
-    REQUIRE(e1 != e2);
+    REQUIRE(this->world.hasComponent<Position>(e) == false);
+
+    this->world.destroyEntity(e);
+
+    REQUIRE_FALSE(this->world.hasComponent<Position>(e));
 }
 
 TEST_CASE_METHOD(
     WorldFixture,
-    "World::destroyEntity invalidates entity",
+    "World adds and retrieves component",
+    "[integration][world]"
+) {
+    Entity e = this->world.createEntity();
+
+    this->world.addComponent<Position>(e, {10, 20});
+
+    REQUIRE(this->world.hasComponent<Position>(e));
+
+    Position &p = this->world.getComponent<Position>(e);
+    REQUIRE(p.x == 10);
+    REQUIRE(p.y == 20);
+}
+
+TEST_CASE_METHOD(
+    WorldFixture,
+    "World throws when adding component to dead entity",
     "[unit][world]"
 ) {
-    Entity e = WorldFixture::createEntity();
-    world.destroyEntity(e);
+    Entity e = this->world.createEntity();
+    this->world.destroyEntity(e);
+
+    REQUIRE_THROWS(this->world.addComponent<Position>(e, {1, 1}));
 }
 
 TEST_CASE_METHOD(
     WorldFixture,
-    "World::addComponent stores and retrieves component",
+    "World throws when getting component from dead entity",
     "[unit][world]"
 ) {
-    Entity e = WorldFixture::createEntity();
+    Entity e = this->world.createEntity();
+    this->world.destroyEntity(e);
 
-    Position p{10, 20};
-    WorldFixture::add(e, p);
-
-    REQUIRE(world.hasComponent<Position>(e));
-
-    Position &stored = world.getComponent<Position>(e);
-    REQUIRE(stored.x == 10);
-    REQUIRE(stored.y == 20);
+    REQUIRE_THROWS(this->world.getComponent<Position>(e));
 }
 
 TEST_CASE_METHOD(
     WorldFixture,
-    "World::removeComponent removes component",
-    "[unit][world]")
-{
-    Entity e = WorldFixture::createEntity();
+    "World removes component correctly",
+    "[integration][world]"
+) {
+    Entity e = this->world.createEntity();
 
-    Position p{1, 2};
-    WorldFixture::add(e, p);
+    this->world.addComponent<Position>(e, {5, 6});
+    REQUIRE(this->world.hasComponent<Position>(e));
 
-    REQUIRE(world.hasComponent<Position>(e));
+    this->world.removeComponent<Position>(e);
 
-    world.removeComponent<Position>(e);
-
-    REQUIRE_FALSE(world.hasComponent<Position>(e));
+    REQUIRE_FALSE(this->world.hasComponent<Position>(e));
 }
 
 TEST_CASE_METHOD(
     WorldFixture,
-    "World handles multiple entities independently",
-    "[unit][world]")
-{
-    Entity e1 = WorldFixture::createEntity();
-    Entity e2 = WorldFixture::createEntity();
+    "World destroyEntity removes all components",
+    "[integration][world]"
+) {
+    Entity e = this->world.createEntity();
 
-    Position p1{5, 6};
-    Position p2{7, 8};
+    this->world.addComponent<Position>(e, {1, 1});
+    this->world.addComponent<Velocity>(e, {2, 2});
 
-    WorldFixture::add(e1, p1);
-    WorldFixture::add(e2, p2);
+    this->world.destroyEntity(e);
 
-    REQUIRE(world.getComponent<Position>(e1).x == 5);
-    REQUIRE(world.getComponent<Position>(e2).x == 7);
+    REQUIRE_FALSE(this->world.hasComponent<Position>(e));
+    REQUIRE_FALSE(this->world.hasComponent<Velocity>(e));
+}
+
+TEST_CASE_METHOD(
+    WorldFixture,
+    "World each iterates only matching entities",
+    "[integration][world]"
+) {
+    Entity e1 = this->world.createEntity();
+    Entity e2 = this->world.createEntity();
+    Entity e3 = this->world.createEntity();
+
+    this->world.addComponent<Position>(e1, {1, 1});
+    this->world.addComponent<Velocity>(e1, {1, 1});
+
+    this->world.addComponent<Position>(e2, {2, 2});
+
+    this->world.addComponent<Position>(e3, {3, 3});
+    this->world.addComponent<Velocity>(e3, {3, 3});
+
+    int count = 0;
+
+    this->world.each<Position, Velocity>([&](Entity, Position &, Velocity &){ count++; });
+
+    REQUIRE(count == 2);
+}
+
+TEST_CASE_METHOD(
+    WorldFixture,
+    "World each allows modifying components",
+    "[integration][world]"
+) {
+    Entity e = this->world.createEntity();
+
+    this->world.addComponent<Position>(e, {1, 1});
+    this->world.addComponent<Velocity>(e, {2, 2});
+
+    this->world.each<Position, Velocity>([&](Entity, Position &p, Velocity &) { p.x = 42; });
+
+    REQUIRE(this->world.getComponent<Position>(e).x == 42);
+}
+
+TEST_CASE_METHOD(
+    WorldFixture,
+    "World each skips destroyed entities",
+    "[integration][world]"
+) {
+    Entity e = this->world.createEntity();
+
+    this->world.addComponent<Position>(e, {1, 1});
+    this->world.addComponent<Velocity>(e, {1, 1});
+
+    this->world.destroyEntity(e);
+
+    int count = 0;
+
+    this->world.each<Position, Velocity>([&](Entity, Position &, Velocity &) { count++; });
+
+    REQUIRE(count == 0);
+}
+
+TEST_CASE_METHOD(
+    WorldFixture,
+    "World each does nothing if one component type has no storage",
+    "[integration][world]"
+) {
+    Entity e = this->world.createEntity();
+
+    this->world.addComponent<Position>(e, {1, 1});
+    int count = 0;
+
+    this->world.each<Position, Velocity>([&](Entity, Position &, Velocity &) { count++; });
+
+    REQUIRE(count == 0);
 }

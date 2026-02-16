@@ -22,6 +22,9 @@ public:
     template <typename... Indices>
     bool match(Entity e, Indices... indices) const;
 
+    template <typename... Components>
+    bool matchTypes(Entity e) const;
+
     void clear(Entity e);
 
 private:
@@ -29,6 +32,7 @@ private:
     using SignatureBlock = uint64_t;
 
     std::vector<Signature> signatures;
+
     static constexpr size_t BITS_PER_BLOCK = sizeof(SignatureBlock) * 8;
 
     void ensureCapacity(Entity e, size_t componentIndex);

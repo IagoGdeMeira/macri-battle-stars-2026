@@ -1,5 +1,7 @@
 #include "../include/SignatureManager/SignatureManager.h"
 
+#include <algorithm>
+
 void SignatureManager::addComponent(Entity e, size_t componentIndex)
 {
     this->ensureCapacity(e, componentIndex);
@@ -37,7 +39,12 @@ bool SignatureManager::hasComponent(Entity e, size_t componentIndex) const
 void SignatureManager::clear(Entity e)
 {
     if (e.index() < this->signatures.size())
-    { std::fill(this->signatures[e.index()].begin(), this->signatures[e.index()].end(), 0); }
+    {
+        std::fill(
+            this->signatures[e.index()].begin(),
+            this->signatures[e.index()].end(),
+            0);
+    }
 }
 
 void SignatureManager::ensureCapacity(Entity e, size_t componentIndex)
@@ -47,12 +54,13 @@ void SignatureManager::ensureCapacity(Entity e, size_t componentIndex)
     size_t requiredBlocks = (componentIndex / SignatureManager::BITS_PER_BLOCK) + 1;
 
     if (this->signatures[e.index()].size() < requiredBlocks)
-        this->signatures[e.index()].resize(requiredBlocks, 0);
+    { this->signatures[e.index()].resize(requiredBlocks, 0); }
 }
 
 bool SignatureManager::match(Entity e, const size_t *indices, size_t count) const
 {
     if (e.index() >= this->signatures.size()) return false;
+
     const auto &signature = this->signatures[e.index()];
 
     for (size_t i = 0; i < count; ++i)
@@ -63,7 +71,10 @@ bool SignatureManager::match(Entity e, const size_t *indices, size_t count) cons
         size_t bit = index % SignatureManager::BITS_PER_BLOCK;
 
         if (block >= signature.size()) return false;
-        if (!(signature[block] & (1ULL << bit))) return false;
+
+        uint64_t mask = (1ULL << bit);
+        if (!(signature[block] & mask)) return false;
     }
+
     return true;
 }
