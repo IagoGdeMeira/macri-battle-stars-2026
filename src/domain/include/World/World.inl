@@ -1,5 +1,3 @@
-#include "World.h"
-
 template <typename Component>
 void World::addComponent(Entity e, const Component &component)
 {

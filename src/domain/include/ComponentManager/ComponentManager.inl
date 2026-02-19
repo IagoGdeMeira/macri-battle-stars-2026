@@ -1,5 +1,3 @@
-#include "ComponentManager.h"
-
 #include <cassert>
 
 template<typename Component>

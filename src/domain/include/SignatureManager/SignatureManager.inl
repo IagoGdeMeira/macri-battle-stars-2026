@@ -1,5 +1,3 @@
-#include "SignatureManager.h"
-
 template <typename Component>
 size_t SignatureManager::getComponentIndex() { return ComponentType::id<Component>(); }
 
