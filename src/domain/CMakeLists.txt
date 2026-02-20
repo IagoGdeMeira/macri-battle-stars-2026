@@ -4,6 +4,8 @@ target_sources(domain
     PRIVATE
         src/ComponentManager.cpp
         src/EntityManager.cpp
+        src/EventBus.cpp
+        src/EventDispatcher.cpp
         src/SignatureManager.cpp
         src/World.cpp
 )

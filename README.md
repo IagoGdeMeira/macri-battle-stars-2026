@@ -15,6 +15,7 @@ Mais informações envolvendo aspectos específicos do projeto estarão disponí
 > - ✉️ [Convenção de Commits](docs/COMMITS.md)
 > - 📚 [Dependências Externas](external/README.md)
 > - 🛠 [Estratégia de Testes](tests/README.md)
+> - 🚌 [Sistema de Eventos](src/domain/docs/EVENTS.md)
 
 ---
 ---
