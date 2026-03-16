@@ -3,36 +3,37 @@
 
 #include "../ComponentManager/ComponentManager.h"
 #include "../EntityManager/EntityManager.h"
-#include "../SignatureManager/SignatureManager.h"
-
-#include <algorithm>
-#include <stdexcept>
+#include "../View/View.h"
 
 class World
 {
 public:
-    Entity createEntity();
-    void destroyEntity(Entity e);
+    World() = default;
 
-    template <typename Component>
-    void addComponent(Entity e, const Component &component);
+    Entity create();
+    void destroy(Entity entity);
 
-    template <typename Component>
-    void removeComponent(Entity e);
+    template <typename T>
+    void registerComponent();
 
-    template <typename Component>
-    Component &getComponent(Entity e);
+    template <typename T>
+    void add(Entity entity, const T& component);
 
-    template <typename Component>
-    bool hasComponent(Entity e) const;
+    template <typename T>
+    void remove(Entity entity);
 
-    template <typename... Components, typename Func>
-    void each(Func func);
+    template <typename T>
+    bool has(Entity entity) const;
+
+    template <typename T>
+    T& get(Entity entity);
+
+    template <typename... Components>
+    View<Components...> view();
 
 private:
-    EntityManager entities;
-    ComponentManager components;
-    SignatureManager signatures;
+    EntityManager entityManager;
+    ComponentManager componentManager;
 };
 
 #include "World.inl"

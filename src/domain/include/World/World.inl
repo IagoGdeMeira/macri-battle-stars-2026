@@ -1,60 +1,23 @@
-template <typename Component>
-void World::addComponent(Entity e, const Component &component)
-{
-    if (!this->entities.isAlive(e)) throw std::runtime_error("Cannot add component to dead entity");
+#include "World.h"
 
-    this->components.add<Component>(e, component);
+inline Entity World::create() { return this->entityManager.create(); }
 
-    auto idx = this->signatures.getComponentIndex<Component>();
-    this->signatures.addComponent(e, idx);
-}
+inline void World::destroy(Entity entity) { this->entityManager.destroy(entity); }
 
-template <typename Component>
-void World::removeComponent(Entity e)
-{
-    if (!this->entities.isAlive(e)) throw std::runtime_error("Cannot remove component from dead entity");
+template <typename T>
+void World::registerComponent() { this->componentManager.registerComponent<T>(); }
 
-    this->components.remove<Component>(e);
+template <typename T>
+void World::add(Entity entity, const T& component) { this->componentManager.add(entity, component); }
 
-    auto idx = this->signatures.getComponentIndex<Component>();
-    this->signatures.removeComponent(e, idx);
-}
+template <typename T>
+void World::remove(Entity entity) { this->componentManager.remove<T>(entity); }
 
-template <typename Component>
-Component &World::getComponent(Entity e)
-{
-    if (!this->entities.isAlive(e)) throw std::runtime_error("Cannot get component from dead entity");
+template <typename T>
+bool World::has(Entity entity) const { return this->componentManager.has<T>(entity); }
 
-    return this->components.get<Component>(e);
-}
+template <typename T>
+T& World::get(Entity entity) { return this->componentManager.get<T>(entity); }
 
-template <typename Component>
-bool World::hasComponent(Entity e) const
-{
-    if (!this->entities.isAlive(e)) return false;
-
-    return this->components.has<Component>(e);
-}
-
-template <typename... Components, typename Func>
-void World::each(Func func)
-{
-    auto *firstStorage = this->components.findStorage<
-        std::tuple_element_t<0, std::tuple<Components...>>>();
-
-    if (!firstStorage)
-        return;
-
-    const auto &entitiesList = firstStorage->getEntities();
-
-    for (Entity e : entitiesList)
-    {
-        if (!this->entities.isAlive(e))
-            continue;
-
-        if (!(this->hasComponent<Components>(e) && ...))
-            continue;
-
-        func(e, this->components.get<Components>(e)...);
-    }
-}
+template <typename... Components>
+View<Components...> World::view() { return View<Components...>(this->componentManager); }

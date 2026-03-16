@@ -4,32 +4,32 @@
 #include "../Entity/Entity.h"
 #include "../IComponentStorage/IComponentStorage.h"
 
-#include <limits>
 #include <vector>
 
-template <typename ComponentType>
+template <typename T>
 class ComponentStorage : public IComponentStorage
 {
 public:
-    void add(Entity e, const ComponentType &component);
-    void remove(Entity e) override;
+    void add(Entity entity, const T& component);
 
-    bool has(Entity e) const;
-    ComponentType &get(Entity e);
+    void remove(Entity entity) override;
 
-    size_t size() const;
+    bool has(Entity entity) const override;
 
-    std::vector<ComponentType> &getComponents();
-    const std::vector<ComponentType> &getComponents() const;
+    T& get(Entity entity);
 
-    const std::vector<Entity> &getEntities() const;
+    const T& get(Entity entity) const;
+
+    size_t size() const override;
+
+    const std::vector<Entity>& entities() const override;
 
 private:
-    static constexpr size_t INVALID = std::numeric_limits<size_t>::max();
+    std::vector<Entity> denseEntities;
 
-    std::vector<ComponentType> components;
-    std::vector<Entity> entities;
-    std::vector<size_t> sparse;
+    std::vector<T> denseComponents;
+
+    std::vector<uint32_t> sparse;
 };
 
 #include "ComponentStorage.inl"

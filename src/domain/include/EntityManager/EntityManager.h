@@ -4,20 +4,25 @@
 #include "../Entity/Entity.h"
 
 #include <cstdint>
+#include <queue>
 #include <vector>
 
 class EntityManager
 {
 public:
     Entity create();
+
     void destroy(Entity e);
 
     bool isAlive(Entity e) const;
 
 private:
-    size_t nextId = 0;
-    std::vector<size_t> generations;
-    std::vector<size_t> freeIds;
+    static constexpr char DEAD = 0;
+    static constexpr char ALIVE = 1;
+
+    uint32_t nextId = 0;
+    std::queue<uint32_t> freeIds;
+    std::vector<char> alive;
 };
 
 #endif // entity_manager_h

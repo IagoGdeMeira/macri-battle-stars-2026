@@ -1,24 +1,16 @@
 #ifndef entity_h
 #define entity_h
 
-#include <cstddef>
+#include <cstdint>
 
-class Entity
+struct Entity
 {
-public:
-    Entity(size_t id, size_t generation) : id(id), generation(generation) {}
+    Entity(uint32_t id) : id(id) {}
 
-    size_t index() const noexcept { return this->id; }
-    size_t gen() const noexcept { return this->generation; }
+    uint32_t id;
 
-    bool operator==(const Entity &other) const
-    { return this->id == other.id && this->generation == other.generation; }
-
-    bool operator!=(const Entity &other) const { return !(*this == other); }
-
-private:
-    size_t id{0};
-    size_t generation{0};
+    bool operator==(const Entity &other) const { return this->id == other.id; }
+    bool operator!=(const Entity &other) const { return this->id != other.id; }
 };
 
 #endif // entity_h

@@ -2,31 +2,35 @@
 
 Entity EntityManager::create()
 {
-    size_t id;
+    uint32_t id;
 
     if (!this->freeIds.empty())
     {
-        id = this->freeIds.back();
-        this->freeIds.pop_back();
+        id = this->freeIds.front();
+        this->freeIds.pop();
     }
-    else
-    {
-        id = this->nextId++;
-        this->generations.resize(id + 1, 0);
-    }
-    return Entity{id, this->generations[id]};
+    else id = this->nextId++;
+
+    if (id >= this->alive.size()) this->alive.resize(id + 1, EntityManager::DEAD);
+    this->alive[id] = EntityManager::ALIVE;
+
+    return Entity{id};
 }
 
 void EntityManager::destroy(Entity e)
 {
-    if (!this->isAlive(e)) return;
+    uint32_t id = e.id;
+    
+    if (id >= this->alive.size() || !this->alive[id]) return;
 
-    ++this->generations[e.index()];
-    this->freeIds.push_back(e.index());
+    this->alive[id] = EntityManager::DEAD;
+    this->freeIds.push(id);
 }
 
 bool EntityManager::isAlive(Entity e) const
 {
-    if (e.index() >= this->generations.size()) return false;
-    return this->generations[e.index()] == e.gen();
+    uint32_t id = e.id;
+
+    if (id >= this->alive.size()) return false;
+    return this->alive[id] == EntityManager::ALIVE;
 }

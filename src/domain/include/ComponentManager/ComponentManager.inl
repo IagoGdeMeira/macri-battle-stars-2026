@@ -1,57 +1,61 @@
-#include <cassert>
+#include "ComponentManager.h"
 
-template<typename Component>
-void ComponentManager::add(Entity e, const Component& component)
-{ this->getOrCreateStorage<Component>()->add(e, component); }
-
-template<typename Component>
-void ComponentManager::remove(Entity e)
+template <typename T>
+void ComponentManager::registerComponent()
 {
-    auto* storage = this->findStorage<Component>();
-    if (storage) storage->remove(e);
-}
-
-template <typename Component>
-Component &ComponentManager::get(Entity e)
-{
-    auto *storage = this->findStorage<Component>();
-    if (!storage) throw std::runtime_error("Component storage not found");
-
-    return storage->get(e);
-}
-
-template<typename Component>
-bool ComponentManager::has(Entity e) const
-{
-    auto* storage = this->findStorage<Component>();
-    return storage && storage->has(e);
-}
-
-template <typename Component>
-ComponentStorage<Component> *ComponentManager::findStorage()
-{
-    size_t id = ComponentType::id<Component>();
-    if (id >= this->storages.size()) return nullptr;
-
-    return static_cast<ComponentStorage<Component> *>(this->storages[id].get());
-}
-
-template<typename Component>
-const ComponentStorage<Component> *ComponentManager::findStorage() const
-{
-    size_t id = ComponentType::id<Component>();
-    if (id >= this->storages.size()) return nullptr;
-    
-    return static_cast<ComponentStorage<Component> *>(this->storages[id].get());
-}
-
-template <typename Component>
-ComponentStorage<Component> *ComponentManager::getOrCreateStorage()
-{
-    size_t id = ComponentType::id<Component>();
+    uint32_t id = this->componentTypeId<T>();
 
     if (id >= this->storages.size()) this->storages.resize(id + 1);
-    if (!this->storages[id]) this->storages[id] = std::make_unique<ComponentStorage<Component>>();
 
-    return static_cast<ComponentStorage<Component> *>(this->storages[id].get());
+    if (this->storages[id]) throw std::logic_error("Component already registered");
+
+    this->storages[id] = std::make_unique<ComponentStorage<T>>();
+}
+
+template <typename T>
+void ComponentManager::add(Entity entity, const T& component)
+{ this->getStorage<T>()->add(entity, component); }
+
+template <typename T>
+void ComponentManager::remove(Entity entity) { this->getStorage<T>()->remove(entity); }
+
+template <typename T>
+bool ComponentManager::has(Entity entity) const { return this->getStorage<T>()->has(entity); }
+
+template <typename T>
+T& ComponentManager::get(Entity entity) { return this->getStorage<T>()->get(entity); }
+
+template <typename T>
+IComponentStorage* ComponentManager::storage() { return this->getStorage<T>(); }
+
+template <typename T>
+const ComponentStorage<T>* ComponentManager::storage() const { return this->getStorage<T>(); }
+
+template <typename T>
+uint32_t ComponentManager::componentTypeId()
+{
+    static uint32_t id = ComponentManager::nextComponentTypeId++;
+    return id;
+}
+
+template <typename T>
+ComponentStorage<T>* ComponentManager::getStorage()
+{
+    uint32_t id = this->componentTypeId<T>();
+
+    if (id >= this->storages.size() || !this->storages[id])
+    { throw std::logic_error("Component not registered"); }
+
+    return static_cast<ComponentStorage<T>*>(this->storages[id].get());
+}
+
+template <typename T>
+const ComponentStorage<T>* ComponentManager::getStorage() const
+{
+    uint32_t id = this->componentTypeId<T>();
+
+    if (id >= this->storages.size() || !this->storages[id])
+    { throw std::logic_error("Component not registered"); }
+
+    return static_cast<const ComponentStorage<T>*>(this->storages[id].get());
 }

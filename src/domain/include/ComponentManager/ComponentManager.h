@@ -2,40 +2,53 @@
 #define component_manager_h
 
 #include "../ComponentStorage/ComponentStorage.h"
-#include "../ComponentType/ComponentType.h"
 #include "../Entity/Entity.h"
+#include "../IComponentStorage/IComponentStorage.h"
 
+#include <cstdint>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 class ComponentManager
 {
 public:
-    template <typename Component>
-    void add(Entity e, const Component &component);
+    template <typename T>
+    void registerComponent();
 
-    template <typename Component>
-    void remove(Entity e);
+    template <typename T>
+    void add(Entity entity, const T &component);
 
-    template <typename Component>
-    Component &get(Entity e);
+    template <typename T>
+    void remove(Entity entity);
 
-    template <typename Component>
-    bool has(Entity e) const;
+    template <typename T>
+    bool has(Entity entity) const;
 
-    template <typename Component>
-    ComponentStorage<Component> *findStorage();
+    template <typename T>
+    T& get(Entity entity);
 
-    template <typename Component>
-    const ComponentStorage<Component> *findStorage() const;
+    template <typename T>
+    IComponentStorage* storage();
 
-    void removeAll(Entity e);
+    template <typename T>
+    const ComponentStorage<T>* storage() const;
+
+    void entityDestroyed(Entity entity);
 
 private:
     std::vector<std::unique_ptr<IComponentStorage>> storages;
 
-    template <typename Component>
-    ComponentStorage<Component> *getOrCreateStorage();
+    static uint32_t nextComponentTypeId;
+
+    template <typename T>
+    static uint32_t componentTypeId();
+
+    template <typename T>
+    ComponentStorage<T>* getStorage();
+
+    template <typename T>
+    const ComponentStorage<T>* getStorage() const;
 };
 
 #include "ComponentManager.inl"

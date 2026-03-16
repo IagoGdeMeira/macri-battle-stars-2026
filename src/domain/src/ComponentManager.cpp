@@ -1,4 +1,6 @@
 #include "../include/ComponentManager/ComponentManager.h"
 
-void ComponentManager::removeAll(Entity e)
-{ for (auto& storage : this->storages) if(storage) storage->remove(e); }
+uint32_t ComponentManager::nextComponentTypeId = 0;
+
+void ComponentManager::entityDestroyed(Entity entity)
+{ for (auto& storage : this->storages) if (storage) storage->remove(entity); }

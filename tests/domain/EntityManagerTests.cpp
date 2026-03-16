@@ -2,104 +2,102 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-struct EntityManagerFixture { EntityManager manager; };
-
-TEST_CASE_METHOD(
-    EntityManagerFixture,
-    "EntityManager creates unique alive entities",
+TEST_CASE("EntityManager can create entities",
     "[unit][entity_manager]"
 ) {
-    Entity e1 = this->manager.create();
-    Entity e2 = this->manager.create();
+    EntityManager manager;
+    Entity e = manager.create();
 
-    REQUIRE(e1 != e2);
-    REQUIRE(this->manager.isAlive(e1));
-    REQUIRE(this->manager.isAlive(e2));
+    REQUIRE(manager.isAlive(e));
 }
 
-TEST_CASE_METHOD(
-    EntityManagerFixture,
-    "EntityManager::destroy makes entity not alive",
+TEST_CASE("EntityManager can assign unique IDs",
     "[unit][entity_manager]"
 ) {
-    Entity e = this->manager.create();
+    EntityManager manager;
 
-    REQUIRE(this->manager.isAlive(e));
-
-    this->manager.destroy(e);
-
-    REQUIRE_FALSE(this->manager.isAlive(e));
+    Entity e1 = manager.create();
+    Entity e2 = manager.create();
+    Entity e3 = manager.create();
+    
+    REQUIRE(e1.id != e2.id);
+    REQUIRE(e2.id != e3.id);
+    REQUIRE(e1.id != e3.id);
 }
 
-TEST_CASE_METHOD(
-    EntityManagerFixture,
-    "EntityManager reuses id after destroy",
+TEST_CASE("EntityManager can destroy entities",
     "[unit][entity_manager]"
 ) {
-    Entity e1 = this->manager.create();
-    size_t reusedId = e1.index();
+    EntityManager manager;
+    Entity e = manager.create();
 
-    this->manager.destroy(e1);
+    manager.destroy(e);
 
-    Entity e2 = this->manager.create();
-
-    REQUIRE(e2.index() == reusedId);
+    REQUIRE_FALSE(manager.isAlive(e));
 }
 
-TEST_CASE_METHOD(
-    EntityManagerFixture,
-    "EntityManager increments generation when reusing id",
+TEST_CASE("EntityManager can reuse IDs of destroyed entities",
     "[unit][entity_manager]"
 ) {
-    Entity e1 = this->manager.create();
-    size_t id = e1.index();
-    size_t gen = e1.gen();
+    EntityManager manager;
 
-    this->manager.destroy(e1);
+    Entity e1 = manager.create();
+    uint32_t id = e1.id;
 
-    Entity e2 = this->manager.create();
+    manager.destroy(e1);
+    Entity e2 = manager.create();
 
-    REQUIRE(e2.index() == id);
-    REQUIRE(e2.gen() == gen + 1);
+    REQUIRE(e2.id == id);
 }
 
-TEST_CASE_METHOD(
-    EntityManagerFixture,
-    "Old entity handle remains invalid after id reuse",
+TEST_CASE("EntityManager can destroy an entity twice without crashing",
     "[unit][entity_manager]"
 ) {
-    Entity e1 = this->manager.create();
-    this->manager.destroy(e1);
+    EntityManager manager;
 
-    Entity e2 = this->manager.create();
+    Entity e = manager.create();
 
-    REQUIRE_FALSE(this->manager.isAlive(e1));
-    REQUIRE(this->manager.isAlive(e2));
+    manager.destroy(e);
+    manager.destroy(e);
+
+    REQUIRE_FALSE(manager.isAlive(e));
 }
 
-TEST_CASE_METHOD(
-    EntityManagerFixture,
-    "Destroying entity twice does not corrupt manager",
+TEST_CASE("Invalid entities are not alive",
     "[unit][entity_manager]"
 ) {
-    Entity e = this->manager.create();
+    EntityManager manager;
 
-    this->manager.destroy(e);
-    this->manager.destroy(e);
+    Entity invalidEntity(9999); // Assuming 9999 is an ID that was never created
 
-    REQUIRE_FALSE(this->manager.isAlive(e));
-
-    Entity newEntity = this->manager.create();
-
-    REQUIRE(this->manager.isAlive(newEntity));
+    REQUIRE_FALSE(manager.isAlive(invalidEntity));
 }
 
-TEST_CASE_METHOD(
-    EntityManagerFixture,
-    "isAlive returns false for out of range entity",
+TEST_CASE("EntityManager can handle multiple entities' lifecycles",
     "[unit][entity_manager]"
 ) {
-    Entity fake{9999, 0};
+    EntityManager manager;
 
-    REQUIRE_FALSE(this->manager.isAlive(fake));
+    Entity e1 = manager.create();
+    Entity e2 = manager.create();
+    Entity e3 = manager.create();
+
+    manager.destroy(e2);
+
+    REQUIRE(manager.isAlive(e1));
+    REQUIRE_FALSE(manager.isAlive(e2));
+    REQUIRE(manager.isAlive(e3));
+}
+
+TEST_CASE("EntityManager can handle a large number of entities",
+    "[unit][entity_manager]"
+) {
+    EntityManager manager;
+
+    const int numEntities = 10000;
+    std::vector<Entity> entities;
+
+    for (int i = 0; i < numEntities; ++i) entities.push_back(manager.create());
+
+    for (const auto& e : entities) REQUIRE(manager.isAlive(e));
 }

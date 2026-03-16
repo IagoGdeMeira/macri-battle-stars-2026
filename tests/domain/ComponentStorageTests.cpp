@@ -1,128 +1,91 @@
 #include "../../src/domain/include/ComponentStorage/ComponentStorage.h"
 
+#include "../../src/domain/include/Entity/Entity.h"
+
 #include <catch2/catch_test_macros.hpp>
 
-struct Position { float x, y; };
+struct Position { float x, y = 0.0f; };
+struct Velocity { float dx, dy = 0.0f; };
 
-struct ComponentStorageFixture { ComponentStorage<Position> storage; };
-
-TEST_CASE_METHOD(
-    ComponentStorageFixture,
-    "ComponentStorage adds and retrieves component",
+TEST_CASE("ComponentStorage can add components",
     "[unit][component_storage]"
 ) {
-    Entity e{0, 0};
-    this->storage.add(e, {10, 20});
+    ComponentStorage<Position> storage;
+    Entity e{1};
 
-    REQUIRE(this->storage.has(e));
-    REQUIRE(this->storage.size() == 1);
+    Position p{10.0f, 20.0f};
+    storage.add(e, p);
 
-    Position &p = this->storage.get(e);
-    REQUIRE(p.x == 10);
-    REQUIRE(p.y == 20);
+    REQUIRE(storage.has(e));
+
+    auto& result = storage.get(e);
+
+    REQUIRE(result.x == 10.0f);
+    REQUIRE(result.y == 20.0f);
 }
 
-TEST_CASE_METHOD(
-    ComponentStorageFixture,
-    "ComponentStorage get throws if component not found",
+TEST_CASE("ComponentStorage can remove components",
     "[unit][component_storage]"
 ) {
-    Entity e{1, 0};
+    ComponentStorage<Position> storage;
+    Entity e{1};
 
-    REQUIRE_FALSE(this->storage.has(e));
-    REQUIRE_THROWS(this->storage.get(e));
+    Position p{10.0f, 20.0f};
+    storage.add(e, p);
+
+    storage.remove(e);
+
+    REQUIRE_FALSE(storage.has(e));
 }
 
-TEST_CASE_METHOD(
-    ComponentStorageFixture,
-    "ComponentStorage throws when adding duplicate component",
+TEST_CASE("ComponentStorage can maintain data after swap removal",
     "[unit][component_storage]"
 ) {
-    Entity e{2, 0};
+    ComponentStorage<Position> storage;
 
-    this->storage.add(e, {1, 1});
+    Entity e1{0};
+    Entity e2{1};
 
-    REQUIRE_THROWS(this->storage.add(e, {2, 2}));
-    REQUIRE(this->storage.size() == 1);
+    storage.add(e1, Position{10.0f, 20.0f});
+    storage.add(e2, Position{30.0f, 40.0f});
+
+    storage.remove(e1);
+
+    REQUIRE(storage.has(e2));
+
+    auto& p = storage.get(e2);
+
+    REQUIRE(p.x == 30.0f);
+    REQUIRE(p.y == 40.0f);
 }
 
-TEST_CASE_METHOD(
-    ComponentStorageFixture,
-    "ComponentStorage removes component correctly",
+TEST_CASE("Size of ComponentStorage must reflect number of components",
     "[unit][component_storage]"
 ) {
-    Entity e{3, 0};
+    ComponentStorage<Position> storage;
 
-    this->storage.add(e, {5, 6});
-    REQUIRE(this->storage.size() == 1);
+    storage.add(Entity{0}, Position{10.0f, 20.0f});
+    storage.add(Entity{1}, Position{30.0f, 40.0f});
 
-    this->storage.remove(e);
+    REQUIRE(storage.size() == 2);
 
-    REQUIRE(this->storage.size() == 0);
-    REQUIRE_FALSE(this->storage.has(e));
+    storage.remove(Entity{0});
+
+    REQUIRE(storage.size() == 1);
 }
 
-TEST_CASE_METHOD(
-    ComponentStorageFixture,
-    "Removing non-existent component does nothing",
+TEST_CASE("ComponentStorage can return list of entities",
     "[unit][component_storage]"
 ) {
-    Entity e{4, 0};
+    ComponentStorage<Position> storage;
 
-    this->storage.remove(e);
+    Entity e1{0};
+    Entity e2{1};
 
-    REQUIRE(this->storage.size() == 0);
-}
+    storage.add(e1, Position{10.0f, 20.0f});
+    storage.add(e2, Position{30.0f, 40.0f});
 
-TEST_CASE_METHOD(
-    ComponentStorageFixture,
-    "ComponentStorage keeps dense array compact after removal",
-    "[unit][component_storage]"
-) {
-    Entity e1{0, 0};
-    Entity e2{1, 0};
-    Entity e3{2, 0};
+    const auto& entities = storage.entities();
 
-    this->storage.add(e1, {1, 1});
-    this->storage.add(e2, {2, 2});
-    this->storage.add(e3, {3, 3});
-
-    REQUIRE(this->storage.size() == 3);
-
-    this->storage.remove(e2);
-
-    REQUIRE(this->storage.size() == 2);
-
-    REQUIRE(this->storage.has(e1));
-    REQUIRE_FALSE(this->storage.has(e2));
-    REQUIRE(this->storage.has(e3));
-
-    REQUIRE(this->storage.getEntities().size() == this->storage.getComponents().size());
-}
-
-TEST_CASE_METHOD(
-    ComponentStorageFixture,
-    "ComponentStorage distinguishes entities by generation",
-    "[unit][component_storage]"
-) {
-    Entity e1{5, 0};
-    Entity e2{5, 1};
-
-    this->storage.add(e1, {9, 9});
-
-    REQUIRE(this->storage.has(e1));
-    REQUIRE_FALSE(this->storage.has(e2));
-}
-
-TEST_CASE_METHOD(
-    ComponentStorageFixture,
-    "ComponentStorage allows modifying component through get",
-    "[unit][component_storage]"
-) {
-    Entity e{6, 0};
-
-    this->storage.add(e, {7, 7});
-    this->storage.get(e).x = 42;
-
-    REQUIRE(this->storage.get(e).x == 42);
+    REQUIRE(entities.size() == 2);
 }

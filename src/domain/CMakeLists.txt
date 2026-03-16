@@ -6,8 +6,6 @@ target_sources(domain
         src/EntityManager.cpp
         src/EventBus.cpp
         src/EventDispatcher.cpp
-        src/SignatureManager.cpp
-        src/World.cpp
 )
 
 target_include_directories(domain
