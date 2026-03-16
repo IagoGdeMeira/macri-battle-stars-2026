@@ -10,32 +10,12 @@ class World
 public:
     World() = default;
 
-    Entity create();
-    void destroy(Entity entity);
-
-    template <typename T>
-    void registerComponent();
-
-    template <typename T>
-    void add(Entity entity, const T& component);
-
-    template <typename T>
-    void remove(Entity entity);
-
-    template <typename T>
-    bool has(Entity entity) const;
-
-    template <typename T>
-    T& get(Entity entity);
-
-    template <typename... Components>
-    View<Components...> view();
+    EntityManager& entities() { return this->entityManager; }
+    ComponentManager& components() { return this->componentManager; }
 
 private:
     EntityManager entityManager;
     ComponentManager componentManager;
 };
-
-#include "World.inl"
 
 #endif // world_h

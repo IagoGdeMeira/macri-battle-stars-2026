@@ -3,8 +3,6 @@ add_executable(domain_tests
     ComponentStorageTests.cpp
     EntityManagerTests.cpp
     EntityTests.cpp
-    EventBusTests.cpp
-    EventDispatcherTests.cpp
     WorldTests.cpp
     ViewTests.cpp
 )

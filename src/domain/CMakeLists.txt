@@ -4,8 +4,6 @@ target_sources(domain
     PRIVATE
         src/ComponentManager.cpp
         src/EntityManager.cpp
-        src/EventBus.cpp
-        src/EventDispatcher.cpp
 )
 
 target_include_directories(domain
