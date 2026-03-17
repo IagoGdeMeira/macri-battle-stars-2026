@@ -11,7 +11,10 @@ public:
     World() = default;
 
     EntityManager& entities() { return this->entityManager; }
+    const EntityManager& entities() const { return this->entityManager; }
+
     ComponentManager& components() { return this->componentManager; }
+    const ComponentManager& components() const { return this->componentManager; }
 
 private:
     EntityManager entityManager;

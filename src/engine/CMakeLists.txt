@@ -2,8 +2,7 @@ add_library(engine STATIC)
 
 target_sources(engine
     PRIVATE
-        src/Engine.cpp
-        src/SystemScheduler.cpp
+        src/SystemManager.cpp
 )
 
 target_include_directories(engine
