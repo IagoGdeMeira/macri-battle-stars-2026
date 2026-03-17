@@ -2,6 +2,8 @@ add_library(engine STATIC)
 
 target_sources(engine
     PRIVATE
+        src/Scene.cpp
+        src/SceneManager.cpp
         src/SystemManager.cpp
 )
 
