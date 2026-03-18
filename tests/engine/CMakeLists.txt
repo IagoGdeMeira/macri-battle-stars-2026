@@ -1,4 +1,5 @@
 add_executable(engine_tests
+    CommandBufferTests.cpp
     EventBusTests.cpp
 )
 

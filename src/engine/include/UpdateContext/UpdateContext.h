@@ -3,12 +3,14 @@
 
 #include "../../domain/include/World/World.h"
 
+class CommandBuffer;
 class EventBus;
 
 struct UpdateContext
 {
     World& world;
     EventBus& eventBus;
+    CommandBuffer& commandBuffer;
     float deltaTime;
 };
 
