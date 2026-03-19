@@ -18,4 +18,6 @@ private:
     std::unique_ptr<Scene> nextScene;
 };
 
+#include "SceneManager.inl"
+
 #endif // scene_manager_h

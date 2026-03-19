@@ -17,10 +17,15 @@ public:
     virtual void init() {}
     virtual void update(float deltaTime);
 
+    template <typename T, typename... Args>
+    T& addSystem(Args&&... args);
+
 protected:
     World world;
     SystemManager systems;
     EventBus& eventBus;
 };
+
+#include "Scene.inl"
 
 #endif // scene_h

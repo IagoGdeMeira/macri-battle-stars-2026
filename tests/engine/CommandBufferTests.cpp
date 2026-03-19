@@ -118,7 +118,8 @@ TEST_CASE("CommandBuffer command can enqueue another command for next flush",
 
     std::vector<int> order;
 
-    buffer.create([&](World&) {
+    buffer.create([&](World&)
+    {
         order.push_back(1);
         buffer.create([&](World&) { order.push_back(2); });
     });
