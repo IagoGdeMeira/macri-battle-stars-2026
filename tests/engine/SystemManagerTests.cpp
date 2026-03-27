@@ -152,7 +152,7 @@ TEST_CASE("SystemManager passes UpdateContext correctly",
 }
 
 TEST_CASE("SystemManager update with no systems does nothing",
-    "[engine][system_manager]"
+    "[unit][system_manager]"
 ) {
     SystemManager manager;
 
