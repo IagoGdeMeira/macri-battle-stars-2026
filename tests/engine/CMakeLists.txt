@@ -2,8 +2,9 @@ add_executable(engine_tests
     CommandBufferTests.cpp
     EngineTests.cpp
     EventBusTests.cpp
-    SceneTests.cpp
     SceneManagerTests.cpp
+    SceneTests.cpp
+    SystemManagerTests.cpp
 )
 
 target_link_libraries(engine_tests
