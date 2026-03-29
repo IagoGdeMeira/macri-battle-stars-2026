@@ -14,9 +14,10 @@ target_include_directories(platform
 
 if(WIN32)
 
-    target_link_libraries(platform
-        PRIVATE
+    target_link_libraries(platform 
+        PUBLIC
             SDL2
+        PRIVATE
             SDL2_image
             SDL2_ttf
             SDL2_mixer

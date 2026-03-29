@@ -2,22 +2,38 @@
 
 #include "../../src/engine/events/QuitEvent.h"
 #include "../../src/engine/include/Scene/Scene.h"
+#include "../../src/engine/include/Window/Window.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>
 #include <thread>
 
-TEST_CASE("Engine must stop when QuitEvent is emitted",
+class Stub
+{
+public:
+    Stub() : engine(window) {}
+
+protected:
+    class StubWindow : public Window
+    {
+    public:
+        void create(int, int, const std::string&) override {}
+        void pollEvents() override {}
+        bool shouldClose() const override { return false; }
+    };
+
+    StubWindow window;
+    Engine engine;
+};
+
+TEST_CASE_METHOD(Stub, "Engine must stop when QuitEvent is emitted",
     "[unit][engine]"
 ) {
-    Engine engine;
-
     struct TestScene : Scene
     {
         using Scene::Scene;
 
-        void update(float) override
-        { this->eventBus.emit<QuitEvent>(); }
+        void update(float) override { this->eventBus.emit<QuitEvent>(); }
     };
 
     engine.scenes().changeScene<TestScene>(engine.events());
@@ -25,11 +41,9 @@ TEST_CASE("Engine must stop when QuitEvent is emitted",
     REQUIRE_NOTHROW(engine.run());
 }
 
-TEST_CASE("Engine must keep looping until stopped",
+TEST_CASE_METHOD(Stub, "Engine must keep looping until stopped",
     "[unit][engine]"
 ) {
-    Engine engine;
-
     int updates = 0;
     const int maxUpdates = 5;
 
@@ -54,11 +68,9 @@ TEST_CASE("Engine must keep looping until stopped",
     REQUIRE(updates == maxUpdates);
 }
 
-TEST_CASE("Engine stops when stop is called", 
+TEST_CASE_METHOD(Stub, "Engine stops when stop is called", 
     "[unit][engine]"
 ) {
-    Engine engine;
-
     struct TestScene : Scene
     {
         using Scene::Scene;

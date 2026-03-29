@@ -2,6 +2,9 @@
 
 #include "../include/Scene/Scene.h"
 
+SceneManager::SceneManager() = default;
+SceneManager::~SceneManager() = default;
+
 void SceneManager::update(float deltaTime)
 {
     if (this->nextScene)

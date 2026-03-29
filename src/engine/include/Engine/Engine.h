@@ -3,10 +3,13 @@
 
 #include "../EventBus/EventBus.h"
 #include "../SceneManager/SceneManager.h"
+#include "../Window/Window.h"
 
 class Engine
 {
 public:
+    Engine(Window& window) : window(window) {}
+
     void run();
     void stop() { this->running = false; }
 
@@ -16,6 +19,7 @@ public:
 private:
     bool running = true;
 
+    Window& window;
     SceneManager sceneManager;
     EventBus eventBus;
 };

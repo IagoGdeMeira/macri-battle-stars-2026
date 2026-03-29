@@ -12,8 +12,10 @@ void Engine::run()
 
     auto lastTime = clock::now();
 
-    while (this->running)
+    while (this->running && !this->window.shouldClose())
     {
+        this->window.pollEvents();
+
         auto now = clock::now();
         std::chrono::duration<float> deltaTime = now - lastTime;
         lastTime = now;
