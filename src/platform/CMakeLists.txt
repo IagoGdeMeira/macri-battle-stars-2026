@@ -31,8 +31,9 @@ elseif(UNIX)
     find_package(SDL2_mixer REQUIRED)
 
     target_link_libraries(platform
-        PRIVATE
+        PUBLIC
             SDL2::SDL2
+        PRIVATE
             SDL2_image::SDL2_image
             SDL2_ttf::SDL2_ttf
             SDL2_mixer::SDL2_mixer
