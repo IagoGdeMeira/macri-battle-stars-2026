@@ -6,9 +6,9 @@ void Scene::update(float deltaTime)
 {
     CommandBuffer commands;
 
-    UpdateContext context { world, eventBus, commands, deltaTime };
+    UpdateContext context { this->localWorld, this->eventBus, commands, deltaTime };
     
-    this->systems.update(context);
+    this->systemManager.update(context);
 
-    commands.flush(this->world);
+    commands.flush(this->localWorld);
 }

@@ -2,6 +2,7 @@ add_executable(engine_tests
     CommandBufferTests.cpp
     EngineTests.cpp
     EventBusTests.cpp
+    MovementSystemTests.cpp
     SceneManagerTests.cpp
     SceneTests.cpp
     SystemManagerTests.cpp

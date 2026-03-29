@@ -17,12 +17,18 @@ public:
     virtual void init() {}
     virtual void update(float deltaTime);
 
+    World& world() { return this->localWorld; }
+    const World& world() const { return this->localWorld; }
+
+    SystemManager& systems() { return this->systemManager; }
+    const SystemManager& systems() const { return this->systemManager; }
+
     template <typename T, typename... Args>
     T& addSystem(Args&&... args);
 
 protected:
-    World world;
-    SystemManager systems;
+    World localWorld; 
+    SystemManager systemManager;
     EventBus& eventBus;
 };
 
