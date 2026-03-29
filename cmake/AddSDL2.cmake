@@ -85,5 +85,3 @@ function(copy_sdl_dlls TARGET)
     endif()
 
 endfunction()
-
-

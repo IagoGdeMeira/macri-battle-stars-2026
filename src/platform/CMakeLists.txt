@@ -14,7 +14,7 @@ target_include_directories(platform
 
 if(WIN32)
 
-    target_link_libraries(platform 
+    target_link_libraries(platform
         PUBLIC
             SDL2
         PRIVATE
@@ -24,6 +24,11 @@ if(WIN32)
     )
 
 elseif(UNIX)
+
+    find_package(SDL2 REQUIRED)
+    find_package(SDL2_image REQUIRED)
+    find_package(SDL2_ttf REQUIRED)
+    find_package(SDL2_mixer REQUIRED)
 
     target_link_libraries(platform
         PRIVATE

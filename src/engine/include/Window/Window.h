@@ -16,11 +16,6 @@ public:
 
     virtual void pollEvents() = 0;
     virtual bool shouldClose() const = 0;
-
-private:
-    int width = 0;
-    int height = 0;
-    std::string title = "";
 };
 
 #endif // window_h
