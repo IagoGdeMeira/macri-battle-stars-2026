@@ -12,3 +12,5 @@ FetchContent_MakeAvailable(Catch2)
 
 add_subdirectory(domain)
 add_subdirectory(engine)
+add_subdirectory(game)
+add_subdirectory(platform)

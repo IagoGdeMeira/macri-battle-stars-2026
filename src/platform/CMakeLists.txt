@@ -5,6 +5,7 @@ target_sources(platform
         src/SDLWindow.cpp
         src/SDLRenderer.cpp
         src/SDLInputAdapter.cpp
+        src/SDLKeyTranslator.cpp
 )
 
 target_include_directories(platform

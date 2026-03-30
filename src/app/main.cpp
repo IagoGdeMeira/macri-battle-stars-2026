@@ -2,6 +2,7 @@
 
 #include "../engine/include/Engine/Engine.h"
 
+#include "../platform/include/SDLInputAdapter/SDLInputAdapter.h"
 #include "../platform/include/SDLWindow/SDLWindow.h"
 
 int main()
@@ -10,6 +11,10 @@ int main()
     window.create(800, 600, "Macri Battle Stars");
 
     Engine engine(window);
+
+    SDLInputAdapter input(engine.events());
+    engine.setInputAdapter(input);
+
     engine.run();
 
     return 0;

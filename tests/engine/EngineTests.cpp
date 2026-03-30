@@ -1,6 +1,7 @@
 #include "../../src/engine/include/Engine/Engine.h"
 
 #include "../../src/engine/events/QuitEvent.h"
+#include "../../src/engine/include/InputAdapter/InputAdapter.h"
 #include "../../src/engine/include/Scene/Scene.h"
 #include "../../src/engine/include/Window/Window.h"
 
@@ -87,4 +88,39 @@ TEST_CASE_METHOD(Stub, "Engine stops when stop is called",
     t.join();
 
     SUCCEED();
+}
+
+TEST_CASE_METHOD(Stub, "Engine must poll configured input adapter",
+    "[unit][engine]"
+) {
+    class StubInputAdapter : public InputAdapter
+    {
+    public:
+        StubInputAdapter(EventBus& bus, int& polls) : bus(bus), polls(polls) {}
+
+        void poll() override
+        {
+            polls++;
+            this->bus.emit<QuitEvent>();
+        }
+
+    private:
+        EventBus& bus;
+        int& polls;
+    };
+
+    struct IdleScene : Scene
+    {
+        using Scene::Scene;
+        void update(float) override {}
+    };
+
+    int polls = 0;
+    StubInputAdapter adapter(engine.events(), polls);
+
+    engine.setInputAdapter(adapter);
+    engine.scenes().changeScene<IdleScene>(engine.events());
+    engine.run();
+
+    REQUIRE(polls > 0);
 }
