@@ -69,7 +69,7 @@ jobs:
       # ------------------------------------
 
       - name: Build
-        run: cmake --build build --parallel
+        run: cmake --build build --parallel --clean-first
 
       # ------------------------------------
       # Run tests
