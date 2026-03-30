@@ -11,6 +11,8 @@ target_link_libraries(platform_tests
 add_test(NAME platform_tests COMMAND platform_tests)
 
 if(WIN32)
+    copy_sdl_dlls(platform_tests)
+
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(_sdl_arch x64)
     else()
