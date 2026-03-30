@@ -3,6 +3,7 @@
 
 #include "../InputBinding/InputBinding.h"
 
+#include <cstdint>
 #include <unordered_map>
 
 using PlayerId = uint32_t;
