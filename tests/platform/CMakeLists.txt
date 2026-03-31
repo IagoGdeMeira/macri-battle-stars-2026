@@ -1,5 +1,8 @@
 add_executable(platform_tests
+    JsonNodeTests.cpp
+    JsonParserTests.cpp
     SDLInputAdapterTests.cpp
+    SDLWindowTests.cpp
 )
 
 target_link_libraries(platform_tests

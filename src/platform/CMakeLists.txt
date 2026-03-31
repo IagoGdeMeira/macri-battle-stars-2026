@@ -2,6 +2,8 @@ add_library(platform STATIC)
 
 target_sources(platform
     PRIVATE
+        src/JsonNode.cpp
+        src/JsonParser.cpp
         src/SDLWindow.cpp
         src/SDLRenderer.cpp
         src/SDLInputAdapter.cpp
@@ -11,7 +13,6 @@ target_sources(platform
 target_include_directories(platform
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PRIVATE
         ${PROJECT_SOURCE_DIR}/external/nlohmann/include
 )
 
