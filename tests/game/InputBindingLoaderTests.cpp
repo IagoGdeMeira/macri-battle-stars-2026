@@ -14,6 +14,7 @@
 
 class Stub
 {
+public:
     class StubNode : public DataNode
     {
     public:
@@ -149,7 +150,7 @@ class Stub
 TEST_CASE_METHOD(Stub, "InputBindingLoader builds context for all players",
     "[unit][input_binding_loader]"
 ) {
-    StubParser parser(makeBindingsRoot());
+    StubParser parser(StubParser::makeBindingsRoot());
     InputBindingLoader loader(parser);
 
     const auto context = loader.load("assets/inputs/input_bindings.json");
@@ -163,7 +164,7 @@ TEST_CASE_METHOD(Stub, "InputBindingLoader builds context for all players",
 TEST_CASE_METHOD(Stub, "InputBindingLoader forwards path to parser",
     "[unit][input_binding_loader]"
 ) {
-    StubParser parser(makeBindingsRoot());
+    StubParser parser(StubParser::makeBindingsRoot());
     InputBindingLoader loader(parser);
 
     (void)loader.load("custom/path/bindings.json");

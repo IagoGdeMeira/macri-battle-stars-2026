@@ -4,14 +4,16 @@
 
 #include <SDL.h>
 
-TEST_CASE("SDLWindow starts with close flag disabled", "[integration][sdl_window]")
-{
+TEST_CASE("SDLWindow starts with close flag disabled",
+    "[integration][sdl_window]"
+) {
     SDLWindow window;
     REQUIRE(window.shouldClose() == false);
 }
 
-TEST_CASE("SDLWindow marks close requested when receiving SDL_QUIT", "[integration][sdl_window]")
-{
+TEST_CASE("SDLWindow marks close requested when receiving SDL_QUIT",
+    "[integration][sdl_window]"
+) {
     SDLWindow window;
 
     SDL_Event quitEvent {};

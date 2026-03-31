@@ -2,8 +2,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("JsonNode reports existing keys", "[unit][json_node]")
-{
+TEST_CASE("JsonNode reports existing keys",
+    "[unit][json_node]"
+) {
     JsonNode node(json{{"name", "Ryu"}, {"hp", 100}, {"speed", 3.5f}});
 
     REQUIRE(node.has("name"));
@@ -12,8 +13,9 @@ TEST_CASE("JsonNode reports existing keys", "[unit][json_node]")
     REQUIRE_FALSE(node.has("missing"));
 }
 
-TEST_CASE("JsonNode reads primitive values", "[unit][json_node]")
-{
+TEST_CASE("JsonNode reads primitive values",
+    "[unit][json_node]"
+) {
     JsonNode node(json{{"name", "Ken"}, {"hp", 90}, {"speed", 4.25f}});
 
     REQUIRE(node.getString("name") == "Ken");
@@ -21,8 +23,9 @@ TEST_CASE("JsonNode reads primitive values", "[unit][json_node]")
     REQUIRE(node.getFloat("speed") == 4.25f);
 }
 
-TEST_CASE("JsonNode throws when key does not exist", "[unit][json_node]")
-{
+TEST_CASE("JsonNode throws when key does not exist",
+    "[unit][json_node]"
+) {
     JsonNode node(json{{"name", "Chun-Li"}});
 
     REQUIRE_THROWS_AS(node.getString("unknown"), std::runtime_error);
@@ -31,8 +34,9 @@ TEST_CASE("JsonNode throws when key does not exist", "[unit][json_node]")
     REQUIRE_THROWS_AS(node.getArray("unknown"), std::runtime_error);
 }
 
-TEST_CASE("JsonNode returns nested array as DataNode collection", "[unit][json_node]")
-{
+TEST_CASE("JsonNode returns nested array as DataNode collection",
+    "[unit][json_node]"
+) {
     JsonNode node(json{
         {"players", json::array({
             json{{"id", 1}, {"name", "P1"}},
