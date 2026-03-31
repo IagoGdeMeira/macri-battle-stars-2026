@@ -1,6 +1,7 @@
 #ifndef input_binding_loader_h
 #define input_binding_loader_h
 
+#include "../../engine/include/DataParser/DataParser.h"
 #include "../../engine/include/InputContext/InputContext.h"
 
 #include <string>
@@ -8,10 +9,12 @@
 class InputBindingLoader
 {
 public:
-    static void load(const std::string& path);
+    InputBindingLoader(DataParser& parser) : parser(parser) {};
 
-    static KeyCode stringToKeyCode(const std::string& keyStr);
-    static InputAction stringToInputAction(const std::string& actionStr);
+    InputContext load(const std::string& path);
+
+private:
+    DataParser& parser;
 };
 
 #endif // input_binding_loader_h

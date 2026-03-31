@@ -4,6 +4,7 @@ target_sources(engine
     PRIVATE
         src/CommandBuffer.cpp
         src/Engine.cpp
+        src/InputMapper.cpp
         src/InputSystem.cpp
         src/MovementSystem.cpp
         src/Scene.cpp
