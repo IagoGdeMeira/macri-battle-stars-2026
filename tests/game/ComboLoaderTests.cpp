@@ -20,6 +20,7 @@ public:
         void setString(const std::string& key, const std::string& value) { this->strings[key] = value; }
         void setInt(const std::string& key, int value) { this->ints[key] = value; }
         void setFloat(const std::string& key, float value) { this->floats[key] = value; }
+        void setBool(const std::string& key, bool value) { this->bools[key] = value; }
 
         void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value)
         {
@@ -125,7 +126,7 @@ public:
             auto comboA = std::make_unique<StubNode>();
             comboA->setString("name", "uppercut");
             comboA->setInt("priority", 10);
-            comboA->setInt("consume", 0);
+            comboA->setBool("consume", false);
 
             std::vector<std::unique_ptr<DataNode>> comboASteps;
             comboASteps.push_back(std::move(step1));
