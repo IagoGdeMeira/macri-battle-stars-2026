@@ -47,6 +47,7 @@ public:
             return this->strings.contains(key)
                 || this->ints.contains(key)
                 || this->floats.contains(key)
+                || this->bools.contains(key)
                 || this->arrays.contains(key);
         }
 
@@ -71,6 +72,13 @@ public:
             return it->second;
         }
 
+        bool getBool(const std::string& key) const override
+        {
+            const auto it = this->bools.find(key);
+            if (it == this->bools.end()) throw std::runtime_error("Missing bool key: " + key);
+            return it->second;
+        }
+
         std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override
         {
             const auto it = this->arrays.find(key);
@@ -88,6 +96,7 @@ public:
         std::unordered_map<std::string, std::string> strings;
         std::unordered_map<std::string, int> ints;
         std::unordered_map<std::string, float> floats;
+        std::unordered_map<std::string, bool> bools;
         std::unordered_map<std::string, std::vector<StubNode>> arrays;
     };
 

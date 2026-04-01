@@ -16,11 +16,12 @@ TEST_CASE("JsonNode reports existing keys",
 TEST_CASE("JsonNode reads primitive values",
     "[unit][json_node]"
 ) {
-    JsonNode node(json{{"name", "Ken"}, {"hp", 90}, {"speed", 4.25f}});
+    JsonNode node(json{{"name", "Ken"}, {"hp", 90}, {"speed", 4.25f}, {"alive", true}});
 
     REQUIRE(node.getString("name") == "Ken");
     REQUIRE(node.getInt("hp") == 90);
     REQUIRE(node.getFloat("speed") == 4.25f);
+    REQUIRE(node.getBool("alive") == true);
 }
 
 TEST_CASE("JsonNode throws when key does not exist",
@@ -31,6 +32,7 @@ TEST_CASE("JsonNode throws when key does not exist",
     REQUIRE_THROWS_AS(node.getString("unknown"), std::runtime_error);
     REQUIRE_THROWS_AS(node.getInt("unknown"), std::runtime_error);
     REQUIRE_THROWS_AS(node.getFloat("unknown"), std::runtime_error);
+    REQUIRE_THROWS_AS(node.getBool("unknown"), std::runtime_error);
     REQUIRE_THROWS_AS(node.getArray("unknown"), std::runtime_error);
 }
 

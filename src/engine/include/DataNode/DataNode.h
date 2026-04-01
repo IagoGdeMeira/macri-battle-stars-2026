@@ -15,6 +15,7 @@ public:
     virtual std::string getString(const std::string& key) const = 0;
     virtual int getInt(const std::string& key) const = 0;
     virtual float getFloat(const std::string& key) const = 0;
+    virtual bool getBool(const std::string& key) const = 0;
     
     virtual std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const = 0;
 };

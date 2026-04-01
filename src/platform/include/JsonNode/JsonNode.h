@@ -17,6 +17,8 @@ public:
     std::string getString(const std::string& key) const override;
     int getInt(const std::string& key) const override;
     float getFloat(const std::string& key) const override;
+    bool getBool(const std::string& key) const override;
+
     std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override;
 
 private:

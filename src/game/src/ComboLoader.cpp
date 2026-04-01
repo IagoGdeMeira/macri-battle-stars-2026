@@ -15,7 +15,7 @@ std::vector<Combo> ComboLoader::load(const std::string& path)
         combo.name = comboNode->getString("name");
         
         if (comboNode->has("priority")) combo.priority = comboNode->getInt("priority");
-        if (comboNode->has("consume")) combo.consumeInput = comboNode->getInt("consume");
+        if (comboNode->has("consume")) combo.consumeInput = comboNode->getBool("consume");
 
         for (auto& stepNode : comboNode->getArray("steps"))
         {

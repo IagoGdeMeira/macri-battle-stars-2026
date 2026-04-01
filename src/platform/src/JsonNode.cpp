@@ -21,6 +21,12 @@ float JsonNode::getFloat(const std::string& key) const
     return this->data.at(key).get<float>();
 }
 
+bool JsonNode::getBool(const std::string& key) const
+{
+    if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
+    return this->data.at(key).get<bool>();
+}
+
 std::vector<std::unique_ptr<DataNode>> JsonNode::getArray(const std::string& key) const
 {
     if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
