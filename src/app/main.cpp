@@ -2,6 +2,8 @@
 
 #include "../engine/include/Engine/Engine.h"
 
+#include "../game/include/ComboLoader/ComboLoader.h"
+#include "../game/include/GameScene/GameScene.h"
 #include "../game/include/InputBindingLoader/InputBindingLoader.h"
 
 #include "../platform/include/JsonParser/JsonParser.h"
@@ -17,11 +19,15 @@ int main()
     InputBindingLoader loader(parser);
     auto bindings = loader.load("assets/inputs/input_bindings.json");
 
+    ComboLoader comboLoader(parser);
+    auto combos = comboLoader.load("assets/combos/combos.json");
+
     Engine engine(window);
 
     SDLInputAdapter input(engine.events());
     engine.setInputAdapter(input);
 
+    engine.scenes().changeScene<GameScene>(engine.events(), bindings, combos);
     engine.run();
 
     return 0;

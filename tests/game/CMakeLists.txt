@@ -1,4 +1,7 @@
 add_executable(game_tests
+    ComboLoaderTests.cpp
+    ComboSystemTests.cpp
+    ComboTests.cpp
     InputBindingLoaderTests.cpp
 )
 

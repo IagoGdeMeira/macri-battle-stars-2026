@@ -2,6 +2,9 @@ add_library(game STATIC)
 
 target_sources(game
     PRIVATE
+        src/ComboLoader.cpp
+        src/ComboSystem.cpp
+        src/GameScene.cpp
         src/InputBindingLoader.cpp
 )
 

@@ -17,19 +17,28 @@ void InputSystem::update(UpdateContext& ctx)
 
     for (auto [entity, input, player] : view)
     {
+        auto& binding = context.bindings[player.id];
+
+        for (auto& [action, state] : input.actions)
+        {
+            state.pressed = false;
+            state.heldTime += ctx.deltaTime;
+        }
+
         for (const auto& e : events)
         {
             if (e.player != player.id) continue;
-            
-            auto& binding = this->context.bindings[e.player];
-            auto it = binding.keyMap.find(e.key);
 
+            auto it = binding.keyMap.find(e.key);
             if (it == binding.keyMap.end()) continue;
 
-            auto& action = it->second;
-            input.actions[action].pressed = e.pressed;
+            auto action = it->second;
 
-            if (!e.pressed) input.actions[action].heldTime = 0.0f;
+            auto& state = input.actions[action];
+
+            state.pressed = e.pressed;
+
+            if (e.pressed) state.heldTime = 0.f;
         }
     }
     

@@ -7,6 +7,7 @@
 #include "../../src/engine/include/EventBus/EventBus.h"
 #include "../../src/engine/include/Scene/Scene.h"
 
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("InputSystem updates mapped action for matching player",
@@ -34,7 +35,7 @@ TEST_CASE("InputSystem updates mapped action for matching player",
     REQUIRE(input.actions.at(InputAction::Attack).pressed == true);
 }
 
-TEST_CASE("InputSystem resets heldTime when mapped key is released",
+TEST_CASE("InputSystem keeps heldTime progression when mapped key is released",
     "[integration][input_system]"
 ) {
     EventBus bus;
@@ -61,7 +62,7 @@ TEST_CASE("InputSystem resets heldTime when mapped key is released",
 
     const auto& updated = scene.world().components().get<InputComponent>(entity);
     REQUIRE(updated.actions.at(InputAction::MoveLeft).pressed == false);
-    REQUIRE(updated.actions.at(InputAction::MoveLeft).heldTime == 0.0f);
+    REQUIRE(updated.actions.at(InputAction::MoveLeft).heldTime == Catch::Approx(2.516f));
 }
 
 TEST_CASE("InputSystem ignores events from other players",
