@@ -1,0 +1,19 @@
+#ifndef state_machine_loader_h
+#define state_machine_loader_h
+
+#include "../StateMachine/StateMachine.h"
+
+#include "../../engine/include/DataParser/DataParser.h"
+
+class StateMachineLoader
+{
+public:
+    StateMachineLoader(DataParser& parser) : parser(parser) {}
+
+    StateMachine load(const std::string& path) const;
+
+private:
+    DataParser& parser;
+};
+
+#endif // state_machine_loader_h

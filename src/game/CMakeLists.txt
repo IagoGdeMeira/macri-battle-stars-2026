@@ -4,8 +4,13 @@ target_sources(game
     PRIVATE
         src/ComboLoader.cpp
         src/ComboSystem.cpp
+        src/ConditionFactory.cpp
         src/GameScene.cpp
         src/InputBindingLoader.cpp
+        src/StateMachineLoader.cpp
+        src/StateMapper.cpp
+        src/StateSystem.cpp
+        src/TriggerMapper.cpp
 )
 
 target_include_directories(game

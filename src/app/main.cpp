@@ -5,10 +5,13 @@
 #include "../game/include/ComboLoader/ComboLoader.h"
 #include "../game/include/GameScene/GameScene.h"
 #include "../game/include/InputBindingLoader/InputBindingLoader.h"
+#include "../game/include/StateMachineLoader/StateMachineLoader.h"
 
 #include "../platform/include/JsonParser/JsonParser.h"
 #include "../platform/include/SDLInputAdapter/SDLInputAdapter.h"
 #include "../platform/include/SDLWindow/SDLWindow.h"
+
+#include <utility>
 
 int main()
 {
@@ -22,12 +25,15 @@ int main()
     ComboLoader comboLoader(parser);
     auto combos = comboLoader.load("assets/combos/combos.json");
 
+    StateMachineLoader stateMachineLoader(parser);
+    auto machine = stateMachineLoader.load("assets/fsm/state_machine.json");
+
     Engine engine(window);
 
     SDLInputAdapter input(engine.events());
     engine.setInputAdapter(input);
 
-    engine.scenes().changeScene<GameScene>(engine.events(), bindings, combos);
+    engine.scenes().changeScene<GameScene>(engine.events(), bindings, combos, std::move(machine));
     engine.run();
 
     return 0;

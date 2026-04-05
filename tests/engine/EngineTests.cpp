@@ -9,10 +9,10 @@
 #include <chrono>
 #include <thread>
 
-class Stub
+class EngineFixture
 {
 public:
-    Stub() : engine(window) {}
+    EngineFixture() : engine(window) {}
 
 protected:
     class StubWindow : public Window
@@ -27,7 +27,7 @@ protected:
     Engine engine;
 };
 
-TEST_CASE_METHOD(Stub, "Engine must stop when QuitEvent is emitted",
+TEST_CASE_METHOD(EngineFixture, "Engine must stop when QuitEvent is emitted",
     "[unit][engine]"
 ) {
     struct TestScene : Scene
@@ -42,7 +42,7 @@ TEST_CASE_METHOD(Stub, "Engine must stop when QuitEvent is emitted",
     REQUIRE_NOTHROW(engine.run());
 }
 
-TEST_CASE_METHOD(Stub, "Engine must keep looping until stopped",
+TEST_CASE_METHOD(EngineFixture, "Engine must keep looping until stopped",
     "[unit][engine]"
 ) {
     int updates = 0;
@@ -69,7 +69,7 @@ TEST_CASE_METHOD(Stub, "Engine must keep looping until stopped",
     REQUIRE(updates == maxUpdates);
 }
 
-TEST_CASE_METHOD(Stub, "Engine stops when stop is called", 
+TEST_CASE_METHOD(EngineFixture, "Engine stops when stop is called", 
     "[unit][engine]"
 ) {
     struct TestScene : Scene
@@ -90,7 +90,7 @@ TEST_CASE_METHOD(Stub, "Engine stops when stop is called",
     SUCCEED();
 }
 
-TEST_CASE_METHOD(Stub, "Engine must poll configured input adapter",
+TEST_CASE_METHOD(EngineFixture, "Engine must poll configured input adapter",
     "[unit][engine]"
 ) {
     class StubInputAdapter : public InputAdapter

@@ -8,6 +8,7 @@ TEST_CASE("Combo uses expected defaults",
     Combo combo;
 
     REQUIRE(combo.name.empty());
+    REQUIRE(combo.trigger == TriggerId::Unknown);
     REQUIRE(combo.steps.empty());
     REQUIRE(combo.priority == 0);
     REQUIRE(combo.consumeInput == true);

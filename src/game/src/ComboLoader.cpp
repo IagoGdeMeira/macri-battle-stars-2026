@@ -1,6 +1,10 @@
 #include "../include/ComboLoader/ComboLoader.h"
 
+#include "../include/TriggerMapper/TriggerMapper.h"
+
 #include "../../engine/include/InputMapper/InputMapper.h"
+
+#include <stdexcept>
 
 std::vector<Combo> ComboLoader::load(const std::string& path)
 {
@@ -8,25 +12,30 @@ std::vector<Combo> ComboLoader::load(const std::string& path)
 
     std::vector<Combo> combos;
 
-    for (auto& comboNode : root->getArray("combos"))
+    for (auto& cnode : root->getArray("combos"))
     {
         Combo combo;
 
-        combo.name = comboNode->getString("name");
-        
-        if (comboNode->has("priority")) combo.priority = comboNode->getInt("priority");
-        if (comboNode->has("consume")) combo.consumeInput = comboNode->getBool("consume");
+        combo.name = cnode->getString("name");
+        combo.trigger = TriggerMapper::fromString(cnode->getString("trigger"));
 
-        for (auto& stepNode : comboNode->getArray("steps"))
+        if (cnode->has("priority")) combo.priority = cnode->getInt("priority");
+        if (cnode->has("consume")) combo.consumeInput = cnode->getBool("consume");
+
+        for (auto& snode : cnode->getArray("steps"))
         {
             ComboStep step;
 
-            step.action = InputMapper::stringToAction(stepNode->getString("action"));
-            step.maxDelay = stepNode->getFloat("maxDelay");
+            step.action = InputMapper::stringToAction(snode->getString("action"));
+            step.maxDelay = snode->getFloat("maxDelay");
 
             combo.steps.push_back(step);
         }
+        if (combo.steps.empty())
+        { throw std::runtime_error("Combo '" + combo.name + "' must have at least one step"); }
+
         combos.push_back(combo);
     }
+    
     return combos;
 }

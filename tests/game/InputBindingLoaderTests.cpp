@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
-class Stub
+class InputBindingLoaderFixture
 {
 public:
     class StubNode : public DataNode
@@ -156,7 +156,7 @@ public:
     };
 };
 
-TEST_CASE_METHOD(Stub, "InputBindingLoader builds context for all players",
+TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader builds context for all players",
     "[unit][input_binding_loader]"
 ) {
     StubParser parser(StubParser::makeBindingsRoot());
@@ -170,7 +170,7 @@ TEST_CASE_METHOD(Stub, "InputBindingLoader builds context for all players",
     REQUIRE(context.bindings.at(2).keyMap.at(KeyCode::LShift) == InputAction::Defend);
 }
 
-TEST_CASE_METHOD(Stub, "InputBindingLoader forwards path to parser",
+TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader forwards path to parser",
     "[unit][input_binding_loader]"
 ) {
     StubParser parser(StubParser::makeBindingsRoot());
@@ -181,7 +181,7 @@ TEST_CASE_METHOD(Stub, "InputBindingLoader forwards path to parser",
     REQUIRE(parser.lastPath == "custom/path/bindings.json");
 }
 
-TEST_CASE_METHOD(Stub, "InputBindingLoader handles empty players list", "[unit][input_binding_loader]")
+TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader handles empty players list", "[unit][input_binding_loader]")
 {
     auto root = std::make_unique<StubNode>();
     root->setArray("players", {});
@@ -194,7 +194,7 @@ TEST_CASE_METHOD(Stub, "InputBindingLoader handles empty players list", "[unit][
     REQUIRE(context.bindings.empty());
 }
 
-TEST_CASE_METHOD(Stub, "InputBindingLoader keeps unknown mapped values as fallback enums",
+TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader keeps unknown mapped values as fallback enums",
     "[unit][input_binding_loader]"
 ) {
     auto unknownBinding = std::make_unique<StubNode>();

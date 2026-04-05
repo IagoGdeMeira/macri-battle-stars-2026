@@ -1,0 +1,22 @@
+#ifndef state_transition_h
+#define state_transition_h
+
+#include "../ICondition/ICondition.h"
+
+#include "../../domain/include/StateId/StateId.h"
+#include "../../domain/include/TriggerId/TriggerId.h"
+
+#include <memory>
+#include <vector>
+
+struct StateTransition
+{
+    StateId from;
+    StateId to;
+
+    std::vector<TriggerId> triggers;
+    
+    std::vector<std::unique_ptr<ICondition>> conditions;
+};
+
+#endif // state_transition_h

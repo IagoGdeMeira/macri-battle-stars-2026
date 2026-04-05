@@ -9,19 +9,27 @@ TEST_CASE("SDLWindow starts with close flag disabled",
 ) {
     SDLWindow window;
     REQUIRE(window.shouldClose() == false);
+
+    SDL_Quit();
 }
 
 TEST_CASE("SDLWindow marks close requested when receiving SDL_QUIT",
     "[integration][sdl_window]"
 ) {
-    SDLWindow window;
+    REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
 
-    SDL_Event quitEvent {};
-    quitEvent.type = SDL_QUIT;
+    {
+        SDLWindow window;
 
-    REQUIRE(SDL_PushEvent(&quitEvent) == 1);
+        SDL_Event quitEvent{};
+        quitEvent.type = SDL_QUIT;
 
-    window.pollEvents();
+        REQUIRE(SDL_PushEvent(&quitEvent) == 1);
 
-    REQUIRE(window.shouldClose() == true);
+        window.pollEvents();
+
+        REQUIRE(window.shouldClose() == true);
+    }
+
+    SDL_Quit();
 }

@@ -1,0 +1,20 @@
+{
+    "combos": [
+        {
+            "name": "uppercut",
+            "trigger": "Punched",
+            "priority": 10,
+            "consume": false,
+            "steps": [
+                {
+                    "action": "Attack",
+                    "maxDelay": 150
+                },
+                {
+                    "action": "Jump",
+                    "maxDelay": 100
+                }
+            ]
+        }
+    ]
+}

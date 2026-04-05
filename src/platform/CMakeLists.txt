@@ -4,10 +4,10 @@ target_sources(platform
     PRIVATE
         src/JsonNode.cpp
         src/JsonParser.cpp
-        src/SDLWindow.cpp
-        src/SDLRenderer.cpp
         src/SDLInputAdapter.cpp
         src/SDLKeyTranslator.cpp
+        src/SDLRenderer.cpp
+        src/SDLWindow.cpp
 )
 
 target_include_directories(platform

@@ -5,24 +5,32 @@ bool JsonNode::has(const std::string& key) const
 
 std::string JsonNode::getString(const std::string& key) const
 {
+    if (key.empty()) return this->data.get<std::string>();
+
     if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
     return this->data.at(key).get<std::string>();
 }
 
 int JsonNode::getInt(const std::string& key) const
 {
+    if (key.empty()) return this->data.get<int>();
+
     if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
     return this->data.at(key).get<int>();
 }
 
 float JsonNode::getFloat(const std::string& key) const
 {
+    if (key.empty()) return this->data.get<float>();
+
     if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
     return this->data.at(key).get<float>();
 }
 
 bool JsonNode::getBool(const std::string& key) const
 {
+    if (key.empty()) return this->data.get<bool>();
+
     if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
     return this->data.at(key).get<bool>();
 }

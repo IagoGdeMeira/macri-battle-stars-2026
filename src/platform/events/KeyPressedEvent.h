@@ -1,6 +1,8 @@
 #ifndef key_pressed_event_h
 #define key_pressed_event_h
 
-struct KeyPressedEvent { int keyCode; };
+#include "../../engine/include/KeyCode/KeyCode.h"
+
+struct KeyPressedEvent { KeyCode keyCode; };
 
 #endif // key_pressed_event_h

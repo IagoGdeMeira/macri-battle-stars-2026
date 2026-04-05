@@ -24,6 +24,20 @@ TEST_CASE("JsonNode reads primitive values",
     REQUIRE(node.getBool("alive") == true);
 }
 
+TEST_CASE("JsonNode reads root primitive values",
+    "[unit][json_node]"
+) {
+    JsonNode stringNode(json("Ryu"));
+    JsonNode intNode(json(42));
+    JsonNode floatNode(json(3.5));
+    JsonNode boolNode(json(true));
+
+    REQUIRE(stringNode.getString("") == "Ryu");
+    REQUIRE(intNode.getInt("") == 42);
+    REQUIRE(floatNode.getFloat("") == 3.5f);
+    REQUIRE(boolNode.getBool("") == true);
+}
+
 TEST_CASE("JsonNode throws when key does not exist",
     "[unit][json_node]"
 ) {

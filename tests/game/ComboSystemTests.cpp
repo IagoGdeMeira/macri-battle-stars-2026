@@ -27,6 +27,7 @@ TEST_CASE("ComboSystem emits best matching combo by priority",
 
     Combo low;
     low.name = "low";
+    low.trigger = TriggerId::Punched;
     low.priority = 1;
     low.steps =
     {
@@ -36,6 +37,7 @@ TEST_CASE("ComboSystem emits best matching combo by priority",
 
     Combo high;
     high.name = "high";
+    high.trigger = TriggerId::Kicked;
     high.priority = 10;
     high.steps =
     {
@@ -53,7 +55,7 @@ TEST_CASE("ComboSystem emits best matching combo by priority",
 
     REQUIRE(emitted.size() == 1);
     REQUIRE(emitted[0].entity == entity);
-    REQUIRE(emitted[0].name == "high");
+    REQUIRE(emitted[0].trigger == TriggerId::Kicked);
 }
 
 TEST_CASE("ComboSystem clears buffer when combo consumes input",
@@ -101,6 +103,7 @@ TEST_CASE("ComboSystem keeps buffer when combo does not consume input",
 
     Combo combo;
     combo.name = "hold";
+    combo.trigger = TriggerId::Kicked;
     combo.consumeInput = false;
     combo.steps = { { InputAction::Defend, 100 } };
 

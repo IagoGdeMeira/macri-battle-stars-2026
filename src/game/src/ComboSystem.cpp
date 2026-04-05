@@ -1,6 +1,7 @@
 #include "../include/ComboSystem/ComboSystem.h"
 
 #include "../events/ComboExecutedEvent.h"
+#include "../include/TriggerMapper/TriggerMapper.h"
 
 #include "../../domain/include/View/View.h"
 
@@ -14,13 +15,13 @@ void ComboSystem::update(UpdateContext& ctx)
 
         for (const auto& combo : combos)
         {
-            if (!matches(buffer, combo)) continue;
+            if (!this->matches(buffer, combo)) continue;
             if (!best || combo.priority > best->priority) best = &combo;
         }
 
         if (best)
         {
-            eventBus.emit<ComboExecutedEvent>(ComboExecutedEvent{entity, best->name});
+            eventBus.emit<ComboExecutedEvent>(ComboExecutedEvent{entity, best->trigger});
             if (best->consumeInput) buffer.buffer.clear();
         }
     }

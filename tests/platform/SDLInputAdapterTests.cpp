@@ -1,25 +1,12 @@
 #include "../../src/platform/include/SDLInputAdapter/SDLInputAdapter.h"
-#include "../../src/platform/include/SDLKeyTranslator/SDLKeyTranslator.h"
 
 #include "../../src/engine/events/KeyEvent.h"
 #include "../../src/engine/events/QuitEvent.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <SDL.h>
-
 #include <vector>
-
-TEST_CASE("SDLKeyTranslator maps known and unknown keys",
-    "[unit][sdl_key_translator]"
-) {
-    REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_a) == KeyCode::A);
-    REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_ESCAPE) == KeyCode::Escape);
-    REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_F12) == KeyCode::F12);
-
-    REQUIRE(SDLKeyTranslator::toKeyCode(-123456) == KeyCode::Unknown);
-}
 
 TEST_CASE("SDLInputAdapter emits quit and key events",
     "[integration][sdl_input_adapter]"

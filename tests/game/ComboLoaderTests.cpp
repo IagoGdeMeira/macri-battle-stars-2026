@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
-class Stub
+class ComboLoaderFixture
 {
 public:
     class StubNode : public DataNode
@@ -113,55 +113,59 @@ public:
             return std::make_unique<StubNode>(*typed);
         }
 
-        static std::unique_ptr<DataNode> makeCombosRoot()
-        {
-            auto step1 = std::make_unique<StubNode>();
-            step1->setString("action", "Attack");
-            step1->setFloat("maxDelay", 150.0f);
-
-            auto step2 = std::make_unique<StubNode>();
-            step2->setString("action", "Jump");
-            step2->setFloat("maxDelay", 100.0f);
-
-            auto comboA = std::make_unique<StubNode>();
-            comboA->setString("name", "uppercut");
-            comboA->setInt("priority", 10);
-            comboA->setBool("consume", false);
-
-            std::vector<std::unique_ptr<DataNode>> comboASteps;
-            comboASteps.push_back(std::move(step1));
-            comboASteps.push_back(std::move(step2));
-            comboA->setArray("steps", std::move(comboASteps));
-
-            auto step3 = std::make_unique<StubNode>();
-            step3->setString("action", "Defend");
-            step3->setFloat("maxDelay", 80.0f);
-
-            auto comboB = std::make_unique<StubNode>();
-            comboB->setString("name", "guard");
-
-            std::vector<std::unique_ptr<DataNode>> comboBSteps;
-            comboBSteps.push_back(std::move(step3));
-            comboB->setArray("steps", std::move(comboBSteps));
-
-            auto rootNode = std::make_unique<StubNode>();
-            std::vector<std::unique_ptr<DataNode>> combos;
-            combos.push_back(std::move(comboA));
-            combos.push_back(std::move(comboB));
-            rootNode->setArray("combos", std::move(combos));
-
-            return rootNode;
-        }
-
     private:
         std::unique_ptr<DataNode> root;
     };
+
+    std::unique_ptr<DataNode> makeCombosRoot() const
+    {
+        auto step1 = std::make_unique<StubNode>();
+        step1->setString("action", "Attack");
+        step1->setFloat("maxDelay", 150.0f);
+
+        auto step2 = std::make_unique<StubNode>();
+        step2->setString("action", "Jump");
+        step2->setFloat("maxDelay", 100.0f);
+
+        auto comboA = std::make_unique<StubNode>();
+        comboA->setString("name", "uppercut");
+        comboA->setString("trigger", "Punched");
+        comboA->setInt("priority", 10);
+        comboA->setBool("consume", false);
+
+        std::vector<std::unique_ptr<DataNode>> comboASteps;
+        comboASteps.push_back(std::move(step1));
+        comboASteps.push_back(std::move(step2));
+        comboA->setArray("steps", std::move(comboASteps));
+
+        auto step3 = std::make_unique<StubNode>();
+        step3->setString("action", "Defend");
+        step3->setFloat("maxDelay", 80.0f);
+
+        auto comboB = std::make_unique<StubNode>();
+        comboB->setString("name", "guard");
+        comboB->setString("trigger", "Kicked");
+        comboB->setInt("priority", 5);
+        comboB->setBool("consume", true);
+
+        std::vector<std::unique_ptr<DataNode>> comboBSteps;
+        comboBSteps.push_back(std::move(step3));
+        comboB->setArray("steps", std::move(comboBSteps));
+
+        auto rootNode = std::make_unique<StubNode>();
+        std::vector<std::unique_ptr<DataNode>> combos;
+        combos.push_back(std::move(comboA));
+        combos.push_back(std::move(comboB));
+        rootNode->setArray("combos", std::move(combos));
+
+        return rootNode;
+    }
 };
 
-TEST_CASE_METHOD(Stub, "ComboLoader parses combos with optional fields",
+TEST_CASE_METHOD(ComboLoaderFixture, "ComboLoader parses combos with optional fields",
     "[unit][combo_loader]"
 ) {
-    StubParser parser(StubParser::makeCombosRoot());
+    ComboLoaderFixture::StubParser parser(this->makeCombosRoot());
     ComboLoader loader(parser);
 
     const auto combos = loader.load("assets/inputs/combos.json");
@@ -169,6 +173,7 @@ TEST_CASE_METHOD(Stub, "ComboLoader parses combos with optional fields",
     REQUIRE(combos.size() == 2);
 
     REQUIRE(combos[0].name == "uppercut");
+    REQUIRE(combos[0].trigger == TriggerId::Punched);
     REQUIRE(combos[0].priority == 10);
     REQUIRE(combos[0].consumeInput == false);
     REQUIRE(combos[0].steps.size() == 2);
@@ -178,17 +183,18 @@ TEST_CASE_METHOD(Stub, "ComboLoader parses combos with optional fields",
     REQUIRE(combos[0].steps[1].maxDelay == 100);
 
     REQUIRE(combos[1].name == "guard");
-    REQUIRE(combos[1].priority == 0);
+    REQUIRE(combos[1].trigger == TriggerId::Kicked);
+    REQUIRE(combos[1].priority == 5);
     REQUIRE(combos[1].consumeInput == true);
     REQUIRE(combos[1].steps.size() == 1);
     REQUIRE(combos[1].steps[0].action == InputAction::Defend);
     REQUIRE(combos[1].steps[0].maxDelay == 80);
 }
 
-TEST_CASE_METHOD(Stub, "ComboLoader forwards file path to parser",
+TEST_CASE_METHOD(ComboLoaderFixture, "ComboLoader forwards file path to parser",
     "[unit][combo_loader]"
 ) {
-    StubParser parser(StubParser::makeCombosRoot());
+    ComboLoaderFixture::StubParser parser(this->makeCombosRoot());
     ComboLoader loader(parser);
 
     (void)loader.load("custom/combos.json");
