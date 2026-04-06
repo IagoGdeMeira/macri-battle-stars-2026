@@ -2,7 +2,8 @@
 #define state_system_h
 
 #include "../StateMachine/StateMachine.h"
-#include "../../events/ComboExecutedEvent.h"
+
+#include "../../events/TriggerEvent.h"
 
 #include "../../../domain/components/StateComponent.h"
 
@@ -22,7 +23,7 @@ private:
     EventBus& bus;
     const StateMachine& machine;
 
-    std::vector<ComboExecutedEvent> events;
+    std::vector<TriggerEvent> events;
 
     bool hasTrigger(const StateTransition& transition, TriggerId trigger);
 

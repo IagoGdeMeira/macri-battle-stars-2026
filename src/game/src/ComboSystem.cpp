@@ -1,6 +1,7 @@
 #include "../include/ComboSystem/ComboSystem.h"
 
 #include "../events/ComboExecutedEvent.h"
+#include "../events/TriggerEvent.h"
 #include "../include/TriggerMapper/TriggerMapper.h"
 
 #include "../../domain/include/View/View.h"
@@ -22,6 +23,7 @@ void ComboSystem::update(UpdateContext& ctx)
         if (best)
         {
             eventBus.emit<ComboExecutedEvent>(ComboExecutedEvent{entity, best->trigger});
+            eventBus.emit<TriggerEvent>(TriggerEvent{entity, best->trigger});
             if (best->consumeInput) buffer.buffer.clear();
         }
     }

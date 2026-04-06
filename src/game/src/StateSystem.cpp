@@ -3,11 +3,12 @@
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
+#include <unordered_map>
 
 StateSystem::StateSystem(EventBus& eventBus, const StateMachine& stateMachine) :
     bus(eventBus), machine(stateMachine)
 {
-    bus.subscribe<ComboExecutedEvent>([this](const ComboExecutedEvent& event)
+    bus.subscribe<TriggerEvent>([this](const TriggerEvent& event)
     { this->events.push_back(event); });
 }
 
@@ -17,26 +18,21 @@ void StateSystem::update(UpdateContext& ctx)
 
     for (auto [entity, state] : view) state.timeInState += ctx.deltaTime;
 
-    for (const auto& e : this->events) for (auto [entity, state] : view)
+    for (const auto& e : this->events)
     {
-        if (entity != e.entity) continue;
+        auto entity = e.entity;
+        auto& state = ctx.world.components().get<StateComponent>(entity);
 
         ConditionContext cctx { ctx.world, entity, state };
 
-        const StateTransition* transition = findTransition(
-            this->machine,
-            state.current,
-            e.trigger,
-            cctx
-        );
+        const StateTransition* transition = this->findTransition(
+            this->machine, state.current, e.trigger, cctx);
 
-        if (transition != nullptr)
+        if (transition)
         {
             state.current = transition->to;
             state.timeInState = 0.0f;
         }
-
-        break;
     }
 
     this->events.clear();

@@ -43,7 +43,7 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem applies matching transition",
     CommandBuffer commandBuffer;
     UpdateContext ctx { world, bus, commandBuffer, 0.016f };
 
-    bus.emit<ComboExecutedEvent>(ComboExecutedEvent{ entity, TriggerId::Punched });
+    bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Punched });
     system.update(ctx);
 
     const auto& state = world.components().get<StateComponent>(entity);
@@ -71,7 +71,7 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem keeps other entities unchanged
     CommandBuffer commandBuffer;
     UpdateContext ctx { world, bus, commandBuffer, 0.016f };
 
-    bus.emit<ComboExecutedEvent>(ComboExecutedEvent{ other, TriggerId::Punched });
+    bus.emit<TriggerEvent>(TriggerEvent{ other, TriggerId::Punched });
     system.update(ctx);
 
     const auto& targetState = world.components().get<StateComponent>(target);
@@ -108,7 +108,7 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem respects transition conditions
     CommandBuffer commandBuffer;
     UpdateContext ctx { world, bus, commandBuffer, 0.10f };
 
-    bus.emit<ComboExecutedEvent>(ComboExecutedEvent{ entity, TriggerId::Punched });
+    bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Punched });
     system.update(ctx);
 
     const auto& updated = world.components().get<StateComponent>(entity);

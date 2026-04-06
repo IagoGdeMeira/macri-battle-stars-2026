@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <unordered_set>
 
-StateMachine StateMachineLoader::load(const std::string &path) const
+StateMachine StateMachineLoader::load(const std::string& path) const
 {
     auto root = parser.parse(path);
 
@@ -25,15 +25,23 @@ StateMachine StateMachineLoader::load(const std::string &path) const
 
         if (t.from == StateId::Unknown) throw std::runtime_error("Invalid 'from' state: " + fromStr);
         if (t.to == StateId::Unknown) throw std::runtime_error("Invalid 'to' state: " + toStr);
-        
+
+        std::unordered_set<TriggerId> uniqueTriggers;
         if (node->has("triggers")) for (auto& tnode : node->getArray("triggers"))
         {
-            std::string triggerStr = tnode->has("value") ? tnode->getString("value") : tnode->getString("");
+            std::string triggerStr = tnode->has("value")
+                ? tnode->getString("value")
+                : tnode->getString("");
 
             auto trigger = TriggerMapper::fromString(triggerStr);
 
             if (trigger == TriggerId::Unknown) throw std::runtime_error(
                 "Invalid trigger in transition from '" +
+                fromStr + "' to '" +
+                toStr + "': " + triggerStr);
+
+            if (!uniqueTriggers.insert(trigger).second) throw std::runtime_error(
+                "Duplicate trigger in transition from '" +
                 fromStr + "' to '" +
                 toStr + "': " + triggerStr);
 
@@ -57,7 +65,7 @@ StateMachine StateMachineLoader::load(const std::string &path) const
             fromStr + "' to '" +
             toStr + "' must have at least one trigger");
 
-        if (node->has("conditions")) for (auto &cnode : node->getArray("conditions"))
+        if (node->has("conditions")) for (auto& cnode : node->getArray("conditions"))
         { t.conditions.push_back(ConditionFactory::create(*cnode)); }
 
         machine.transitions.push_back(std::move(t));
