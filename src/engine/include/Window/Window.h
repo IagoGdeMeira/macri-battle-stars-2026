@@ -1,7 +1,7 @@
 #ifndef window_h
 #define window_h
 
-#include <string>
+class EventBus;
 
 class Window
 {
@@ -11,11 +11,13 @@ public:
     virtual void create(
         int width,
         int height,
-        const std::string& title
+        const char* title
     ) = 0;
 
-    virtual void pollEvents() = 0;
-    virtual bool shouldClose() const = 0;
+    virtual void setResolution(int width, int height) = 0;
+    virtual void setFullscreen(bool enabled) = 0;
+
+    virtual void getSize(int& width, int& height) = 0;
 };
 
 #endif // window_h

@@ -8,16 +8,27 @@
 class SDLWindow : public Window
 {
 public:
-    SDLWindow();
+    SDLWindow() {}
     ~SDLWindow();
 
-    void create(int width, int height, const std::string& title) override;
-    void pollEvents() override;
-    bool shouldClose() const override;
+    void create(
+        int width,
+        int height,
+        const char* title
+    ) override;
+
+    void setResolution(int width, int height) override;
+    void setFullscreen(bool enabled) override;
+
+    void getSize(int& width, int& height) override;
+
+    SDL_Window* getNativeHandle() const { return this->window; }
 
 private:
     SDL_Window* window = nullptr;
-    bool closeRequested = false;
+
+    int width = 0;
+    int height = 0;
 };
 
 #endif // sdl_window

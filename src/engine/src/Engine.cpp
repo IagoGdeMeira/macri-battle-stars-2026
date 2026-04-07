@@ -12,9 +12,8 @@ void Engine::run()
 
     auto lastTime = clock::now();
 
-    while (this->running && !this->window.shouldClose())
+    while (this->running)
     {
-        this->window.pollEvents();
         if (this->input) this->input->poll();
 
         auto now = clock::now();
