@@ -1,15 +1,35 @@
 #include "../include/RenderSystem/RenderSystem.h"
 
-#include "../include/UpdateContext/UpdateContext.h"
+#include "../../engine/events/WindowResizedEvent.h"
 
-#include "../../domain/include/View/View.h"
+RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer) : renderer(renderer)
+{
+    bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent& event)
+    {
+        this->windowWidth = event.width;
+        this->windowHeight = event.height;
+        this->updateViewport();
+    });
+}
 
 void RenderSystem::update(UpdateContext& ctx)
 {
-    renderer.beginFrame();
+    this->renderer.clear();
+    this->renderer.present();
+}
 
-    auto view = View<TransformComponent, SpriteComponent>(ctx.world.components());
-    for (auto [entity, transform, sprite] : view) renderer.draw(transform, sprite);
+void RenderSystem::updateViewport()
+{
+    float scaleX = (float)this->windowWidth / this->VIRTUAL_WIDTH;
+    float scaleY = (float)this->windowHeight / this->VIRTUAL_HEIGHT;
 
-    renderer.endFrame();
+    float scale = (scaleX < scaleY) ? scaleX : scaleY;
+
+    int viewWidth = (int)(this->VIRTUAL_WIDTH * scale);
+    int viewHeight = (int)(this->VIRTUAL_HEIGHT * scale);
+
+    int offsetX = (this->windowWidth - viewWidth) / 2;
+    int offsetY = (this->windowHeight - viewHeight) / 2;
+
+    this->renderer.setViewport(offsetX, offsetY, viewWidth, viewHeight);
 }
