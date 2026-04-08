@@ -19,9 +19,6 @@ void SDLWindow::create(
 ) {
     SDL_Init(SDL_INIT_VIDEO);
 
-    this->width = width;
-    this->height = height;
-
     this->window = SDL_CreateWindow(
         title,
         SDL_WINDOWPOS_CENTERED,
@@ -34,12 +31,7 @@ void SDLWindow::create(
 }
 
 void SDLWindow::setResolution(int width, int height)
-{
-    this->width = width;
-    this->height = height;
-
-    if (this->window) SDL_SetWindowSize(this->window, width, height);
-}
+{ if (this->window) SDL_SetWindowSize(this->window, width, height); }
 
 void SDLWindow::setFullscreen(bool enabled)
 {
