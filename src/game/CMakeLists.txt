@@ -7,6 +7,7 @@ target_sources(game
         src/ConditionFactory.cpp
         src/GameScene.cpp
         src/InputBindingLoader.cpp
+        src/RenderSystem.cpp
         src/StateMachineLoader.cpp
         src/StateMapper.cpp
         src/StateSystem.cpp
