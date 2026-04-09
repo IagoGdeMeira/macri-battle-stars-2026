@@ -12,7 +12,7 @@ RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer) : renderer(rendere
     });
 }
 
-void RenderSystem::update(UpdateContext& ctx)
+void RenderSystem::update(UpdateContext&)
 {
     this->renderer.clear();
     this->renderer.present();

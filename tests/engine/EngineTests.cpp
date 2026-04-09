@@ -18,9 +18,14 @@ protected:
     class StubWindow : public Window
     {
     public:
-        void create(int, int, const std::string&) override {}
-        void pollEvents() override {}
-        bool shouldClose() const override { return false; }
+        void create(int, int, const char*) override {}
+        void setResolution(int, int) override {}
+        void setFullscreen(bool) override {}
+        void getSize(int& width, int& height) override
+        {
+            width = 0;
+            height = 0;
+        }
     };
 
     StubWindow window;

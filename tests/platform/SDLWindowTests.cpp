@@ -8,27 +8,49 @@ TEST_CASE("SDLWindow starts with close flag disabled",
     "[integration][sdl_window]"
 ) {
     SDLWindow window;
-    REQUIRE(window.shouldClose() == false);
+    REQUIRE(window.getNativeHandle() == nullptr);
 
     SDL_Quit();
 }
 
-TEST_CASE("SDLWindow marks close requested when receiving SDL_QUIT",
+TEST_CASE("SDLWindow creates native window and reports configured size",
     "[integration][sdl_window]"
 ) {
-    REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
-
     {
         SDLWindow window;
+        window.create(800, 600, "Window Test");
 
-        SDL_Event quitEvent{};
-        quitEvent.type = SDL_QUIT;
+        REQUIRE(window.getNativeHandle() != nullptr);
 
-        REQUIRE(SDL_PushEvent(&quitEvent) == 1);
+        int width = 0;
+        int height = 0;
+        window.getSize(width, height);
 
-        window.pollEvents();
+        REQUIRE(width == 800);
+        REQUIRE(height == 600);
+    }
 
-        REQUIRE(window.shouldClose() == true);
+    SDL_Quit();
+}
+
+TEST_CASE("SDLWindow updates size after setResolution",
+    "[integration][sdl_window]"
+) {
+    {
+        SDLWindow window;
+        window.create(800, 600, "Window Test");
+
+        window.setResolution(1024, 768);
+
+        int width = 0;
+        int height = 0;
+        window.getSize(width, height);
+
+        REQUIRE(width == 1024);
+        REQUIRE(height == 768);
+
+        REQUIRE_NOTHROW(window.setFullscreen(true));
+        REQUIRE_NOTHROW(window.setFullscreen(false));
     }
 
     SDL_Quit();
