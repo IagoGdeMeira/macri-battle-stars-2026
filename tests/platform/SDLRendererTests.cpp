@@ -11,10 +11,10 @@ class SDLRendererFixture
 public:
     void configureVideoDriverForCi() const
     {
-#if defined(__linux__)
-        SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
-        SDL_sethint(SDL_HINT_RENDER_DRIVER, "software");
-#endif
+        #if defined(__linux__)
+            SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
+            SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
+        #endif
     }
 };
 
