@@ -6,9 +6,23 @@
 
 #include <SDL.h>
 
-TEST_CASE("SDLRenderer can be created from an SDL window",
+class SDLRendererFixture
+{
+public:
+    void configureVideoDriverForCi() const
+    {
+#if defined(__linux__)
+        SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
+        SDL_sethint(SDL_HINT_RENDER_DRIVER, "software");
+#endif
+    }
+};
+
+TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL window",
     "[integration][sdl_renderer]"
 ) {
+    this->configureVideoDriverForCi();
+
     SDLWindow window;
     window.create(800, 600, "Renderer Test");
 

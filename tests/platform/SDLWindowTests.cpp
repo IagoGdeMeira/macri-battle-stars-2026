@@ -4,7 +4,18 @@
 
 #include <SDL.h>
 
-TEST_CASE("SDLWindow starts with close flag disabled",
+class SDLWindowFixture
+{
+public:
+    void configureVideoDriverForCi() const
+    {
+        #if defined(__linux__)
+            SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
+        #endif
+    }
+};
+
+TEST_CASE_METHOD(SDLWindowFixture, "SDLWindow starts with close flag disabled",
     "[integration][sdl_window]"
 ) {
     SDLWindow window;
@@ -13,9 +24,11 @@ TEST_CASE("SDLWindow starts with close flag disabled",
     SDL_Quit();
 }
 
-TEST_CASE("SDLWindow creates native window and reports configured size",
+TEST_CASE_METHOD(SDLWindowFixture, "SDLWindow creates native window and reports configured size",
     "[integration][sdl_window]"
 ) {
+    this->configureVideoDriverForCi();
+
     {
         SDLWindow window;
         window.create(800, 600, "Window Test");
@@ -33,9 +46,11 @@ TEST_CASE("SDLWindow creates native window and reports configured size",
     SDL_Quit();
 }
 
-TEST_CASE("SDLWindow updates size after setResolution",
+TEST_CASE_METHOD(SDLWindowFixture, "SDLWindow updates size after setResolution",
     "[integration][sdl_window]"
 ) {
+    this->configureVideoDriverForCi();
+
     {
         SDLWindow window;
         window.create(800, 600, "Window Test");
