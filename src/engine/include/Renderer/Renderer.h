@@ -3,9 +3,6 @@
 
 #include <string>
 
-struct SpriteComponent;
-struct TransformComponent;
-
 class Renderer
 {
 public:
@@ -13,6 +10,11 @@ public:
 
     virtual void clear() = 0;
     virtual void present() = 0;
+    
+    virtual void draw(
+        const std::string& textureId,
+        int x, int y, int width, int height
+    ) = 0;
 
     virtual void setViewport(int x, int y, int width, int height) = 0;
 };

@@ -29,6 +29,7 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
     SDLRenderer renderer(window.getNativeHandle());
 
     REQUIRE_NOTHROW(renderer.clear());
+    REQUIRE_NOTHROW(renderer.draw("stub_texture", 10, 20, 32, 48));
     REQUIRE_NOTHROW(renderer.present());
     REQUIRE_NOTHROW(renderer.setViewport(0, 0, 800, 600));
 

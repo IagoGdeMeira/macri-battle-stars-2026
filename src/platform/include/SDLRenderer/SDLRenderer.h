@@ -14,6 +14,11 @@ public:
     void clear() override;
     void present() override;
 
+    void draw(
+        const std::string& textureId,
+        int x, int y, int width, int height
+    ) override;
+
     void setViewport(int x, int y, int width, int height) override;
 
 private:

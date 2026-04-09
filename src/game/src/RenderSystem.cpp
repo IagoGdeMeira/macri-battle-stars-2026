@@ -1,10 +1,17 @@
 #include "../include/RenderSystem/RenderSystem.h"
 
+#include "../../domain/components/SpriteComponent.h"
+#include "../../domain/components/TransformComponent.h"
+#include "../../domain/include/View/View.h"
+
 #include "../../engine/events/WindowResizedEvent.h"
+#include "../../engine/include/UpdateContext/UpdateContext.h"
 
 RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer, Camera2D& camera) :
     renderer(renderer), camera(camera)
 {
+    this->updateViewport();
+
     bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent& event)
     {
         this->windowWidth = event.width;
@@ -13,16 +20,40 @@ RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer, Camera2D& camera) 
     });
 }
 
-void RenderSystem::update(UpdateContext&)
+void RenderSystem::update(UpdateContext& ctx)
 {
     this->renderer.clear();
+
+    auto view = View<TransformComponent, SpriteComponent>(ctx.world.components());
+
+    for (auto [entity, transform, sprite] : view)
+    {
+        float screenX, screenY;
+        this->worldToScreen(transform.x, transform.y, screenX, screenY);
+
+        int width = static_cast<int>(sprite.width * transform.scaleX * camera.getZoom());
+        int height = static_cast<int>(sprite.height * transform.scaleY * camera.getZoom());
+
+        this->renderer.draw(
+            sprite.textureId,
+            static_cast<int>(screenX),
+            static_cast<int>(screenY),
+            width,
+            height
+        );
+    }
+
     this->renderer.present();
 }
 
 void RenderSystem::worldToScreen(float worldX, float worldY, float& screenX, float& screenY)
 {
-    screenX = (worldX - camera.getX()) * camera.getZoom();
-    screenY = (worldY - camera.getY()) * camera.getZoom();
+    float camX = this->camera.getX();
+    float camY = this->camera.getY();
+    float zoom = this->camera.getZoom();
+
+    screenX = (worldX - camX) * zoom + (this->VIRTUAL_WIDTH * 0.5f);
+    screenY = (worldY - camY) * zoom + (this->VIRTUAL_HEIGHT * 0.5f);
 }
 
 void RenderSystem::updateViewport()

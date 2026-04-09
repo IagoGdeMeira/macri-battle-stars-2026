@@ -10,6 +10,14 @@ void SDLRenderer::clear() { SDL_RenderClear(this->renderer); }
 
 void SDLRenderer::present() { SDL_RenderPresent(this->renderer); }
 
+void SDLRenderer::draw(const std::string&, int x, int y, int width, int height)
+{
+    SDL_Rect rect = { x, y, width, height };
+
+    SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(this->renderer, &rect);
+}
+
 void SDLRenderer::setViewport(int x, int y, int width, int height)
 {
     SDL_Rect rect = { x, y, width, height };
