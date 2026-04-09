@@ -5,13 +5,53 @@
 #include "../../src/domain/components/PlayerComponent.h"
 #include "../../src/domain/components/StateComponent.h"
 #include "../../src/domain/include/View/View.h"
+
 #include "../../src/engine/include/EventBus/EventBus.h"
 #include "../../src/engine/include/InputBinding/InputBinding.h"
+#include "../../src/engine/include/Window/Window.h"
+
+#include "../../src/game/include/Camera2D/Camera2D.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <utility>
 
-TEST_CASE("GameScene init registers core gameplay components",
+class GameSceneFixture
+{
+public:
+    class StubWindow : public Window
+    {
+    public:
+        void create(int w, int h, const char* /*title*/) override
+        {
+            this->width = w;
+            this->height = h;
+        }
+
+        void setResolution(int w, int h) override
+        {
+            this->width = w;
+            this->height = h;
+        }
+
+        void setFullscreen(bool enabled) override
+        {
+            this->fullscreen = enabled;
+        }
+
+        void getSize(int& w, int& h) override
+        {
+            w = this->width;
+            h = this->height;
+        }
+
+    private:
+        int width = 800;
+        int height = 600;
+        bool fullscreen = false;
+    };
+};
+
+TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay components",
     "[integration][game_scene]"
 ) {
     EventBus bus;
@@ -20,8 +60,10 @@ TEST_CASE("GameScene init registers core gameplay components",
 
     std::vector<Combo> combos;
     StateMachine machine;
+    Camera2D camera;
+    StubWindow window;
 
-    GameScene scene(bus, input, combos, std::move(machine));
+    GameScene scene(bus, input, combos, std::move(machine), camera, window);
 
     scene.init();
 

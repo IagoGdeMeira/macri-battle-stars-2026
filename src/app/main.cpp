@@ -1,7 +1,9 @@
 #define SDL_MAIN_HANDLED
 
 #include "../engine/include/Engine/Engine.h"
+#include "../engine/include/Window/Window.h"
 
+#include "../game/include/Camera2D/Camera2D.h"
 #include "../game/include/ComboLoader/ComboLoader.h"
 #include "../game/include/GameScene/GameScene.h"
 #include "../game/include/InputBindingLoader/InputBindingLoader.h"
@@ -33,7 +35,16 @@ int main()
     SDLInputAdapter input(engine.events());
     engine.setInputAdapter(input);
 
-    engine.scenes().changeScene<GameScene>(engine.events(), bindings, combos, std::move(machine));
+    Camera2D camera;
+
+    engine.scenes().changeScene<GameScene>(
+        engine.events(),
+        bindings,
+        combos,
+        std::move(machine),
+        camera,
+        window
+    );
     engine.run();
 
     return 0;

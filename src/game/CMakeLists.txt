@@ -3,6 +3,7 @@ add_library(game STATIC)
 target_sources(game
     PRIVATE
         src/Camera2D.cpp
+        src/CameraControllerSystem.cpp
         src/ComboLoader.cpp
         src/ComboSystem.cpp
         src/ConditionFactory.cpp

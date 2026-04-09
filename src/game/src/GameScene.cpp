@@ -1,5 +1,6 @@
 #include "../include/GameScene/GameScene.h"
 
+#include "../include/CameraControllerSystem/CameraControllerSystem.h"
 #include "../include/ComboSystem/ComboSystem.h"
 #include "../include/StateSystem/StateSystem.h"
 
@@ -17,13 +18,21 @@ GameScene::GameScene(
     EventBus& bus,
     InputContext& input,
     std::vector<Combo> combos,
-    StateMachine machine
-) : Scene(bus), input(input), machine(std::move(machine))
+    StateMachine machine,
+    Camera2D& camera,
+    Window& window
+) :
+    Scene(bus),
+    input(input),
+    machine(std::move(machine)),
+    camera(camera),
+    window(window)
 {
     systemManager.addSystem<InputSystem>(bus, input);
     systemManager.addSystem<InputBufferSystem>(bus, input);
     systemManager.addSystem<ComboSystem>(bus, combos);
-    systemManager.addSystem<StateSystem>(bus, this->machine);
+    systemManager.addSystem<StateSystem>(bus, machine);
+    systemManager.addSystem<CameraControllerSystem>(camera, window);
 }
 
 void GameScene::init()
