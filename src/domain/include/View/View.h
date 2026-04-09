@@ -25,6 +25,7 @@ public:
         );
 
         Iterator& operator++();
+        bool operator==(const Iterator& other) const;
         bool operator!=(const Iterator& other) const;
         auto operator*();
 

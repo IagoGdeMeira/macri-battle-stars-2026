@@ -7,38 +7,48 @@
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
+#include <limits>
 
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
     auto view = View<TransformComponent, PlayerComponent>(ctx.world.components());
 
-    float left = FLT_MAX;
-    float right = -FLT_MAX;
-    float top = FLT_MAX;
-    float bottom = -FLT_MAX;
+    auto it = view.begin();
+    if (it == view.end()) return;
 
-    for (auto [entity, transform, tag] : view)
+    float minX = std::numeric_limits<float>::max();
+    float minY = std::numeric_limits<float>::max();
+    float maxX = std::numeric_limits<float>::lowest();
+    float maxY = std::numeric_limits<float>::lowest();
+
+    for (; it != view.end(); ++it)
     {
-        left   = std::min(left, transform.x);
-        right  = std::max(right, transform.x);
-        top    = std::min(top, transform.y);
-        bottom = std::max(bottom, transform.y);
+        auto [entity, transform, player] = *it;
+
+        minX = std::min(minX, transform.x);
+        minY = std::min(minY, transform.y);
+        maxX = std::max(maxX, transform.x);
+        maxY = std::max(maxY, transform.y);
     }
 
-    float centerX = (left + right) * 0.5f;
-    float centerY = (top + bottom) * 0.5f;
+    float centerX = (minX + maxX) * 0.5f;
+    float centerY = (minY + maxY) * 0.5f;
+
+    float width = (maxX - minX) + padding;
+    float height = (maxY - minY) + padding;
+
+    width = std::max(width, 1.0f);
+    height = std::max(height, 1.0f);
+
+    int screenW, screenH;
+    this->window.getSize(screenW, screenH);
+
+    float zoomX = static_cast<float>(screenW) / width;
+    float zoomY = static_cast<float>(screenH) / height;
+
+    float targetZoom = std::min(zoomX, zoomY);
+    targetZoom = std::clamp(targetZoom, minZoom, maxZoom);
 
     camera.setPosition(centerX, centerY);
-
-    float width = right - left;
-    float height = bottom - top;
-
-    float zoomX = 800.0f / width;
-    float zoomY = 600.0f / height;
-
-    float zoom = std::min(zoomX, zoomY);
-
-    zoom = std::clamp(zoom, minZoom, maxZoom);
-
-    camera.setZoom(zoom);
+    camera.setZoom(targetZoom);
 }

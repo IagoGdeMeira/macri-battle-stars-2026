@@ -39,8 +39,12 @@ View<Components...>::Iterator::operator++()
 }
 
 template <typename... Components>
+bool View<Components...>::Iterator::operator==(const Iterator& other) const
+{ return this->index == other.index && &this->entities == &other.entities; }
+
+template <typename... Components>
 bool View<Components...>::Iterator::operator!=(const Iterator& other) const
-{ return this->index != other.index; }
+{ return !(*this == other); }
 
 template <typename... Components>
 auto View<Components...>::Iterator::operator*()
