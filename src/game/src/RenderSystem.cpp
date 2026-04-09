@@ -2,7 +2,8 @@
 
 #include "../../engine/events/WindowResizedEvent.h"
 
-RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer) : renderer(renderer)
+RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer, Camera2D& camera) :
+    renderer(renderer), camera(camera)
 {
     bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent& event)
     {
@@ -16,6 +17,12 @@ void RenderSystem::update(UpdateContext&)
 {
     this->renderer.clear();
     this->renderer.present();
+}
+
+void RenderSystem::worldToScreen(float worldX, float worldY, float& screenX, float& screenY)
+{
+    screenX = (worldX - camera.getX()) * camera.getZoom();
+    screenY = (worldY - camera.getY()) * camera.getZoom();
 }
 
 void RenderSystem::updateViewport()

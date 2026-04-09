@@ -8,12 +8,14 @@
 #include "../../src/engine/include/Renderer/Renderer.h"
 #include "../../src/engine/include/UpdateContext/UpdateContext.h"
 
+#include "../../src/game/include/Camera2D/Camera2D.h"
+
 #include <catch2/catch_test_macros.hpp>
 
 class RenderSystemFixture
 {
 public:
-    RenderSystemFixture() : system(bus, renderer), context { world, bus, commandBuffer, 0.016f } {}
+    RenderSystemFixture() : system(bus, renderer, camera), context { world, bus, commandBuffer, 0.016f } {}
 
 protected:
     struct StubRenderer : Renderer
@@ -43,6 +45,7 @@ protected:
     EventBus bus;
     CommandBuffer commandBuffer;
     StubRenderer renderer;
+    Camera2D camera;
     RenderSystem system;
     UpdateContext context;
 };
