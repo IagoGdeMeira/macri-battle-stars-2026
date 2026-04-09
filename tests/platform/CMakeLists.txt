@@ -3,6 +3,7 @@ add_executable(platform_tests
     JsonParserTests.cpp
     SDLInputAdapterTests.cpp
     SDLKeyTranslatorTests.cpp
+    SDLRendererTests.cpp
     SDLWindowTests.cpp
 )
 
