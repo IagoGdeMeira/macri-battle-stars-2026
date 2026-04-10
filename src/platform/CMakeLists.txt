@@ -7,6 +7,7 @@ target_sources(platform
         src/SDLInputAdapter.cpp
         src/SDLKeyTranslator.cpp
         src/SDLRenderer.cpp
+        src/SDLTexture.cpp
         src/SDLWindow.cpp
 )
 

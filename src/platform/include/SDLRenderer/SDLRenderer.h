@@ -2,8 +2,11 @@
 #define sdl_renderer_h
 
 #include "../../engine/include/Renderer/Renderer.h"
+#include "../../engine/include/Texture/Texture.h"
 
+#include <memory>
 #include <SDL.h>
+#include <string>
 
 class SDLRenderer : public Renderer
 {
@@ -14,8 +17,10 @@ public:
     void clear() override;
     void present() override;
 
+    std::shared_ptr<Texture> createTexture(const std::string& path) override;
+
     void draw(
-        const std::string& textureId,
+        const Texture& texture,
         int x, int y, int width, int height
     ) override;
 
