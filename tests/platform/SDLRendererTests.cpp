@@ -1,5 +1,6 @@
 #include "../../src/platform/include/SDLRenderer/SDLRenderer.h"
 
+#include "../../src/platform/include/SDLTexture/SDLTexture.h"
 #include "../../src/platform/include/SDLWindow/SDLWindow.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -27,9 +28,10 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
     window.create(800, 600, "Renderer Test");
 
     SDLRenderer renderer(window.getNativeHandle());
+    SDLTexture texture(nullptr);
 
     REQUIRE_NOTHROW(renderer.clear());
-    REQUIRE_NOTHROW(renderer.draw("stub_texture", 10, 20, 32, 48));
+    REQUIRE_NOTHROW(renderer.draw(texture, 10, 20, 32, 48));
     REQUIRE_NOTHROW(renderer.present());
     REQUIRE_NOTHROW(renderer.setViewport(0, 0, 800, 600));
 

@@ -29,11 +29,11 @@ std::shared_ptr<Texture> SDLRenderer::createTexture(const std::string& path)
 
 void SDLRenderer::draw(const Texture& texture, int x, int y, int width, int height)
 {
-    const SDLTexture& sdlTexture = dynamic_cast<const SDLTexture&>(texture);
-    SDL_Rect rect = { x, y, width, height };
+    const SDLTexture& sdlTexture = static_cast<const SDLTexture&>(texture);
 
-    SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(this->renderer, &rect);
+    SDL_Rect dst = { x, y, width, height };
+
+    SDL_RenderCopy(this->renderer, sdlTexture.get(), nullptr, &dst);
 }
 
 void SDLRenderer::setViewport(int x, int y, int width, int height)

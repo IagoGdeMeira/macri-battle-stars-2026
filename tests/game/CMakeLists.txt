@@ -9,6 +9,7 @@ add_executable(game_tests
     StateMachineLoaderTests.cpp
     StateMapperTests.cpp
     StateSystemTests.cpp
+    TextureLoaderTests.cpp
     TriggerMapperTests.cpp
 )
 

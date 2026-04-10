@@ -14,6 +14,7 @@
 #include "../../src/game/include/Camera2D/Camera2D.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <memory>
 
 class RenderSystemFixture
 {
@@ -43,10 +44,17 @@ protected:
 
         void clear() override { this->clearCalls++; }
         void present() override { this->presentCalls++; }
-        void draw(const std::string& textureId, int x, int y, int width, int height) override
+
+        std::shared_ptr<Texture> createTexture(const std::string& filePath) override
         {
+            (void)filePath;
+            return std::make_shared<Texture>();
+        }
+
+        void draw(const Texture& texture, int x, int y, int width, int height) override
+        {
+            (void)texture;
             this->drawCalls++;
-            this->lastTextureId = textureId;
             this->lastDrawX = x;
             this->lastDrawY = y;
             this->lastDrawWidth = width;
@@ -100,7 +108,8 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
     const auto entity = this->world.entities().create();
 
     this->world.components().add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
-    this->world.components().add<SpriteComponent>(entity, SpriteComponent{ "fighter_idle", 16, 8 });
+    this->world.components().add<SpriteComponent>(
+        entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
 
     this->camera.setPosition(0.0f, 0.0f);
     this->camera.setZoom(1.5f);
@@ -108,9 +117,21 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
     this->system.update(this->context);
 
     REQUIRE(this->renderer.drawCalls == 1);
-    REQUIRE(this->renderer.lastTextureId == "fighter_idle");
     REQUIRE(this->renderer.lastDrawX == 415);
     REQUIRE(this->renderer.lastDrawY == 330);
     REQUIRE(this->renderer.lastDrawWidth == 48);
     REQUIRE(this->renderer.lastDrawHeight == 36);
+}
+
+TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem skips sprites without textures",
+    "[unit][render_system]"
+) {
+    const auto entity = this->world.entities().create();
+
+    this->world.components().add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    this->world.components().add<SpriteComponent>(entity, SpriteComponent{ nullptr, 16, 8 });
+
+    this->system.update(this->context);
+
+    REQUIRE(this->renderer.drawCalls == 0);
 }

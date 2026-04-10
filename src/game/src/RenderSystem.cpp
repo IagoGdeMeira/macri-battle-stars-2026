@@ -34,13 +34,16 @@ void RenderSystem::update(UpdateContext& ctx)
         int width = static_cast<int>(sprite.width * transform.scaleX * camera.getZoom());
         int height = static_cast<int>(sprite.height * transform.scaleY * camera.getZoom());
 
-        this->renderer.draw(
-            sprite.textureId,
-            static_cast<int>(screenX),
-            static_cast<int>(screenY),
-            width,
-            height
-        );
+        if (sprite.texture)
+        {
+            this->renderer.draw(
+                *sprite.texture,
+                static_cast<int>(screenX),
+                static_cast<int>(screenY),
+                width,
+                height
+            );
+        }
     }
 
     this->renderer.present();
