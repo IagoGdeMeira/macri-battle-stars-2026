@@ -7,6 +7,7 @@ add_executable(engine_tests
     InputSystemTests.cpp
     MovementSystemTests.cpp
     ResourceLoaderTests.cpp
+    ResourceManagerTests.cpp
     SceneManagerTests.cpp
     SceneTests.cpp
     SystemManagerTests.cpp
