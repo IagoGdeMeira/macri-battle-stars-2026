@@ -9,7 +9,7 @@ class SDLTexture : public Texture
 {
 public:
     SDLTexture(SDL_Texture* texture) : texture(texture) {}
-    ~SDLTexture();
+    ~SDLTexture() { if (this->texture) SDL_DestroyTexture(this->texture); }
 
     SDL_Texture* get() const { return this->texture; }
 

@@ -17,13 +17,9 @@ void SDLRenderer::present() { SDL_RenderPresent(this->renderer); }
 
 std::shared_ptr<Texture> SDLRenderer::createTexture(const std::string& path)
 {
-    SDL_Surface* surface = IMG_Load(path.c_str());
-    if (!surface) throw std::runtime_error("Failed to load image: " + path);
+    SDL_Texture* tex = IMG_LoadTexture(this->renderer, path.c_str());
+    if (!tex) return nullptr;
 
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(this->renderer, surface);
-    SDL_FreeSurface(surface);
-
-    if (!tex) throw std::runtime_error("Failed to create texture: " + path);
     return std::make_shared<SDLTexture>(tex);
 }
 
@@ -32,7 +28,6 @@ void SDLRenderer::draw(const Texture& texture, int x, int y, int width, int heig
     const SDLTexture& sdlTexture = static_cast<const SDLTexture&>(texture);
 
     SDL_Rect dst = { x, y, width, height };
-
     SDL_RenderCopy(this->renderer, sdlTexture.get(), nullptr, &dst);
 }
 

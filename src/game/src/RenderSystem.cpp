@@ -28,22 +28,21 @@ void RenderSystem::update(UpdateContext& ctx)
 
     for (auto [entity, transform, sprite] : view)
     {
+        if (!sprite.texture) continue;
+
         float screenX, screenY;
         this->worldToScreen(transform.x, transform.y, screenX, screenY);
 
         int width = static_cast<int>(sprite.width * transform.scaleX * camera.getZoom());
         int height = static_cast<int>(sprite.height * transform.scaleY * camera.getZoom());
 
-        if (sprite.texture)
-        {
-            this->renderer.draw(
-                *sprite.texture,
-                static_cast<int>(screenX),
-                static_cast<int>(screenY),
-                width,
-                height
-            );
-        }
+        this->renderer.draw(
+            *sprite.texture,
+            static_cast<int>(screenX),
+            static_cast<int>(screenY),
+            width,
+            height
+        );
     }
 
     this->renderer.present();
