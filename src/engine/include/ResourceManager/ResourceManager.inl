@@ -24,27 +24,40 @@ std::future<std::shared_ptr<T>> ResourceManager::loadAsync(
     ResourceLoader<T>& loader,
     const std::string& path
 ) {
-    auto key = makeKey<T>(path);
+    auto key = this->makeKey<T>(path);
 
-    auto it = resources.find(key);
-    if (it != resources.end()) if (auto existing = it->second.lock())
-    { return this->makeReadyFuture(std::static_pointer_cast<T>(existing)); }
+    {
+        std::lock_guard<std::mutex> lock(this->mutex);
 
-    auto itLoading = this->loading.find(key);
-    if (itLoading != this->loading.end())
-    { return this->wrapFuture<T>(itLoading->second); }
+        auto it = resources.find(key);
+        if (it != resources.end()) if (auto existing = it->second.lock())
+        { return this->makeReadyFuture(std::static_pointer_cast<T>(existing)); }
+
+        auto itLoading = loading.find(key);
+        if (itLoading != loading.end()) return this->wrapFuture<T>(itLoading->second);
+    }
 
     auto future = this->async.load(loader, path);
     auto sharedFuture = future.share();
 
-    this->loading[key] = sharedFuture;
+    auto erasedFuture = std::shared_future<std::shared_ptr<void>>(
+        std::async(std::launch::deferred, [sharedFuture]()
+        { return std::static_pointer_cast<void>(sharedFuture.get()); }));
 
-    return std::async(std::launch::async, [this, key, sharedFuture]()
+    {
+        std::lock_guard<std::mutex> lock(this->mutex);
+        this->loading[key] = erasedFuture;
+    }
+
+    return std::async(std::launch::deferred, [this, key, sharedFuture]()
     {
         auto resource = sharedFuture.get();
 
-        this->resources[key] = resource;
-        this->loading.erase(key);
+        {
+            std::lock_guard<std::mutex> lock(this->mutex);
+            this->resources[key] = resource;
+            this->loading.erase(key);
+        }
 
         return resource;
     });

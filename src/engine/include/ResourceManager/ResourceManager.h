@@ -4,15 +4,19 @@
 #include "../ResourceLoader/ResourceLoader.h"
 #include "../ResourceLoader/SyncLoader.h"
 #include "../ResourceLoader/AsyncLoader.h"
+#include "../ThreadPool/ThreadPool.h"
 
 #include <future>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
 class ResourceManager
 {
 public:
+    ResourceManager(ThreadPool& pool) : async(pool) {}
+
     template<typename T>
     std::shared_ptr<T> load(
         ResourceLoader<T>& loader,
@@ -28,6 +32,7 @@ public:
 private:
     std::unordered_map<std::string, std::weak_ptr<void>> resources;
     std::unordered_map<std::string, std::shared_future<std::shared_ptr<void>>> loading;
+    std::mutex mutex;
 
     SyncLoader sync;
     AsyncLoader async;

@@ -1,6 +1,7 @@
 #include "../../src/engine/include/ResourceManager/ResourceManager.h"
 
 #include "../../src/engine/include/ResourceLoader/ResourceLoader.h"
+#include "../../src/engine/include/ThreadPool/ThreadPool.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -11,10 +12,7 @@
 class ResourceManagerFixture
 {
 public:
-    struct FakeResource
-    {
-        int value = 0;
-    };
+    struct FakeResource { int value = 0; };
 
     struct StubLoader : ResourceLoader<FakeResource>
     {
@@ -30,11 +28,7 @@ public:
             this->loadCalls++;
             this->lastPath = path;
 
-            if (this->blockUntilReleased)
-            {
-                this->gateFuture.wait();
-            }
-
+            if (this->blockUntilReleased) this->gateFuture.wait();
             return this->resourceToReturn;
         }
     };
@@ -43,7 +37,8 @@ public:
 TEST_CASE_METHOD(ResourceManagerFixture, "ResourceManager caches synchronous loads",
     "[unit][resource_manager]"
 ) {
-    ResourceManager manager;
+    ThreadPool pool(2);
+    ResourceManager manager(pool);
     StubLoader loader;
 
     const auto first = manager.load(loader, "assets/data/config.json");
@@ -59,7 +54,8 @@ TEST_CASE_METHOD(ResourceManagerFixture, "ResourceManager caches synchronous loa
 TEST_CASE_METHOD(ResourceManagerFixture, "ResourceManager returns cached resource through async load after sync load",
     "[unit][resource_manager]"
 ) {
-    ResourceManager manager;
+    ThreadPool pool(2);
+    ResourceManager manager(pool);
     StubLoader loader;
 
     const auto cached = manager.load(loader, "assets/data/config.json");
@@ -72,19 +68,20 @@ TEST_CASE_METHOD(ResourceManagerFixture, "ResourceManager returns cached resourc
 TEST_CASE_METHOD(ResourceManagerFixture, "ResourceManager shares pending async loads and caches the resolved resource",
     "[unit][resource_manager]"
 ) {
-    ResourceManager manager;
+    ThreadPool pool(2);
+    ResourceManager manager(pool);
     StubLoader loader;
     loader.blockUntilReleased = true;
 
     auto firstFuture = manager.loadAsync(loader, "assets/data/config.json");
     auto secondFuture = manager.loadAsync(loader, "assets/data/config.json");
 
-    REQUIRE(loader.loadCalls == 1);
-
     loader.gate->set_value();
 
     const auto first = firstFuture.get();
     const auto second = secondFuture.get();
+
+    REQUIRE(loader.loadCalls == 1);
 
     REQUIRE(first == loader.resourceToReturn);
     REQUIRE(second == loader.resourceToReturn);
@@ -94,4 +91,42 @@ TEST_CASE_METHOD(ResourceManagerFixture, "ResourceManager shares pending async l
 
     REQUIRE(loader.loadCalls == 1);
     REQUIRE(thirdFuture.get() == loader.resourceToReturn);
+}
+
+TEST_CASE_METHOD(ResourceManagerFixture, "ResourceManager reloads resource when weak cache entry expires",
+    "[unit][resource_manager]"
+) {
+    ThreadPool pool(2);
+    ResourceManager manager(pool);
+    StubLoader loader;
+
+    {
+        auto firstResource = std::make_shared<FakeResource>(FakeResource{ 1 });
+        loader.resourceToReturn = firstResource;
+        auto first = manager.load(loader, "assets/data/config.json");
+        REQUIRE(first == firstResource);
+    }
+
+    auto secondResource = std::make_shared<FakeResource>(FakeResource{ 2 });
+    loader.resourceToReturn = secondResource;
+    auto second = manager.load(loader, "assets/data/config.json");
+
+    REQUIRE(loader.loadCalls == 2);
+    REQUIRE(second == secondResource);
+    REQUIRE(second->value == 2);
+}
+
+TEST_CASE_METHOD(ResourceManagerFixture, "ResourceManager reuses async-resolved resource in subsequent sync load",
+    "[unit][resource_manager]"
+) {
+    ThreadPool pool(2);
+    ResourceManager manager(pool);
+    StubLoader loader;
+
+    auto asyncFuture = manager.loadAsync(loader, "assets/data/config.json");
+    auto asyncResult = asyncFuture.get();
+    auto syncResult = manager.load(loader, "assets/data/config.json");
+
+    REQUIRE(loader.loadCalls == 1);
+    REQUIRE(syncResult == asyncResult);
 }

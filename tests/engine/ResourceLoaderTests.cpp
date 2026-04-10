@@ -1,6 +1,8 @@
-#include "../../src/engine/include/ResourceLoader/AsyncLoader.h"
 #include "../../src/engine/include/ResourceLoader/ResourceLoader.h"
+
+#include "../../src/engine/include/ResourceLoader/AsyncLoader.h"
 #include "../../src/engine/include/ResourceLoader/SyncLoader.h"
+#include "../../src/engine/include/ThreadPool/ThreadPool.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -52,7 +54,8 @@ TEST_CASE_METHOD(ResourceLoaderFixture, "AsyncLoader resolves resource and forwa
     "[unit][resource_loader]"
 ) {
     StubResourceLoader loader;
-    AsyncLoader async;
+    ThreadPool pool(2);
+    AsyncLoader async(pool);
 
     auto future = async.load(loader, "assets/data/config.json");
     const auto result = future.get();
@@ -67,7 +70,8 @@ TEST_CASE_METHOD(ResourceLoaderFixture, "AsyncLoader propagates loader exception
 ) {
     StubResourceLoader loader;
     loader.shouldThrow = true;
-    AsyncLoader async;
+    ThreadPool pool(2);
+    AsyncLoader async(pool);
 
     auto future = async.load(loader, "assets/data/config.json");
 

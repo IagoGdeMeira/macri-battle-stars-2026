@@ -2,15 +2,21 @@
 #define async_loader_h
 
 #include "ResourceLoader.h"
-
-#include <future>
+#include "../ThreadPool/ThreadPool.h"
 
 class AsyncLoader
 {
 public:
+    AsyncLoader(ThreadPool& pool) : pool(pool) {}
+
     template<typename T>
-    std::future<std::shared_ptr<T>> load(ResourceLoader<T>& loader, const std::string& path)
-    { return std::async(std::launch::async, [&loader, path]() { return loader.load(path); }); }
+    std::future<std::shared_ptr<T>> load(
+        ResourceLoader<T>& loader,
+        const std::string& path
+    ) { return pool.enqueue([&loader, path]() { return loader.load(path); }); }
+
+private:
+    ThreadPool& pool;
 };
 
 #endif // async_loader_h
