@@ -1,5 +1,7 @@
 #include "../../src/platform/include/SDLRenderer/SDLRenderer.h"
 
+#include "../../src/engine/include/Viewport/Viewport.h"
+
 #include "../../src/platform/include/SDLTexture/SDLTexture.h"
 #include "../../src/platform/include/SDLWindow/SDLWindow.h"
 
@@ -33,7 +35,7 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
     REQUIRE_NOTHROW(renderer.clear());
     REQUIRE_NOTHROW(renderer.draw(texture, 10, 20, 32, 48));
     REQUIRE_NOTHROW(renderer.present());
-    REQUIRE_NOTHROW(renderer.setViewport(0, 0, 800, 600));
+    REQUIRE_NOTHROW(renderer.setViewport(Viewport{ 0, 0, 800, 600 }));
 
     SDL_Quit();
 }

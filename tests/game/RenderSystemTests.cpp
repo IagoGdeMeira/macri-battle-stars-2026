@@ -16,6 +16,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
+#include <vector>
 
 class RenderSystemFixture
 {
@@ -43,6 +44,7 @@ protected:
         int viewportY = 0;
         int viewportWidth = 0;
         int viewportHeight = 0;
+        std::vector<Viewport> viewportHistory;
 
         void clear() override { this->clearCalls++; }
         void present() override { this->presentCalls++; }
@@ -63,13 +65,14 @@ protected:
             this->lastDrawHeight = height;
         }
 
-        void setViewport(int xPosition, int yPosition, int width, int height) override
+        void setViewport(const Viewport& viewport) override
         {
             this->viewportCalls++;
-            this->viewportX = xPosition;
-            this->viewportY = yPosition;
-            this->viewportWidth = width;
-            this->viewportHeight = height;
+            this->viewportX = viewport.x;
+            this->viewportY = viewport.y;
+            this->viewportWidth = viewport.width;
+            this->viewportHeight = viewport.height;
+            this->viewportHistory.push_back(viewport);
         }
     };
 
@@ -89,7 +92,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem clears and presents each upd
 
     REQUIRE(this->renderer.clearCalls == 1);
     REQUIRE(this->renderer.presentCalls == 1);
-    REQUIRE(this->renderer.viewportCalls == 1);
+    REQUIRE(this->renderer.viewportCalls == 2);
 }
 
 TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem updates viewport on window resize",
@@ -97,11 +100,14 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem updates viewport on window r
 ) {
     this->bus.emit<WindowResizedEvent>(WindowResizedEvent { 1920, 1080 });
 
+    this->system.update(this->context);
+
     REQUIRE(this->renderer.viewportCalls == 2);
-    REQUIRE(this->renderer.viewportX == 240);
-    REQUIRE(this->renderer.viewportY == 0);
-    REQUIRE(this->renderer.viewportWidth == 1440);
-    REQUIRE(this->renderer.viewportHeight == 1080);
+    REQUIRE(this->renderer.viewportHistory.size() == 2);
+    REQUIRE(this->renderer.viewportHistory[0].x == 240);
+    REQUIRE(this->renderer.viewportHistory[0].y == 0);
+    REQUIRE(this->renderer.viewportHistory[0].width == 1440);
+    REQUIRE(this->renderer.viewportHistory[0].height == 1080);
 }
 
 TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transformed world coordinates",

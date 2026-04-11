@@ -31,8 +31,8 @@ void SDLRenderer::draw(const Texture& texture, int x, int y, int width, int heig
     SDL_RenderCopy(this->renderer, sdlTexture.get(), nullptr, &dst);
 }
 
-void SDLRenderer::setViewport(int x, int y, int width, int height)
+void SDLRenderer::setViewport(const Viewport& viewport)
 {
-    SDL_Rect rect = { x, y, width, height };
+    SDL_Rect rect = { viewport.x, viewport.y, viewport.width, viewport.height };
     SDL_RenderSetViewport(this->renderer, &rect);
 }

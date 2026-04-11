@@ -49,6 +49,28 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     float targetZoom = std::min(zoomX, zoomY);
     targetZoom = std::clamp(targetZoom, minZoom, maxZoom);
 
-    camera.setPosition(centerX, centerY);
+    float mapMinX = this->bounds.minX;
+    float mapMaxX = this->bounds.maxX;
+    float mapMinY = this->bounds.minY;
+    float mapMaxY = this->bounds.maxY;
+
+    float halfWidth = (screenW / targetZoom) * 0.5f;
+    float halfHeight = (screenH / targetZoom) * 0.5f;
+
+    float minClampX = mapMinX + halfWidth;
+    float maxClampX = mapMaxX - halfWidth;
+
+    float clampedX;
+    if (minClampX > maxClampX) clampedX = (mapMinX + mapMaxX) * 0.5f;
+    else clampedX = std::clamp(centerX, minClampX, maxClampX);
+
+    float minClampY = mapMinY + halfHeight;
+    float maxClampY = mapMaxY - halfHeight;
+
+    float clampedY;
+    if (minClampY > maxClampY) clampedY = (mapMinY + mapMaxY) * 0.5f;
+    else clampedY = std::clamp(centerY, minClampY, maxClampY);
+
+    camera.setPosition(clampedX, clampedY);
     camera.setZoom(targetZoom);
 }

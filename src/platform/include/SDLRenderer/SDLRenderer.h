@@ -3,6 +3,7 @@
 
 #include "../../engine/include/Renderer/Renderer.h"
 #include "../../engine/include/Texture/Texture.h"
+#include "../../engine/include/Viewport/Viewport.h"
 
 #include <memory>
 #include <SDL.h>
@@ -24,7 +25,7 @@ public:
         int x, int y, int width, int height
     ) override;
 
-    void setViewport(int x, int y, int width, int height) override;
+    void setViewport(const Viewport& viewport) override;
 
 private:
     SDL_Renderer* renderer = nullptr;

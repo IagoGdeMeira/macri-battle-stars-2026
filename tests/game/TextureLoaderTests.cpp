@@ -38,12 +38,9 @@ public:
             this->drawCalls++;
         }
 
-        void setViewport(int x, int y, int width, int height) override
+        void setViewport(const Viewport& viewport) override
         {
-            (void)x;
-            (void)y;
-            (void)width;
-            (void)height;
+            (void)viewport;
             this->viewportCalls++;
         }
     };

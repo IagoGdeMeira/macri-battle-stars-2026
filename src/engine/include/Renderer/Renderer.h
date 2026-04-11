@@ -2,6 +2,7 @@
 #define renderer_h
 
 #include "../Texture/Texture.h"
+#include "../Viewport/Viewport.h"
 
 #include <memory>
 #include <string>
@@ -21,7 +22,7 @@ public:
         int x, int y, int width, int height
     ) = 0;
 
-    virtual void setViewport(int x, int y, int width, int height) = 0;
+    virtual void setViewport(const Viewport& viewport) = 0;
 };
 
 #endif // renderer_h
