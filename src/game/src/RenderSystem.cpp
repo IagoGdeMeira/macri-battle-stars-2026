@@ -1,11 +1,15 @@
 #include "../include/RenderSystem/RenderSystem.h"
 
+#include "../../domain/components/RenderComponent.h"
 #include "../../domain/components/SpriteComponent.h"
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/include/View/View.h"
 
 #include "../../engine/events/WindowResizedEvent.h"
 #include "../../engine/include/UpdateContext/UpdateContext.h"
+
+#include <algorithm>
+#include <vector>
 
 RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer, Camera2D& camera) :
     renderer(renderer), camera(camera)
@@ -24,9 +28,12 @@ void RenderSystem::update(UpdateContext& ctx)
 {
     this->renderer.clear();
 
-    auto view = View<TransformComponent, SpriteComponent>(ctx.world.components());
+    std::vector<DrawCommand> commands;
 
-    for (auto [entity, transform, sprite] : view)
+    auto view = View<TransformComponent, SpriteComponent, RenderComponent>(
+        ctx.world.components());
+
+    for (auto [entity, transform, sprite, render] : view)
     {
         if (!sprite.texture) continue;
 
@@ -36,14 +43,26 @@ void RenderSystem::update(UpdateContext& ctx)
         int width = static_cast<int>(sprite.width * transform.scaleX * camera.getZoom());
         int height = static_cast<int>(sprite.height * transform.scaleY * camera.getZoom());
 
-        this->renderer.draw(
-            *sprite.texture,
+        commands.push_back({
+            sprite.texture.get(),
             static_cast<int>(screenX),
             static_cast<int>(screenY),
             width,
-            height
-        );
+            height,
+            render.layer,
+            transform.y
+        });
     }
+
+    std::sort(commands.begin(), commands.end(),
+        [](const DrawCommand& a, const DrawCommand& b)
+        {
+            if (a.layer != b.layer) return a.layer < b.layer;
+            return a.sortY < b.sortY;
+        });
+
+    for (const auto& cmd : commands) this->renderer.draw(
+        *cmd.texture, cmd.x, cmd.y, cmd.width, cmd.height);
 
     this->renderer.present();
 }

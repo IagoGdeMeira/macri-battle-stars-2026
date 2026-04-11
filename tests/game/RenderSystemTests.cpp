@@ -2,6 +2,7 @@
 
 #include "../../src/domain/include/World/World.h"
 
+#include "../../src/domain/components/RenderComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/TransformComponent.h"
 
@@ -23,6 +24,7 @@ public:
     {
         this->world.components().registerComponent<TransformComponent>();
         this->world.components().registerComponent<SpriteComponent>();
+        this->world.components().registerComponent<RenderComponent>();
     }
 
 protected:
@@ -110,6 +112,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
     this->world.components().add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
     this->world.components().add<SpriteComponent>(
         entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
+    this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.0f, 0.0f);
     this->camera.setZoom(1.5f);
@@ -130,6 +133,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem skips sprites without textur
 
     this->world.components().add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
     this->world.components().add<SpriteComponent>(entity, SpriteComponent{ nullptr, 16, 8 });
+    this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->system.update(this->context);
 

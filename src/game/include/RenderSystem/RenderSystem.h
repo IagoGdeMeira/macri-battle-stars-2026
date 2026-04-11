@@ -15,6 +15,14 @@ public:
     void update(UpdateContext& ctx) override;
 
 private:
+    struct DrawCommand
+    {
+        Texture* texture;
+        int x, y, width, height;
+        int layer;
+        float sortY;
+    };
+
     Renderer& renderer;
     Camera2D& camera;
 
