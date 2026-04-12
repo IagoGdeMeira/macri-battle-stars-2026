@@ -1,5 +1,7 @@
 #include "../include/StateSystem/StateSystem.h"
 
+#include "../events/StateChangedEvent.h"
+
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
@@ -30,8 +32,13 @@ void StateSystem::update(UpdateContext& ctx)
 
         if (transition)
         {
+            StateId previous = state.current;
+
             state.current = transition->to;
             state.timeInState = 0.0f;
+
+            this->bus.emit<StateChangedEvent>(
+                StateChangedEvent{ entity, previous, state.current });
         }
     }
 
