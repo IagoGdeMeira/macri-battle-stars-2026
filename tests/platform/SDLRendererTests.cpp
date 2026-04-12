@@ -31,9 +31,17 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
 
     SDLRenderer renderer(window.getNativeHandle());
     SDLTexture texture(nullptr);
+    Renderer::DrawParams params;
+    params.x = 10;
+    params.y = 20;
+    params.width = 32;
+    params.height = 48;
+    params.rotation = 30.0f;
+    params.flipX = true;
+    params.flipY = false;
 
     REQUIRE_NOTHROW(renderer.clear());
-    REQUIRE_NOTHROW(renderer.draw(texture, 10, 20, 32, 48));
+    REQUIRE_NOTHROW(renderer.draw(texture, params));
     REQUIRE_NOTHROW(renderer.present());
     REQUIRE_NOTHROW(renderer.setViewport(Viewport{ 0, 0, 800, 600 }));
 

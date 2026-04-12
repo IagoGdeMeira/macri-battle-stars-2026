@@ -40,6 +40,14 @@ protected:
         int lastDrawY = 0;
         int lastDrawWidth = 0;
         int lastDrawHeight = 0;
+        float lastDrawRotation = 0.0f;
+        bool lastDrawFlipX = false;
+        bool lastDrawFlipY = false;
+        int lastSrcX = 0;
+        int lastSrcY = 0;
+        int lastSrcWidth = 0;
+        int lastSrcHeight = 0;
+        bool lastUseSourceRect = false;
         int viewportX = 0;
         int viewportY = 0;
         int viewportWidth = 0;
@@ -55,14 +63,22 @@ protected:
             return std::make_shared<Texture>();
         }
 
-        void draw(const Texture& texture, int x, int y, int width, int height) override
+        void draw(const Texture& texture, const Renderer::DrawParams& params) override
         {
             (void)texture;
             this->drawCalls++;
-            this->lastDrawX = x;
-            this->lastDrawY = y;
-            this->lastDrawWidth = width;
-            this->lastDrawHeight = height;
+            this->lastDrawX = params.x;
+            this->lastDrawY = params.y;
+            this->lastDrawWidth = params.width;
+            this->lastDrawHeight = params.height;
+            this->lastDrawRotation = params.rotation;
+            this->lastDrawFlipX = params.flipX;
+            this->lastDrawFlipY = params.flipY;
+            this->lastSrcX = params.srcX;
+            this->lastSrcY = params.srcY;
+            this->lastSrcWidth = params.srcWidth;
+            this->lastSrcHeight = params.srcHeight;
+            this->lastUseSourceRect = params.useSourceRect;
         }
 
         void setViewport(const Viewport& viewport) override
@@ -115,7 +131,8 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
 ) {
     const auto entity = this->world.entities().create();
 
-    this->world.components().add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    this->world.components().add<TransformComponent>(
+        entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
     this->world.components().add<SpriteComponent>(
         entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
     this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
@@ -130,6 +147,55 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
     REQUIRE(this->renderer.lastDrawY == 330);
     REQUIRE(this->renderer.lastDrawWidth == 48);
     REQUIRE(this->renderer.lastDrawHeight == 36);
+    REQUIRE(this->renderer.lastDrawRotation == 0.0f);
+    REQUIRE(this->renderer.lastDrawFlipX == false);
+    REQUIRE(this->renderer.lastDrawFlipY == false);
+}
+
+TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards rotation and flip flags to renderer",
+    "[unit][render_system]"
+) {
+    const auto entity = this->world.entities().create();
+
+    this->world.components().add<TransformComponent>(
+        entity, TransformComponent{ 10.0f, 20.0f, -2.0f, -3.0f, 37.5f });
+    this->world.components().add<SpriteComponent>(
+        entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
+    this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
+
+    this->camera.setPosition(0.0f, 0.0f);
+    this->camera.setZoom(1.5f);
+
+    this->system.update(this->context);
+
+    REQUIRE(this->renderer.drawCalls == 1);
+    REQUIRE(this->renderer.lastDrawWidth == 48);
+    REQUIRE(this->renderer.lastDrawHeight == 36);
+    REQUIRE(this->renderer.lastDrawRotation == 37.5f);
+    REQUIRE(this->renderer.lastDrawFlipX == true);
+    REQUIRE(this->renderer.lastDrawFlipY == true);
+}
+
+TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards sprite source rect to renderer",
+    "[unit][render_system]"
+) {
+    const auto entity = this->world.entities().create();
+
+    this->world.components().add<TransformComponent>(
+        entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    this->world.components().add<SpriteComponent>(
+        entity,
+        SpriteComponent{ std::make_shared<Texture>(), 16, 8, 4, 6, 8, 10, true });
+    this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
+
+    this->system.update(this->context);
+
+    REQUIRE(this->renderer.drawCalls == 1);
+    REQUIRE(this->renderer.lastUseSourceRect == true);
+    REQUIRE(this->renderer.lastSrcX == 4);
+    REQUIRE(this->renderer.lastSrcY == 6);
+    REQUIRE(this->renderer.lastSrcWidth == 8);
+    REQUIRE(this->renderer.lastSrcHeight == 10);
 }
 
 TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem skips sprites without textures",

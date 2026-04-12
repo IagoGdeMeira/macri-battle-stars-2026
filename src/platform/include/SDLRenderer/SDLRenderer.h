@@ -20,10 +20,7 @@ public:
 
     std::shared_ptr<Texture> createTexture(const std::string& path) override;
 
-    void draw(
-        const Texture& texture,
-        int x, int y, int width, int height
-    ) override;
+    void draw(const Texture& texture, const DrawParams& params) override;
 
     void setViewport(const Viewport& viewport) override;
 

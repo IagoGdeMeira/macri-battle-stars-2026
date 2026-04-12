@@ -8,7 +8,10 @@
 #include "../../engine/include/System/System.h"
 #include "../../engine/include/Viewport/Viewport.h"
 
+#include <cstddef>
 #include <vector>
+
+struct Entity;
 
 class RenderSystem : public System
 {
@@ -22,8 +25,12 @@ private:
     {
         Texture* texture;
         int x, y, width, height;
+        float rotation;
+        bool flipX, flipY;
         int layer, zIndex;
         size_t order;
+        int srcX, srcY, srcWidth, srcHeight;
+        bool useSourceRect;
     };
 
     Renderer& renderer;
@@ -44,8 +51,21 @@ private:
     void worldToScreen(
         float worldX, float worldY,
         float& screenX, float& screenY,
-        const Viewport& viewport
-    );
+        const Viewport& viewport,
+        float parallaxX = 1.0f, float parallaxY = 1.0f);
+
+    void resolveParallaxFactors(
+        UpdateContext& ctx, Entity entity,
+        float& parallaxX, float& parallaxY) const;
+
+    void resolveScaleAndFlip(
+        int spriteWidth, int spriteHeight,
+        float scaleX, float scaleY,
+        int& finalWidth, int& finalHeight,
+        bool& flipX, bool& flipY) const;
+
+    void sortDrawCommands(std::vector<DrawCommand>& commands) const;
+    void submitDrawCommands(const std::vector<DrawCommand>& commands) const;
 
     void updateViewports();
 };

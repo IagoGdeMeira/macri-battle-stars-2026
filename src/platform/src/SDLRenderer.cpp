@@ -23,12 +23,38 @@ std::shared_ptr<Texture> SDLRenderer::createTexture(const std::string& path)
     return std::make_shared<SDLTexture>(tex);
 }
 
-void SDLRenderer::draw(const Texture& texture, int x, int y, int width, int height)
+void SDLRenderer::draw(const Texture& texture, const DrawParams& params)
 {
-    const SDLTexture& sdlTexture = static_cast<const SDLTexture&>(texture);
+    auto& sdlTex = static_cast<const SDLTexture&>(texture);
 
-    SDL_Rect dst = { x, y, width, height };
-    SDL_RenderCopy(this->renderer, sdlTexture.get(), nullptr, &dst);
+    SDL_Rect dst = { params.x, params.y, params.width, params.height };
+    
+    SDL_Rect* srcPtr = nullptr;
+    SDL_Rect src;
+    if (params.useSourceRect)
+    {
+        src = { params.srcX, params.srcY, params.srcWidth, params.srcHeight };
+        srcPtr = &src;
+    }
+
+    SDL_Point pivot =
+    {
+        static_cast<int>(params.pivotX * params.width),
+        static_cast<int>(params.pivotY * params.height)
+    };
+
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+    if (params.flipX) flip = (SDL_RendererFlip)(flip | SDL_FLIP_HORIZONTAL);
+    if (params.flipY) flip = (SDL_RendererFlip)(flip | SDL_FLIP_VERTICAL);
+
+    SDL_RenderCopyEx(
+        this->renderer,
+        sdlTex.get(),
+        srcPtr,
+        &dst,
+        params.rotation,
+        &pivot,
+        flip);
 }
 
 void SDLRenderer::setViewport(const Viewport& viewport)

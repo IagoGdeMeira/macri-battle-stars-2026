@@ -1,7 +1,6 @@
 #include "../../src/game/include/TextureLoader/TextureLoader.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <string>
 
@@ -28,13 +27,9 @@ public:
             return this->textureToReturn;
         }
 
-        void draw(const Texture& texture, int x, int y, int width, int height) override
-        {
+        void draw(const Texture& texture, const Renderer::DrawParams& params) override {
             (void)texture;
-            (void)x;
-            (void)y;
-            (void)width;
-            (void)height;
+            (void)params;
             this->drawCalls++;
         }
 
