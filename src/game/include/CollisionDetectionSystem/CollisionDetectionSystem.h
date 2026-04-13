@@ -1,10 +1,12 @@
 #ifndef collision_detection_system_h
 #define collision_detection_system_h
 
-#include "../../engine/include/System/System.h"
-
 #include "../../domain/include/Entity/Entity.h"
 
+#include "../../engine/include/System/System.h"
+
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 struct CircleColliderComponent;
@@ -15,6 +17,10 @@ class CollisionDetectionSystem : public System
 {
 public:
     void update(UpdateContext& ctx) override;
+
+private:
+    struct CollisionPair { Entity a, b; };
+    struct Cell { std::vector<Entity> entities; };
 
     struct RectParams
     {
@@ -28,17 +34,31 @@ public:
         const CircleColliderComponent& collider;
     };
 
-private:
-    struct CollisionPair { Entity a, b; };
+    using Grid = std::unordered_map<long long, Cell>;
+    using PairSet = std::unordered_set<unsigned long long>;
 
-    using RectP = CollisionDetectionSystem::RectParams;
-    using CircleP = CollisionDetectionSystem::CircleParams;
+    static long long hash(int x, int y);
+    static unsigned long long hashPair(Entity a, Entity b);
 
-    static bool rectToRect(RectP a, RectP b);
-    static bool circleToCircle(CircleP a, CircleP b);
-    static bool rectToCircle(RectP rect, CircleP circle);
+    void buildGrid(UpdateContext& ctx, Grid& grid, float cellSize);
 
     void detect(UpdateContext& ctx, std::vector<CollisionPair>& pairs);
+
+    void detectInCell(
+        UpdateContext& ctx,
+        const Cell& cell,
+        std::vector<CollisionPair>& pairs,
+        PairSet& checkedPairs);
+
+    void detectPair(UpdateContext& ctx,
+        std::vector<CollisionPair>& pairs,
+        CollisionPair pair,
+        PairSet& checkedPairs
+    );
+
+    static bool rectToRect(RectParams a, RectParams b);
+    static bool circleToCircle(CircleParams a, CircleParams b);
+    static bool rectToCircle(RectParams rect, CircleParams circle);
 };
 
 #endif // collision_detection_system_h

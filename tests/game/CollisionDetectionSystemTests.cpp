@@ -120,3 +120,28 @@ TEST_CASE_METHOD(CollisionDetectionSystemFixture,
 
     REQUIRE(this->events.empty());
 }
+
+TEST_CASE_METHOD(CollisionDetectionSystemFixture,
+    "CollisionDetectionSystem detects collision across grid cell boundary",
+    "[integration][collision_detection_system]"
+) {
+    const Entity rect = this->createRect(99.0f, 0.0f, 40.0f, 20.0f);
+    const Entity circle = this->createCircle(120.0f, 0.0f, 2.0f);
+
+    this->update();
+
+    REQUIRE(this->hasPair(rect, circle));
+}
+
+TEST_CASE_METHOD(CollisionDetectionSystemFixture,
+    "CollisionDetectionSystem emits each colliding pair only once across multiple cells",
+    "[integration][collision_detection_system]"
+) {
+    const Entity left = this->createRect(99.0f, 0.0f, 40.0f, 20.0f);
+    const Entity right = this->createRect(101.0f, 0.0f, 40.0f, 20.0f);
+
+    this->update();
+
+    REQUIRE(this->events.size() == 1);
+    REQUIRE(this->hasPair(left, right));
+}
