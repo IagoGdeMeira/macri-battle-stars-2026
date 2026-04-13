@@ -31,19 +31,22 @@ void CollisionDetectionSystem::detect(UpdateContext& ctx, std::vector<CollisionP
     for (auto [a, ta, ra] : rects) for (auto [b, tb, rb] : rects)
     {
         if (a == b) continue;
-        if (this->rectToRect({ ta, ra }, { tb, rb })) pairs.push_back({ Entity(a), Entity(b) });
+        if (CollisionDetectionSystem::rectToRect({ta, ra}, {tb, rb}))
+        { pairs.push_back({Entity(a), Entity(b)}); }
     }
 
     for (auto [a, ta, ca] : circles) for (auto [b, tb, cb] : circles)
     {
         if (a == b) continue;
-        if (this->circleToCircle({ ta, ca }, { tb, cb })) pairs.push_back({ Entity(a), Entity(b) });
+        if (CollisionDetectionSystem::circleToCircle({ ta, ca }, { tb, cb }))
+        { pairs.push_back({ Entity(a), Entity(b) }); }
     }
 
     for (auto [a, ta, ra] : rects) for (auto [b, tb, cb] : circles)
     {
         if (a == b) continue;
-        if (this->rectToCircle({ ta, ra }, { tb, cb })) pairs.push_back({ Entity(a), Entity(b) });
+        if (CollisionDetectionSystem::rectToCircle({ ta, ra }, { tb, cb }))
+        { pairs.push_back({ Entity(a), Entity(b) }); }
     }
 }
 
