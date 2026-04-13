@@ -12,6 +12,7 @@ add_executable(game_tests
     ConditionFactoryTests.cpp
     GameSceneTests.cpp
     InputBindingLoaderTests.cpp
+    LocalToWorldSystemTests.cpp
     RenderSystemTests.cpp
     StateMachineLoaderTests.cpp
     StateMapperTests.cpp
