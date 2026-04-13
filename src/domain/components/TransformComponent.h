@@ -3,7 +3,7 @@
 
 struct TransformComponent
 {
-    float x, y = 0.0f;
+    float x = 0.0f, y = 0.0f;
 
     float scaleX = 1.0f;
     float scaleY = 1.0f;
