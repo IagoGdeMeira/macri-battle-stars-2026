@@ -7,6 +7,8 @@
 #include "../../engine/include/EventBus/EventBus.h"
 #include "../../engine/include/System/System.h"
 
+#include <vector>
+
 class AnimationStateSystem : public System
 {
 public:

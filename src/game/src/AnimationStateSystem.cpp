@@ -18,7 +18,7 @@ void AnimationStateSystem::update(UpdateContext &ctx)
 {
     auto& components = ctx.world.components();
 
-    for (const auto &change : this->changes)
+    for (const auto& change : this->changes)
     {
         if (!components.has<AnimationControllerComponent>(change.entity)) continue;
 

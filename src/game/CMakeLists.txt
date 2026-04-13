@@ -2,10 +2,13 @@ add_library(game STATIC)
 
 target_sources(game
     PRIVATE
+        src/AnimationLoader.cpp
         src/AnimationStateSystem.cpp
         src/AnimationSystem.cpp
         src/Camera2D.cpp
         src/CameraControllerSystem.cpp
+        src/CharacterDefinitionLoader.cpp
+        src/CharacterLoader.cpp
         src/ComboLoader.cpp
         src/ComboSystem.cpp
         src/ConditionFactory.cpp
