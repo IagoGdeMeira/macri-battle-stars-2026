@@ -6,6 +6,7 @@ add_executable(game_tests
     CameraControllerSystemTests.cpp
     CharacterDefinitionLoaderTests.cpp
     CharacterLoaderTests.cpp
+    CollisionDetectionSystemTests.cpp
     ComboLoaderTests.cpp
     ComboSystemTests.cpp
     ComboTests.cpp

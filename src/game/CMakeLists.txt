@@ -9,6 +9,7 @@ target_sources(game
         src/CameraControllerSystem.cpp
         src/CharacterDefinitionLoader.cpp
         src/CharacterLoader.cpp
+        src/CollisionDetectionSystem.cpp
         src/ComboLoader.cpp
         src/ComboSystem.cpp
         src/ConditionFactory.cpp
