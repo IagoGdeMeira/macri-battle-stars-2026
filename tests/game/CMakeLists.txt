@@ -1,6 +1,11 @@
 add_executable(game_tests
+    AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
     AnimationSystemTests.cpp
+    Camera2DTests.cpp
+    CameraControllerSystemTests.cpp
+    CharacterDefinitionLoaderTests.cpp
+    CharacterLoaderTests.cpp
     ComboLoaderTests.cpp
     ComboSystemTests.cpp
     ComboTests.cpp

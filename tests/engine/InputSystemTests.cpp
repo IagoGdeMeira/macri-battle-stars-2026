@@ -10,86 +10,81 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("InputSystem updates mapped action for matching player",
+class InputSystemFixture
+{
+public:
+    InputSystemFixture()
+    {
+        this->scene.world().components().registerComponent<InputComponent>();
+        this->scene.world().components().registerComponent<PlayerComponent>();
+    }
+
+    EventBus bus;
+    Scene scene{bus};
+};
+
+TEST_CASE_METHOD(InputSystemFixture, "InputSystem updates mapped action for matching player",
     "[integration][input_system]"
 ) {
-    EventBus bus;
-    Scene scene(bus);
-
-    scene.world().components().registerComponent<InputComponent>();
-    scene.world().components().registerComponent<PlayerComponent>();
-
-    const auto entity = scene.world().entities().create();
-    scene.world().components().add<InputComponent>(entity, InputComponent{});
-    scene.world().components().add<PlayerComponent>(entity, PlayerComponent{1});
+    const auto entity = this->scene.world().entities().create();
+    this->scene.world().components().add<InputComponent>(entity, InputComponent{});
+    this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{1});
 
     InputContext context;
     context.bindings[1].keyMap[KeyCode::A] = InputAction::Attack;
 
-    scene.systems().addSystem<InputSystem>(bus, context);
+    this->scene.systems().addSystem<InputSystem>(bus, context);
 
     bus.emit<KeyEvent>(KeyCode::A, true, 1);
-    scene.update(0.016f);
+    this->scene.update(0.016f);
 
-    const auto& input = scene.world().components().get<InputComponent>(entity);
+    const auto& input = this->scene.world().components().get<InputComponent>(entity);
     REQUIRE(input.actions.at(InputAction::Attack).pressed == true);
 }
 
-TEST_CASE("InputSystem keeps heldTime progression when mapped key is released",
+TEST_CASE_METHOD(InputSystemFixture, "InputSystem keeps heldTime progression when mapped key is released",
     "[integration][input_system]"
 ) {
-    EventBus bus;
-    Scene scene(bus);
-
-    scene.world().components().registerComponent<InputComponent>();
-    scene.world().components().registerComponent<PlayerComponent>();
-
-    const auto entity = scene.world().entities().create();
+    const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
     input.actions[InputAction::MoveLeft] = InputState{true, 2.5f};
 
-    scene.world().components().add<InputComponent>(entity, input);
-    scene.world().components().add<PlayerComponent>(entity, PlayerComponent{7});
+    this->scene.world().components().add<InputComponent>(entity, input);
+    this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{7});
 
     InputContext context;
     context.bindings[7].keyMap[KeyCode::Left] = InputAction::MoveLeft;
 
-    scene.systems().addSystem<InputSystem>(bus, context);
+    this->scene.systems().addSystem<InputSystem>(this->bus, context);
 
-    bus.emit<KeyEvent>(KeyCode::Left, false, 7);
-    scene.update(0.016f);
+    this->bus.emit<KeyEvent>(KeyCode::Left, false, 7);
+    this->scene.update(0.016f);
 
-    const auto& updated = scene.world().components().get<InputComponent>(entity);
+    const auto& updated = this->scene.world().components().get<InputComponent>(entity);
     REQUIRE(updated.actions.at(InputAction::MoveLeft).pressed == false);
     REQUIRE(updated.actions.at(InputAction::MoveLeft).heldTime == Catch::Approx(2.516f));
 }
 
-TEST_CASE("InputSystem ignores events from other players",
+TEST_CASE_METHOD(InputSystemFixture, "InputSystem ignores events from other players",
     "[integration][input_system]"
 ) {
-    EventBus bus;
-    Scene scene(bus);
-
-    scene.world().components().registerComponent<InputComponent>();
-    scene.world().components().registerComponent<PlayerComponent>();
-
-    const auto entity = scene.world().entities().create();
+    const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
     input.actions[InputAction::Defend] = InputState{false, 0.0f};
 
-    scene.world().components().add<InputComponent>(entity, input);
-    scene.world().components().add<PlayerComponent>(entity, PlayerComponent{3});
+    this->scene.world().components().add<InputComponent>(entity, input);
+    this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{3});
 
     InputContext context;
     context.bindings[3].keyMap[KeyCode::RShift] = InputAction::Defend;
 
-    scene.systems().addSystem<InputSystem>(bus, context);
+    this->scene.systems().addSystem<InputSystem>(this->bus, context);
 
-    bus.emit<KeyEvent>(KeyCode::RShift, true, 99);
-    scene.update(0.016f);
+    this->bus.emit<KeyEvent>(KeyCode::RShift, true, 99);
+    this->scene.update(0.016f);
 
-    const auto& updated = scene.world().components().get<InputComponent>(entity);
+    const auto& updated = this->scene.world().components().get<InputComponent>(entity);
     REQUIRE(updated.actions.at(InputAction::Defend).pressed == false);
 }
