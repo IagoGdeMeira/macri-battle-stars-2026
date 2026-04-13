@@ -20,7 +20,7 @@ void LocalToWorldSystem::update(UpdateContext& ctx)
         if (!components.has<TransformComponent>(parent.parent)) continue;
 
         const auto& parentTransform = components.get<TransformComponent>(parent.parent);
-        this->applyParentTransform(transform, local, parentTransform);
+        LocalToWorldSystem::applyParentTransform(transform, local, parentTransform);
     }
 }
 
