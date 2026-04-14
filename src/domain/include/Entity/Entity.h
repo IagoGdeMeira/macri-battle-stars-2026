@@ -2,6 +2,7 @@
 #define entity_h
 
 #include <cstdint>
+#include <functional>
 
 struct Entity
 {
@@ -11,6 +12,12 @@ struct Entity
 
     bool operator==(const Entity &other) const { return this->id == other.id; }
     bool operator!=(const Entity &other) const { return this->id != other.id; }
+
+    struct Hash
+    {
+        size_t operator()(const Entity& entity) const noexcept
+        { return std::hash<uint32_t>{}(entity.id); }
+    };
 };
 
 #endif // entity_h
