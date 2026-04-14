@@ -25,16 +25,19 @@ private:
 
     std::vector<TriggerEvent> events;
 
+    struct FindTransitionParams 
+    {
+        const StateMachine& stateMachine;
+        StateId currentState;
+        TriggerId trigger;
+        ConditionContext& ctx;
+    };
+
     bool hasTrigger(const StateTransition& transition, TriggerId trigger);
 
     bool conditionsAreValid(const StateTransition& transition, ConditionContext& ctx);
     
-    const StateTransition* findTransition(
-        const StateMachine& stateMachine,
-        StateId currentState,
-        TriggerId trigger,
-        ConditionContext& ctx
-    );
+    const StateTransition* findTransition(FindTransitionParams& params);
 };
 
 #endif // state_system_h

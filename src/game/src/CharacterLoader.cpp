@@ -4,6 +4,7 @@
 #include "../../domain/components/AnimationControllerComponent.h"
 #include "../../domain/components/SpriteComponent.h"
 #include "../../domain/components/StateComponent.h"
+#include "../../domain/components/StateMachineComponent.h"
 
 Entity CharacterLoader::create(World& world, const std::string& path) const
 {
@@ -24,6 +25,7 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 
     auto fsm = fsmLoader.load(def.stateMachinePath);
     components.add<StateComponent>(entity, StateComponent{});
+    components.add<StateMachineComponent>(entity, StateMachineComponent{ std::move(fsm) });
 
     AnimationControllerComponent controller;
     controller.animations = animLoader.load(def.animationsPath);

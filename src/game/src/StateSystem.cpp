@@ -27,8 +27,10 @@ void StateSystem::update(UpdateContext& ctx)
 
         ConditionContext cctx { ctx.world, entity, state };
 
-        const StateTransition* transition = this->findTransition(
-            this->machine, state.current, e.trigger, cctx);
+        StateSystem::FindTransitionParams findParams
+        { this->machine, state.current, e.trigger, cctx };
+        
+        const StateTransition* transition = this->findTransition(findParams);
 
         if (transition)
         {
@@ -37,8 +39,8 @@ void StateSystem::update(UpdateContext& ctx)
             state.current = transition->to;
             state.timeInState = 0.0f;
 
-            this->bus.emit<StateChangedEvent>(
-                StateChangedEvent{ entity, previous, state.current });
+            this->bus.emit<StateChangedEvent>(StateChangedEvent
+            { entity, previous, state.current });
         }
     }
 
@@ -56,24 +58,21 @@ bool StateSystem::hasTrigger(const StateTransition& transition, TriggerId trigge
 
 bool StateSystem::conditionsAreValid(const StateTransition& transition, ConditionContext& ctx)
 {
-    for (const auto& cond : transition.conditions) if (!cond->evaluate(ctx)) return false;
+    for (const auto& cond : transition.conditions)
+    { if (!cond->evaluate(ctx)) return false; }
 
     return true;
 }
 
-const StateTransition* StateSystem::findTransition(
-    const StateMachine& stateMachine,
-    StateId currentState,
-    TriggerId trigger,
-    ConditionContext& ctx
-) {
-    for (const auto& transition : stateMachine.transitions)
+const StateTransition* StateSystem::findTransition(FindTransitionParams& params)
+{
+    for (const auto& transition : params.stateMachine.transitions)
     {
-        if (transition.from != currentState) continue;
-        if (!this->hasTrigger(transition, trigger)) continue;
-        if (!this->conditionsAreValid(transition, ctx)) continue;
+        if (transition.from != params.currentState) continue;
+        if (!this->hasTrigger(transition, params.trigger)) continue;
+        if (!this->conditionsAreValid(transition, params.ctx)) continue;
 
-        return& transition;
+        return &transition;
     }
 
     return nullptr;
