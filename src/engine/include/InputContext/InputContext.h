@@ -9,8 +9,6 @@
 using PlayerId = uint32_t;
 
 struct InputContext
-{
-    std::unordered_map<PlayerId, InputBinding> bindings;
-};
+{ std::unordered_map<PlayerId, InputBinding> bindings; };
 
 #endif // input_context_h

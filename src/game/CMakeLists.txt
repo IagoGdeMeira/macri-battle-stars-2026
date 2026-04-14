@@ -21,6 +21,8 @@ target_sources(game
         src/StateMachineLoader.cpp
         src/StateMapper.cpp
         src/StateSystem.cpp
+        src/TriggerBindingLoader.cpp
+        src/TriggerGenerationSystem.cpp
         src/TriggerMapper.cpp
 )
 

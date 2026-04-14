@@ -17,7 +17,7 @@ void InputSystem::update(UpdateContext& ctx)
 
     for (auto [entity, input, player] : view)
     {
-        auto& binding = context.bindings[player.id];
+        auto& binding = this->context.bindings[player.id];
 
         for (auto& [action, state] : input.actions)
         {
@@ -25,7 +25,7 @@ void InputSystem::update(UpdateContext& ctx)
             state.heldTime += ctx.deltaTime;
         }
 
-        for (const auto& e : events)
+        for (const auto& e : this->events)
         {
             if (e.player != player.id) continue;
 
@@ -35,12 +35,11 @@ void InputSystem::update(UpdateContext& ctx)
             auto action = it->second;
 
             auto& state = input.actions[action];
-
             state.pressed = e.pressed;
 
             if (e.pressed) state.heldTime = 0.f;
         }
     }
     
-    events.clear();
+    this->events.clear();
 }

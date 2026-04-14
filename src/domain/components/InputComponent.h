@@ -12,8 +12,6 @@ struct InputState
 };
 
 struct InputComponent
-{
-    std::unordered_map<InputAction, InputState> actions;
-};
+{ std::unordered_map<InputAction, InputState> actions; };
 
 #endif // input_component_h

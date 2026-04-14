@@ -11,9 +11,6 @@ struct InputBufferEntry
     float time;
 };
 
-struct InputBufferComponent
-{
-    std::deque<InputBufferEntry> buffer;
-};
+struct InputBufferComponent { std::deque<InputBufferEntry> buffer; };
 
 #endif // input_buffer_component_h

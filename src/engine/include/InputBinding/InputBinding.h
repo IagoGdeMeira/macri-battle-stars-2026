@@ -8,8 +8,6 @@
 #include <unordered_map>
 
 struct InputBinding
-{
-    std::unordered_map<KeyCode, InputAction> keyMap;
-};
+{ std::unordered_map<KeyCode, InputAction> keyMap; };
 
 #endif // input_binding_h
