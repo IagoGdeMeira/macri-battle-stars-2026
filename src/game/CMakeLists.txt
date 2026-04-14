@@ -13,6 +13,7 @@ target_sources(game
         src/ComboLoader.cpp
         src/ComboSystem.cpp
         src/ConditionFactory.cpp
+        src/DamageSystem.cpp
         src/GameScene.cpp
         src/InputBindingLoader.cpp
         src/LocalToWorldSystem.cpp
