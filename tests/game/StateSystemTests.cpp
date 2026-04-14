@@ -104,6 +104,50 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem chooses the highest priority t
     REQUIRE(state.timeInState == 0.0f);
 }
 
+TEST_CASE_METHOD(StateSystemFixture, "StateSystem applies only one transition per entity per frame",
+    "[integration][state_system]"
+) {
+    EventBus bus;
+    StateSystem system(bus);
+
+    StateMachine machine;
+
+    StateTransition first;
+    first.from = StateId::Idle;
+    first.to = StateId::Walking;
+    first.triggers.push_back(TriggerId::Punched);
+    first.priority = 5;
+
+    StateTransition second;
+    second.from = StateId::Walking;
+    second.to = StateId::Running;
+    second.triggers.push_back(TriggerId::Kicked);
+    second.priority = 10;
+
+    machine.transitions.push_back(std::move(first));
+    machine.transitions.push_back(std::move(second));
+
+    World world;
+    world.components().registerComponent<StateComponent>();
+    world.components().registerComponent<StateMachineComponent>();
+
+    const auto entity = world.entities().create();
+    world.components().add<StateComponent>(entity, StateComponent{});
+    this->attachMachine(world, entity, std::move(machine));
+
+    CommandBuffer commandBuffer;
+    UpdateContext ctx { world, bus, commandBuffer, 0.016f };
+
+    bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Punched });
+    bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Kicked });
+    system.update(ctx);
+
+    const auto& state = world.components().get<StateComponent>(entity);
+
+    REQUIRE(state.current == StateId::Walking);
+    REQUIRE(state.timeInState == 0.0f);
+}
+
 TEST_CASE_METHOD(StateSystemFixture, "StateSystem keeps other entities unchanged",
     "[integration][state_system]"
 ) {

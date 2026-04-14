@@ -19,23 +19,29 @@ StateSystem::StateSystem(EventBus& eventBus) : bus(eventBus)
 
 void StateSystem::update(UpdateContext& ctx)
 {
-    auto view = View<StateComponent>(ctx.world.components());
+    auto& components = ctx.world.components();
+    auto view = View<StateComponent>(components);
 
     for (auto [entity, state] : view) state.timeInState += ctx.deltaTime;
 
-    for (const auto& e : this->events)
-    {
-        auto entity = e.entity;
-        auto& components = ctx.world.components();
+    std::unordered_map<uint32_t, std::vector<TriggerId>> grouped;
 
+    for (const auto& e : this->events)
+    { grouped[e.entity.id].push_back(e.trigger); }
+
+    for (auto& [entityId, triggers] : grouped)
+    {
+        Entity entity { entityId };
+
+        if (!components.has<StateComponent>(entity)) continue;
         if (!components.has<StateMachineComponent>(entity)) continue;
 
         auto& state = components.get<StateComponent>(entity);
         auto& machine = components.get<StateMachineComponent>(entity).machine;
 
         ConditionContext cctx { ctx.world, entity, state };
-        
-        FindTransitionParams params { machine, state.current, e.trigger, cctx };
+
+        FindTransitionParams params { machine, state.current, triggers, cctx };
         const StateTransition* transition = this->findTransition(params);
 
         if (transition)
@@ -78,8 +84,14 @@ const StateTransition* StateSystem::findTransition(FindTransitionParams& params)
     for (const auto& transition : params.stateMachine.transitions)
     {
         if (transition.from != params.currentState) continue;
-        if (!this->hasTrigger(transition, params.trigger)) continue;
         if (!this->conditionsAreValid(transition, params.ctx)) continue;
+
+        bool matched = false;
+
+        for (auto trigger : params.triggers) if (this->hasTrigger(transition, trigger))
+        { matched = true; break; }
+        
+        if (!matched) continue;
 
         if (!best || transition.priority > bestPriority)
         {
