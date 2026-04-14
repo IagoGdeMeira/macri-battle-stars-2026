@@ -11,6 +11,11 @@ add_executable(game_tests
     ComboSystemTests.cpp
     ComboTests.cpp
     ConditionFactoryTests.cpp
+    conditions/CompositeConditionTests.cpp
+    conditions/HealthBelowConditionTests.cpp
+    conditions/MinTimeConditionTests.cpp
+    conditions/NotConditionTests.cpp
+    conditions/VelocityAboveConditionTests.cpp
     GameSceneTests.cpp
     InputBindingLoaderTests.cpp
     LocalToWorldSystemTests.cpp

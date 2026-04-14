@@ -2,14 +2,14 @@
 
 #include "../include/UpdateContext/UpdateContext.h"
 
-#include "../../domain/components/Position.h"
-#include "../../domain/components/Velocity.h"
+#include "../../domain/components/PositionComponent.h"
+#include "../../domain/components/VelocityComponent.h"
 #include "../../domain/include/ComponentManager/ComponentManager.h"
 #include "../../domain/include/View/View.h"
 
 void MovementSystem::update(UpdateContext& context)
 {
-    auto view = View<Position, Velocity>(context.world.components());
+    auto view = View<PositionComponent, VelocityComponent>(context.world.components());
 
     for (auto [entity, p, v] : view)
     {

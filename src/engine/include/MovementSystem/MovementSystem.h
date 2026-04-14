@@ -4,7 +4,7 @@
 #include "../System/System.h"
 
 struct Position;
-struct Velocity;
+struct VelocityComponent;
 
 class MovementSystem : public System
 {
