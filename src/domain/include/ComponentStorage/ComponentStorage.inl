@@ -1,6 +1,7 @@
 #include "ComponentStorage.h"
 
 #include <cassert>
+#include <utility>
 
 template<typename T>
 void ComponentStorage<T>::add(Entity entity, const T& component)
@@ -19,6 +20,23 @@ void ComponentStorage<T>::add(Entity entity, const T& component)
     this->sparse[id] = index;
 }
 
+template<typename T>
+void ComponentStorage<T>::add(Entity entity, T&& component)
+{
+    uint32_t id = entity.id;
+
+    if (id >= this->sparse.size()) this->sparse.resize(id + 1, UINT32_MAX);
+
+    assert(!this->has(entity) && "Component already exists");
+
+    uint32_t index = static_cast<uint32_t>(this->denseComponents.size());
+
+    this->denseEntities.push_back(entity);
+    this->denseComponents.push_back(std::move(component));
+
+    this->sparse[id] = index;
+}
+
 template <typename T>
 void ComponentStorage<T>::remove(Entity entity)
 {
@@ -32,7 +50,7 @@ void ComponentStorage<T>::remove(Entity entity)
     Entity lastEntity = this->denseEntities[lastIndex];
 
     this->denseEntities[index] = lastEntity;
-    this->denseComponents[index] = this->denseComponents[lastIndex];
+    this->denseComponents[index] = std::move(this->denseComponents[lastIndex]);
 
     this->sparse[lastEntity.id] = index;
 

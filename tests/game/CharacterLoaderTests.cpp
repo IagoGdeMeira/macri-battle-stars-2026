@@ -4,6 +4,7 @@
 #include "../../src/domain/components/AnimationControllerComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/StateComponent.h"
+#include "../../src/domain/components/StateMachineComponent.h"
 #include "../../src/domain/include/StateId/StateId.h"
 #include "../../src/domain/include/TriggerId/TriggerId.h"
 #include "../../src/domain/include/World/World.h"
@@ -164,6 +165,7 @@ public:
     {
         this->world.components().registerComponent<SpriteComponent>();
         this->world.components().registerComponent<StateComponent>();
+        this->world.components().registerComponent<StateMachineComponent>();
         this->world.components().registerComponent<AnimationControllerComponent>();
         this->world.components().registerComponent<AnimationComponent>();
     }
@@ -256,11 +258,13 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 
     REQUIRE(this->world.components().has<SpriteComponent>(entity));
     REQUIRE(this->world.components().has<StateComponent>(entity));
+    REQUIRE(this->world.components().has<StateMachineComponent>(entity));
     REQUIRE(this->world.components().has<AnimationControllerComponent>(entity));
     REQUIRE(this->world.components().has<AnimationComponent>(entity));
 
     const auto& sprite = this->world.components().get<SpriteComponent>(entity);
     const auto& state = this->world.components().get<StateComponent>(entity);
+    const auto& stateMachine = this->world.components().get<StateMachineComponent>(entity);
     const auto& controller = this->world.components().get<AnimationControllerComponent>(entity);
     const auto& animation = this->world.components().get<AnimationComponent>(entity);
 
@@ -271,6 +275,10 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 
     REQUIRE(state.current == StateId::Idle);
     REQUIRE(state.timeInState == 0.0f);
+
+    REQUIRE(stateMachine.machine.transitions.size() == 1);
+    REQUIRE(stateMachine.machine.transitions[0].from == StateId::Idle);
+    REQUIRE(stateMachine.machine.transitions[0].to == StateId::Punching);
 
     REQUIRE(controller.animations.size() == 1);
     REQUIRE(controller.animations.contains(StateId::Idle));

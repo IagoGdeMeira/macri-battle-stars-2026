@@ -17,7 +17,10 @@ public:
     void registerComponent();
 
     template <typename T>
-    void add(Entity entity, const T &component);
+    void add(Entity entity, const T& component);
+
+    template <typename T>
+    void add(Entity entity, T&& component);
 
     template <typename T>
     void remove(Entity entity);

@@ -5,8 +5,6 @@
 
 #include "../../events/TriggerEvent.h"
 
-#include "../../../domain/components/StateComponent.h"
-
 #include "../../../engine/include/EventBus/EventBus.h"
 #include "../../../engine/include/System/System.h"
 
@@ -15,16 +13,11 @@
 class StateSystem : public System
 {
 public:
-    StateSystem(EventBus& eventBus, const StateMachine& stateMachine);
+    StateSystem(EventBus& eventBus);
 
     void update(UpdateContext& ctx) override;
 
 private:
-    EventBus& bus;
-    const StateMachine& machine;
-
-    std::vector<TriggerEvent> events;
-
     struct FindTransitionParams 
     {
         const StateMachine& stateMachine;
@@ -33,10 +26,11 @@ private:
         ConditionContext& ctx;
     };
 
-    bool hasTrigger(const StateTransition& transition, TriggerId trigger);
+    EventBus& bus;
+    std::vector<TriggerEvent> events;
 
+    bool hasTrigger(const StateTransition& transition, TriggerId trigger);
     bool conditionsAreValid(const StateTransition& transition, ConditionContext& ctx);
-    
     const StateTransition* findTransition(FindTransitionParams& params);
 };
 

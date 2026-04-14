@@ -22,6 +22,7 @@ StateMachine StateMachineLoader::load(const std::string& path) const
 
         t.from = StateMapper::fromString(node->getString("from"));
         t.to = StateMapper::fromString(node->getString("to"));
+        t.priority = node->has("priority") ? node->getInt("priority") : 0;
 
         if (t.from == StateId::Unknown) throw std::runtime_error("Invalid 'from' state: " + fromStr);
         if (t.to == StateId::Unknown) throw std::runtime_error("Invalid 'to' state: " + toStr);

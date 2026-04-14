@@ -31,7 +31,7 @@ GameScene::GameScene(
     systemManager.addSystem<InputSystem>(bus, input);
     systemManager.addSystem<InputBufferSystem>(bus, input);
     systemManager.addSystem<ComboSystem>(bus, combos);
-    systemManager.addSystem<StateSystem>(bus, machine);
+    systemManager.addSystem<StateSystem>(bus);
     systemManager.addSystem<CameraControllerSystem>(camera, window);
 }
 

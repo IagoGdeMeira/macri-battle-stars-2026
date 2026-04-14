@@ -17,6 +17,8 @@ struct StateTransition
     std::vector<TriggerId> triggers;
     
     std::vector<std::unique_ptr<ICondition>> conditions;
+
+    int priority = 0;
 };
 
 #endif // state_transition_h

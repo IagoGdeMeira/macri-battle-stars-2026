@@ -1,5 +1,7 @@
 #include "ComponentManager.h"
 
+#include <utility>
+
 template <typename T>
 void ComponentManager::registerComponent()
 {
@@ -15,6 +17,10 @@ void ComponentManager::registerComponent()
 template <typename T>
 void ComponentManager::add(Entity entity, const T& component)
 { this->getStorage<T>()->add(entity, component); }
+
+template <typename T>
+void ComponentManager::add(Entity entity, T&& component)
+{ this->getStorage<T>()->add(entity, std::move(component)); }
 
 template <typename T>
 void ComponentManager::remove(Entity entity) { this->getStorage<T>()->remove(entity); }

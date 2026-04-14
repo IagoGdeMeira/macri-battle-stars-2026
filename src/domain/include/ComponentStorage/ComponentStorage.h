@@ -12,6 +12,8 @@ class ComponentStorage : public IComponentStorage
 public:
     void add(Entity entity, const T& component);
 
+    void add(Entity entity, T&& component);
+
     void remove(Entity entity) override;
 
     bool has(Entity entity) const override;

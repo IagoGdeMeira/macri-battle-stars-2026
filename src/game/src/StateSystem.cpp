@@ -2,13 +2,16 @@
 
 #include "../events/StateChangedEvent.h"
 
+#include "../../domain/components/StateComponent.h"
+#include "../../domain/components/StateMachineComponent.h"
+
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
+#include <limits>
 #include <unordered_map>
 
-StateSystem::StateSystem(EventBus& eventBus, const StateMachine& stateMachine) :
-    bus(eventBus), machine(stateMachine)
+StateSystem::StateSystem(EventBus& eventBus) : bus(eventBus)
 {
     bus.subscribe<TriggerEvent>([this](const TriggerEvent& event)
     { this->events.push_back(event); });
@@ -23,14 +26,17 @@ void StateSystem::update(UpdateContext& ctx)
     for (const auto& e : this->events)
     {
         auto entity = e.entity;
-        auto& state = ctx.world.components().get<StateComponent>(entity);
+        auto& components = ctx.world.components();
+
+        if (!components.has<StateMachineComponent>(entity)) continue;
+
+        auto& state = components.get<StateComponent>(entity);
+        auto& machine = components.get<StateMachineComponent>(entity).machine;
 
         ConditionContext cctx { ctx.world, entity, state };
-
-        StateSystem::FindTransitionParams findParams
-        { this->machine, state.current, e.trigger, cctx };
         
-        const StateTransition* transition = this->findTransition(findParams);
+        FindTransitionParams params { machine, state.current, e.trigger, cctx };
+        const StateTransition* transition = this->findTransition(params);
 
         if (transition)
         {
@@ -66,14 +72,21 @@ bool StateSystem::conditionsAreValid(const StateTransition& transition, Conditio
 
 const StateTransition* StateSystem::findTransition(FindTransitionParams& params)
 {
+    const StateTransition* best = nullptr;
+    int bestPriority = std::numeric_limits<int>::min();
+
     for (const auto& transition : params.stateMachine.transitions)
     {
         if (transition.from != params.currentState) continue;
         if (!this->hasTrigger(transition, params.trigger)) continue;
         if (!this->conditionsAreValid(transition, params.ctx)) continue;
 
-        return &transition;
+        if (!best || transition.priority > bestPriority)
+        {
+            best = &transition;
+            bestPriority = transition.priority;
+        }
     }
 
-    return nullptr;
+    return best;
 }

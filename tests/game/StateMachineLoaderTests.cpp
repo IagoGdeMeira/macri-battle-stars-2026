@@ -145,6 +145,7 @@ public:
         auto transitionA = std::make_unique<Node>();
         transitionA->setString("from", "Idle");
         transitionA->setString("to", "Punching");
+        transitionA->setInt("priority", 7);
 
         std::vector<std::unique_ptr<DataNode>> triggersA;
         triggersA.push_back(std::move(triggerA));
@@ -183,6 +184,7 @@ TEST_CASE_METHOD(StateMachineLoaderFixture, "StateMachineLoader parses transitio
 
     REQUIRE(machine.transitions[0].from == StateId::Idle);
     REQUIRE(machine.transitions[0].to == StateId::Punching);
+    REQUIRE(machine.transitions[0].priority == 7);
     REQUIRE(machine.transitions[0].triggers.size() == 2);
     REQUIRE(machine.transitions[0].triggers[0] == TriggerId::Punched);
     REQUIRE(machine.transitions[0].triggers[1] == TriggerId::Kicked);
@@ -198,6 +200,7 @@ TEST_CASE_METHOD(StateMachineLoaderFixture, "StateMachineLoader parses transitio
 
     REQUIRE(machine.transitions[1].from == StateId::Punching);
     REQUIRE(machine.transitions[1].to == StateId::Idle);
+    REQUIRE(machine.transitions[1].priority == 0);
     REQUIRE(machine.transitions[1].triggers.size() == 1);
     REQUIRE(machine.transitions[1].triggers[0] == TriggerId::Landed);
 }

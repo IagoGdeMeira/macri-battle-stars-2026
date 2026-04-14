@@ -1,6 +1,7 @@
 #include "../../src/game/include/StateSystem/StateSystem.h"
 
 #include "../../src/domain/components/StateComponent.h"
+#include "../../src/domain/components/StateMachineComponent.h"
 #include "../../src/domain/include/World/World.h"
 #include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
@@ -17,13 +18,29 @@ public:
     {
         StateMachine machine;
 
-        StateTransition transition;
-        transition.from = StateId::Idle;
-        transition.to = StateId::Punching;
-        transition.triggers.push_back(TriggerId::Punched);
+        StateTransition lowPriority;
+        lowPriority.from = StateId::Idle;
+        lowPriority.to = StateId::Punching;
+        lowPriority.triggers.push_back(TriggerId::Punched);
+        lowPriority.priority = 1;
 
-        machine.transitions.push_back(std::move(transition));
+        StateTransition highPriority;
+        highPriority.from = StateId::Idle;
+        highPriority.to = StateId::Blocking;
+        highPriority.triggers.push_back(TriggerId::Punched);
+        highPriority.priority = 10;
+
+        machine.transitions.push_back(std::move(lowPriority));
+        machine.transitions.push_back(std::move(highPriority));
         return machine;
+    }
+
+    void attachMachine(World& world, Entity entity, StateMachine machine) const
+    {
+        world.components().add<StateMachineComponent>(
+            entity,
+            StateMachineComponent{ std::move(machine) }
+        );
     }
 };
 
@@ -31,14 +48,15 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem applies matching transition",
     "[integration][state_system]"
 ) {
     EventBus bus;
-    StateMachine machine = this->makeMachineWithTrigger();
-    StateSystem system(bus, machine);
+    StateSystem system(bus);
 
     World world;
     world.components().registerComponent<StateComponent>();
+    world.components().registerComponent<StateMachineComponent>();
 
     const auto entity = world.entities().create();
     world.components().add<StateComponent>(entity, StateComponent{});
+    this->attachMachine(world, entity, this->makeMachineWithTrigger());
 
     CommandBuffer commandBuffer;
     UpdateContext ctx { world, bus, commandBuffer, 0.016f };
@@ -48,7 +66,41 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem applies matching transition",
 
     const auto& state = world.components().get<StateComponent>(entity);
 
-    REQUIRE(state.current == StateId::Punching);
+    REQUIRE(state.current == StateId::Blocking);
+    REQUIRE(state.timeInState == 0.0f);
+}
+
+TEST_CASE_METHOD(StateSystemFixture, "StateSystem chooses the highest priority transition",
+    "[integration][state_system]"
+) {
+    EventBus bus;
+    StateSystem system(bus);
+
+    auto machine = this->makeMachineWithTrigger();
+
+    REQUIRE(machine.transitions.size() == 2);
+    REQUIRE(machine.transitions[0].priority == 1);
+    REQUIRE(machine.transitions[1].priority == 10);
+    REQUIRE(machine.transitions[0].to == StateId::Punching);
+    REQUIRE(machine.transitions[1].to == StateId::Blocking);
+
+    World world;
+    world.components().registerComponent<StateComponent>();
+    world.components().registerComponent<StateMachineComponent>();
+
+    const auto entity = world.entities().create();
+    world.components().add<StateComponent>(entity, StateComponent{});
+    this->attachMachine(world, entity, std::move(machine));
+
+    CommandBuffer commandBuffer;
+    UpdateContext ctx { world, bus, commandBuffer, 0.016f };
+
+    bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Punched });
+    system.update(ctx);
+
+    const auto& state = world.components().get<StateComponent>(entity);
+
+    REQUIRE(state.current == StateId::Blocking);
     REQUIRE(state.timeInState == 0.0f);
 }
 
@@ -56,17 +108,19 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem keeps other entities unchanged
     "[integration][state_system]"
 ) {
     EventBus bus;
-    StateMachine machine = this->makeMachineWithTrigger();
-    StateSystem system(bus, machine);
+    StateSystem system(bus);
 
     World world;
     world.components().registerComponent<StateComponent>();
+    world.components().registerComponent<StateMachineComponent>();
 
     const auto target = world.entities().create();
     const auto other = world.entities().create();
 
     world.components().add<StateComponent>(target, StateComponent{});
     world.components().add<StateComponent>(other, StateComponent{});
+    this->attachMachine(world, target, this->makeMachineWithTrigger());
+    this->attachMachine(world, other, this->makeMachineWithTrigger());
 
     CommandBuffer commandBuffer;
     UpdateContext ctx { world, bus, commandBuffer, 0.016f };
@@ -78,7 +132,7 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem keeps other entities unchanged
     const auto& otherState = world.components().get<StateComponent>(other);
 
     REQUIRE(targetState.current == StateId::Idle);
-    REQUIRE(otherState.current == StateId::Punching);
+    REQUIRE(otherState.current == StateId::Blocking);
 }
 
 TEST_CASE_METHOD(StateSystemFixture, "StateSystem respects transition conditions",
@@ -94,16 +148,18 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem respects transition conditions
     transition.conditions.push_back(std::make_unique<MinTimeCondition>(0.5f));
     machine.transitions.push_back(std::move(transition));
 
-    StateSystem system(bus, machine);
+    StateSystem system(bus);
 
     World world;
     world.components().registerComponent<StateComponent>();
+    world.components().registerComponent<StateMachineComponent>();
 
     const auto entity = world.entities().create();
 
     StateComponent state;
     state.timeInState = 0.25f;
     world.components().add<StateComponent>(entity, state);
+    this->attachMachine(world, entity, std::move(machine));
 
     CommandBuffer commandBuffer;
     UpdateContext ctx { world, bus, commandBuffer, 0.10f };
