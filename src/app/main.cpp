@@ -1,12 +1,12 @@
 #define SDL_MAIN_HANDLED
 
 #include "../engine/include/Engine/Engine.h"
+#include "../engine/include/InputBindingLoader/InputBindingLoader.h"
 #include "../engine/include/Window/Window.h"
 
 #include "../game/include/Camera2D/Camera2D.h"
 #include "../game/include/ComboLoader/ComboLoader.h"
 #include "../game/include/GameScene/GameScene.h"
-#include "../game/include/InputBindingLoader/InputBindingLoader.h"
 #include "../game/include/StateMachineLoader/StateMachineLoader.h"
 #include "../game/include/TriggerBindingLoader/TriggerBindingLoader.h"
 

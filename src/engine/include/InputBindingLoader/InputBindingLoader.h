@@ -1,8 +1,8 @@
 #ifndef input_binding_loader_h
 #define input_binding_loader_h
 
-#include "../../engine/include/DataParser/DataParser.h"
-#include "../../engine/include/InputContext/InputContext.h"
+#include "../include/DataParser/DataParser.h"
+#include "../include/InputContext/InputContext.h"
 
 #include <string>
 

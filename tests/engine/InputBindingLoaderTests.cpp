@@ -1,4 +1,4 @@
-#include "../../src/game/include/InputBindingLoader/InputBindingLoader.h"
+#include "../../src/engine/include/InputBindingLoader/InputBindingLoader.h"
 
 #include "../../src/engine/include/DataNode/DataNode.h"
 #include "../../src/engine/include/DataParser/DataParser.h"
