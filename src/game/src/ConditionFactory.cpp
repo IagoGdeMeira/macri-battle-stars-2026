@@ -2,9 +2,12 @@
 
 #include "../conditions/CompositeCondition.h"
 #include "../conditions/HealthBelowCondition.h"
+#include "../conditions/InputPressedCondition.h"
 #include "../conditions/MinTimeCondition.h"
 #include "../conditions/NotCondition.h"
 #include "../conditions/VelocityAboveCondition.h"
+
+#include "../../engine/include/InputMapper/InputMapper.h"
 
 #include <stdexcept>
 
@@ -35,6 +38,15 @@ std::unique_ptr<ICondition> ConditionFactory::create(const DataNode& node)
     if (type == "min_time")         return std::make_unique<MinTimeCondition>(node.getFloat("value"));
     if (type == "velocity_above")   return std::make_unique<VelocityAboveCondition>(node.getFloat("value"));
     if (type == "health_below")     return std::make_unique<HealthBelowCondition>(node.getInt("value"));
+    
+    if (type == "input_pressed")
+    {
+        const auto action = InputMapper::stringToAction(node.getString("action"));
+        if (action == InputAction::None)
+        { throw std::runtime_error("Unknown input action in input_pressed condition"); }
+
+        return std::make_unique<InputPressedCondition>(action);
+    }
 
     throw std::runtime_error("Unknown condition type: " + type);
 }

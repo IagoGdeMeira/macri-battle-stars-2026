@@ -4,6 +4,7 @@
 #include "../../src/domain/components/InputComponent.h"
 #include "../../src/domain/components/PlayerComponent.h"
 #include "../../src/domain/components/StateComponent.h"
+#include "../../src/domain/components/StateMachineComponent.h"
 #include "../../src/domain/include/View/View.h"
 
 #include "../../src/engine/include/EventBus/EventBus.h"
@@ -57,26 +58,38 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
     EventBus bus;
     InputContext input;
     input.bindings.emplace(7, InputBinding{});
+    TriggerContext triggerContext;
 
     std::vector<Combo> combos;
     StateMachine machine;
     Camera2D camera;
     StubWindow window;
 
-    GameScene scene(bus, input, combos, std::move(machine), camera, window);
+    GameScene scene(
+        bus,
+        input,
+        std::move(triggerContext),
+        combos,
+        std::move(machine),
+        camera,
+        window);
 
     scene.init();
 
     View<PlayerComponent,
         InputComponent,
         InputBufferComponent,
-        StateComponent
+        StateComponent,
+        StateMachineComponent
     > view(scene.world().components());
 
     size_t count = 0;
-    for (auto [entity, player, inputComponent, buffer, state] : view)
+    for (auto [entity, player, inputComponent, buffer, state, stateMachine] : view)
     {
         ++count;
+        (void)entity;
+        (void)stateMachine;
+
         REQUIRE(player.id == 7);
         REQUIRE(inputComponent.actions.empty());
         REQUIRE(buffer.buffer.empty());

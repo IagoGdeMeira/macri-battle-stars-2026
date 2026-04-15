@@ -3,11 +3,13 @@
 #include "../include/CameraControllerSystem/CameraControllerSystem.h"
 #include "../include/ComboSystem/ComboSystem.h"
 #include "../include/StateSystem/StateSystem.h"
+#include "../include/TriggerGenerationSystem/TriggerGenerationSystem.h"
 
 #include "../../domain/components/InputBufferComponent.h"
 #include "../../domain/components/InputComponent.h"
 #include "../../domain/components/PlayerComponent.h"
 #include "../../domain/components/StateComponent.h"
+#include "../../domain/components/StateMachineComponent.h"
 
 #include "../../engine/include/InputBufferSystem/InputBufferSystem.h"
 #include "../../engine/include/InputSystem/InputSystem.h"
@@ -17,6 +19,7 @@
 GameScene::GameScene(
     EventBus& bus,
     InputContext& input,
+    TriggerContext triggerContext,
     std::vector<Combo> combos,
     StateMachine machine,
     Camera2D& camera,
@@ -24,11 +27,13 @@ GameScene::GameScene(
 ) :
     Scene(bus),
     input(input),
+    triggerContext(std::move(triggerContext)),
     machine(std::move(machine)),
     camera(camera),
     window(window)
 {
     systemManager.addSystem<InputSystem>(bus, input);
+    systemManager.addSystem<TriggerGenerationSystem>(bus, this->triggerContext);
     systemManager.addSystem<InputBufferSystem>(bus, input);
     systemManager.addSystem<ComboSystem>(bus, combos);
     systemManager.addSystem<StateSystem>(bus);
@@ -43,6 +48,7 @@ void GameScene::init()
     components.registerComponent<InputComponent>();
     components.registerComponent<InputBufferComponent>();
     components.registerComponent<StateComponent>();
+    components.registerComponent<StateMachineComponent>();
 
     const auto entity = this->world().entities().create();
 
@@ -55,4 +61,6 @@ void GameScene::init()
     components.add<InputComponent>(entity, InputComponent{});
     components.add<InputBufferComponent>(entity, InputBufferComponent{});
     components.add<StateComponent>(entity, StateComponent{});
+    components.add<StateMachineComponent>(
+        entity, StateMachineComponent{ std::move(this->machine) });
 }

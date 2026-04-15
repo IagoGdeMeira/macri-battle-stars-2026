@@ -66,6 +66,17 @@ TEST_CASE_METHOD(ConditionFactoryFixture, "ConditionFactory creates min_time con
     REQUIRE(condition != nullptr);
 }
 
+TEST_CASE_METHOD(ConditionFactoryFixture, "ConditionFactory creates input_pressed conditions",
+    "[unit][condition_factory]"
+) {
+    this->node.setString("type", "input_pressed");
+    this->node.setString("action", "Attack");
+
+    auto condition = ConditionFactory::create(this->node);
+
+    REQUIRE(condition != nullptr);
+}
+
 TEST_CASE_METHOD(ConditionFactoryFixture, "ConditionFactory rejects unknown condition types",
     "[unit][condition_factory]"
 ) {

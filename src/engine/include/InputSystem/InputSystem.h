@@ -10,6 +10,7 @@
 #include "../../../domain/components/InputComponent.h"
 #include "../../../domain/components/PlayerComponent.h"
 
+#include <unordered_map>
 #include <vector>
 
 class InputSystem : public System
@@ -22,6 +23,9 @@ public:
 private:
     InputContext& context;
     std::vector<KeyEvent> events;
+
+    std::unordered_map<PlayerId, std::unordered_map<KeyCode, bool>> keyStates;
+    std::unordered_map<PlayerId, std::unordered_map<KeyCode, bool>> previousKeyStates;
 };
 
 #endif // input_system_h

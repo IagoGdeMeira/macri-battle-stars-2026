@@ -13,11 +13,16 @@ InputSystem::InputSystem(EventBus& bus, InputContext& inputContext) :
 
 void InputSystem::update(UpdateContext& ctx)
 {
+    for (const auto& event : this->events)
+    { this->keyStates[event.player][event.key] = event.pressed; }
+
     auto view = View<InputComponent, PlayerComponent>(ctx.world.components());
 
     for (auto [entity, input, player] : view)
     {
         auto& binding = this->context.bindings[player.id];
+        auto& playerKeys = this->keyStates[player.id];
+        auto& previousKeys = this->previousKeyStates[player.id];
 
         for (auto& [action, state] : input.actions)
         {
@@ -25,20 +30,20 @@ void InputSystem::update(UpdateContext& ctx)
             state.heldTime += ctx.deltaTime;
         }
 
-        for (const auto& e : this->events)
+        for (const auto& [key, action] : binding.keyMap)
         {
-            if (e.player != player.id) continue;
-
-            auto it = binding.keyMap.find(e.key);
-            if (it == binding.keyMap.end()) continue;
-
-            auto action = it->second;
+            const bool isPressed = playerKeys.contains(key)
+                && playerKeys.at(key);
+            const bool wasPressed = previousKeys.contains(key)
+                && previousKeys.at(key);
 
             auto& state = input.actions[action];
-            state.pressed = e.pressed;
+            state.pressed = isPressed;
 
-            if (e.pressed) state.heldTime = 0.f;
+            if (isPressed && !wasPressed) state.heldTime = 0.f;
         }
+
+        previousKeys = playerKeys;
     }
     
     this->events.clear();

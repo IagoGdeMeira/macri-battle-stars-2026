@@ -1,0 +1,24 @@
+{
+  "bindings": [
+    {
+      "action": "Attack",
+      "triggers": ["Punched"]
+    },
+    {
+      "action": "Defend",
+      "triggers": ["Blocked"]
+    },
+    {
+      "action": "Jump",
+      "triggers": ["Jumped"]
+    },
+    {
+      "action": "MoveLeft",
+      "triggers": ["LookedLeft"]
+    },
+    {
+      "action": "MoveRight",
+      "triggers": ["LookedRight"]
+    }
+  ]
+}

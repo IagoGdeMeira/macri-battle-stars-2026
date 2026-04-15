@@ -8,6 +8,7 @@
 #include "../game/include/GameScene/GameScene.h"
 #include "../game/include/InputBindingLoader/InputBindingLoader.h"
 #include "../game/include/StateMachineLoader/StateMachineLoader.h"
+#include "../game/include/TriggerBindingLoader/TriggerBindingLoader.h"
 
 #include "../platform/include/JsonParser/JsonParser.h"
 #include "../platform/include/SDLInputAdapter/SDLInputAdapter.h"
@@ -23,6 +24,9 @@ int main()
     JsonParser parser;
     InputBindingLoader loader(parser);
     auto bindings = loader.load("assets/inputs/input_bindings.json");
+
+    TriggerBindingLoader triggerBindingLoader(parser);
+    auto triggerContext = triggerBindingLoader.load("assets/fsm/trigger_bindings.json");
 
     ComboLoader comboLoader(parser);
     auto combos = comboLoader.load("assets/combos/combos.json");
@@ -40,6 +44,7 @@ int main()
     engine.scenes().changeScene<GameScene>(
         engine.events(),
         bindings,
+        std::move(triggerContext),
         combos,
         std::move(machine),
         camera,
