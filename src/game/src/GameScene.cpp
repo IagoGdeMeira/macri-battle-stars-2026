@@ -16,51 +16,42 @@
 
 #include <utility>
 
-GameScene::GameScene(
-    EventBus& bus,
-    InputContext& input,
-    TriggerContext triggerContext,
-    std::vector<Combo> combos,
-    StateMachine machine,
-    Camera2D& camera,
-    Window& window
-) :
-    Scene(bus),
-    input(input),
-    triggerContext(std::move(triggerContext)),
-    machine(std::move(machine)),
-    camera(camera),
-    window(window)
+GameScene::GameScene(Config config) :
+    Scene(config.eventBus),
+    input(config.input),
+    triggerContext(std::move(config.triggerContext)),
+    camera(config.camera),
+    window(config.window),
+    playerSlots(std::move(config.playerSlots)),
+    characterLoader(config.characterLoader),
+    combos(std::move(config.combos))
 {
-    systemManager.addSystem<InputSystem>(bus, input);
-    systemManager.addSystem<TriggerGenerationSystem>(bus, this->triggerContext);
-    systemManager.addSystem<InputBufferSystem>(bus, input);
-    systemManager.addSystem<ComboSystem>(bus, combos);
-    systemManager.addSystem<StateSystem>(bus);
-    systemManager.addSystem<CameraControllerSystem>(camera, window);
+    this->systemManager.addSystem<InputSystem>(this->eventBus, this->input);
+    this->systemManager.addSystem<TriggerGenerationSystem>(this->eventBus, this->triggerContext);
+    this->systemManager.addSystem<InputBufferSystem>(this->eventBus, this->input);
+    this->systemManager.addSystem<ComboSystem>(this->eventBus, combos);
+    this->systemManager.addSystem<StateSystem>(this->eventBus);
+    this->systemManager.addSystem<CameraControllerSystem>(this->camera, this->window);
 }
 
 void GameScene::init()
 {
-    auto& components = this->world().components();
+    auto& world = this->world();
+    auto& components = world.components();
 
     components.registerComponent<PlayerComponent>();
     components.registerComponent<InputComponent>();
     components.registerComponent<InputBufferComponent>();
-    components.registerComponent<StateComponent>();
-    components.registerComponent<StateMachineComponent>();
 
-    const auto entity = this->world().entities().create();
+    for (const auto& slot : playerSlots)
+    {
+        Entity entity = characterLoader.create(world, slot.characterDefPath);
 
-    PlayerId playerId = 0;
+        components.add<PlayerComponent>(entity, PlayerComponent{ slot.PlayerId });
+        components.add<InputComponent>(entity, InputComponent{});
+        components.add<InputBufferComponent>(entity, InputBufferComponent{});
 
-    if (!this->input.bindings.empty())
-    { playerId = this->input.bindings.begin()->first; }
-
-    components.add<PlayerComponent>(entity, PlayerComponent{ playerId });
-    components.add<InputComponent>(entity, InputComponent{});
-    components.add<InputBufferComponent>(entity, InputBufferComponent{});
-    components.add<StateComponent>(entity, StateComponent{});
-    components.add<StateMachineComponent>(
-        entity, StateMachineComponent{ std::move(this->machine) });
+        if (components.has<StateComponent>(entity))
+        { components.get<StateComponent>(entity).current = StateId::Idle; }
+    }
 }

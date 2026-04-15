@@ -65,14 +65,15 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
     Camera2D camera;
     StubWindow window;
 
-    GameScene scene(
+    GameScene scene(GameScene::Config{
         bus,
         input,
         std::move(triggerContext),
         combos,
         std::move(machine),
         camera,
-        window);
+        window
+    });
 
     scene.init();
 

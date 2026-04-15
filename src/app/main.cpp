@@ -42,13 +42,15 @@ int main()
     Camera2D camera;
 
     engine.scenes().changeScene<GameScene>(
-        engine.events(),
-        bindings,
-        std::move(triggerContext),
-        combos,
-        std::move(machine),
-        camera,
-        window
+        GameScene::Config{
+            engine.events(),
+            bindings,
+            std::move(triggerContext),
+            combos,
+            std::move(machine),
+            camera,
+            window
+        }
     );
     engine.run();
 

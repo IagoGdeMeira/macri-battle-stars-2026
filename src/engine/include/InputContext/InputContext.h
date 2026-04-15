@@ -6,9 +6,6 @@
 #include <cstdint>
 #include <unordered_map>
 
-using PlayerId = uint32_t;
-
-struct InputContext
-{ std::unordered_map<PlayerId, InputBinding> bindings; };
+struct InputContext { std::unordered_map<uint32_t, InputBinding> bindings; };
 
 #endif // input_context_h

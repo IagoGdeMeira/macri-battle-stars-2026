@@ -3,11 +3,6 @@
 
 #include <cstdint>
 
-using PlayerId = uint32_t;
-
-struct PlayerComponent
-{
-    PlayerId id;
-};
+struct PlayerComponent { uint32_t id; };
 
 #endif // player_component_h
