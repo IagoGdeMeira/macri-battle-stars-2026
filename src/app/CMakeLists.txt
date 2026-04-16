@@ -1,5 +1,20 @@
+add_library(app
+    src/Application.cpp
+)
+
+target_link_libraries(app
+    PUBLIC
+        game
+        platform
+)
+
+target_include_directories(app
+    PUBLIC
+        include
+)
+
 add_executable(MacriBattleStars
-    main.cpp
+    src/main.cpp
 )
 
 if(WIN32)
@@ -8,6 +23,5 @@ endif()
 
 target_link_libraries(MacriBattleStars
     PRIVATE
-        game
-        platform
+        app
 )

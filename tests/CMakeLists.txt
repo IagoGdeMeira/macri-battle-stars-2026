@@ -10,6 +10,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
+add_subdirectory(app)
 add_subdirectory(domain)
 add_subdirectory(engine)
 add_subdirectory(game)

@@ -10,7 +10,7 @@ InputContext InputBindingLoader::load(const std::string& path)
 
     for (auto& playerNode : root->getArray("players"))
     {
-        PlayerId playerId = playerNode->getInt("id");
+        uint32_t playerId = static_cast<uint32_t>(playerNode->getInt("id"));
 
         InputBinding binding;
 

@@ -1,0 +1,125 @@
+#include "../include/Application/Application.h"
+
+#include "../../engine/include/Engine/Engine.h"
+#include "../../engine/include/InputBindingLoader/InputBindingLoader.h"
+#include "../../engine/include/ResourceManager/ResourceManager.h"
+#include "../../engine/include/ResourceLoader/SyncLoader.h"
+
+#include "../../game/include/AnimationLoader/AnimationLoader.h"
+#include "../../game/include/Camera2D/Camera2D.h"
+#include "../../game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
+#include "../../game/include/CharacterLoader/CharacterLoader.h"
+#include "../../game/include/Combo/Combo.h"
+#include "../../game/include/ComboLoader/ComboLoader.h"
+#include "../../game/include/GameScene/GameScene.h"
+#include "../../game/include/StateMachineLoader/StateMachineLoader.h"
+#include "../../game/include/TextureLoader/TextureLoader.h"
+#include "../../game/include/TriggerBindingLoader/TriggerBindingLoader.h"
+
+#include "../../platform/include/JsonParser/JsonParser.h"
+#include "../../platform/include/SDLInputAdapter/SDLInputAdapter.h"
+#include "../../platform/include/SDLRenderer/SDLRenderer.h"
+#include "../../platform/include/SDLSystemInitializer/SDLSystemInitializer.h"
+#include "../../platform/include/SDLWindow/SDLWindow.h"
+
+Application& Application::setWindowTitle(const std::string& title)
+{
+    this->windowTitle = title;
+    return *this;
+}
+
+Application& Application::setWindowSize(int width, int height)
+{
+    this->windowWidth = width;
+    this->windowHeight = height;
+    return *this;
+}
+
+int Application::run()
+{
+    this->initSystems();
+    this->initLoaders();
+    this->loadGameData();
+    this->setupInitialScene();
+
+    this->engine->run();
+    return 0;
+}
+
+void Application::initSystems()
+{
+    this->initializer = std::make_unique<SDLSystemInitializer>();
+    this->initializer->initialize();
+
+    auto sdlWindow = std::make_unique<SDLWindow>();
+    sdlWindow->create(this->windowWidth, this->windowHeight, this->windowTitle.c_str());
+    this->window = std::move(sdlWindow);
+
+    this->renderer = std::make_unique<SDLRenderer>(
+        static_cast<SDLWindow*>(this->window.get())->getNativeHandle());
+
+    this->engine = std::make_unique<Engine>(*this->window);
+
+    this->inputAdapter = std::make_unique<SDLInputAdapter>(this->engine->events());
+    this->engine->setInputAdapter(*this->inputAdapter);
+}
+
+void Application::initLoaders()
+{
+    this->parser = std::make_unique<JsonParser>();
+    this->threadPool = std::make_unique<ThreadPool>(1);
+    this->resourceManager = std::make_unique<ResourceManager>(*this->threadPool);
+
+    this->charDefLoader = std::make_unique<CharacterDefinitionLoader>(*this->parser);
+    this->animLoader = std::make_unique<AnimationLoader>(*this->parser);
+    this->fsmLoader = std::make_unique<StateMachineLoader>(*this->parser);
+    this->textureLoader = std::make_unique<TextureLoader>(*this->renderer);
+
+    this->characterLoader = std::make_unique<CharacterLoader>(
+        *this->charDefLoader,
+        *this->animLoader,
+        *this->fsmLoader,
+        *this->resourceManager,
+        *this->textureLoader);
+}
+
+void Application::loadGameData()
+{
+    InputBindingLoader inputLoader(*this->parser);
+    this->inputContext = std::make_unique<InputContext>(
+        inputLoader.load("assets/inputs/input_bindings.json"));
+
+    TriggerBindingLoader triggerLoader(*this->parser);
+    this->triggerContext = std::make_unique<TriggerContext>(
+        triggerLoader.load("assets/fsm/trigger_bindings.json"));
+
+    ComboLoader comboLoader(*this->parser);
+    this->globalCombos = comboLoader.load("assets/combos/combos.json");
+}
+
+void Application::setupInitialScene()
+{
+    static Camera2D camera;
+
+    std::vector<GameScene::PlayerSlot> slots;
+    for (const auto& [playerId, _] : inputContext->bindings)
+    {
+        std::string charPath = (playerId == 0)
+            ? "assets/characters/ryu.json" 
+            : "assets/characters/ken.json";
+        slots.push_back({ playerId, charPath });
+    }
+
+    GameScene::Config config{
+        .eventBus = engine->events(),
+        .input = *inputContext,
+        .triggerContext = std::move(*triggerContext),
+        .combos = std::move(globalCombos),
+        .camera = camera,
+        .window = *window,
+        .characterLoader = *characterLoader,
+        .playerSlots = std::move(slots)
+    };
+
+    engine->scenes().changeScene<GameScene>(std::move(config));
+}

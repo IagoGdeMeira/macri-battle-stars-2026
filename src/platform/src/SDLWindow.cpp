@@ -6,19 +6,13 @@
 
 #include <stdexcept>
 
-SDLWindow::~SDLWindow()
-{
-    if (this->window) SDL_DestroyWindow(this->window);
-    SDL_Quit();
-}
+SDLWindow::~SDLWindow() { if (this->window) SDL_DestroyWindow(this->window); }
 
 void SDLWindow::create(
     int width,
     int height,
     const char* title
 ) {
-    SDL_Init(SDL_INIT_VIDEO);
-
     this->window = SDL_CreateWindow(
         title,
         SDL_WINDOWPOS_CENTERED,

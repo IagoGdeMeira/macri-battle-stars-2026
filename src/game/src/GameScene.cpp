@@ -16,42 +16,47 @@
 
 #include <utility>
 
-GameScene::GameScene(Config config) :
+GameScene::GameScene(Config&& config) :
     Scene(config.eventBus),
     input(config.input),
     triggerContext(std::move(config.triggerContext)),
+    machine(),
     camera(config.camera),
     window(config.window),
-    playerSlots(std::move(config.playerSlots)),
+    combos(std::move(config.combos)),
     characterLoader(config.characterLoader),
-    combos(std::move(config.combos))
+    playerSlots(std::move(config.playerSlots))
 {
-    this->systemManager.addSystem<InputSystem>(this->eventBus, this->input);
-    this->systemManager.addSystem<TriggerGenerationSystem>(this->eventBus, this->triggerContext);
-    this->systemManager.addSystem<InputBufferSystem>(this->eventBus, this->input);
-    this->systemManager.addSystem<ComboSystem>(this->eventBus, combos);
-    this->systemManager.addSystem<StateSystem>(this->eventBus);
-    this->systemManager.addSystem<CameraControllerSystem>(this->camera, this->window);
+    systemManager.addSystem<InputSystem>(config.eventBus, this->input);
+    systemManager.addSystem<TriggerGenerationSystem>(config.eventBus, this->triggerContext);
+    systemManager.addSystem<InputBufferSystem>(config.eventBus, this->input);
+    systemManager.addSystem<ComboSystem>(config.eventBus, this->combos);
+    systemManager.addSystem<StateSystem>(config.eventBus);
+    systemManager.addSystem<CameraControllerSystem>(this->camera, this->window);
 }
 
 void GameScene::init()
 {
     auto& world = this->world();
-    auto& components = world.components();
+    auto& components = this->world().components();
 
     components.registerComponent<PlayerComponent>();
     components.registerComponent<InputComponent>();
     components.registerComponent<InputBufferComponent>();
+    components.registerComponent<StateComponent>();
+    components.registerComponent<StateMachineComponent>();
 
-    for (const auto& slot : playerSlots)
+    for (const auto& slot : this->playerSlots)
     {
-        Entity entity = characterLoader.create(world, slot.characterDefPath);
+        Entity entity = this->characterLoader.create(world, slot.characterDefPath);
 
         components.add<PlayerComponent>(entity, PlayerComponent{ slot.PlayerId });
         components.add<InputComponent>(entity, InputComponent{});
         components.add<InputBufferComponent>(entity, InputBufferComponent{});
 
-        if (components.has<StateComponent>(entity))
-        { components.get<StateComponent>(entity).current = StateId::Idle; }
+        if (!components.has<StateComponent>(entity)) continue;
+        
+        auto& state = components.get<StateComponent>(entity);
+        state.current = StateId::Idle;
     }
 }
