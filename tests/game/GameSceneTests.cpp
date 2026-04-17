@@ -1,4 +1,4 @@
-#include "../../src/game/include/GameScene/GameScene.h"
+#include "../../src/game/scenes/GameScene/GameScene.h"
 
 #include "../../src/domain/components/InputBufferComponent.h"
 #include "../../src/domain/components/InputComponent.h"

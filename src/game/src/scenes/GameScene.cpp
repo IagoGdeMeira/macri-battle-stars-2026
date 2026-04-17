@@ -1,18 +1,18 @@
-#include "../include/GameScene/GameScene.h"
+#include "../../scenes/GameScene/GameScene.h"
 
-#include "../include/CameraControllerSystem/CameraControllerSystem.h"
-#include "../include/ComboSystem/ComboSystem.h"
-#include "../include/StateSystem/StateSystem.h"
-#include "../include/TriggerGenerationSystem/TriggerGenerationSystem.h"
+#include "../../include/CameraControllerSystem/CameraControllerSystem.h"
+#include "../../include/ComboSystem/ComboSystem.h"
+#include "../../include/StateSystem/StateSystem.h"
+#include "../../include/TriggerGenerationSystem/TriggerGenerationSystem.h"
 
-#include "../../domain/components/InputBufferComponent.h"
-#include "../../domain/components/InputComponent.h"
-#include "../../domain/components/PlayerComponent.h"
-#include "../../domain/components/StateComponent.h"
-#include "../../domain/components/StateMachineComponent.h"
+#include "../../../domain/components/InputBufferComponent.h"
+#include "../../../domain/components/InputComponent.h"
+#include "../../../domain/components/PlayerComponent.h"
+#include "../../../domain/components/StateComponent.h"
+#include "../../../domain/components/StateMachineComponent.h"
 
-#include "../../engine/include/InputBufferSystem/InputBufferSystem.h"
-#include "../../engine/include/InputSystem/InputSystem.h"
+#include "../../../engine/include/InputBufferSystem/InputBufferSystem.h"
+#include "../../../engine/include/InputSystem/InputSystem.h"
 
 #include <utility>
 

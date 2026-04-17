@@ -1,16 +1,16 @@
 #ifndef game_scene_h
 #define game_scene_h
 
-#include "../Camera2D/Camera2D.h"
-#include "../CharacterLoader/CharacterLoader.h"
-#include "../Combo/Combo.h"
-#include "../StateMachine/StateMachine.h"
-#include "../TriggerContext/TriggerContext.h"
+#include "../../include/Camera2D/Camera2D.h"
+#include "../../include/CharacterLoader/CharacterLoader.h"
+#include "../../include/Combo/Combo.h"
+#include "../../include/StateMachine/StateMachine.h"
+#include "../../include/TriggerContext/TriggerContext.h"
 
-#include "../../engine/include/InputContext/InputContext.h"
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/Scene/Scene.h"
-#include "../../engine/include/Window/Window.h"
+#include "../../../engine/include/InputContext/InputContext.h"
+#include "../../../engine/include/EventBus/EventBus.h"
+#include "../../../engine/include/Scene/Scene.h"
+#include "../../../engine/include/Window/Window.h"
 
 #include <cstdint>
 #include <string>
@@ -37,8 +37,7 @@ public:
         std::vector<PlayerSlot> playerSlots;
     };
 
-    GameScene(
-        Config&& config);
+    GameScene(Config&& config);
     void init() override;
 
 private:

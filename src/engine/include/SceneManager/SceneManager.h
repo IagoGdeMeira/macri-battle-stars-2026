@@ -8,8 +8,8 @@ class Scene;
 class SceneManager
 {
 public:
-    SceneManager();
-    ~SceneManager();
+    SceneManager() = default;
+    ~SceneManager() = default;
 
     template <typename T, typename... Args>    
     void changeScene(Args&&... args);

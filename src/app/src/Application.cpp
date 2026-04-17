@@ -9,12 +9,14 @@
 #include "../../game/include/Camera2D/Camera2D.h"
 #include "../../game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 #include "../../game/include/CharacterLoader/CharacterLoader.h"
+#include "../../game/include/CharacterRoster/CharacterRoster.h"
+#include "../../game/include/CharacterRosterLoader/CharacterRosterLoader.h"
 #include "../../game/include/Combo/Combo.h"
 #include "../../game/include/ComboLoader/ComboLoader.h"
-#include "../../game/include/GameScene/GameScene.h"
 #include "../../game/include/StateMachineLoader/StateMachineLoader.h"
 #include "../../game/include/TextureLoader/TextureLoader.h"
 #include "../../game/include/TriggerBindingLoader/TriggerBindingLoader.h"
+#include "../../game/scenes/GameScene/GameScene.h"
 
 #include "../../platform/include/JsonParser/JsonParser.h"
 #include "../../platform/include/SDLInputAdapter/SDLInputAdapter.h"
@@ -95,6 +97,10 @@ void Application::loadGameData()
 
     ComboLoader comboLoader(*this->parser);
     this->globalCombos = comboLoader.load("assets/combos/combos.json");
+
+    CharacterRosterLoader rosterLoader(*this->parser);
+    this->characterRoster = std::make_unique<CharacterRoster>(
+        rosterLoader.load("assets/characters/roster.json"));
 }
 
 void Application::setupInitialScene()

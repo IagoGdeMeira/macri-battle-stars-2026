@@ -2,6 +2,7 @@ add_library(game STATIC)
 
 target_sources(game
     PRIVATE
+        src/scenes/GameScene.cpp
         src/AnimationLoader.cpp
         src/AnimationStateSystem.cpp
         src/AnimationSystem.cpp
@@ -9,12 +10,13 @@ target_sources(game
         src/CameraControllerSystem.cpp
         src/CharacterDefinitionLoader.cpp
         src/CharacterLoader.cpp
+        src/CharacterRoster.cpp
+        src/CharacterRosterLoader.cpp
         src/CollisionDetectionSystem.cpp
         src/ComboLoader.cpp
         src/ComboSystem.cpp
         src/ConditionFactory.cpp
-        src/DamageSystem.cpp
-        src/GameScene.cpp
+        src/DamageSystem.cpp  
         src/LocalToWorldSystem.cpp
         src/RenderSystem.cpp
         src/StateMachineLoader.cpp

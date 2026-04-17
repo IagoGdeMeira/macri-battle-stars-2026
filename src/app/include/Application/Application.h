@@ -22,6 +22,7 @@
 #include <vector>
 
 class CharacterDefinitionLoader;
+class CharacterRoster;
 class Camera2D;
 class AnimationLoader;
 class StateMachineLoader;
@@ -62,6 +63,7 @@ private:
 
     std::unique_ptr<ResourceManager> resourceManager;
     std::unique_ptr<CharacterLoader> characterLoader;
+    std::unique_ptr<CharacterRoster> characterRoster;
 
     std::unique_ptr<InputContext> inputContext;
     std::unique_ptr<TriggerContext> triggerContext;
