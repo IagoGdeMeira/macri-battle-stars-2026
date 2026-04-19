@@ -4,6 +4,7 @@ add_library(app
 
 target_link_libraries(app
     PUBLIC
+        engine
         game
         platform
 )
@@ -24,4 +25,6 @@ endif()
 target_link_libraries(MacriBattleStars
     PRIVATE
         app
+        engine
+        game
 )
