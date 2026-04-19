@@ -293,7 +293,8 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
         camera,
         window,
         characterLoader,
-        std::move(playerSlots)
+        std::move(playerSlots),
+        renderer
     });
 
     scene.world().components().registerComponent<SpriteComponent>();

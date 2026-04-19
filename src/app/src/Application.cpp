@@ -16,13 +16,16 @@
 #include "../../game/include/StateMachineLoader/StateMachineLoader.h"
 #include "../../game/include/TextureLoader/TextureLoader.h"
 #include "../../game/include/TriggerBindingLoader/TriggerBindingLoader.h"
-#include "../../game/scenes/GameScene/GameScene.h"
+#include "../../game/scenes/TitleScene/TitleScene.h"
 
 #include "../../platform/include/JsonParser/JsonParser.h"
 #include "../../platform/include/SDLInputAdapter/SDLInputAdapter.h"
 #include "../../platform/include/SDLRenderer/SDLRenderer.h"
 #include "../../platform/include/SDLSystemInitializer/SDLSystemInitializer.h"
 #include "../../platform/include/SDLWindow/SDLWindow.h"
+
+Application::Application() = default;
+Application::~Application() = default;
 
 Application& Application::setWindowTitle(const std::string& title)
 {
@@ -42,6 +45,7 @@ int Application::run()
     this->initSystems();
     this->initLoaders();
     this->loadGameData();
+
     this->setupInitialScene();
 
     this->engine->run();
@@ -60,10 +64,7 @@ void Application::initSystems()
     this->renderer = std::make_unique<SDLRenderer>(
         static_cast<SDLWindow*>(this->window.get())->getNativeHandle());
 
-    this->engine = std::make_unique<Engine>(*this->window);
-
-    this->inputAdapter = std::make_unique<SDLInputAdapter>(this->engine->events());
-    this->engine->setInputAdapter(*this->inputAdapter);
+    this->camera = std::make_unique<Camera2D>();
 }
 
 void Application::initLoaders()
@@ -105,27 +106,29 @@ void Application::loadGameData()
 
 void Application::setupInitialScene()
 {
-    static Camera2D camera;
+    this->sceneFactory = std::make_unique<SceneFactory>(
+        *this->window,
+        *this->inputContext,
+        *this->triggerContext,
+        *this->characterRoster,
+        *this->characterLoader,
+        *this->camera,
+        this->globalCombos);
 
-    std::vector<GameScene::PlayerSlot> slots;
-    for (const auto& [playerId, _] : inputContext->bindings)
+    this->engine = std::make_unique<Engine>(*this->window, *this->sceneFactory);
+    this->sceneFactory->engine = this->engine.get();
+    this->engine->setRenderer(*this->renderer);
+
+    this->inputAdapter = std::make_unique<SDLInputAdapter>(this->engine->events());
+    this->engine->setInputAdapter(*this->inputAdapter);
+
+    TitleScene::Config cfg
     {
-        std::string charPath = (playerId == 0)
-            ? "assets/characters/ryu.json" 
-            : "assets/characters/ken.json";
-        slots.push_back({ playerId, charPath });
-    }
-
-    GameScene::Config config{
-        .eventBus = engine->events(),
-        .input = *inputContext,
-        .triggerContext = std::move(*triggerContext),
-        .combos = std::move(globalCombos),
-        .camera = camera,
-        .window = *window,
-        .characterLoader = *characterLoader,
-        .playerSlots = std::move(slots)
+        .eventBus = this->engine->events(),
+        .sceneManager = this->engine->scenes(),
+        .roster = *this->characterRoster,
+        .input = *this->inputContext,
+        .renderer = *this->renderer
     };
-
-    engine->scenes().changeScene<GameScene>(std::move(config));
+    this->engine->scenes().changeScene(SceneId::Title, std::move(cfg));
 }

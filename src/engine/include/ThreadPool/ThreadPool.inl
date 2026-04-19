@@ -1,3 +1,6 @@
+#ifndef thread_pool_inl
+#define thread_pool_inl
+
 #include "ThreadPool.h"
 
 inline ThreadPool::ThreadPool(size_t threadCount)
@@ -58,3 +61,5 @@ auto ThreadPool::enqueue(F&& f) -> std::future<decltype(f())>
 
     return result;
 }
+
+#endif // thread_pool_inl

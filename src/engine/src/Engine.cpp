@@ -17,9 +17,12 @@ void Engine::run()
         if (this->input) this->input->poll();
 
         auto now = clock::now();
-        std::chrono::duration<float> deltaTime = now - lastTime;
+        float deltaTime = std::chrono::duration<float>(now - lastTime).count();
         lastTime = now;
 
-        this->sceneManager.update(deltaTime.count());
+        this->sceneManager.update(deltaTime);
+        this->sceneManager.render();
+
+        if (this->renderer) this->renderer->present();
     }
 }

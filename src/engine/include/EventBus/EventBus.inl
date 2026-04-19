@@ -1,3 +1,6 @@
+#ifndef event_bus_inl
+#define event_bus_inl
+
 #include "EventBus.h"
 
 #include <utility>
@@ -22,3 +25,5 @@ void EventBus::emit(Args &&...args)
 
     for (auto& handler : it->second) handler(&event);
 }
+
+#endif // event_bus_inl

@@ -8,12 +8,12 @@
 
 Entity CharacterLoader::create(World& world, const std::string& path) const
 {
-    auto def = defLoader.load(path);
+    auto def = this->defLoader.load(path);
 
     Entity entity = world.entities().create();
     auto& components = world.components();
 
-    auto texture = resourceManager.load<Texture>(textureLoader, def.texturePath);
+    auto texture = this->resourceManager.load<Texture>(this->textureLoader, def.texturePath);
 
     SpriteComponent sprite;
     sprite.texture = texture;
@@ -23,12 +23,12 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 
     components.add<SpriteComponent>(entity, std::move(sprite));
 
-    auto fsm = fsmLoader.load(def.stateMachinePath);
+    auto fsm = this->fsmLoader.load(def.stateMachinePath);
     components.add<StateComponent>(entity, StateComponent{});
     components.add<StateMachineComponent>(entity, StateMachineComponent{ std::move(fsm) });
 
     AnimationControllerComponent controller;
-    controller.animations = animLoader.load(def.animationsPath);
+    controller.animations = this->animLoader.load(def.animationsPath);
 
     components.add<AnimationControllerComponent>(entity, std::move(controller));
     components.add<AnimationComponent>(entity, AnimationComponent{});

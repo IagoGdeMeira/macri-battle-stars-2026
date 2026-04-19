@@ -3,6 +3,8 @@ add_library(game STATIC)
 target_sources(game
     PRIVATE
         src/scenes/GameScene.cpp
+        src/scenes/SelectionScene.cpp
+        src/scenes/TitleScene.cpp
         src/AnimationLoader.cpp
         src/AnimationStateSystem.cpp
         src/AnimationSystem.cpp

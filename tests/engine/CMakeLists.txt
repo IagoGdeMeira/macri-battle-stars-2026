@@ -9,6 +9,7 @@ add_executable(engine_tests
     MovementSystemTests.cpp
     ResourceLoaderTests.cpp
     ResourceManagerTests.cpp
+    SceneFactoryTests.cpp
     SceneManagerTests.cpp
     SceneTests.cpp
     SystemManagerTests.cpp
@@ -17,6 +18,7 @@ add_executable(engine_tests
 target_link_libraries(engine_tests
     PRIVATE
         engine
+        game
         Catch2::Catch2WithMain
 )
 

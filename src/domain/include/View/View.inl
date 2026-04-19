@@ -1,3 +1,6 @@
+#ifndef view_inl
+#define view_inl
+
 #include "View.h"
 
 #include <array>
@@ -96,3 +99,5 @@ View<Components...>::end()
         this->baseIndex
     );
 }
+
+#endif // view_inl

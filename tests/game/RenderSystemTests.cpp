@@ -7,10 +7,9 @@
 #include "../../src/domain/components/TransformComponent.h"
 
 #include "../../src/engine/events/WindowResizedEvent.h"
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/RenderContext/RenderContext.h"
 #include "../../src/engine/include/Renderer/Renderer.h"
-#include "../../src/engine/include/UpdateContext/UpdateContext.h"
 
 #include "../../src/game/include/Camera2D/Camera2D.h"
 
@@ -21,7 +20,7 @@
 class RenderSystemFixture
 {
 public:
-    RenderSystemFixture() : system(bus, renderer, camera), context { world, bus, commandBuffer, 0.016f }
+    RenderSystemFixture() : system(bus, renderer, camera), context{ world, bus }
     {
         this->world.components().registerComponent<TransformComponent>();
         this->world.components().registerComponent<SpriteComponent>();
@@ -94,20 +93,17 @@ protected:
 
     World world;
     EventBus bus;
-    CommandBuffer commandBuffer;
     StubRenderer renderer;
     Camera2D camera;
     RenderSystem system;
-    UpdateContext context;
+    RenderContext context;
 };
 
-TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem clears and presents each update",
+TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem configures viewports on draw",
     "[unit][render_system]"
 ) {
-    this->system.update(this->context);
+    this->system.draw(this->context);
 
-    REQUIRE(this->renderer.clearCalls == 1);
-    REQUIRE(this->renderer.presentCalls == 1);
     REQUIRE(this->renderer.viewportCalls == 2);
 }
 
@@ -116,7 +112,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem updates viewport on window r
 ) {
     this->bus.emit<WindowResizedEvent>(WindowResizedEvent { 1920, 1080 });
 
-    this->system.update(this->context);
+    this->system.draw(this->context);
 
     REQUIRE(this->renderer.viewportCalls == 2);
     REQUIRE(this->renderer.viewportHistory.size() == 2);
@@ -140,7 +136,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
     this->camera.setPosition(0.0f, 0.0f);
     this->camera.setZoom(1.5f);
 
-    this->system.update(this->context);
+    this->system.draw(this->context);
 
     REQUIRE(this->renderer.drawCalls == 1);
     REQUIRE(this->renderer.lastDrawX == 415);
@@ -166,7 +162,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards rotation and flip f
     this->camera.setPosition(0.0f, 0.0f);
     this->camera.setZoom(1.5f);
 
-    this->system.update(this->context);
+    this->system.draw(this->context);
 
     REQUIRE(this->renderer.drawCalls == 1);
     REQUIRE(this->renderer.lastDrawWidth == 48);
@@ -188,7 +184,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards sprite source rect 
         SpriteComponent{ std::make_shared<Texture>(), 16, 8, 4, 6, 8, 10, true });
     this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
 
-    this->system.update(this->context);
+    this->system.draw(this->context);
 
     REQUIRE(this->renderer.drawCalls == 1);
     REQUIRE(this->renderer.lastUseSourceRect == true);
@@ -207,7 +203,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem skips sprites without textur
     this->world.components().add<SpriteComponent>(entity, SpriteComponent{ nullptr, 16, 8 });
     this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
 
-    this->system.update(this->context);
+    this->system.draw(this->context);
 
     REQUIRE(this->renderer.drawCalls == 0);
 }

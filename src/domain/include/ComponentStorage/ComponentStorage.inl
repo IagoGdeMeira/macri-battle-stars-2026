@@ -1,3 +1,6 @@
+#ifndef component_storage_inl
+#define component_storage_inl
+
 #include "ComponentStorage.h"
 
 #include <cassert>
@@ -95,3 +98,5 @@ size_t ComponentStorage<T>::size() const { return this->denseComponents.size(); 
 
 template <typename T>
 const std::vector<Entity>& ComponentStorage<T>::entities() const { return this->denseEntities; }
+
+#endif // component_storage_inl

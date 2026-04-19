@@ -6,7 +6,7 @@ void CharacterRoster::addEntry(const CharacterEntry& entry)
     this->entries.push_back(entry);
 }
 
-const CharacterEntry *CharacterRoster::findById(const std::string& id) const
+const CharacterEntry* CharacterRoster::findById(const std::string& id) const
 {
     auto it = this->idMap.find(id);
     return (it != this->idMap.end()) ? &this->entries[it->second] : nullptr;

@@ -1,0 +1,177 @@
+#include "../../src/engine/include/Engine/Engine.h"
+#include "../../src/engine/include/SceneFactory/SceneFactory.h"
+#include "../../src/engine/include/Window/Window.h"
+
+#include "../../src/game/include/AnimationLoader/AnimationLoader.h"
+#include "../../src/game/include/Camera2D/Camera2D.h"
+#include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
+#include "../../src/game/include/CharacterLoader/CharacterLoader.h"
+#include "../../src/game/include/CharacterRoster/CharacterRoster.h"
+#include "../../src/game/include/Combo/Combo.h"
+#include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
+#include "../../src/game/include/TextureLoader/TextureLoader.h"
+#include "../../src/game/include/TriggerContext/TriggerContext.h"
+#include "../../src/game/scenes/GameScene/GameScene.h"
+#include "../../src/game/scenes/SelectionScene/SelectionScene.h"
+#include "../../src/game/scenes/TitleScene/TitleScene.h"
+
+#include "../../src/engine/include/DataNode/DataNode.h"
+#include "../../src/engine/include/DataParser/DataParser.h"
+#include "../../src/engine/include/InputContext/InputContext.h"
+#include "../../src/engine/include/Renderer/Renderer.h"
+#include "../../src/engine/include/ResourceManager/ResourceManager.h"
+#include "../../src/engine/include/ThreadPool/ThreadPool.h"
+
+#include <catch2/catch_test_macros.hpp>
+
+#include <any>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+class SceneFactoryFixture
+{
+public:
+    class DummyNode : public DataNode
+    {
+    public:
+        bool has(const std::string&) const override { return false; }
+        std::string getString(const std::string&) const override { return ""; }
+        int getInt(const std::string&) const override { return 0; }
+        float getFloat(const std::string&) const override { return 0.0f; }
+        bool getBool(const std::string&) const override { return false; }
+
+        std::vector<std::unique_ptr<DataNode>> getArray(const std::string&) const override
+        { return {}; }
+    };
+
+    class DummyParser : public DataParser
+    {
+    public:
+        std::unique_ptr<DataNode> parse(const std::string&) const override
+        { return std::make_unique<DummyNode>(); }
+    };
+
+    class StubRenderer : public Renderer
+    {
+    public:
+        void clear() override {}
+        void present() override {}
+
+        std::shared_ptr<Texture> createTexture(const std::string&) override
+        { return std::make_shared<Texture>(); }
+
+        void draw(const Texture&, const DrawParams&) override {}
+        void setViewport(const Viewport&) override {}
+    };
+
+    class StubWindow : public Window
+    {
+    public:
+        void create(int, int, const char*) override {}
+        void setResolution(int, int) override {}
+        void setFullscreen(bool) override {}
+
+        void getSize(int& width, int& height) override
+        {
+            width = 800;
+            height = 600;
+        }
+    };
+
+    SceneFactoryFixture() :
+        resourceManager(threadPool),
+        textureLoader(renderer),
+        characterLoader(definitionLoader, animationLoader, machineLoader, resourceManager, textureLoader),
+        sceneFactory(window, inputContext, triggerContext, roster, characterLoader, camera, combos),
+        engine(window, sceneFactory)
+    { this->sceneFactory.engine = &this->engine; }
+
+    void enableRenderer() { this->engine.setRenderer(this->renderer); }
+
+    StubWindow window;
+    InputContext inputContext;
+    TriggerContext triggerContext;
+    CharacterRoster roster;
+    Camera2D camera;
+    std::vector<Combo> combos;
+
+    ThreadPool threadPool{ 1 };
+    ResourceManager resourceManager;
+    StubRenderer renderer;
+
+    DummyParser definitionParser;
+    DummyParser animationParser;
+    DummyParser machineParser;
+
+    CharacterDefinitionLoader definitionLoader{ this->definitionParser };
+    AnimationLoader animationLoader{ this->animationParser };
+    StateMachineLoader machineLoader{ this->machineParser };
+    TextureLoader textureLoader;
+    CharacterLoader characterLoader;
+
+    SceneFactory sceneFactory;
+    Engine engine;
+};
+
+TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory throws when engine is not bound",
+    "[unit][scene_factory]"
+) {
+    this->sceneFactory.engine = nullptr;
+
+    REQUIRE_THROWS(this->sceneFactory.createScene(SceneId::Title, std::monostate{}));
+}
+
+TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory throws when renderer is not configured in Engine",
+    "[unit][scene_factory]"
+) { REQUIRE_THROWS(this->sceneFactory.createScene(SceneId::Title, std::monostate{})); }
+
+TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory creates TitleScene when dependencies are configured",
+    "[unit][scene_factory]"
+) {
+    this->enableRenderer();
+
+    auto scene = this->sceneFactory.createScene(SceneId::Title, std::monostate{});
+
+    REQUIRE(dynamic_cast<TitleScene*>(scene.get()) != nullptr);
+}
+
+TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory creates SelectionScene when dependencies are configured",
+    "[unit][scene_factory]"
+) {
+    this->enableRenderer();
+
+    auto scene = this->sceneFactory.createScene(SceneId::Selection, std::monostate{});
+
+    REQUIRE(dynamic_cast<SelectionScene*>(scene.get()) != nullptr);
+}
+
+TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory creates GameScene when provided valid player slots",
+    "[unit][scene_factory]"
+) {
+    this->enableRenderer();
+
+    std::vector<GameScene::PlayerSlot> slots;
+    slots.push_back(GameScene::PlayerSlot{ 1, "assets/characters/fighter_01.json" });
+
+    auto scene = this->sceneFactory.createScene(SceneId::Game, std::move(slots));
+
+    REQUIRE(dynamic_cast<GameScene*>(scene.get()) != nullptr);
+}
+
+TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory throws for invalid payload in Game scene",
+    "[unit][scene_factory]"
+) {
+    this->enableRenderer();
+
+    REQUIRE_THROWS(this->sceneFactory.createScene(SceneId::Game, std::monostate{}));
+}
+
+TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory throws for unknown SceneId",
+    "[unit][scene_factory]"
+) {
+    this->enableRenderer();
+
+    REQUIRE_THROWS(this->sceneFactory.createScene(static_cast<SceneId>(999), std::monostate{}));
+}

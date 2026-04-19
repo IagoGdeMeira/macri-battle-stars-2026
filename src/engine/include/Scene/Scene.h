@@ -11,11 +11,21 @@ class EventBus;
 class Scene
 {
 public:
+    enum class UpdatePolicy { Always, WhenTop, Never };
+
     Scene(EventBus& eventBus) : eventBus(eventBus) {}
     virtual ~Scene() = default;
 
     virtual void init() {}
     virtual void update(float deltaTime);
+    virtual void render() {}
+
+    virtual void onEnter() {}
+    virtual void onExit() {}
+    virtual void onPause() {}
+    virtual void onResume() {}
+
+    virtual UpdatePolicy getUpdatePolicy() const { return UpdatePolicy::WhenTop; }
 
     World& world() { return this->localWorld; }
     const World& world() const { return this->localWorld; }

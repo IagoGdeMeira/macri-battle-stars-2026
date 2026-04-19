@@ -1,59 +1,55 @@
-#ifndef game_scene_h
-#define game_scene_h
+#ifndef selection_scene_h
+#define selection_scene_h
 
-#include "../../include/Camera2D/Camera2D.h"
 #include "../../include/CharacterLoader/CharacterLoader.h"
+#include "../../include/CharacterRoster/CharacterRoster.h"
+#include "../../include/Camera2D/Camera2D.h"
 #include "../../include/Combo/Combo.h"
-#include "../../include/RenderSystem/RenderSystem.h"
-#include "../../include/StateMachine/StateMachine.h"
 #include "../../include/TriggerContext/TriggerContext.h"
 
-#include "../../../engine/include/InputContext/InputContext.h"
 #include "../../../engine/include/EventBus/EventBus.h"
+#include "../../../engine/include/InputContext/InputContext.h"
 #include "../../../engine/include/Renderer/Renderer.h"
 #include "../../../engine/include/Scene/Scene.h"
+#include "../../../engine/include/SceneManager/SceneManager.h"
 #include "../../../engine/include/Window/Window.h"
 
 #include <cstdint>
-#include <string>
-#include <vector>
+#include <unordered_map>
 
-class GameScene : public Scene
+class SelectionScene : public Scene 
 {
 public:
-    struct PlayerSlot
-    {
-        std::uint32_t PlayerId;
-        std::string characterDefPath;
-    };
-
     struct Config
     {
         EventBus& eventBus;
+        SceneManager& sceneManager;
+        CharacterRoster& roster;
         InputContext& input;
         TriggerContext triggerContext;
         std::vector<Combo> combos;
         Camera2D& camera;
         Window& window;
         CharacterLoader& characterLoader;
-        std::vector<PlayerSlot> playerSlots;
         Renderer& renderer;
     };
 
-    GameScene(Config&& config);
-    void init() override;
+    explicit SelectionScene(Config config);
+    void update(float deltaTime) override;
 
 private:
+    SceneManager& sceneManager;
+    CharacterRoster& roster;
     InputContext& input;
     TriggerContext triggerContext;
+    std::vector<Combo> combos;
     Camera2D& camera;
     Window& window;
-    std::vector<Combo> combos;
     CharacterLoader& characterLoader;
-    std::vector<PlayerSlot> playerSlots;
     Renderer& renderer;
 
-    std::unique_ptr<RenderSystem> renderSystem;
+    std::unordered_map<uint32_t, std::string> selections;
+    bool confirmed = false;
 };
 
-#endif // game_scene_h
+#endif // selection_scene_h

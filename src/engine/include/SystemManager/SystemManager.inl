@@ -1,3 +1,6 @@
+#ifndef system_manager_inl
+#define system_manager_inl
+
 #include "SystemManager.h"
 
 #include <utility>
@@ -13,3 +16,5 @@ T& SystemManager::addSystem(Args&&... args)
     
     return ref;
 }
+
+#endif // system_manager_inl

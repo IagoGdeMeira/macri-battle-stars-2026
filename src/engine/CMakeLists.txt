@@ -10,6 +10,7 @@ target_sources(engine
         src/InputSystem.cpp
         src/MovementSystem.cpp
         src/Scene.cpp
+        src/SceneFactory.cpp
         src/SceneManager.cpp
         src/SystemManager.cpp
 )

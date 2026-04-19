@@ -1,3 +1,6 @@
+#ifndef component_manager_inl
+#define component_manager_inl
+
 #include "ComponentManager.h"
 
 #include <utility>
@@ -65,3 +68,5 @@ const ComponentStorage<T>* ComponentManager::getStorage() const
 
     return static_cast<const ComponentStorage<T>*>(this->storages[id].get());
 }
+
+#endif // component_manager_inl

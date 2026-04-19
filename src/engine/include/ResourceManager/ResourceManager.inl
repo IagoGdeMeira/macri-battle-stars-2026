@@ -1,3 +1,6 @@
+#ifndef resource_manager_inl
+#define resource_manager_inl
+
 #include "ResourceManager.h"
 
 #include <typeinfo>
@@ -82,3 +85,5 @@ std::future<std::shared_ptr<T>> ResourceManager::wrapFuture(
     return std::async(std::launch::deferred, [f]()
     { return std::static_pointer_cast<T>(f.get()); });
 }
+
+#endif // resource_manager_inl

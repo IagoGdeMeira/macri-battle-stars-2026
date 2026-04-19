@@ -26,27 +26,22 @@ RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer, Camera2D& camera) 
     });
 }
 
-void RenderSystem::update(UpdateContext& ctx)
+void RenderSystem::draw(RenderContext& ctx)
 {
-    this->renderer.clear();
-
     this->renderer.setViewport(this->worldViewport);
     this->renderWorld(ctx);
 
     this->renderer.setViewport(this->uiViewport);
     this->renderUI(ctx);
-
-    this->renderer.present();
 }
 
-void RenderSystem::renderWorld(UpdateContext& ctx)
+void RenderSystem::renderWorld(RenderContext& ctx)
 {
     std::vector<DrawCommand> commands;
     commands.reserve(128);
 
     auto view = View<TransformComponent, SpriteComponent, RenderComponent>(
         ctx.world.components());
-
     size_t orderCounter = 0;
 
     for (auto [entity, transform, sprite, render] : view)
@@ -54,7 +49,7 @@ void RenderSystem::renderWorld(UpdateContext& ctx)
         if (!sprite.texture) continue;
 
         float parallaxX = 1.0f, parallaxY = 1.0f;
-        this->resolveParallaxFactors(ctx, entity, parallaxX, parallaxY);
+        this->resolveParallaxFactors(ctx.world, entity, parallaxX, parallaxY);
 
         float screenX, screenY;
         this->worldToScreen(
@@ -89,7 +84,7 @@ void RenderSystem::renderWorld(UpdateContext& ctx)
     this->submitDrawCommands(commands);
 }
 
-void RenderSystem::renderUI(UpdateContext& ctx)
+void RenderSystem::renderUI(RenderContext& ctx)
 {
     (void)ctx;
     // TODO: Implement UI rendering
@@ -112,14 +107,14 @@ void RenderSystem::worldToScreen(
 }
 
 void RenderSystem::resolveParallaxFactors(
-    UpdateContext& ctx, Entity entity,
+    World& world, Entity entity,
     float& parallaxX, float& parallaxY
 ) const {
     try
     {
-        if (!ctx.world.components().has<ParallaxComponent>(entity)) return;
+        if (!world.components().has<ParallaxComponent>(entity)) return;
 
-        auto& parallax = ctx.world.components().get<ParallaxComponent>(entity);
+        auto& parallax = world.components().get<ParallaxComponent>(entity);
         parallaxX = parallax.factorX;
         parallaxY = parallax.factorY;
     } catch (const std::logic_error&) {}

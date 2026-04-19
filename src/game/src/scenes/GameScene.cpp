@@ -20,12 +20,12 @@ GameScene::GameScene(Config&& config) :
     Scene(config.eventBus),
     input(config.input),
     triggerContext(std::move(config.triggerContext)),
-    machine(),
     camera(config.camera),
     window(config.window),
     combos(std::move(config.combos)),
     characterLoader(config.characterLoader),
-    playerSlots(std::move(config.playerSlots))
+    playerSlots(std::move(config.playerSlots)),
+    renderer(config.renderer)
 {
     systemManager.addSystem<InputSystem>(config.eventBus, this->input);
     systemManager.addSystem<TriggerGenerationSystem>(config.eventBus, this->triggerContext);
@@ -33,6 +33,9 @@ GameScene::GameScene(Config&& config) :
     systemManager.addSystem<ComboSystem>(config.eventBus, this->combos);
     systemManager.addSystem<StateSystem>(config.eventBus);
     systemManager.addSystem<CameraControllerSystem>(this->camera, this->window);
+
+    this->renderSystem = std::make_unique<RenderSystem>(config.eventBus, config.renderer, config.camera);
+    systemManager.addSystem<RenderSystem>(*this->renderSystem);
 }
 
 void GameScene::init()
