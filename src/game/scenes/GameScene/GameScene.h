@@ -23,7 +23,7 @@ class GameScene : public Scene
 public:
     struct PlayerSlot
     {
-        std::uint32_t PlayerId;
+        std::uint32_t playerId;
         std::string characterDefPath;
     };
 
@@ -41,7 +41,9 @@ public:
     };
 
     GameScene(Config&& config);
+
     void init() override;
+    void render() override;
 
 private:
     InputContext& input;

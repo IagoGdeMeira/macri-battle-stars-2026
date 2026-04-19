@@ -16,7 +16,8 @@
 #include "../../game/include/StateMachineLoader/StateMachineLoader.h"
 #include "../../game/include/TextureLoader/TextureLoader.h"
 #include "../../game/include/TriggerBindingLoader/TriggerBindingLoader.h"
-#include "../../game/scenes/TitleScene/TitleScene.h"
+
+#include "../../game/scenes/GameScene/GameScene.h"
 
 #include "../../platform/include/JsonParser/JsonParser.h"
 #include "../../platform/include/SDLInputAdapter/SDLInputAdapter.h"
@@ -122,13 +123,29 @@ void Application::setupInitialScene()
     this->inputAdapter = std::make_unique<SDLInputAdapter>(this->engine->events());
     this->engine->setInputAdapter(*this->inputAdapter);
 
-    TitleScene::Config cfg
+    std::vector<GameScene::PlayerSlot> slots;
+
+    const auto& availableCharacters = this->characterRoster->getAll();
+    if (availableCharacters.empty())
+    { throw std::runtime_error("No characters found in roster. Cannot start GameScene."); }
+
+    const std::string& defaultCharId = availableCharacters.front().id;
+    const CharacterEntry* defaultEntry = this->characterRoster->findById(defaultCharId);
+    if (!defaultEntry) throw std::runtime_error("Default character ID not found in roster.");
+    
+    for (const auto& [playerId, _] : this->inputContext->bindings)
+    { slots.push_back({ .playerId = playerId, .characterDefPath = defaultEntry->definitionPath }); }
+
+    this->engine->scenes().changeScene(SceneId::Game, std::move(GameScene::Config
     {
         .eventBus = this->engine->events(),
-        .sceneManager = this->engine->scenes(),
-        .roster = *this->characterRoster,
         .input = *this->inputContext,
+        .triggerContext = std::move(*this->triggerContext),
+        .combos = std::move(this->globalCombos),
+        .camera = *this->camera,
+        .window = *this->window,
+        .characterLoader = *this->characterLoader,
+        .playerSlots = std::move(slots),
         .renderer = *this->renderer
-    };
-    this->engine->scenes().changeScene(SceneId::Title, std::move(cfg));
+    }));
 }

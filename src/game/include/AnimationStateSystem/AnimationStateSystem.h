@@ -19,11 +19,7 @@ public:
 private:
     EventBus& bus;
 
-    struct PendingChange
-    {
-        Entity entity;
-        StateId state;
-    };
+    struct PendingChange { Entity entity; StateId state; };
 
     std::vector<PendingChange> changes;
 };
