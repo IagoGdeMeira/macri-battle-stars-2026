@@ -19,7 +19,8 @@ target_sources(game
         src/ComboSystem.cpp
         src/ComponentRegistry.cpp
         src/ConditionFactory.cpp
-        src/DamageSystem.cpp  
+        src/DamageSystem.cpp
+        src/GravitySystem.cpp
         src/LocalToWorldSystem.cpp
         src/MapLoader.cpp
         src/MapRoster.cpp
