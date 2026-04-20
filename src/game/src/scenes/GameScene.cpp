@@ -82,7 +82,7 @@ void GameScene::init()
         auto bgParallax = ParallaxComponent { layer.parallaxFactorX, layer.parallaxFactorY };
         components.add<ParallaxComponent>(bg, bgParallax);
 
-        components.add<RenderComponent>(bg, RenderComponent{0, layer.zIndex});
+        components.add<RenderComponent>(bg, RenderComponent{ 0, layer.zIndex });
     }
 
     // Create floor entity with collider based on map data
@@ -121,7 +121,14 @@ void GameScene::init()
 
         auto& transform = components.get<TransformComponent>(entity);
         transform.x = spawnX;
-        transform.y = this->mapData.floorY - 32.0f;
+
+        if (components.has<SpriteComponent>(entity))
+        {
+            const auto& sprite = components.get<SpriteComponent>(entity);
+            transform.y = this->mapData.floorY - (sprite.height * 0.5f);
+        }
+        else transform.y = this->mapData.floorY - 32.0f;
+        
 
         if (components.has<StateComponent>(entity))
         { components.get<StateComponent>(entity).current = StateId::Idle; }
