@@ -23,30 +23,30 @@ public:
         bool has(const std::string& key) const override
         { return this->strings.contains(key) || this->ints.contains(key); }
 
-        std::string getString(const std::string& key) const override
+        std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
         {
             const auto it = this->strings.find(key);
-            if (it == this->strings.end()) throw std::runtime_error("Missing string key: " + key);
+            if (it == this->strings.end()) return fallback;
             return it->second;
         }
 
-        int getInt(const std::string& key) const override
+        int getInt(const std::string& key, const int& fallback = DataNode::defaultIntFallback) const override
         {
             const auto it = this->ints.find(key);
-            if (it == this->ints.end()) throw std::runtime_error("Missing int key: " + key);
+            if (it == this->ints.end()) return fallback;
             return it->second;
         }
 
-        float getFloat(const std::string& key) const override
+        float getFloat(const std::string& key, const float& fallback = DataNode::defaultFloatFallback) const override
         {
             (void)key;
-            throw std::runtime_error("Float not supported in this fixture");
+            return fallback;
         }
 
-        bool getBool(const std::string& key) const override
+        bool getBool(const std::string& key, const bool& fallback = DataNode::defaultBoolFallback) const override
         {
             (void)key;
-            throw std::runtime_error("Bool not supported in this fixture");
+            return fallback;
         }
 
         std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override

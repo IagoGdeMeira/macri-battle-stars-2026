@@ -27,6 +27,8 @@ struct MapData
     float floorHeight;
     std::vector<Rectangle> walls;
     std::vector<SpawnPoint> spawnPoints;
+    float gravity = 980.0f;
+    float floorFriction = 5.0f;
 };
 
 #endif // map_data_h

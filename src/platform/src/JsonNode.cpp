@@ -3,35 +3,55 @@
 bool JsonNode::has(const std::string& key) const
 { return this->data.contains(key); }
 
-std::string JsonNode::getString(const std::string& key) const
+std::string JsonNode::getString(const std::string& key, const std::string& fallback) const
 {
-    if (key.empty()) return this->data.get<std::string>();
+    if (key.empty())
+    {
+        if (!this->data.is_null()) return this->data.get<std::string>();
+        return fallback;
+    }
 
-    if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
+    if (!this->data.contains(key))return fallback;
+
     return this->data.at(key).get<std::string>();
 }
 
-int JsonNode::getInt(const std::string& key) const
+int JsonNode::getInt(const std::string& key, const int& fallback) const
 {
-    if (key.empty()) return this->data.get<int>();
+    if (key.empty())
+    {
+        if (!this->data.is_null()) return this->data.get<int>();
+        return fallback;
+    }
 
-    if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
+    if (!this->data.contains(key)) return fallback;
+
     return this->data.at(key).get<int>();
 }
 
-float JsonNode::getFloat(const std::string& key) const
+float JsonNode::getFloat(const std::string& key, const float& fallback) const
 {
-    if (key.empty()) return this->data.get<float>();
+    if (key.empty())
+    {
+        if (!this->data.is_null()) return this->data.get<float>();
+        return fallback;
+    }
 
-    if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
+    if (!this->data.contains(key)) return fallback;
+
     return this->data.at(key).get<float>();
 }
 
-bool JsonNode::getBool(const std::string& key) const
+bool JsonNode::getBool(const std::string& key, const bool& fallback) const
 {
-    if (key.empty()) return this->data.get<bool>();
+    if (key.empty())
+    {
+        if (!this->data.is_null()) return this->data.get<bool>();
+        return fallback;
+    }
 
-    if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
+    if (!this->data.contains(key)) return fallback;
+
     return this->data.at(key).get<bool>();
 }
 

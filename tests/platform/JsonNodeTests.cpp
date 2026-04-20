@@ -39,15 +39,19 @@ TEST_CASE("JsonNode reads root primitive values",
     REQUIRE(boolNode.getBool("") == true);
 }
 
-TEST_CASE("JsonNode throws when key does not exist",
+TEST_CASE("JsonNode returns fallback when key does not exist",
     "[unit][json_node]"
 ) {
     JsonNode node(json{{"name", "Chun-Li"}});
+    const std::string stringFallback = "fallback";
+    const int intFallback = 123;
+    const float floatFallback = 4.5f;
+    const bool boolFallback = true;
 
-    REQUIRE_THROWS_AS(node.getString("unknown"), std::runtime_error);
-    REQUIRE_THROWS_AS(node.getInt("unknown"), std::runtime_error);
-    REQUIRE_THROWS_AS(node.getFloat("unknown"), std::runtime_error);
-    REQUIRE_THROWS_AS(node.getBool("unknown"), std::runtime_error);
+    REQUIRE(node.getString("unknown", stringFallback) == "fallback");
+    REQUIRE(node.getInt("unknown", intFallback) == 123);
+    REQUIRE(node.getFloat("unknown", floatFallback) == 4.5f);
+    REQUIRE(node.getBool("unknown", boolFallback) == true);
     REQUIRE_THROWS_AS(node.getArray("unknown"), std::runtime_error);
 }
 

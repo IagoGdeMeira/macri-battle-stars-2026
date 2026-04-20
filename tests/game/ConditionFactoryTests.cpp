@@ -24,25 +24,31 @@ public:
         bool has(const std::string& key) const override
         { return this->strings.contains(key) || this->floats.contains(key); }
 
-        std::string getString(const std::string& key) const override
+        std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
         {
             const auto it = this->strings.find(key);
-            if (it == this->strings.end()) throw std::runtime_error("Missing string key: " + key);
+            if (it == this->strings.end()) return fallback;
             return it->second;
         }
 
-        int getInt(const std::string& key) const override
-        { throw std::runtime_error("Unexpected int key: " + key); }
+        int getInt(const std::string& key, const int& fallback = DataNode::defaultIntFallback) const override
+        {
+            (void)key;
+            return fallback;
+        }
 
-        float getFloat(const std::string& key) const override
+        float getFloat(const std::string& key, const float& fallback = DataNode::defaultFloatFallback) const override
         {
             const auto it = this->floats.find(key);
-            if (it == this->floats.end()) throw std::runtime_error("Missing float key: " + key);
+            if (it == this->floats.end()) return fallback;
             return it->second;
         }
 
-        bool getBool(const std::string& key) const override
-        { throw std::runtime_error("Unexpected bool key: " + key); }
+        bool getBool(const std::string& key, const bool& fallback = DataNode::defaultBoolFallback) const override
+        {
+            (void)key;
+            return fallback;
+        }
 
         std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override
         { throw std::runtime_error("Unexpected array key: " + key); }

@@ -48,15 +48,17 @@ TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem updates vertical velocity 
 TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem updates only entities that have VelocityComponent and GravityComponent",
     "[unit][gravity_system]"
 ) {
-    const auto withBoth = this->world.entities().create();
     auto& components = this->world.components();
+    auto& entities = this->world.entities();
+    
+    const auto withBoth = entities.create();
     components.add<VelocityComponent>(withBoth, VelocityComponent{ 0.0f, 3.0f });
     components.add<GravityComponent>(withBoth, GravityComponent{ 2.0f });
 
-    const auto withVelocityOnly = this->world.entities().create();
+    const auto withVelocityOnly = entities.create();
     components.add<VelocityComponent>(withVelocityOnly, VelocityComponent{ 4.0f, 6.0f });
 
-    const auto withGravityOnly = this->world.entities().create();
+    const auto withGravityOnly = entities.create();
     components.add<GravityComponent>(withGravityOnly, GravityComponent{ 3.0f });
 
     this->context.deltaTime = 0.5f;

@@ -38,10 +38,10 @@ public:
     {
     public:
         bool has(const std::string&) const override { return false; }
-        std::string getString(const std::string&) const override { return ""; }
-        int getInt(const std::string&) const override { return 0; }
-        float getFloat(const std::string&) const override { return 0.0f; }
-        bool getBool(const std::string&) const override { return false; }
+        std::string getString(const std::string&, const std::string& fallback = DataNode::defaultStringFallback) const override { return fallback; }
+        int getInt(const std::string&, const int& fallback = DataNode::defaultIntFallback) const override { return fallback; }
+        float getFloat(const std::string&, const float& fallback = DataNode::defaultFloatFallback) const override { return fallback; }
+        bool getBool(const std::string&, const bool& fallback = DataNode::defaultBoolFallback) const override { return fallback; }
 
         std::vector<std::unique_ptr<DataNode>> getArray(const std::string&) const override
         { return {}; }

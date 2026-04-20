@@ -12,6 +12,8 @@ MapData MapLoader::load(const std::string& path) const
     map.floorTexture = root->getString("floor.texture");
     map.floorWidth = root->getFloat("floor.width");
     map.floorHeight = root->getFloat("floor.height");
+    map.gravity = root->getFloat("gravity", 980.0f);
+    map.floorFriction = root->getFloat("floorFriction", 5.0f);
 
     for (auto& layerNode : root->getArray("backgroundLayers"))
     {

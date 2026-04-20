@@ -20,6 +20,7 @@ target_sources(game
         src/ComponentRegistry.cpp
         src/ConditionFactory.cpp
         src/DamageSystem.cpp
+        src/FrictionSystem.cpp
         src/GravitySystem.cpp
         src/LocalToWorldSystem.cpp
         src/MapLoader.cpp

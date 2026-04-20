@@ -17,6 +17,7 @@ add_executable(game_tests
     conditions/MinTimeConditionTests.cpp
     conditions/NotConditionTests.cpp
     conditions/VelocityAboveConditionTests.cpp
+    FrictionSystemTests.cpp
     GameSceneTests.cpp
     GravitySystemTests.cpp
     LocalToWorldSystemTests.cpp
