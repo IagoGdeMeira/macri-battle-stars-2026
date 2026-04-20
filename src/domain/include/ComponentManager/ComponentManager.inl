@@ -11,8 +11,7 @@ void ComponentManager::registerComponent()
     uint32_t id = this->componentTypeId<T>();
 
     if (id >= this->storages.size()) this->storages.resize(id + 1);
-
-    if (this->storages[id]) throw std::logic_error("Component already registered");
+    if (this->storages[id]) return;
 
     this->storages[id] = std::make_unique<ComponentStorage<T>>();
 }

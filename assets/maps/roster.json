@@ -1,0 +1,14 @@
+{
+    "maps": [
+        {
+            "id": "dojo",
+            "name": "Dojo",
+            "definition": "assets/maps/dojo.json"
+        },
+        {
+            "id": "street",
+            "name": "Street",
+            "definition": "assets/maps/street.json"
+        }
+    ]
+}

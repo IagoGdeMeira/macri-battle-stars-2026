@@ -8,6 +8,7 @@
 #include "../../src/game/include/CharacterLoader/CharacterLoader.h"
 #include "../../src/game/include/CharacterRoster/CharacterRoster.h"
 #include "../../src/game/include/Combo/Combo.h"
+#include "../../src/game/include/MapRoster/MapRoster.h"
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
 #include "../../src/game/include/TextureLoader/TextureLoader.h"
 #include "../../src/game/include/TriggerContext/TriggerContext.h"
@@ -84,9 +85,14 @@ public:
         resourceManager(threadPool),
         textureLoader(renderer),
         characterLoader(definitionLoader, animationLoader, machineLoader, resourceManager, textureLoader),
-        sceneFactory(window, inputContext, triggerContext, roster, characterLoader, camera, combos),
+        sceneFactory(window, inputContext, triggerContext, roster, characterLoader, camera, combos,
+            mapRoster, parser, resourceManager),
         engine(window, sceneFactory)
-    { this->sceneFactory.engine = &this->engine; }
+    {
+        this->sceneFactory.engine = &this->engine;
+        this->roster.addEntry(CharacterEntry{ "fighter_01", "Fighter 01", "assets/characters/fighter_01.json" });
+        this->mapRoster.addEntry(MapEntry{ "default", "Default", "assets/maps/default.json" });
+    }
 
     void enableRenderer() { this->engine.setRenderer(this->renderer); }
 
@@ -94,6 +100,7 @@ public:
     InputContext inputContext;
     TriggerContext triggerContext;
     CharacterRoster roster;
+    MapRoster mapRoster;
     Camera2D camera;
     std::vector<Combo> combos;
 
@@ -104,6 +111,7 @@ public:
     DummyParser definitionParser;
     DummyParser animationParser;
     DummyParser machineParser;
+    DummyParser parser;
 
     CharacterDefinitionLoader definitionLoader{ this->definitionParser };
     AnimationLoader animationLoader{ this->animationParser };

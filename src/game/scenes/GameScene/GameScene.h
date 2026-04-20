@@ -4,28 +4,29 @@
 #include "../../include/Camera2D/Camera2D.h"
 #include "../../include/CharacterLoader/CharacterLoader.h"
 #include "../../include/Combo/Combo.h"
-#include "../../include/RenderSystem/RenderSystem.h"
-#include "../../include/StateMachine/StateMachine.h"
+#include "../../include/MapData/MapData.h"
 #include "../../include/TriggerContext/TriggerContext.h"
+#include "../../include/RenderSystem/RenderSystem.h"
 
 #include "../../../engine/include/InputContext/InputContext.h"
 #include "../../../engine/include/EventBus/EventBus.h"
 #include "../../../engine/include/Renderer/Renderer.h"
+#include "../../../engine/include/ResourceManager/ResourceManager.h"
 #include "../../../engine/include/Scene/Scene.h"
 #include "../../../engine/include/Window/Window.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
+
+class RenderSystem;
 
 class GameScene : public Scene
 {
 public:
-    struct PlayerSlot
-    {
-        std::uint32_t playerId;
-        std::string characterDefPath;
-    };
+    struct PlayerSlot { std::uint32_t playerId; std::string characterDefPath; };
 
     struct Config
     {
@@ -38,6 +39,8 @@ public:
         CharacterLoader& characterLoader;
         std::vector<PlayerSlot> playerSlots;
         Renderer& renderer;
+        MapData mapData;
+        ResourceManager& resourceManager;
     };
 
     GameScene(Config&& config);
@@ -54,6 +57,8 @@ private:
     CharacterLoader& characterLoader;
     std::vector<PlayerSlot> playerSlots;
     Renderer& renderer;
+    MapData mapData;
+    ResourceManager& resourceManager;
 
     std::unique_ptr<RenderSystem> renderSystem;
 };

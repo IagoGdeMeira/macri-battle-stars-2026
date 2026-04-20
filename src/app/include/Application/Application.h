@@ -14,6 +14,7 @@
 
 #include "../../game/include/CharacterLoader/CharacterLoader.h"
 #include "../../game/include/Combo/Combo.h"
+#include "../../game/include/MapRoster/MapRoster.h"
 #include "../../game/include/TriggerContext/TriggerContext.h"
 
 #include "../../platform/include/JsonParser/JsonParser.h"
@@ -26,6 +27,8 @@ class AnimationLoader;
 class Camera2D;
 class CharacterDefinitionLoader;
 class CharacterRoster;
+class MapLoader;
+class MapRoster;
 class StateMachineLoader;
 class TextureLoader;
 
@@ -65,6 +68,7 @@ private:
     std::unique_ptr<ResourceManager> resourceManager;
     std::unique_ptr<CharacterLoader> characterLoader;
     std::unique_ptr<CharacterRoster> characterRoster;
+    std::unique_ptr<MapRoster> mapRoster;
     std::unique_ptr<Camera2D> camera;
 
     std::unique_ptr<InputContext> inputContext;

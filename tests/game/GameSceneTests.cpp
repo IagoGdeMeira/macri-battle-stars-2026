@@ -15,8 +15,8 @@
 #include "../../src/engine/include/DataParser/DataParser.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
 #include "../../src/engine/include/InputBinding/InputBinding.h"
-#include "../../src/engine/include/Renderer/Renderer.h"
 #include "../../src/engine/include/ResourceManager/ResourceManager.h"
+#include "../../src/engine/include/Renderer/Renderer.h"
 #include "../../src/engine/include/ThreadPool/ThreadPool.h"
 #include "../../src/engine/include/Window/Window.h"
 
@@ -24,6 +24,7 @@
 #include "../../src/game/include/Camera2D/Camera2D.h"
 #include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 #include "../../src/game/include/CharacterLoader/CharacterLoader.h"
+#include "../../src/game/include/MapData/MapData.h"
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
 #include "../../src/game/include/TextureLoader/TextureLoader.h"
 
@@ -285,30 +286,41 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
     std::vector<GameScene::PlayerSlot> playerSlots;
     playerSlots.push_back(GameScene::PlayerSlot{ 7, "assets/characters/fighter_01.json" });
 
-    GameScene scene(GameScene::Config{
-        bus,
-        input,
-        std::move(triggerContext),
-        combos,
-        camera,
-        window,
-        characterLoader,
-        std::move(playerSlots),
-        renderer
+    MapData mapData;
+    mapData.floorY = 0.0f;
+    mapData.floorWidth = 1000.0f;
+    mapData.floorHeight = 100.0f;
+    mapData.spawnPoints.push_back({ 7, 128.0f });
+
+    GameScene scene(GameScene::Config
+    {
+        .eventBus = bus,
+        .input = input,
+        .triggerContext = std::move(triggerContext),
+        .combos = combos,
+        .camera = camera,
+        .window = window,
+        .characterLoader = characterLoader,
+        .playerSlots = std::move(playerSlots),
+        .renderer = renderer,
+        .mapData = std::move(mapData),
+        .resourceManager = resourceManager
     });
 
-    scene.world().components().registerComponent<SpriteComponent>();
-    scene.world().components().registerComponent<AnimationControllerComponent>();
-    scene.world().components().registerComponent<AnimationComponent>();
+    auto& components = scene.world().components();
+
+    components.registerComponent<SpriteComponent>();
+    components.registerComponent<AnimationControllerComponent>();
+    components.registerComponent<AnimationComponent>();
 
     scene.init();
 
     View<PlayerComponent,
-        InputComponent,
-        InputBufferComponent,
-        StateComponent,
-        StateMachineComponent
-    > view(scene.world().components());
+         InputComponent,
+         InputBufferComponent,
+         StateComponent,
+         StateMachineComponent>
+        view(components);
 
     size_t count = 0;
     for (auto [entity, player, inputComponent, buffer, state, stateMachine] : view)

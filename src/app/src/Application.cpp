@@ -13,6 +13,9 @@
 #include "../../game/include/CharacterRosterLoader/CharacterRosterLoader.h"
 #include "../../game/include/Combo/Combo.h"
 #include "../../game/include/ComboLoader/ComboLoader.h"
+#include "../../game/include/MapData/MapData.h"
+#include "../../game/include/MapLoader/MapLoader.h"
+#include "../../game/include/MapRosterLoader/MapRosterLoader.h"
 #include "../../game/include/StateMachineLoader/StateMachineLoader.h"
 #include "../../game/include/TextureLoader/TextureLoader.h"
 #include "../../game/include/TriggerBindingLoader/TriggerBindingLoader.h"
@@ -103,6 +106,10 @@ void Application::loadGameData()
     CharacterRosterLoader rosterLoader(*this->parser);
     this->characterRoster = std::make_unique<CharacterRoster>(
         rosterLoader.load("assets/characters/roster.json"));
+
+    MapRosterLoader mapRosterLoader(*this->parser);
+    this->mapRoster = std::make_unique<MapRoster>(
+        mapRosterLoader.load("assets/maps/roster.json"));
 }
 
 void Application::setupInitialScene()
@@ -114,7 +121,10 @@ void Application::setupInitialScene()
         *this->characterRoster,
         *this->characterLoader,
         *this->camera,
-        this->globalCombos);
+        this->globalCombos,
+        *this->mapRoster,
+        *this->parser,
+        *this->resourceManager);
 
     this->engine = std::make_unique<Engine>(*this->window, *this->sceneFactory);
     this->sceneFactory->engine = this->engine.get();
@@ -132,20 +142,30 @@ void Application::setupInitialScene()
     const std::string& defaultCharId = availableCharacters.front().id;
     const CharacterEntry* defaultEntry = this->characterRoster->findById(defaultCharId);
     if (!defaultEntry) throw std::runtime_error("Default character ID not found in roster.");
-    
+
+    const auto& maps = this->mapRoster->getAll();
+    if (maps.empty()) throw std::runtime_error("No maps found in roster. Cannot start GameScene.");
+
+    MapLoader mapLoader(*this->parser);
+    MapData defaultMap = mapLoader.load(maps.front().definitionPath);
+
     for (const auto& [playerId, _] : this->inputContext->bindings)
     { slots.push_back({ .playerId = playerId, .characterDefPath = defaultEntry->definitionPath }); }
 
-    this->engine->scenes().changeScene(SceneId::Game, std::move(GameScene::Config
-    {
-        .eventBus = this->engine->events(),
-        .input = *this->inputContext,
-        .triggerContext = std::move(*this->triggerContext),
-        .combos = std::move(this->globalCombos),
-        .camera = *this->camera,
-        .window = *this->window,
-        .characterLoader = *this->characterLoader,
-        .playerSlots = std::move(slots),
-        .renderer = *this->renderer
-    }));
+    this->engine->scenes().changeScene(
+        SceneId::Game,
+        std::move(GameScene::Config
+        {
+            .eventBus = this->engine->events(),
+            .input = *this->inputContext,
+            .triggerContext = std::move(*this->triggerContext),
+            .combos = std::move(this->globalCombos),
+            .camera = *this->camera,
+            .window = *this->window,
+            .characterLoader = *this->characterLoader,
+            .playerSlots = std::move(slots),
+            .renderer = *this->renderer,
+            .mapData = std::move(defaultMap),
+            .resourceManager = *this->resourceManager
+        }));
 }

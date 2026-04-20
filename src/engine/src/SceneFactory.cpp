@@ -3,6 +3,8 @@
 #include "../include/Engine/Engine.h"
 #include "../include/Scene/Scene.h"
 
+#include "../../game/include/MapLoader/MapLoader.h"
+#include "../../game/include/MapRoster/MapRoster.h"
 #include "../../game/scenes/TitleScene/TitleScene.h"
 #include "../../game/scenes/SelectionScene/SelectionScene.h"
 #include "../../game/scenes/GameScene/GameScene.h"
@@ -16,7 +18,10 @@ SceneFactory::SceneFactory(
     CharacterRoster& characterRoster,
     CharacterLoader& characterLoader,
     Camera2D& camera,
-    std::vector<Combo>& globalCombos
+    std::vector<Combo>& globalCombos,
+    MapRoster& mapRoster,
+    DataParser& parser,
+    ResourceManager& resourceManager
 ) :
     window(window),
     inputContext(inputContext),
@@ -24,7 +29,10 @@ SceneFactory::SceneFactory(
     characterRoster(characterRoster),
     characterLoader(characterLoader),
     camera(camera),
-    globalCombos(globalCombos)
+    globalCombos(globalCombos),
+    mapRoster(mapRoster),
+    parser(parser),
+    resourceManager(resourceManager)
 {}
 
 std::unique_ptr<Scene> SceneFactory::createScene(SceneId id, std::any data)
@@ -64,11 +72,24 @@ std::unique_ptr<Scene> SceneFactory::createScene(SceneId id, std::any data)
                 ? *this->engine->getRenderer()
                 : throw std::runtime_error("Renderer not set in Engine");
             auto slots = std::any_cast<std::vector<GameScene::PlayerSlot>>(std::move(data));
+            MapLoader mapLoader(this->parser);
+            const auto& maps = this->mapRoster.getAll();
+            if (maps.empty()) throw std::runtime_error("No maps available in roster");
+
+            MapData mapData = mapLoader.load(maps.front().definitionPath);
             GameScene::Config cfg
             {
-                this->engine->events(), this->inputContext, std::move(this->triggerContext),
-                std::move(this->globalCombos), this->camera, this->window, this->characterLoader,
-                std::move(slots), renderer
+                .eventBus = this->engine->events(),
+                .input = this->inputContext,
+                .triggerContext = std::move(this->triggerContext),
+                .combos = std::move(this->globalCombos),
+                .camera = this->camera,
+                .window = this->window,
+                .characterLoader = this->characterLoader,
+                .playerSlots = std::move(slots),
+                .renderer = renderer,
+                .mapData = std::move(mapData),
+                .resourceManager = this->resourceManager
             };
             return std::make_unique<GameScene>(std::move(cfg));
         }

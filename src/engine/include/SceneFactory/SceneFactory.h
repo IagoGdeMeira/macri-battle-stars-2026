@@ -7,14 +7,18 @@
 #include <memory>
 #include <vector>
 
+class Camera2D;
+class CharacterLoader;
+class CharacterRoster;
+class DataParser;
 class Engine;
+class MapRoster;
+class ResourceManager;
 class Window;
+
+struct Combo;
 struct InputContext;
 struct TriggerContext;
-class CharacterRoster;
-class CharacterLoader;
-class Camera2D;
-struct Combo;
 
 class SceneFactory : public ISceneFactory
 {
@@ -26,7 +30,10 @@ public:
         CharacterRoster& characterRoster,
         CharacterLoader& characterLoader,
         Camera2D& camera,
-        std::vector<Combo>& globalCombos
+        std::vector<Combo>& globalCombos,
+        MapRoster& mapRoster,
+        DataParser& parser,
+        ResourceManager& resourceManager
     );
 
     std::unique_ptr<Scene> createScene(SceneId id, std::any data) override;
@@ -41,6 +48,9 @@ private:
     CharacterLoader& characterLoader;
     Camera2D& camera;
     std::vector<Combo>& globalCombos;
+    MapRoster& mapRoster;
+    DataParser& parser;
+    ResourceManager& resourceManager;
 };
 
 #endif // scene_factory_h

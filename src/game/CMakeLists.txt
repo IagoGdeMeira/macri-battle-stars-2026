@@ -17,9 +17,13 @@ target_sources(game
         src/CollisionDetectionSystem.cpp
         src/ComboLoader.cpp
         src/ComboSystem.cpp
+        src/ComponentRegistry.cpp
         src/ConditionFactory.cpp
         src/DamageSystem.cpp  
         src/LocalToWorldSystem.cpp
+        src/MapLoader.cpp
+        src/MapRoster.cpp
+        src/MapRosterLoader.cpp
         src/RenderSystem.cpp
         src/StateMachineLoader.cpp
         src/StateMapper.cpp
