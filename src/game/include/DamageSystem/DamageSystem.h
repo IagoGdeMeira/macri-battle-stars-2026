@@ -2,12 +2,11 @@
 #define damage_system_h
 
 #include "../../engine/include/System/System.h"
+#include "../../events/CollisionEvent.h"
 
 #include <vector>
 
 class EventBus;
-
-struct CollisionEvent;
 
 class DamageSystem : public System
 {
