@@ -29,6 +29,7 @@ struct MapData
     std::vector<SpawnPoint> spawnPoints;
     float gravity = 980.0f;
     float floorFriction = 5.0f;
+    float airFriction = 2.0f;
 };
 
 #endif // map_data_h
