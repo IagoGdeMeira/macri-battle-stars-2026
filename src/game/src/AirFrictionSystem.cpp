@@ -22,6 +22,9 @@ void AirFrictionSystem::update(UpdateContext& ctx)
         float effectiveX = this->airFriction * air.multiplierX;
         float effectiveY = this->airFriction * air.multiplierY;
 
+        if (effectiveX < 0.0f) effectiveX = 0.0f;
+        if (effectiveY < 0.0f) effectiveY = 0.0f;
+
         float decayX = 1.0f - (effectiveX * 0.01f * ctx.deltaTime);
         float decayY = 1.0f - (effectiveY * 0.01f * ctx.deltaTime);
 
