@@ -1,4 +1,9 @@
 add_executable(game_tests
+    conditions/CompositeConditionTests.cpp
+    conditions/HealthBelowConditionTests.cpp
+    conditions/MinTimeConditionTests.cpp
+    conditions/NotConditionTests.cpp
+    conditions/VelocityAboveConditionTests.cpp
     AirFrictionSystemTests.cpp
     AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
@@ -13,11 +18,6 @@ add_executable(game_tests
     ComboSystemTests.cpp
     ComboTests.cpp
     ConditionFactoryTests.cpp
-    conditions/CompositeConditionTests.cpp
-    conditions/HealthBelowConditionTests.cpp
-    conditions/MinTimeConditionTests.cpp
-    conditions/NotConditionTests.cpp
-    conditions/VelocityAboveConditionTests.cpp
     FrictionSystemTests.cpp
     GameSceneTests.cpp
     GravitySystemTests.cpp
