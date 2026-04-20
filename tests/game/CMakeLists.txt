@@ -1,4 +1,5 @@
 add_executable(game_tests
+    AirFrictionSystemTests.cpp
     AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
     AnimationSystemTests.cpp

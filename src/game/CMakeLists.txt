@@ -5,6 +5,7 @@ target_sources(game
         src/scenes/GameScene.cpp
         src/scenes/SelectionScene.cpp
         src/scenes/TitleScene.cpp
+        src/AirFrictionSystem.cpp
         src/AnimationLoader.cpp
         src/AnimationStateSystem.cpp
         src/AnimationSystem.cpp

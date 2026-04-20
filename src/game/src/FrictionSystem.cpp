@@ -18,7 +18,7 @@ void FrictionSystem::update(UpdateContext& ctx)
     {
         if (!g.onGround) continue;
 
-        float effectiveFriction = friction * (1.0f - g.frictionReduction);
+        float effectiveFriction = this->friction * (1.0f - g.frictionReduction);
         if (effectiveFriction < 0.0f) effectiveFriction = 0.0f;
 
         float decay = 1.0f - (effectiveFriction * 0.01f * ctx.deltaTime);
