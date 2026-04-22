@@ -19,9 +19,23 @@ public:
     public:
         void setString(const std::string& key, const std::string& value) { this->strings[key] = value; }
         void setInt(const std::string& key, int value) { this->ints[key] = value; }
+        void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value)
+        {
+            std::vector<Node> converted;
+            converted.reserve(value.size());
+
+            for (auto& node : value)
+            {
+                auto* typed = dynamic_cast<Node*>(node.get());
+                if (!typed) throw std::runtime_error("Unexpected node type in fake tree");
+                converted.push_back(*typed);
+            }
+
+            this->arrays[key] = std::move(converted);
+        }
 
         bool has(const std::string& key) const override
-        { return this->strings.contains(key) || this->ints.contains(key); }
+        { return this->strings.contains(key) || this->ints.contains(key) || this->arrays.contains(key); }
 
         std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
         {
@@ -51,13 +65,22 @@ public:
 
         std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override
         {
-            (void)key;
-            throw std::runtime_error("Array not supported in this fixture");
+            const auto it = this->arrays.find(key);
+            if (it == this->arrays.end()) throw std::runtime_error("Missing array key: " + key);
+
+            std::vector<std::unique_ptr<DataNode>> out;
+            out.reserve(it->second.size());
+
+            for (const auto& node : it->second)
+            { out.push_back(std::make_unique<Node>(node)); }
+
+            return out;
         }
 
     private:
         std::unordered_map<std::string, std::string> strings;
         std::unordered_map<std::string, int> ints;
+        std::unordered_map<std::string, std::vector<Node>> arrays;
     };
 
     class Parser : public DataParser
@@ -99,8 +122,7 @@ public:
 
 TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader parses required and optional fields",
     "[unit][character_definition_loader]"
-)
-{
+) {
     Parser parser(this->makeDefinitionRoot(true));
     CharacterDefinitionLoader loader(parser);
 
@@ -118,8 +140,7 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader pa
 
 TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader keeps combos path empty when omitted",
     "[unit][character_definition_loader]"
-)
-{
+) {
     Parser parser(this->makeDefinitionRoot(false));
     CharacterDefinitionLoader loader(parser);
 
@@ -130,8 +151,7 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader ke
 
 TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader rejects empty id",
     "[unit][character_definition_loader]"
-)
-{
+) {
     auto rootNode = std::make_unique<Node>();
     rootNode->setString("id", "");
     rootNode->setString("texture", "assets/sprites/fighter.png");
@@ -144,4 +164,43 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader re
     CharacterDefinitionLoader loader(parser);
 
     REQUIRE_THROWS_AS(loader.load("assets/characters/fighter.json"), std::runtime_error);
+}
+
+TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader parses custom states when present",
+    "[unit][character_definition_loader]"
+) {
+    auto customState = std::make_unique<Node>();
+    customState->setString("", "PowerCharge");
+
+    std::vector<std::unique_ptr<DataNode>> customStates;
+    customStates.push_back(std::move(customState));
+
+    auto rootNode = this->makeDefinitionRoot(false);
+    static_cast<Node*>(rootNode.get())->setArray("customStates", std::move(customStates));
+
+    Parser parser(std::move(rootNode));
+    CharacterDefinitionLoader loader(parser);
+
+    const auto def = loader.load("assets/characters/fighter_custom.json");
+
+    REQUIRE(def.customStates.size() == 1);
+    REQUIRE(def.customStates[0] == "PowerCharge");
+}
+
+TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader rejects custom states that collide with base states",
+    "[unit][character_definition_loader]"
+) {
+    auto customState = std::make_unique<Node>();
+    customState->setString("", "Idle");
+
+    std::vector<std::unique_ptr<DataNode>> customStates;
+    customStates.push_back(std::move(customState));
+
+    auto rootNode = this->makeDefinitionRoot(false);
+    static_cast<Node*>(rootNode.get())->setArray("customStates", std::move(customStates));
+
+    Parser parser(std::move(rootNode));
+    CharacterDefinitionLoader loader(parser);
+
+    REQUIRE_THROWS_AS(loader.load("assets/characters/fighter_invalid.json"), std::runtime_error);
 }

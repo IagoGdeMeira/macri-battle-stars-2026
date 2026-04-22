@@ -1,5 +1,7 @@
 #include "../include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 
+#include "../../domain/include/StateId/StateId.h"
+
 #include <stdexcept>
 
 CharacterDefinition CharacterDefinitionLoader::load(const std::string& path) const
@@ -20,7 +22,13 @@ CharacterDefinition CharacterDefinitionLoader::load(const std::string& path) con
     if (root->has("combos")) def.combosPath = root->getString("combos");
 
     if (root->has("customStates")) for (auto& node : root->getArray("customStates"))
-    { def.customStates.push_back(node->getString("")); }
+    {
+        const auto customState = node->getString("");
+        if (StateId::isBaseName(customState))
+        { throw std::runtime_error("CharacterDefinition custom state collides with base state: " + customState); }
+
+        def.customStates.push_back(customState);
+    }
 
     if (def.id.empty()) throw std::runtime_error("CharacterDefinition missing id");
 

@@ -3,9 +3,12 @@
 #include "../../src/domain/components/StateComponent.h"
 #include "../../src/domain/include/Entity/Entity.h"
 #include "../../src/domain/include/World/World.h"
+
 #include "../../src/engine/include/DataNode/DataNode.h"
 #include "../../src/engine/include/DataParser/DataParser.h"
+
 #include "../../src/game/include/ConditionContext/ConditionContext.h"
+#include "../../src/game/include/StateIdMapper/StateIdMapper.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -221,4 +224,53 @@ TEST_CASE_METHOD(StateMachineLoaderFixture, "StateMachineLoader rejects transiti
     StateMachineLoader loader(parser);
 
     REQUIRE_THROWS_AS(loader.load("assets/fsm/state_machine.json"), std::runtime_error);
+}
+
+TEST_CASE_METHOD(StateMachineLoaderFixture, "StateMachineLoader resolves custom states with mapper",
+    "[unit][state_machine_loader]"
+) {
+    auto transition = std::make_unique<Node>();
+    transition->setString("from", "Idle");
+    transition->setString("to", "PowerCharge");
+    transition->setString("trigger", "Punched");
+
+    auto rootNode = std::make_unique<Node>();
+    std::vector<std::unique_ptr<DataNode>> transitions;
+    transitions.push_back(std::move(transition));
+    rootNode->setArray("transitions", std::move(transitions));
+
+    Parser parser(std::move(rootNode));
+    StateMachineLoader loader(parser);
+
+    StateIdMapper mapper;
+    const auto powerCharge = mapper.addCustomMapping("PowerCharge");
+
+    const auto machine = loader.load("assets/fsm/custom_state_machine.json", mapper);
+
+    REQUIRE(machine.transitions.size() == 1);
+    REQUIRE(machine.transitions[0].from == StateId::Idle);
+    REQUIRE(machine.transitions[0].to == powerCharge);
+    REQUIRE(machine.transitions[0].triggers.size() == 1);
+    REQUIRE(machine.transitions[0].triggers[0] == TriggerId::Punched);
+}
+
+TEST_CASE_METHOD(StateMachineLoaderFixture, "StateMachineLoader with mapper rejects unmapped custom state",
+    "[unit][state_machine_loader]"
+) {
+    auto transition = std::make_unique<Node>();
+    transition->setString("from", "Idle");
+    transition->setString("to", "PowerCharge");
+    transition->setString("trigger", "Punched");
+
+    auto rootNode = std::make_unique<Node>();
+    std::vector<std::unique_ptr<DataNode>> transitions;
+    transitions.push_back(std::move(transition));
+    rootNode->setArray("transitions", std::move(transitions));
+
+    Parser parser(std::move(rootNode));
+    StateMachineLoader loader(parser);
+
+    StateIdMapper mapper;
+
+    REQUIRE_THROWS_AS(loader.load("assets/fsm/custom_state_machine_bad.json", mapper), std::runtime_error);
 }

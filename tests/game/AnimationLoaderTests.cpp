@@ -1,4 +1,5 @@
 #include "../../src/game/include/AnimationLoader/AnimationLoader.h"
+#include "../../src/game/include/StateIdMapper/StateIdMapper.h"
 
 #include "../../src/engine/include/DataNode/DataNode.h"
 #include "../../src/engine/include/DataParser/DataParser.h"
@@ -200,4 +201,72 @@ TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader rejects unknown state 
     AnimationLoader loader(parser);
 
     REQUIRE_THROWS(loader.load("assets/animations/bad.json"));
+}
+
+TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader resolves custom state names with mapper",
+    "[unit][animation_loader]"
+) {
+    auto frame = std::make_unique<Node>();
+    frame->setInt("x", 0);
+    frame->setInt("y", 0);
+    frame->setInt("width", 32);
+    frame->setInt("height", 32);
+
+    auto animation = std::make_unique<Node>();
+    animation->setString("state", "PowerCharge");
+    animation->setFloat("frameDuration", 0.2f);
+    animation->setBool("loop", false);
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame));
+    animation->setArray("frames", std::move(frames));
+
+    auto rootNode = std::make_unique<Node>();
+    std::vector<std::unique_ptr<DataNode>> animations;
+    animations.push_back(std::move(animation));
+    rootNode->setArray("animations", std::move(animations));
+
+    Parser parser(std::move(rootNode));
+    AnimationLoader loader(parser);
+
+    StateIdMapper mapper;
+    const auto customState = mapper.addCustomMapping("PowerCharge");
+
+    const auto loaded = loader.load("assets/animations/custom.json", mapper);
+
+    REQUIRE(loaded.size() == 1);
+    REQUIRE(loaded.contains(customState));
+    REQUIRE(loaded.at(customState).frameDuration == 0.2f);
+    REQUIRE(loaded.at(customState).loop == false);
+}
+
+TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader with mapper rejects unmapped custom state",
+    "[unit][animation_loader]"
+) {
+    auto frame = std::make_unique<Node>();
+    frame->setInt("x", 0);
+    frame->setInt("y", 0);
+    frame->setInt("width", 16);
+    frame->setInt("height", 16);
+
+    auto animation = std::make_unique<Node>();
+    animation->setString("state", "PowerCharge");
+    animation->setFloat("frameDuration", 0.1f);
+    animation->setBool("loop", true);
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame));
+    animation->setArray("frames", std::move(frames));
+
+    auto rootNode = std::make_unique<Node>();
+    std::vector<std::unique_ptr<DataNode>> animations;
+    animations.push_back(std::move(animation));
+    rootNode->setArray("animations", std::move(animations));
+
+    Parser parser(std::move(rootNode));
+    AnimationLoader loader(parser);
+
+    StateIdMapper mapper;
+
+    REQUIRE_THROWS_AS(loader.load("assets/animations/custom_bad.json", mapper), std::runtime_error);
 }
