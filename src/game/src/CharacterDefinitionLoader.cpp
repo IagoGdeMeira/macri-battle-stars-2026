@@ -4,7 +4,7 @@
 
 CharacterDefinition CharacterDefinitionLoader::load(const std::string& path) const
 {
-    auto root = parser.parse(path);
+    auto root = this->parser.parse(path);
 
     CharacterDefinition def;
 
@@ -18,6 +18,9 @@ CharacterDefinition CharacterDefinitionLoader::load(const std::string& path) con
     def.stateMachinePath = root->getString("stateMachine");
 
     if (root->has("combos")) def.combosPath = root->getString("combos");
+
+    if (root->has("customStates")) for (auto& node : root->getArray("customStates"))
+    { def.customStates.push_back(node->getString("")); }
 
     if (def.id.empty()) throw std::runtime_error("CharacterDefinition missing id");
 

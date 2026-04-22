@@ -2,6 +2,7 @@
 #define character_definition_h
 
 #include <string>
+#include <vector>
 
 struct CharacterDefinition
 {
@@ -13,6 +14,7 @@ struct CharacterDefinition
     std::string animationsPath;
     std::string stateMachinePath;
     std::string combosPath;
+    std::vector<std::string> customStates;
 };
 
 #endif // character_definition_h

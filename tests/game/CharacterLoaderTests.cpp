@@ -4,6 +4,7 @@
 #include "../../src/domain/components/AnimationControllerComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/StateComponent.h"
+#include "../../src/domain/components/StateMappingComponent.h"
 #include "../../src/domain/components/StateMachineComponent.h"
 #include "../../src/domain/include/StateId/StateId.h"
 #include "../../src/domain/include/TriggerId/TriggerId.h"
@@ -17,6 +18,7 @@
 
 #include "../../src/game/include/AnimationLoader/AnimationLoader.h"
 #include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
+#include "../../src/game/include/StateIdMapper/StateIdMapper.h"
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
 #include "../../src/game/include/TextureLoader/TextureLoader.h"
 
@@ -165,6 +167,7 @@ public:
     {
         this->world.components().registerComponent<SpriteComponent>();
         this->world.components().registerComponent<StateComponent>();
+        this->world.components().registerComponent<StateMappingComponent>();
         this->world.components().registerComponent<StateMachineComponent>();
         this->world.components().registerComponent<AnimationControllerComponent>();
         this->world.components().registerComponent<AnimationComponent>();
@@ -258,6 +261,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 
     REQUIRE(this->world.components().has<SpriteComponent>(entity));
     REQUIRE(this->world.components().has<StateComponent>(entity));
+    REQUIRE(this->world.components().has<StateMappingComponent>(entity));
     REQUIRE(this->world.components().has<StateMachineComponent>(entity));
     REQUIRE(this->world.components().has<AnimationControllerComponent>(entity));
     REQUIRE(this->world.components().has<AnimationComponent>(entity));
@@ -287,4 +291,84 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(animation.currentFrame == 0);
     REQUIRE(animation.elapsedTime == 0.0f);
     REQUIRE(animation.currentState == StateId::Unknown);
+}
+
+TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states per character definition",
+    "[integration][character_loader]"
+) {
+    auto definitionRoot = std::make_unique<Node>();
+    definitionRoot->setString("id", "fighter_custom");
+    definitionRoot->setString("texture", "assets/sprites/fighter.png");
+    definitionRoot->setInt("spriteWidth", 64);
+    definitionRoot->setInt("spriteHeight", 96);
+    definitionRoot->setString("animations", "assets/animations/fighter_custom.json");
+    definitionRoot->setString("stateMachine", "assets/fsm/fighter_custom.json");
+
+    auto customState = std::make_unique<Node>();
+    customState->setString("", "PowerCharge");
+    std::vector<std::unique_ptr<DataNode>> customStates;
+    customStates.push_back(std::move(customState));
+    definitionRoot->setArray("customStates", std::move(customStates));
+
+    auto frame = std::make_unique<Node>();
+    frame->setInt("x", 0);
+    frame->setInt("y", 0);
+    frame->setInt("width", 64);
+    frame->setInt("height", 96);
+
+    auto customAnimation = std::make_unique<Node>();
+    customAnimation->setString("state", "PowerCharge");
+    customAnimation->setFloat("frameDuration", 0.2f);
+    customAnimation->setBool("loop", false);
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame));
+    customAnimation->setArray("frames", std::move(frames));
+
+    auto animationRoot = std::make_unique<Node>();
+    std::vector<std::unique_ptr<DataNode>> animations;
+    animations.push_back(std::move(customAnimation));
+    animationRoot->setArray("animations", std::move(animations));
+
+    auto transition = std::make_unique<Node>();
+    transition->setString("from", "Idle");
+    transition->setString("to", "PowerCharge");
+    transition->setString("trigger", "Punched");
+
+    auto machineRoot = std::make_unique<Node>();
+    std::vector<std::unique_ptr<DataNode>> transitions;
+    transitions.push_back(std::move(transition));
+    machineRoot->setArray("transitions", std::move(transitions));
+
+    Parser definitionParser(std::move(definitionRoot));
+    Parser animationParser(std::move(animationRoot));
+    Parser stateMachineParser(std::move(machineRoot));
+
+    CharacterDefinitionLoader definitionLoader(definitionParser);
+    AnimationLoader animationLoader(animationParser);
+    StateMachineLoader machineLoader(stateMachineParser);
+    TextureLoader textureLoader(renderer);
+
+    CharacterLoader loader(
+        definitionLoader,
+        animationLoader,
+        machineLoader,
+        resourceManager,
+        textureLoader
+    );
+
+    const auto entity = loader.create(this->world, "assets/characters/fighter_custom.json");
+
+    const auto& mapping = this->world.components().get<StateMappingComponent>(entity);
+    REQUIRE(mapping.mapper != nullptr);
+
+    const auto customStateId = mapping.mapper->fromString("PowerCharge");
+    REQUIRE(customStateId.isCustom());
+
+    const auto& stateMachine = this->world.components().get<StateMachineComponent>(entity);
+    REQUIRE(stateMachine.machine.transitions.size() == 1);
+    REQUIRE(stateMachine.machine.transitions[0].to == customStateId);
+
+    const auto& controller = this->world.components().get<AnimationControllerComponent>(entity);
+    REQUIRE(controller.animations.contains(customStateId));
 }

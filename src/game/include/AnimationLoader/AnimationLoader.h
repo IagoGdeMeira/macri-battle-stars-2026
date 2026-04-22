@@ -6,14 +6,21 @@
 
 #include "../../../engine/include/DataParser/DataParser.h"
 
+#include <memory>
+
 #include <unordered_map>
+
+class StateIdMapper;
 
 class AnimationLoader
 {
 public:
     AnimationLoader(DataParser& parser) : parser(parser) {}
 
-    std::unordered_map<StateId, Animation> load(const std::string& path) const;
+    using AnimationMap = std::unordered_map<StateId, Animation, StateId::Hash>;
+
+    AnimationMap load(const std::string& path) const;
+    AnimationMap load(const std::string& path, const StateIdMapper& mapper) const;
 
 private:
     DataParser& parser;

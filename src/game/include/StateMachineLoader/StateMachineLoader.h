@@ -5,12 +5,15 @@
 
 #include "../../engine/include/DataParser/DataParser.h"
 
+class StateIdMapper;
+
 class StateMachineLoader
 {
 public:
     StateMachineLoader(DataParser& parser) : parser(parser) {}
 
     StateMachine load(const std::string& path) const;
+    StateMachine load(const std::string& path, const StateIdMapper& mapper) const;
 
 private:
     DataParser& parser;

@@ -4,6 +4,7 @@ target_sources(domain
     PRIVATE
         src/ComponentManager.cpp
         src/EntityManager.cpp
+        src/StateId.cpp
 )
 
 target_include_directories(domain

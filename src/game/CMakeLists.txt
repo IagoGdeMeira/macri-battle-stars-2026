@@ -29,6 +29,7 @@ target_sources(game
         src/MapRosterLoader.cpp
         src/RenderSystem.cpp
         src/StateMachineLoader.cpp
+        src/StateIdMapper.cpp
         src/StateMapper.cpp
         src/StateSystem.cpp
         src/TriggerBindingLoader.cpp

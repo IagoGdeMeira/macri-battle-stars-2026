@@ -8,7 +8,7 @@
 
 struct AnimationControllerComponent
 {
-    std::unordered_map<StateId, Animation> animations;
+    std::unordered_map<StateId, Animation, StateId::Hash> animations;
 
     StateId currentState = StateId::Unknown;
 };
