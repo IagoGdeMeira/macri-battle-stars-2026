@@ -1,0 +1,90 @@
+#include "../include/CollisionClipLoader/CollisionClipLoader.h"
+#include "../include/StateIdMapper/StateIdMapper.h"
+#include <stdexcept>
+
+
+CollisionClipLoader::ClipMap CollisionClipLoader::load(const std::string& path) const
+{
+    StateIdMapper defaultMapper;
+    return this->load(path, defaultMapper);
+}
+
+CollisionClipLoader::ClipMap CollisionClipLoader::load(
+    const std::string& path,
+    const StateIdMapper& mapper
+) const {
+    auto root = parser.parse(path);
+    ClipMap result;
+
+    for (auto& clipNode : root->getArray("collisionClips"))
+    {
+        std::string stateStr = clipNode->getString("state");
+        StateId state = mapper.fromString(stateStr);
+
+        if (state == StateId::Unknown)
+        { throw std::runtime_error("Unknown state in collision clip: " + stateStr); }
+
+        CollisionClip clip;
+        clip.loop = clipNode->getBool("loop", false);
+
+        for (auto& frameNode : clipNode->getArray("frames"))
+        {
+            CollisionFrame frame;
+            frame.duration = frameNode->getFloat("duration");
+
+            if (frameNode->has("hitboxes")) for (auto& node : frameNode->getArray("hitboxes"))
+            { frame.hitboxes.push_back(this->parseHitbox(*node)); }
+
+            if (frameNode->has("hurtboxes")) for (auto& node : frameNode->getArray("hurtboxes"))
+            { frame.hurtboxes.push_back(this->parseHurtbox(*node)); }
+
+            clip.frames.push_back(std::move(frame));
+        }
+
+        result[state] = std::move(clip);
+    }
+
+    return result;
+}
+
+std::unique_ptr<ColliderDef> CollisionClipLoader::parseCollider(const DataNode& node) const
+{
+    if (node.has("radius"))
+    {
+        auto circle = std::make_unique<CircleDef>();
+        circle->radius = node.getFloat("radius");
+        this->parseOffset(circle->offsetX, circle->offsetY, node);
+        return circle;
+    } 
+    else if (node.has("width") && node.has("height"))
+    {
+        auto rect = std::make_unique<RectangleDef>();
+        rect->width = node.getFloat("width");
+        rect->height = node.getFloat("height");
+        this->parseOffset(rect->offsetX, rect->offsetY, node);
+        return rect;
+    } 
+    else throw std::runtime_error("Collider must have either 'radius' or 'width'/'height'");
+}
+
+HitboxDef CollisionClipLoader::parseHitbox(const DataNode& node) const
+{
+    HitboxDef def;
+    def.collider = this->parseCollider(node);
+    def.damage = node.getInt("damage", 0);
+    return def;
+}
+
+HurtboxDef CollisionClipLoader::parseHurtbox(const DataNode& node) const
+{
+    HurtboxDef def;
+    def.collider = this->parseCollider(node);
+    def.damageMultiplier = node.getFloat("damageMultiplier", 1.0f);
+    return def;
+}
+
+void CollisionClipLoader::parseOffset(float& offsetX, float& offsetY, const DataNode& node) const
+{
+    offsetX = node.getFloat("offsetX", 0.0f);
+    offsetY = node.getFloat("offsetY", 0.0f);
+}

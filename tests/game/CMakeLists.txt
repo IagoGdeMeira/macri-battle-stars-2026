@@ -13,6 +13,7 @@ add_executable(game_tests
     ComponentRegistryTests.cpp
     CharacterDefinitionLoaderTests.cpp
     CharacterLoaderTests.cpp
+    CollisionClipLoaderTests.cpp
     CollisionDetectionSystemTests.cpp
     ComboLoaderTests.cpp
     ComboSystemTests.cpp
