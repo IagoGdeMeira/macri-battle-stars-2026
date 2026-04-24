@@ -200,7 +200,11 @@ TEST_CASE_METHOD(EngineFixture, "Engine presents frames when renderer is configu
         {
             return std::make_shared<Texture>();
         }
-        void draw(const Texture&, const DrawParams&) override {}
+        void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
+        void drawRectOutline(const Rectangle&, const Renderer::Color&) override {}
+        void drawRectFilled(const Rectangle&, const Renderer::Color&) override {}
+        void drawCircleOutline(const Circle&, const Renderer::Color&) override {}
+        void drawCircleFilled(const Circle&, const Renderer::Color&) override {}
         void setViewport(const Viewport&) override {}
     };
 

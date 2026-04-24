@@ -31,7 +31,7 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
 
     SDLRenderer renderer(window.getNativeHandle());
     SDLTexture texture(nullptr);
-    Renderer::DrawParams params;
+    Renderer::DrawTextureParams params;
     params.dest.position.x = 10.0f;
     params.dest.position.y = 20.0f;
     params.dest.width = 32.0f;
@@ -41,7 +41,11 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
     params.flipY = false;
 
     REQUIRE_NOTHROW(renderer.clear());
-    REQUIRE_NOTHROW(renderer.draw(texture, params));
+    REQUIRE_NOTHROW(renderer.drawTexture(texture, params));
+    REQUIRE_NOTHROW(renderer.drawRectOutline(Rectangle{ { 0.0f, 0.0f }, 10.0f, 10.0f }, Renderer::Color{}));
+    REQUIRE_NOTHROW(renderer.drawRectFilled(Rectangle{ { 1.0f, 1.0f }, 12.0f, 14.0f }, Renderer::Color{ 10, 20, 30, 40 }));
+    REQUIRE_NOTHROW(renderer.drawCircleOutline(Circle{ { 4.0f, 5.0f }, 6.0f }, Renderer::Color{}));
+    REQUIRE_NOTHROW(renderer.drawCircleFilled(Circle{ { 7.0f, 8.0f }, 9.0f }, Renderer::Color{ 10, 20, 30, 40 }));
     REQUIRE_NOTHROW(renderer.present());
     REQUIRE_NOTHROW(renderer.setViewport(Viewport{ 0, 0, 800, 600 }));
 

@@ -1,10 +1,11 @@
 #include "../../src/game/include/RenderSystem/RenderSystem.h"
 
-#include "../../src/domain/include/World/World.h"
-
+#include "../../src/domain/components/ParallaxComponent.h"
 #include "../../src/domain/components/RenderComponent.h"
+#include "../../src/domain/components/ShapeRenderComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/TransformComponent.h"
+#include "../../src/domain/include/World/World.h"
 
 #include "../../src/engine/events/WindowResizedEvent.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
@@ -22,9 +23,13 @@ class RenderSystemFixture
 public:
     RenderSystemFixture() : system(bus, renderer, camera), context{ world, bus }
     {
-        this->world.components().registerComponent<TransformComponent>();
-        this->world.components().registerComponent<SpriteComponent>();
-        this->world.components().registerComponent<RenderComponent>();
+        auto& components = this->world.components();
+
+        components.registerComponent<TransformComponent>();
+        components.registerComponent<SpriteComponent>();
+        components.registerComponent<RenderComponent>();
+        components.registerComponent<ParallaxComponent>();
+        components.registerComponent<ShapeRenderComponent>();
     }
 
 protected:
@@ -32,7 +37,11 @@ protected:
     {
         int clearCalls = 0;
         int presentCalls = 0;
-        int drawCalls = 0;
+        int drawTextureCalls = 0;
+        int drawRectOutlineCalls = 0;
+        int drawRectFilledCalls = 0;
+        int drawCircleOutlineCalls = 0;
+        int drawCircleFilledCalls = 0;
         int viewportCalls = 0;
         std::string lastTextureId;
         int lastDrawX = 0;
@@ -47,6 +56,9 @@ protected:
         int lastSrcWidth = 0;
         int lastSrcHeight = 0;
         bool lastUseSourceRect = false;
+        Rectangle lastRect;
+        Circle lastCircle;
+        Renderer::Color lastColor;
         int viewportX = 0;
         int viewportY = 0;
         int viewportWidth = 0;
@@ -62,10 +74,10 @@ protected:
             return std::make_shared<Texture>();
         }
 
-        void draw(const Texture& texture, const Renderer::DrawParams& params) override
+        void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
         {
             (void)texture;
-            this->drawCalls++;
+            this->drawTextureCalls++;
             this->lastDrawX = static_cast<int>(params.dest.position.x);
             this->lastDrawY = static_cast<int>(params.dest.position.y);
             this->lastDrawWidth = static_cast<int>(params.dest.width);
@@ -78,6 +90,34 @@ protected:
             this->lastSrcWidth = static_cast<int>(params.source.width);
             this->lastSrcHeight = static_cast<int>(params.source.height);
             this->lastUseSourceRect = params.useSourceRect;
+        }
+
+        void drawRectOutline(const Rectangle& rect, const Renderer::Color& color) override
+        {
+            this->drawRectOutlineCalls++;
+            this->lastRect = rect;
+            this->lastColor = color;
+        }
+
+        void drawRectFilled(const Rectangle& rect, const Renderer::Color& color) override
+        {
+            this->drawRectFilledCalls++;
+            this->lastRect = rect;
+            this->lastColor = color;
+        }
+
+        void drawCircleOutline(const Circle& circle, const Renderer::Color& color) override
+        {
+            this->drawCircleOutlineCalls++;
+            this->lastCircle = circle;
+            this->lastColor = color;
+        }
+
+        void drawCircleFilled(const Circle& circle, const Renderer::Color& color) override
+        {
+            this->drawCircleFilledCalls++;
+            this->lastCircle = circle;
+            this->lastColor = color;
         }
 
         void setViewport(const Viewport& viewport) override
@@ -126,19 +166,18 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
     "[unit][render_system]"
 ) {
     const auto entity = this->world.entities().create();
+    auto& components = this->world.components();
 
-    this->world.components().add<TransformComponent>(
-        entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
-    this->world.components().add<SpriteComponent>(
-        entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
-    this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
+    components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
+    components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.0f, 0.0f);
     this->camera.setZoom(1.5f);
 
     this->system.draw(this->context);
 
-    REQUIRE(this->renderer.drawCalls == 1);
+    REQUIRE(this->renderer.drawTextureCalls == 1);
     REQUIRE(this->renderer.lastDrawX == 415);
     REQUIRE(this->renderer.lastDrawY == 330);
     REQUIRE(this->renderer.lastDrawWidth == 48);
@@ -152,19 +191,18 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards rotation and flip f
     "[unit][render_system]"
 ) {
     const auto entity = this->world.entities().create();
+    auto& components = this->world.components();
 
-    this->world.components().add<TransformComponent>(
-        entity, TransformComponent{ 10.0f, 20.0f, -2.0f, -3.0f, 37.5f });
-    this->world.components().add<SpriteComponent>(
-        entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
-    this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
+    components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, -2.0f, -3.0f, 37.5f });
+    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
+    components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.0f, 0.0f);
     this->camera.setZoom(1.5f);
 
     this->system.draw(this->context);
 
-    REQUIRE(this->renderer.drawCalls == 1);
+    REQUIRE(this->renderer.drawTextureCalls == 1);
     REQUIRE(this->renderer.lastDrawWidth == 48);
     REQUIRE(this->renderer.lastDrawHeight == 36);
     REQUIRE(this->renderer.lastDrawRotation == 37.5f);
@@ -176,17 +214,15 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards sprite source rect 
     "[unit][render_system]"
 ) {
     const auto entity = this->world.entities().create();
+    auto& components = this->world.components();
 
-    this->world.components().add<TransformComponent>(
-        entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
-    this->world.components().add<SpriteComponent>(
-        entity,
-        SpriteComponent{ std::make_shared<Texture>(), 16, 8, 4, 6, 8, 10, true });
-    this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
+    components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8, 4, 6, 8, 10, true });
+    components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->system.draw(this->context);
 
-    REQUIRE(this->renderer.drawCalls == 1);
+    REQUIRE(this->renderer.drawTextureCalls == 1);
     REQUIRE(this->renderer.lastUseSourceRect == true);
     REQUIRE(this->renderer.lastSrcX == 4);
     REQUIRE(this->renderer.lastSrcY == 6);
@@ -198,12 +234,66 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem skips sprites without textur
     "[unit][render_system]"
 ) {
     const auto entity = this->world.entities().create();
+    auto& components = this->world.components();
 
-    this->world.components().add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
-    this->world.components().add<SpriteComponent>(entity, SpriteComponent{ nullptr, 16, 8 });
-    this->world.components().add<RenderComponent>(entity, RenderComponent{ 0 });
+    components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    components.add<SpriteComponent>(entity, SpriteComponent{ nullptr, 16, 8 });
+    components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->system.draw(this->context);
 
-    REQUIRE(this->renderer.drawCalls == 0);
+    REQUIRE(this->renderer.drawTextureCalls == 0);
+}
+
+TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws filled rectangle shapes",
+    "[unit][render_system]"
+) {
+    const auto entity = this->world.entities().create();
+    auto& components = this->world.components();
+
+    auto shape = std::make_unique<RectangleDef>();
+    shape->width = 12.0f;
+    shape->height = 8.0f;
+
+    components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Renderer::Color{ 1, 2, 3, 4 }, true });
+
+    this->system.draw(this->context);
+
+    REQUIRE(this->renderer.drawRectFilledCalls == 1);
+    REQUIRE(this->renderer.drawRectOutlineCalls == 0);
+    REQUIRE(this->renderer.lastRect.position.x == 398.0f);
+    REQUIRE(this->renderer.lastRect.position.y == 308.0f);
+    REQUIRE(this->renderer.lastRect.width == 24.0f);
+    REQUIRE(this->renderer.lastRect.height == 24.0f);
+    REQUIRE(this->renderer.lastColor.r == 1);
+    REQUIRE(this->renderer.lastColor.g == 2);
+    REQUIRE(this->renderer.lastColor.b == 3);
+    REQUIRE(this->renderer.lastColor.a == 4);
+}
+
+TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws outlined circle shapes",
+    "[unit][render_system]"
+) {
+    const auto entity = this->world.entities().create();
+    auto& components = this->world.components();
+
+    auto shape = std::make_unique<CircleDef>();
+    shape->radius = 7.0f;
+
+    this->camera.setZoom(2.0f);
+    components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, -3.0f, 0.0f });
+    components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Renderer::Color{ 9, 8, 7, 6 }, false });
+
+    this->system.draw(this->context);
+
+    REQUIRE(this->renderer.drawCircleOutlineCalls == 1);
+    REQUIRE(this->renderer.drawCircleFilledCalls == 0);
+    REQUIRE(this->renderer.lastCircle.position.x == 420.0f);
+    REQUIRE(this->renderer.lastCircle.position.y == 340.0f);
+    REQUIRE(this->renderer.lastCircle.radius == 42.0f);
+    REQUIRE(this->renderer.lastColor.r == 9);
+    REQUIRE(this->renderer.lastColor.g == 8);
+    REQUIRE(this->renderer.lastColor.b == 7);
+    REQUIRE(this->renderer.lastColor.a == 6);
 }

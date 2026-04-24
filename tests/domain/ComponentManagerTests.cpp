@@ -26,7 +26,7 @@ TEST_CASE("ComponentManager can add and get components",
     manager.registerComponent<Position>();
 
     Entity e{1};
-    manager.add(e, Position{10.0f, 20.0f});
+    manager.add<Position>(e, Position{10.0f, 20.0f});
 
     auto& p = manager.get<Position>(e);
 
@@ -42,7 +42,7 @@ TEST_CASE("ComponentManager can check for components",
     manager.registerComponent<Position>();
 
     Entity e{1};
-    manager.add(e, Position{10.0f, 20.0f});
+    manager.add<Position>(e, Position{10.0f, 20.0f});
 
     REQUIRE(manager.has<Position>(e));
 }
@@ -55,7 +55,7 @@ TEST_CASE("ComponentManager can remove components",
     manager.registerComponent<Position>();
 
     Entity e{1};
-    manager.add(e, Position{10.0f, 20.0f});
+    manager.add<Position>(e, Position{10.0f, 20.0f});
 
     manager.remove<Position>(e);
 
@@ -70,7 +70,7 @@ TEST_CASE("ComponentManager can handle entity destruction",
     manager.registerComponent<Position>();
 
     Entity e{1};
-    manager.add(e, Position{10.0f, 20.0f});
+    manager.add<Position>(e, Position{10.0f, 20.0f});
 
     manager.entityDestroyed(e);
 

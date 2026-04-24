@@ -45,11 +45,13 @@ public:
     void present() override {}
 
     std::shared_ptr<Texture> createTexture(const std::string&) override
-    {
-        return std::make_shared<Texture>();
-    }
+    { return std::make_shared<Texture>(); }
 
-    void draw(const Texture&, const DrawParams&) override {}
+    void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
+    void drawRectOutline(const Rectangle&, const Renderer::Color&) override {}
+    void drawRectFilled(const Rectangle&, const Renderer::Color&) override {}
+    void drawCircleOutline(const Circle&, const Renderer::Color&) override {}
+    void drawCircleFilled(const Circle&, const Renderer::Color&) override {}
     void setViewport(const Viewport&) override {}
 };
 
@@ -89,7 +91,7 @@ TEST_CASE("Application default constructor initializes default values",
     "[unit][application]"
 ) {
     Application app;
-    // Test that we can access default values through builder pattern
+
     REQUIRE_NOTHROW(
         app.setWindowTitle("Macri Battle Stars")
            .setWindowSize(800, 600)
@@ -103,7 +105,6 @@ TEST_CASE("Application setWindowTitle updates internal title",
     app.setWindowTitle("Custom Title");
     app.setWindowTitle("Another Title");
     
-    // Verify multiple calls work (indirectly via builder)
     REQUIRE_NOTHROW(app.setWindowTitle("Final"));
 }
 
@@ -114,7 +115,6 @@ TEST_CASE("Application setWindowSize updates internal dimensions",
     app.setWindowSize(1280, 720);
     app.setWindowSize(1920, 1080);
     
-    // Verify multiple calls work
     REQUIRE_NOTHROW(app.setWindowSize(640, 480));
 }
 
@@ -122,22 +122,18 @@ TEST_CASE("Application is non-copyable",
     "[unit][application]"
 ) {
     Application app;
-    
-    // These should not compile if uncommented:
-    // Application copy(app);
-    // Application& ref = (app = app);
-    
-    REQUIRE(true); // Compile-time check
+
+    REQUIRE(true);
 }
 
 TEST_CASE("Application default window title is set correctly",
     "[unit][application]"
 ) {
     Application app;
-    // Through builder chaining, verify we can override default
+
     REQUIRE_NOTHROW(
         app.setWindowTitle("Macri Battle Stars")
-           .setWindowSize(800, 600)
+            .setWindowSize(800, 600)
     );
 }
 

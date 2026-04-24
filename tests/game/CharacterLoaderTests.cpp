@@ -153,11 +153,20 @@ public:
             return this->textureToReturn;
         }
 
-        void draw(const Texture& texture, const DrawParams& params) override
-        {
-            (void)texture;
-            (void)params;
-        }
+        void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
+        { (void)texture; (void)params; }
+
+        void drawRectOutline(const Rectangle& rect, const Renderer::Color& color) override
+        { (void)rect; (void)color; }
+
+        void drawRectFilled(const Rectangle& rect, const Renderer::Color& color) override
+        { (void)rect; (void)color; }
+
+        void drawCircleOutline(const Circle& circle, const Renderer::Color& color) override
+        { (void)circle; (void)color; }
+
+        void drawCircleFilled(const Circle& circle, const Renderer::Color& color) override
+        { (void)circle; (void)color; }
 
         void setViewport(const Viewport& viewport) override
         { (void)viewport; }

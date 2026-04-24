@@ -1,6 +1,8 @@
 #ifndef collider_def_h
 #define collider_def_h
 
+#include <memory>
+
 class ColliderDef
 {
 public:
