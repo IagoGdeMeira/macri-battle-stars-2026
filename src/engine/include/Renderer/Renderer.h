@@ -14,7 +14,7 @@ class Renderer
 public:
     struct Color { std::uint8_t r = 255, g = 255, b = 255, a = 255; };
 
-    struct DrawParams
+    struct DrawTextureParams
     {
         Rectangle dest;
         float rotation = 0.0f;
@@ -31,7 +31,11 @@ public:
     
     virtual std::shared_ptr<Texture> createTexture(const std::string& filePath) = 0;
 
-    virtual void draw(const Texture& texture, const DrawParams& params) = 0;
+    virtual void drawTexture(const Texture& texture, const DrawTextureParams& params) = 0;
+    virtual void drawRectOutline(const Rectangle& rect, const Color& color) = 0;
+    virtual void drawRectFilled(const Rectangle& rect, const Color& color) = 0;
+    virtual void drawCircleOutline(const Circle& circle, const Color& color) = 0;
+    virtual void drawCircleFilled(const Circle& circle, const Color& color) = 0;
 
     virtual void setViewport(const Viewport& viewport) = 0;
 };

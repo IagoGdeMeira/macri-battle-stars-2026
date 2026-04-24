@@ -23,8 +23,7 @@ struct MapData
     std::vector<BackgroundLayer> backgroundLayers;
     float floorY;
     std::string floorTexture;
-    float floorWidth;
-    float floorHeight;
+    float floorWidth, floorHeight;
     std::vector<Rectangle> walls;
     std::vector<SpawnPoint> spawnPoints;
     float gravity = 980.0f;

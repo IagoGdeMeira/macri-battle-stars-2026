@@ -26,50 +26,40 @@ public:
 private:
     struct DrawCommand
     {
-        Texture* texture;
+        Texture* texture = nullptr;
         Rectangle dest;
-        float rotation;
-        bool flipX, flipY;
-        int layer, zIndex;
-        size_t order;
+        float rotation = 0.0f;
+        bool flipX = false, flipY = false;
+        int layer = 0, zIndex = 0;
+        size_t order = 0;
         Rectangle source;
-        bool useSourceRect;
+        bool useSourceRect = false;
     };
+
+    struct SpriteTransform { int width = 0, height = 0; bool flipX = false, flipY = false; };
 
     Renderer& renderer;
     Camera2D& camera;
 
     int windowWidth = 800;
     int windowHeight = 600;
-
-    const int VIRTUAL_WIDTH = 800;
-    const int VIRTUAL_HEIGHT = 600;
+    static constexpr int VIRTUAL_WIDTH = 800;
+    static constexpr int VIRTUAL_HEIGHT = 600;
 
     Viewport worldViewport;
     Viewport uiViewport;
 
     void renderWorld(RenderContext& ctx);
+    void renderShapes(RenderContext& ctx);
     void renderUI(RenderContext& ctx);
 
-    void worldToScreen(
-        float worldX, float worldY,
-        float& screenX, float& screenY,
-        const Viewport& viewport,
-        float parallaxX = 1.0f, float parallaxY = 1.0f);
+    Position worldToScreen(Position worldPos, const Viewport& viewport, Position parallax = {1.0f, 1.0f}) const;
+    Position resolveParallax(World& world, Entity entity) const;
+    SpriteTransform computeSpriteTransform(int baseWidth, int baseHeight, float scaleX, float scaleY) const;
+    DrawCommand buildDrawCommand(Entity entity, World &world, size_t order) const;
 
-    void resolveParallaxFactors(
-        World& world, Entity entity,
-        float& parallaxX, float& parallaxY) const;
-
-    void resolveScaleAndFlip(
-        int spriteWidth, int spriteHeight,
-        float scaleX, float scaleY,
-        int& finalWidth, int& finalHeight,
-        bool& flipX, bool& flipY) const;
-
-    void sortDrawCommands(std::vector<DrawCommand>& commands) const;
-    void submitDrawCommands(const std::vector<DrawCommand>& commands) const;
-
+    void sortCommands(std::vector<DrawCommand> &commands) const;
+    void submitCommands(const std::vector<DrawCommand> &commands) const;
     void updateViewports();
 };
 

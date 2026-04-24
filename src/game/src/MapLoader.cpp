@@ -5,8 +5,8 @@
 MapData MapLoader::load(const std::string& path) const
 {
     auto root = this->parser.parse(path);
+    
     MapData map;
-
     map.name = root->getString("name");
     map.floorY = root->getFloat("floor.y");
     map.floorTexture = root->getString("floor.texture");
@@ -44,6 +44,6 @@ MapData MapLoader::load(const std::string& path) const
         sp.x = spNode->getFloat("x");
         map.spawnPoints.push_back(sp);
     }
-
+    
     return map;
 }

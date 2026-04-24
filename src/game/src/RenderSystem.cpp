@@ -1,27 +1,22 @@
 #include "../include/RenderSystem/RenderSystem.h"
-
 #include "../../domain/components/ParallaxComponent.h"
 #include "../../domain/components/RenderComponent.h"
+#include "../../domain/components/ShapeRenderComponent.h"
 #include "../../domain/components/SpriteComponent.h"
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/include/View/View.h"
-
 #include "../../engine/events/WindowResizedEvent.h"
-#include "../../engine/include/UpdateContext/UpdateContext.h"
-
 #include <algorithm>
 #include <cmath>
-#include <stdexcept>
 
-RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer, Camera2D& camera) :
-    renderer(renderer), camera(camera)
+RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer, Camera2D& camera)
+    : renderer(renderer), camera(camera)
 {
     this->updateViewports();
-
-    bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent& event)
+    bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent& e)
     {
-        this->windowWidth = event.width;
-        this->windowHeight = event.height;
+        this->windowWidth = e.width;
+        this->windowHeight = e.height;
         this->updateViewports();
     });
 }
@@ -30,7 +25,7 @@ void RenderSystem::draw(RenderContext& ctx)
 {
     this->renderer.setViewport(this->worldViewport);
     this->renderWorld(ctx);
-
+    this->renderShapes(ctx);
     this->renderer.setViewport(this->uiViewport);
     this->renderUI(ctx);
 }
@@ -41,107 +36,121 @@ void RenderSystem::renderWorld(RenderContext& ctx)
     commands.reserve(128);
 
     auto view = View<TransformComponent, SpriteComponent, RenderComponent>(ctx.world.components());
-    size_t orderCounter = 0;
-
+    size_t order = 0;
     for (auto [entity, transform, sprite, render] : view)
     {
         if (!sprite.texture) continue;
-
-        float parallaxX = 1.0f, parallaxY = 1.0f;
-        this->resolveParallaxFactors(ctx.world, entity, parallaxX, parallaxY);
-
-        float screenX, screenY;
-        this->worldToScreen(
-            transform.x, transform.y,
-            screenX, screenY,
-            this->worldViewport,
-            parallaxX, parallaxY);
-
-        int finalWidth = 0, finalHeight = 0;
-        bool flipX = false, flipY = false;
-        this->resolveScaleAndFlip(
-            sprite.width, sprite.height,
-            transform.scaleX, transform.scaleY,
-            finalWidth, finalHeight,
-            flipX, flipY);
-
-        DrawCommand command;
-        command.texture = sprite.texture.get();
-        command.dest.position.x = screenX;
-        command.dest.position.y = screenY;
-        command.dest.width = static_cast<float>(finalWidth);
-        command.dest.height = static_cast<float>(finalHeight);
-        command.rotation = transform.rotation;
-        command.flipX = flipX;
-        command.flipY = flipY;
-        command.layer = render.layer;
-        command.zIndex = render.zIndex;
-        command.order = orderCounter;
-        command.source.position.x = static_cast<float>(sprite.srcX);
-        command.source.position.y = static_cast<float>(sprite.srcY);
-        command.source.width = static_cast<float>(sprite.srcWidth);
-        command.source.height = static_cast<float>(sprite.srcHeight);
-        command.useSourceRect = sprite.useSourceRect;
-
-        commands.push_back(command);
-        orderCounter++;
+        commands.push_back(this->buildDrawCommand(entity, ctx.world, order++));
     }
 
-    this->sortDrawCommands(commands);
-    this->submitDrawCommands(commands);
+    this->sortCommands(commands);
+    this->submitCommands(commands);
 }
 
-void RenderSystem::renderUI(RenderContext& ctx)
+void RenderSystem::renderUI(RenderContext&) { /* TODO */ }
+
+void RenderSystem::renderShapes(RenderContext& ctx)
 {
-    (void)ctx;
-    // TODO: Implement UI rendering
-    // This function will handle rendering UI elements on top of the game world
-    // Something like: View<UISpriteComponent, UITransformComponent, RenderComponent>
-};
-
-void RenderSystem::worldToScreen(
-    float worldX, float worldY,
-    float& screenX, float& screenY,
-    const Viewport& viewport,
-    float parallaxX, float parallaxY
-) {
-    float camX = this->camera.getX();
-    float camY = this->camera.getY();
-    float zoom = this->camera.getZoom();
-
-    screenX = (worldX - camX * parallaxX) * zoom + (viewport.width * 0.5f);
-    screenY = (worldY - camY * parallaxY) * zoom + (viewport.height * 0.5f);
-}
-
-void RenderSystem::resolveParallaxFactors(
-    World& world, Entity entity,
-    float& parallaxX, float& parallaxY
-) const {
-    try
+    auto view = View<TransformComponent, ShapeRenderComponent>(ctx.world.components());
+    for (auto [entity, transform, shapeComp] : view)
     {
-        if (!world.components().has<ParallaxComponent>(entity)) return;
+        if (!shapeComp.shape) continue;
+        const Position screenPos = this->worldToScreen({transform.x, transform.y}, this->worldViewport);
+        const float zoom = this->camera.getZoom();
 
-        auto& parallax = world.components().get<ParallaxComponent>(entity);
-        parallaxX = parallax.factorX;
-        parallaxY = parallax.factorY;
-    } catch (const std::logic_error&) {}
+        if (auto* rect = dynamic_cast<RectangleDef*>(shapeComp.shape.get()))
+        {
+            Rectangle r;
+            r.position.x = screenPos.x - (rect->width  * std::abs(transform.scaleX) * zoom) * 0.5f;
+            r.position.y = screenPos.y - (rect->height * std::abs(transform.scaleY) * zoom) * 0.5f;
+            r.width  = rect->width  * std::abs(transform.scaleX) * zoom;
+            r.height = rect->height * std::abs(transform.scaleY) * zoom;
+            
+            if (shapeComp.filled) this->renderer.drawRectFilled(r, shapeComp.color);
+            else this->renderer.drawRectOutline(r, shapeComp.color);
+        }
+        else if (auto* circ = dynamic_cast<CircleDef*>(shapeComp.shape.get()))
+        {
+            Circle c;
+            c.position = screenPos;
+            c.radius = circ->radius * std::max(std::abs(transform.scaleX), std::abs(transform.scaleY)) * zoom;
+            
+            if (shapeComp.filled) this->renderer.drawCircleFilled(c, shapeComp.color);
+            else this->renderer.drawCircleOutline(c, shapeComp.color);
+        }
+    }
 }
 
-void RenderSystem::resolveScaleAndFlip(
-    int spriteWidth, int spriteHeight,
-    float scaleX, float scaleY,
-    int& finalWidth, int& finalHeight,
-    bool& flipX, bool& flipY
+RenderSystem::DrawCommand RenderSystem::buildDrawCommand(Entity entity, World& world, size_t order) const
+{
+    auto& comp = world.components();
+    const auto& sprite = comp.get<SpriteComponent>(entity);
+    const auto& transform = comp.get<TransformComponent>(entity);
+    const auto& render = comp.get<RenderComponent>(entity);
+
+    const Position parallax = this->resolveParallax(world, entity);
+    const Position screenPos = this->worldToScreen({transform.x, transform.y}, this->worldViewport, parallax);
+    const SpriteTransform st = this->computeSpriteTransform(
+        sprite.width, sprite.height, transform.scaleX, transform.scaleY);
+
+    DrawCommand cmd;
+    cmd.texture = sprite.texture.get();
+    cmd.dest.position = screenPos;
+    cmd.dest.width  = static_cast<float>(st.width);
+    cmd.dest.height = static_cast<float>(st.height);
+    cmd.rotation = transform.rotation;
+    cmd.flipX = st.flipX;
+    cmd.flipY = st.flipY;
+    cmd.layer = render.layer;
+    cmd.zIndex = render.zIndex;
+    cmd.order = order;
+    cmd.source.position.x = static_cast<float>(sprite.srcX);
+    cmd.source.position.y = static_cast<float>(sprite.srcY);
+    cmd.source.width = static_cast<float>(sprite.srcWidth);
+    cmd.source.height = static_cast<float>(sprite.srcHeight);
+    cmd.useSourceRect = sprite.useSourceRect;
+    return cmd;
+}
+
+Position RenderSystem::worldToScreen(Position worldPos, const Viewport& viewport, Position parallax) const
+{
+    const float camX = camera.getX();
+    const float camY = camera.getY();
+    const float zoom = camera.getZoom();
+    
+    return
+    {
+        (worldPos.x - camX * parallax.x) * zoom + viewport.width  * 0.5f,
+        (worldPos.y - camY * parallax.y) * zoom + viewport.height * 0.5f
+    };
+}
+
+Position RenderSystem::resolveParallax(World& world, Entity entity) const
+{
+    Position p{1.0f, 1.0f};
+    if (world.components().has<ParallaxComponent>(entity))
+    {
+        auto& par = world.components().get<ParallaxComponent>(entity);
+        p.x = par.factorX;
+        p.y = par.factorY;
+    }
+    return p;
+}
+
+RenderSystem::SpriteTransform RenderSystem::computeSpriteTransform(
+    int baseWidth, int baseHeight, float scaleX, float scaleY
 ) const {
-    flipX = scaleX < 0.0f;
-    flipY = scaleY < 0.0f;
+    SpriteTransform st;
+    st.flipX = scaleX < 0.0f;
+    st.flipY = scaleY < 0.0f;
 
     const float zoom = this->camera.getZoom();
-    finalWidth = static_cast<int>(spriteWidth * std::abs(scaleX) * zoom);
-    finalHeight = static_cast<int>(spriteHeight * std::abs(scaleY) * zoom);
+    st.width  = static_cast<int>(baseWidth  * std::abs(scaleX) * zoom);
+    st.height = static_cast<int>(baseHeight * std::abs(scaleY) * zoom);
+    return st;
 }
 
-void RenderSystem::sortDrawCommands(std::vector<DrawCommand>& commands) const
+void RenderSystem::sortCommands(std::vector<DrawCommand>& commands) const
 {
     std::stable_sort(commands.begin(), commands.end(),
         [](const DrawCommand& a, const DrawCommand& b)
@@ -152,12 +161,11 @@ void RenderSystem::sortDrawCommands(std::vector<DrawCommand>& commands) const
         });
 }
 
-void RenderSystem::submitDrawCommands(const std::vector<DrawCommand>& commands) const
+void RenderSystem::submitCommands(const std::vector<DrawCommand>& commands) const
 {
     for (const auto& cmd : commands)
     {
-        Renderer::DrawParams params;
-
+        Renderer::DrawTextureParams params;
         params.dest = cmd.dest;
         params.rotation = cmd.rotation;
         params.pivotX = 0.5f;
@@ -166,24 +174,22 @@ void RenderSystem::submitDrawCommands(const std::vector<DrawCommand>& commands) 
         params.flipY = cmd.flipY;
         params.source = cmd.source;
         params.useSourceRect = cmd.useSourceRect;
-
-        this->renderer.draw(*cmd.texture, params);
+        this->renderer.drawTexture(*cmd.texture, params);
     }
 }
 
 void RenderSystem::updateViewports()
 {
-    float scaleX = (float)this->windowWidth / this->VIRTUAL_WIDTH;
-    float scaleY = (float)this->windowHeight / this->VIRTUAL_HEIGHT;
+    const float scaleX = static_cast<float>(this->windowWidth) / RenderSystem::VIRTUAL_WIDTH;
+    const float scaleY = static_cast<float>(this->windowHeight) / RenderSystem::VIRTUAL_HEIGHT;
+    const float scale = std::min(scaleX, scaleY);
 
-    float scale = (scaleX < scaleY) ? scaleX : scaleY;
+    const int viewW = static_cast<int>(RenderSystem::VIRTUAL_WIDTH  * scale);
+    const int viewH = static_cast<int>(RenderSystem::VIRTUAL_HEIGHT * scale);
 
-    int viewWidth = (int)(this->VIRTUAL_WIDTH * scale);
-    int viewHeight = (int)(this->VIRTUAL_HEIGHT * scale);
+    const int offsetX = (this->windowWidth  - viewW) / 2;
+    const int offsetY = (this->windowHeight - viewH) / 2;
 
-    int offsetX = (this->windowWidth - viewWidth) / 2;
-    int offsetY = (this->windowHeight - viewHeight) / 2;
-
-    this->worldViewport = { offsetX, offsetY, viewWidth, viewHeight };
-    this->uiViewport = { 0, 0, this->windowWidth, this->windowHeight };
+    this->worldViewport = { offsetX, offsetY, viewW, viewH };
+    this->uiViewport    = { 0, 0, this->windowWidth, this->windowHeight };
 }

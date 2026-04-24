@@ -24,7 +24,7 @@ std::shared_ptr<Texture> SDLRenderer::createTexture(const std::string& path)
     return std::make_shared<SDLTexture>(tex);
 }
 
-void SDLRenderer::draw(const Texture& texture, const DrawParams& params)
+void SDLRenderer::drawTexture(const Texture& texture, const DrawTextureParams& params)
 {
     auto& sdlTex = static_cast<const SDLTexture&>(texture);
 
@@ -68,6 +68,72 @@ void SDLRenderer::draw(const Texture& texture, const DrawParams& params)
         params.rotation,
         &pivot,
         flip);
+}
+
+void SDLRenderer::drawRectOutline(const Rectangle& rect, const Color& color)
+{
+    SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
+    SDL_Rect sdlRect =
+    {
+        static_cast<int>(std::lround(rect.position.x)),
+        static_cast<int>(std::lround(rect.position.y)),
+        static_cast<int>(std::lround(rect.width)),
+        static_cast<int>(std::lround(rect.height))
+    };
+    SDL_RenderDrawRect(this->renderer, &sdlRect);
+}
+
+void SDLRenderer::drawRectFilled(const Rectangle& rect, const Color& color)
+{
+    SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
+    SDL_Rect sdlRect =
+    {
+        static_cast<int>(std::lround(rect.position.x)),
+        static_cast<int>(std::lround(rect.position.y)),
+        static_cast<int>(std::lround(rect.width)),
+        static_cast<int>(std::lround(rect.height))
+    };
+    SDL_RenderFillRect(this->renderer, &sdlRect);
+}
+
+void SDLRenderer::drawCircleOutline(const Circle& circle, const Color& color)
+{
+    SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
+    int cx = static_cast<int>(std::lround(circle.position.x));
+    int cy = static_cast<int>(std::lround(circle.position.y));
+    int r = static_cast<int>(std::lround(circle.radius));
+
+    int x = 0, y = r;
+    int d = 1 - r;
+    while (x <= y)
+    {
+        SDL_RenderDrawPoint(this->renderer, cx + x, cy + y);
+        SDL_RenderDrawPoint(this->renderer, cx + y, cy + x);
+        SDL_RenderDrawPoint(this->renderer, cx - x, cy + y);
+        SDL_RenderDrawPoint(this->renderer, cx - y, cy + x);
+        SDL_RenderDrawPoint(this->renderer, cx + x, cy - y);
+        SDL_RenderDrawPoint(this->renderer, cx + y, cy - x);
+        SDL_RenderDrawPoint(this->renderer, cx - x, cy - y);
+        SDL_RenderDrawPoint(this->renderer, cx - y, cy - x);
+
+        if (d < 0) d += 2 * x + 3;
+        else { d += 2 * (x - y) + 5; y--; }
+        x++;
+    }
+}
+
+void SDLRenderer::drawCircleFilled(const Circle& circle, const Color& color)
+{
+    SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
+    int cx = static_cast<int>(std::lround(circle.position.x));
+    int cy = static_cast<int>(std::lround(circle.position.y));
+    int r = static_cast<int>(std::lround(circle.radius));
+
+    for (int dy = -r; dy <= r; dy++)
+    {
+        int dx = static_cast<int>(std::sqrt(r * r - dy * dy));
+        SDL_RenderDrawLine(this->renderer, cx - dx, cy + dy, cx + dx, cy + dy);
+    }
 }
 
 void SDLRenderer::setViewport(const Viewport& viewport)
