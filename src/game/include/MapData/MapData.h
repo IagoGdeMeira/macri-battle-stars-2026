@@ -1,11 +1,11 @@
 #ifndef map_data_h
 #define map_data_h
 
+#include "../../../engine/include/GeometryUtils/GeometryUtils.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
-
-struct Rectangle { float x, y, width, height; };
 
 struct BackgroundLayer
 {

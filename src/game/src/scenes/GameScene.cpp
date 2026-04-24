@@ -98,7 +98,11 @@ void GameScene::init()
     {
         Entity w = entities.create();
 
-        auto wallTransform = TransformComponent { wall.x + wall.width * 0.5f, wall.y + wall.height * 0.5f };
+        auto wallTransform = TransformComponent
+        {
+            wall.position.x + wall.width * 0.5f,
+            wall.position.y + wall.height * 0.5f
+        };
         components.add<TransformComponent>(w, wallTransform);
 
         components.add<RectangleColliderComponent>(w, RectangleColliderComponent{wall.width, wall.height});

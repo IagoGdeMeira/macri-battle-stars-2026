@@ -2,6 +2,7 @@
 
 #include "../include/SDLTexture/SDLTexture.h"
 
+#include <cmath>
 #include <SDL_image.h>
 #include <stdexcept>
 
@@ -27,20 +28,32 @@ void SDLRenderer::draw(const Texture& texture, const DrawParams& params)
 {
     auto& sdlTex = static_cast<const SDLTexture&>(texture);
 
-    SDL_Rect dst = { params.x, params.y, params.width, params.height };
+    SDL_Rect dst =
+    {
+        static_cast<int>(std::lround(params.dest.position.x)),
+        static_cast<int>(std::lround(params.dest.position.y)),
+        static_cast<int>(std::lround(params.dest.width)),
+        static_cast<int>(std::lround(params.dest.height))
+    };
     
     SDL_Rect* srcPtr = nullptr;
     SDL_Rect src;
     if (params.useSourceRect)
     {
-        src = { params.srcX, params.srcY, params.srcWidth, params.srcHeight };
+        src =
+        {
+            static_cast<int>(std::lround(params.source.position.x)),
+            static_cast<int>(std::lround(params.source.position.y)),
+            static_cast<int>(std::lround(params.source.width)),
+            static_cast<int>(std::lround(params.source.height))
+        };
         srcPtr = &src;
     }
 
     SDL_Point pivot =
     {
-        static_cast<int>(params.pivotX * params.width),
-        static_cast<int>(params.pivotY * params.height)
+        static_cast<int>(params.pivotX * params.dest.width),
+        static_cast<int>(params.pivotY * params.dest.height)
     };
 
     SDL_RendererFlip flip = SDL_FLIP_NONE;

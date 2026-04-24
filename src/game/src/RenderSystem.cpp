@@ -40,8 +40,7 @@ void RenderSystem::renderWorld(RenderContext& ctx)
     std::vector<DrawCommand> commands;
     commands.reserve(128);
 
-    auto view = View<TransformComponent, SpriteComponent, RenderComponent>(
-        ctx.world.components());
+    auto view = View<TransformComponent, SpriteComponent, RenderComponent>(ctx.world.components());
     size_t orderCounter = 0;
 
     for (auto [entity, transform, sprite, render] : view)
@@ -66,17 +65,25 @@ void RenderSystem::renderWorld(RenderContext& ctx)
             finalWidth, finalHeight,
             flipX, flipY);
 
-        commands.push_back(DrawCommand{
-            sprite.texture.get(),
-            static_cast<int>(screenX), static_cast<int>(screenY),
-            finalWidth, finalHeight,
-            transform.rotation,
-            flipX, flipY,
-            render.layer, render.zIndex,
-            orderCounter,
-            sprite.srcX, sprite.srcY, sprite.srcWidth, sprite.srcHeight,
-            sprite.useSourceRect
-        });
+        DrawCommand command;
+        command.texture = sprite.texture.get();
+        command.dest.position.x = screenX;
+        command.dest.position.y = screenY;
+        command.dest.width = static_cast<float>(finalWidth);
+        command.dest.height = static_cast<float>(finalHeight);
+        command.rotation = transform.rotation;
+        command.flipX = flipX;
+        command.flipY = flipY;
+        command.layer = render.layer;
+        command.zIndex = render.zIndex;
+        command.order = orderCounter;
+        command.source.position.x = static_cast<float>(sprite.srcX);
+        command.source.position.y = static_cast<float>(sprite.srcY);
+        command.source.width = static_cast<float>(sprite.srcWidth);
+        command.source.height = static_cast<float>(sprite.srcHeight);
+        command.useSourceRect = sprite.useSourceRect;
+
+        commands.push_back(command);
         orderCounter++;
     }
 
@@ -151,19 +158,13 @@ void RenderSystem::submitDrawCommands(const std::vector<DrawCommand>& commands) 
     {
         Renderer::DrawParams params;
 
-        params.x = cmd.x;
-        params.y = cmd.y;
-        params.width = cmd.width;
-        params.height = cmd.height;
+        params.dest = cmd.dest;
         params.rotation = cmd.rotation;
         params.pivotX = 0.5f;
         params.pivotY = 0.5f;
         params.flipX = cmd.flipX;
         params.flipY = cmd.flipY;
-        params.srcX = cmd.srcX;
-        params.srcY = cmd.srcY;
-        params.srcWidth = cmd.srcWidth;
-        params.srcHeight = cmd.srcHeight;
+        params.source = cmd.source;
         params.useSourceRect = cmd.useSourceRect;
 
         this->renderer.draw(*cmd.texture, params);
@@ -183,6 +184,6 @@ void RenderSystem::updateViewports()
     int offsetX = (this->windowWidth - viewWidth) / 2;
     int offsetY = (this->windowHeight - viewHeight) / 2;
 
-    this->worldViewport = { offsetX, offsetY, viewWidth, viewHeight};
-    this->uiViewport = { 0, 0, this->windowWidth, this->windowHeight};
+    this->worldViewport = { offsetX, offsetY, viewWidth, viewHeight };
+    this->uiViewport = { 0, 0, this->windowWidth, this->windowHeight };
 }

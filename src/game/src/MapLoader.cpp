@@ -30,8 +30,8 @@ MapData MapLoader::load(const std::string& path) const
     for (auto& wallNode : root->getArray("walls"))
     {
         Rectangle wall;
-        wall.x = wallNode->getFloat("x");
-        wall.y = wallNode->getFloat("y");
+        wall.position.x = wallNode->getFloat("x");
+        wall.position.y = wallNode->getFloat("y");
         wall.width = wallNode->getFloat("width");
         wall.height = wallNode->getFloat("height");
         map.walls.push_back(wall);

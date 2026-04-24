@@ -66,17 +66,17 @@ protected:
         {
             (void)texture;
             this->drawCalls++;
-            this->lastDrawX = params.x;
-            this->lastDrawY = params.y;
-            this->lastDrawWidth = params.width;
-            this->lastDrawHeight = params.height;
+            this->lastDrawX = static_cast<int>(params.dest.position.x);
+            this->lastDrawY = static_cast<int>(params.dest.position.y);
+            this->lastDrawWidth = static_cast<int>(params.dest.width);
+            this->lastDrawHeight = static_cast<int>(params.dest.height);
             this->lastDrawRotation = params.rotation;
             this->lastDrawFlipX = params.flipX;
             this->lastDrawFlipY = params.flipY;
-            this->lastSrcX = params.srcX;
-            this->lastSrcY = params.srcY;
-            this->lastSrcWidth = params.srcWidth;
-            this->lastSrcHeight = params.srcHeight;
+            this->lastSrcX = static_cast<int>(params.source.position.x);
+            this->lastSrcY = static_cast<int>(params.source.position.y);
+            this->lastSrcWidth = static_cast<int>(params.source.width);
+            this->lastSrcHeight = static_cast<int>(params.source.height);
             this->lastUseSourceRect = params.useSourceRect;
         }
 

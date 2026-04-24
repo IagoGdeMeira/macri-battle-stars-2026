@@ -6,6 +6,7 @@
 #include "../../engine/include/EventBus/EventBus.h"
 #include "../../engine/include/RenderContext/RenderContext.h"
 #include "../../engine/include/Renderer/Renderer.h"
+#include "../../engine/include/GeometryUtils/GeometryUtils.h"
 #include "../../engine/include/System/System.h"
 #include "../../engine/include/Viewport/Viewport.h"
 
@@ -26,12 +27,12 @@ private:
     struct DrawCommand
     {
         Texture* texture;
-        int x, y, width, height;
+        Rectangle dest;
         float rotation;
         bool flipX, flipY;
         int layer, zIndex;
         size_t order;
-        int srcX, srcY, srcWidth, srcHeight;
+        Rectangle source;
         bool useSourceRect;
     };
 

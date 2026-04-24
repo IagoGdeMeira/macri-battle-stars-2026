@@ -1,22 +1,26 @@
 #ifndef renderer_h
 #define renderer_h
 
+#include "../GeometryUtils/GeometryUtils.h"
 #include "../Texture/Texture.h"
 #include "../Viewport/Viewport.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 class Renderer
 {
 public:
+    struct Color { std::uint8_t r = 255, g = 255, b = 255, a = 255; };
+
     struct DrawParams
     {
-        int x = 0, y = 0, width = 0, height = 0;
+        Rectangle dest;
         float rotation = 0.0f;
         float pivotX = 0.5f, pivotY = 0.5f;
         bool flipX = false, flipY = false;
-        int srcX = 0, srcY = 0, srcWidth = 0, srcHeight = 0;
+        Rectangle source;
         bool useSourceRect = false;
     };
 
