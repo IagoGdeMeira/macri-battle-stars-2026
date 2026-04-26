@@ -15,13 +15,16 @@ add_executable(game_tests
     CharacterLoaderTests.cpp
     CollisionClipLoaderTests.cpp
     CollisionDetectionSystemTests.cpp
+    CollisionHandlerFactoryTests.cpp
     ComboLoaderTests.cpp
     ComboSystemTests.cpp
     ComboTests.cpp
     ConditionFactoryTests.cpp
+    DynamicPushboxResolutionSystemTests.cpp
     FrictionSystemTests.cpp
     GameSceneTests.cpp
     GravitySystemTests.cpp
+    GroundDetectionSystemTests.cpp
     LocalToWorldSystemTests.cpp
     RenderSystemTests.cpp
     StateMachineLoaderTests.cpp
@@ -31,6 +34,7 @@ add_executable(game_tests
     TriggerBindingLoaderTests.cpp
     TriggerGenerationSystemTests.cpp
     TriggerMapperTests.cpp
+    StaticPushboxResolutionSystemTests.cpp
 )
 
 target_link_libraries(game_tests

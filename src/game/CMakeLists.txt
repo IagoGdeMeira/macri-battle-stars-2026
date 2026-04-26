@@ -17,13 +17,16 @@ target_sources(game
         src/CharacterRosterLoader.cpp
         src/CollisionClipLoader.cpp
         src/CollisionDetectionSystem.cpp
+        src/CollisionHandlerFactory.cpp
         src/ComboLoader.cpp
         src/ComboSystem.cpp
         src/ComponentRegistry.cpp
         src/ConditionFactory.cpp
         src/DamageSystem.cpp
+        src/DynamicPushboxResolutionSystem.cpp
         src/FrictionSystem.cpp
         src/GravitySystem.cpp
+        src/GroundDetectionSystem.cpp
         src/LocalToWorldSystem.cpp
         src/MapLoader.cpp
         src/MapRoster.cpp
@@ -33,6 +36,7 @@ target_sources(game
         src/StateIdMapper.cpp
         src/StateMapper.cpp
         src/StateSystem.cpp
+        src/StaticPushboxResolutionSystem.cpp
         src/TriggerBindingLoader.cpp
         src/TriggerGenerationSystem.cpp
         src/TriggerMapper.cpp
