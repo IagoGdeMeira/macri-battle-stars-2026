@@ -15,6 +15,7 @@
 #include "../../domain/components/ParentComponent.h"
 #include "../../domain/components/ParallaxComponent.h"
 #include "../../domain/components/PlayerComponent.h"
+#include "../../domain/components/PushboxComponent.h"
 #include "../../domain/components/RectangleColliderComponent.h"
 #include "../../domain/components/RenderComponent.h"
 #include "../../domain/components/SpriteComponent.h"
@@ -51,4 +52,5 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<HitboxComponent>();
     components.registerComponent<HurtboxComponent>();
     components.registerComponent<HealthComponent>();
+    components.registerComponent<PushboxComponent>();
 }

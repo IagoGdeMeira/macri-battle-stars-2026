@@ -2,12 +2,8 @@
 
 #include "../include/UpdateContext/UpdateContext.h"
 
-InputBufferSystem::InputBufferSystem(EventBus& bus, InputContext& context)
-    : context(context)
-{
-    bus.subscribe<KeyEvent>([this](const KeyEvent& e)
-    { if (e.pressed) events.push_back(e); });
-}
+InputBufferSystem::InputBufferSystem(EventBus& bus, InputContext& context) : context(context)
+{ bus.subscribe<KeyEvent>([this](const KeyEvent& e) { if (e.pressed) this->events.push_back(e); }); }
 
 void InputBufferSystem::update(UpdateContext& ctx)
 {
@@ -17,13 +13,13 @@ void InputBufferSystem::update(UpdateContext& ctx)
     {
         for (auto& entry : buffer.buffer) entry.time += ctx.deltaTime;
 
-        while (!buffer.buffer.empty() && buffer.buffer.front().time > maxBufferTime)
+        while (!buffer.buffer.empty() && buffer.buffer.front().time > this->maxBufferTime)
         { buffer.buffer.pop_front(); }
     }
 
-    for (const auto& e : events)
+    for (const auto& e : this->events)
     {
-        auto& binding = context.bindings[e.player];
+        auto& binding = this->context.bindings[e.player];
 
         auto it = binding.keyMap.find(e.key);
         if (it == binding.keyMap.end()) continue;
@@ -37,5 +33,5 @@ void InputBufferSystem::update(UpdateContext& ctx)
         }
     }
 
-    events.clear();
+    this->events.clear();
 }

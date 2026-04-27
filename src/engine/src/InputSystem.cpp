@@ -4,12 +4,8 @@
 
 #include "../../domain/include/View/View.h"
 
-InputSystem::InputSystem(EventBus& bus, InputContext& inputContext) :
-    context(inputContext)
-{
-    bus.subscribe<KeyEvent>([this](const KeyEvent& event)
-    { this->events.push_back(event); });
-}
+InputSystem::InputSystem(EventBus& bus, InputContext& inputContext) : context(inputContext)
+{ bus.subscribe<KeyEvent>([this](const KeyEvent& event) { this->events.push_back(event); }); }
 
 void InputSystem::update(UpdateContext& ctx)
 {

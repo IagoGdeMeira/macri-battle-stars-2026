@@ -15,6 +15,7 @@
 #include "../../src/domain/components/ParentComponent.h"
 #include "../../src/domain/components/ParallaxComponent.h"
 #include "../../src/domain/components/PlayerComponent.h"
+#include "../../src/domain/components/PushboxComponent.h"
 #include "../../src/domain/components/RectangleColliderComponent.h"
 #include "../../src/domain/components/RenderComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
@@ -58,6 +59,7 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(components.storage<HurtboxComponent>() != nullptr);
     REQUIRE(components.storage<HealthComponent>() != nullptr);
     REQUIRE(components.storage<StateMappingComponent>() != nullptr);
+    REQUIRE(components.storage<PushboxComponent>() != nullptr);
 }
 
 TEST_CASE("ComponentRegistry can be invoked more than once safely",
