@@ -23,7 +23,7 @@
 #include "../../game/scenes/GameScene/GameScene.h"
 
 #include "../../platform/include/JsonParser/JsonParser.h"
-#include "../../platform/include/SDLInputAdapter/SDLInputAdapter.h"
+#include "../../platform/include/SDLKeyboardAdapter/SDLKeyboardAdapter.h"
 #include "../../platform/include/SDLRenderer/SDLRenderer.h"
 #include "../../platform/include/SDLSystemInitializer/SDLSystemInitializer.h"
 #include "../../platform/include/SDLWindow/SDLWindow.h"
@@ -130,7 +130,7 @@ void Application::setupInitialScene()
     this->sceneFactory->engine = this->engine.get();
     this->engine->setRenderer(*this->renderer);
 
-    this->inputAdapter = std::make_unique<SDLInputAdapter>(this->engine->events());
+    this->inputAdapter = std::make_unique<SDLKeyboardAdapter>(this->engine->events(), *this->inputContext);
     this->engine->setInputAdapter(*this->inputAdapter);
 
     std::vector<GameScene::PlayerSlot> slots;

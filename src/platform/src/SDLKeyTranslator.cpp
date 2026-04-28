@@ -2,6 +2,30 @@
 
 #include <SDL.h>
 
+GamepadButton SDLKeyTranslator::toGamepadButton(int sdlButton)
+{
+    switch (sdlButton)
+    {
+        case SDL_CONTROLLER_BUTTON_A:               return GamepadButton::A;
+        case SDL_CONTROLLER_BUTTON_B:               return GamepadButton::B;
+        case SDL_CONTROLLER_BUTTON_X:               return GamepadButton::X;
+        case SDL_CONTROLLER_BUTTON_Y:               return GamepadButton::Y;
+        case SDL_CONTROLLER_BUTTON_BACK:            return GamepadButton::Back;
+        case SDL_CONTROLLER_BUTTON_GUIDE:           return GamepadButton::Guide;
+        case SDL_CONTROLLER_BUTTON_START:           return GamepadButton::Start;
+        case SDL_CONTROLLER_BUTTON_LEFTSTICK:       return GamepadButton::LeftStick;
+        case SDL_CONTROLLER_BUTTON_RIGHTSTICK:      return GamepadButton::RightStick;
+        case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:    return GamepadButton::LeftShoulder;
+        case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:   return GamepadButton::RightShoulder;
+        case SDL_CONTROLLER_BUTTON_DPAD_UP:         return GamepadButton::DpadUp;
+        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:       return GamepadButton::DpadDown;
+        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:       return GamepadButton::DpadLeft;
+        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:      return GamepadButton::DpadRight;
+        
+        default: return GamepadButton::Unknown;
+    }
+}
+
 KeyCode SDLKeyTranslator::toKeyCode(int sdlKey)
 {
     switch (sdlKey)
@@ -109,5 +133,19 @@ KeyCode SDLKeyTranslator::toKeyCode(int sdlKey)
         case SDLK_PAUSE:        return KeyCode::Pause;
         
         default: return KeyCode::Unknown;
+    }
+}
+
+MouseButton SDLKeyTranslator::toMouseButton(int sdlButton)
+{
+    switch (sdlButton)
+    {
+        case SDL_BUTTON_LEFT:   return MouseButton::Left;
+        case SDL_BUTTON_RIGHT:  return MouseButton::Right;
+        case SDL_BUTTON_MIDDLE: return MouseButton::Middle;
+        case SDL_BUTTON_X1:     return MouseButton::X1;
+        case SDL_BUTTON_X2:     return MouseButton::X2;
+        
+        default: return MouseButton::Unknown;
     }
 }
