@@ -8,9 +8,14 @@
 class SDLKeyTranslator
 {
 public:
-    static GamepadButton toGamepadButton(int sdlButton);
-    static KeyCode toKeyCode(int sdlKey);
+    static KeyCode toKeyCode(int key);
+    static int fromKeyCode(KeyCode key);
+
     static MouseButton toMouseButton(int sdlButton);
+    static int fromMouseButton(MouseButton button);
+
+    static GamepadButton toGamepadButton(int sdlButton);
+    static int fromGamepadButton(GamepadButton button);
 };
 
 #endif // sdl_key_translator

@@ -2,70 +2,16 @@
 
 #include <SDL.h>
 
-GamepadButton SDLKeyTranslator::toGamepadButton(int sdlButton)
-{
-    switch (sdlButton)
-    {
-        case SDL_CONTROLLER_BUTTON_A:               return GamepadButton::A;
-        case SDL_CONTROLLER_BUTTON_B:               return GamepadButton::B;
-        case SDL_CONTROLLER_BUTTON_X:               return GamepadButton::X;
-        case SDL_CONTROLLER_BUTTON_Y:               return GamepadButton::Y;
-        case SDL_CONTROLLER_BUTTON_BACK:            return GamepadButton::Back;
-        case SDL_CONTROLLER_BUTTON_GUIDE:           return GamepadButton::Guide;
-        case SDL_CONTROLLER_BUTTON_START:           return GamepadButton::Start;
-        case SDL_CONTROLLER_BUTTON_LEFTSTICK:       return GamepadButton::LeftStick;
-        case SDL_CONTROLLER_BUTTON_RIGHTSTICK:      return GamepadButton::RightStick;
-        case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:    return GamepadButton::LeftShoulder;
-        case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:   return GamepadButton::RightShoulder;
-        case SDL_CONTROLLER_BUTTON_DPAD_UP:         return GamepadButton::DpadUp;
-        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:       return GamepadButton::DpadDown;
-        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:       return GamepadButton::DpadLeft;
-        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:      return GamepadButton::DpadRight;
-        
-        default: return GamepadButton::Unknown;
-    }
-}
-
 KeyCode SDLKeyTranslator::toKeyCode(int sdlKey)
 {
+    if (sdlKey >= SDLK_a && sdlKey <= SDLK_z)
+    { return static_cast<KeyCode>(static_cast<int>(KeyCode::A) + (sdlKey - SDLK_a)); }
+
+    if (sdlKey >= SDLK_0 && sdlKey <= SDLK_9)
+    { return static_cast<KeyCode>(static_cast<int>(KeyCode::Num0) + (sdlKey - SDLK_0)); }
+
     switch (sdlKey)
     {
-        case SDLK_a:            return KeyCode::A;
-        case SDLK_b:            return KeyCode::B;
-        case SDLK_c:            return KeyCode::C;
-        case SDLK_d:            return KeyCode::D;
-        case SDLK_e:            return KeyCode::E;
-        case SDLK_f:            return KeyCode::F;
-        case SDLK_g:            return KeyCode::G;
-        case SDLK_h:            return KeyCode::H;
-        case SDLK_i:            return KeyCode::I;
-        case SDLK_j:            return KeyCode::J;
-        case SDLK_k:            return KeyCode::K;
-        case SDLK_l:            return KeyCode::L;
-        case SDLK_m:            return KeyCode::M;
-        case SDLK_n:            return KeyCode::N;
-        case SDLK_o:            return KeyCode::O;
-        case SDLK_p:            return KeyCode::P;
-        case SDLK_q:            return KeyCode::Q;
-        case SDLK_r:            return KeyCode::R;
-        case SDLK_s:            return KeyCode::S;
-        case SDLK_t:            return KeyCode::T;
-        case SDLK_u:            return KeyCode::U;
-        case SDLK_v:            return KeyCode::V;
-        case SDLK_w:            return KeyCode::W;
-        case SDLK_x:            return KeyCode::X;
-        case SDLK_y:            return KeyCode::Y;
-        case SDLK_z:            return KeyCode::Z;
-        case SDLK_0:            return KeyCode::Num0;
-        case SDLK_1:            return KeyCode::Num1;
-        case SDLK_2:            return KeyCode::Num2;
-        case SDLK_3:            return KeyCode::Num3;
-        case SDLK_4:            return KeyCode::Num4;
-        case SDLK_5:            return KeyCode::Num5;
-        case SDLK_6:            return KeyCode::Num6;
-        case SDLK_7:            return KeyCode::Num7;
-        case SDLK_8:            return KeyCode::Num8;
-        case SDLK_9:            return KeyCode::Num9;
         case SDLK_ESCAPE:       return KeyCode::Escape;
         case SDLK_LCTRL:        return KeyCode::LControl;
         case SDLK_LSHIFT:       return KeyCode::LShift;
@@ -136,6 +82,116 @@ KeyCode SDLKeyTranslator::toKeyCode(int sdlKey)
     }
 }
 
+SDL_Keycode SDLKeyTranslator::fromKeyCode(KeyCode key)
+{
+    switch (key)
+    {
+        case KeyCode::A:            return SDLK_a;
+        case KeyCode::B:            return SDLK_b;
+        case KeyCode::C:            return SDLK_c;
+        case KeyCode::D:            return SDLK_d;
+        case KeyCode::E:            return SDLK_e;
+        case KeyCode::F:            return SDLK_f;
+        case KeyCode::G:            return SDLK_g;
+        case KeyCode::H:            return SDLK_h;
+        case KeyCode::I:            return SDLK_i;
+        case KeyCode::J:            return SDLK_j;
+        case KeyCode::K:            return SDLK_k;
+        case KeyCode::L:            return SDLK_l;
+        case KeyCode::M:            return SDLK_m;
+        case KeyCode::N:            return SDLK_n;
+        case KeyCode::O:            return SDLK_o;
+        case KeyCode::P:            return SDLK_p;
+        case KeyCode::Q:            return SDLK_q;
+        case KeyCode::R:            return SDLK_r;
+        case KeyCode::S:            return SDLK_s;
+        case KeyCode::T:            return SDLK_t;
+        case KeyCode::U:            return SDLK_u;
+        case KeyCode::V:            return SDLK_v;
+        case KeyCode::W:            return SDLK_w;
+        case KeyCode::X:            return SDLK_x;
+        case KeyCode::Y:            return SDLK_y;
+        case KeyCode::Z:            return SDLK_z;
+        case KeyCode::Num0:         return SDLK_0;
+        case KeyCode::Num1:         return SDLK_1;
+        case KeyCode::Num2:         return SDLK_2;
+        case KeyCode::Num3:         return SDLK_3;
+        case KeyCode::Num4:         return SDLK_4;
+        case KeyCode::Num5:         return SDLK_5;
+        case KeyCode::Num6:         return SDLK_6;
+        case KeyCode::Num7:         return SDLK_7;
+        case KeyCode::Num8:         return SDLK_8;
+        case KeyCode::Num9:         return SDLK_9;
+        case KeyCode::Escape:       return SDLK_ESCAPE;
+        case KeyCode::LControl:     return SDLK_LCTRL;
+        case KeyCode::LShift:       return SDLK_LSHIFT;
+        case KeyCode::LAlt:         return SDLK_LALT;
+        case KeyCode::LSystem:      return SDLK_LGUI;
+        case KeyCode::RControl:     return SDLK_RCTRL;
+        case KeyCode::RShift:       return SDLK_RSHIFT;
+        case KeyCode::RAlt:         return SDLK_RALT;
+        case KeyCode::RSystem:      return SDLK_RGUI;
+        case KeyCode::Menu:         return SDLK_MENU;
+        case KeyCode::LBracket:     return SDLK_LEFTBRACKET;
+        case KeyCode::RBracket:     return SDLK_RIGHTBRACKET;
+        case KeyCode::Semicolon:    return SDLK_SEMICOLON;
+        case KeyCode::Comma:        return SDLK_COMMA;
+        case KeyCode::Period:       return SDLK_PERIOD;
+        case KeyCode::Quote:        return SDLK_QUOTE;
+        case KeyCode::Slash:        return SDLK_SLASH;
+        case KeyCode::Backslash:    return SDLK_BACKSLASH;
+        case KeyCode::Tilde:        return SDLK_BACKQUOTE;
+        case KeyCode::Equal:        return SDLK_EQUALS;
+        case KeyCode::Hyphen:       return SDLK_MINUS;
+        case KeyCode::Space:        return SDLK_SPACE;
+        case KeyCode::Enter:        return SDLK_RETURN;
+        case KeyCode::Backspace:    return SDLK_BACKSPACE;
+        case KeyCode::Tab:          return SDLK_TAB;
+        case KeyCode::PageUp:       return SDLK_PAGEUP;
+        case KeyCode::PageDown:     return SDLK_PAGEDOWN;
+        case KeyCode::End:          return SDLK_END;
+        case KeyCode::Home:         return SDLK_HOME;
+        case KeyCode::Insert:       return SDLK_INSERT;
+        case KeyCode::Delete:       return SDLK_DELETE;
+        case KeyCode::Add:          return SDLK_KP_PLUS;
+        case KeyCode::Subtract:     return SDLK_KP_MINUS;
+        case KeyCode::Multiply:     return SDLK_KP_MULTIPLY;
+        case KeyCode::Divide:       return SDLK_KP_DIVIDE;
+        case KeyCode::Left:         return SDLK_LEFT;
+        case KeyCode::Right:        return SDLK_RIGHT;
+        case KeyCode::Up:           return SDLK_UP;
+        case KeyCode::Down:         return SDLK_DOWN;
+        case KeyCode::Numpad0:      return SDLK_KP_0;
+        case KeyCode::Numpad1:      return SDLK_KP_1;
+        case KeyCode::Numpad2:      return SDLK_KP_2;
+        case KeyCode::Numpad3:      return SDLK_KP_3;
+        case KeyCode::Numpad4:      return SDLK_KP_4;
+        case KeyCode::Numpad5:      return SDLK_KP_5;
+        case KeyCode::Numpad6:      return SDLK_KP_6;
+        case KeyCode::Numpad7:      return SDLK_KP_7;
+        case KeyCode::Numpad8:      return SDLK_KP_8;
+        case KeyCode::Numpad9:      return SDLK_KP_9;
+        case KeyCode::F1:           return SDLK_F1;
+        case KeyCode::F2:           return SDLK_F2;
+        case KeyCode::F3:           return SDLK_F3;
+        case KeyCode::F4:           return SDLK_F4;
+        case KeyCode::F5:           return SDLK_F5;
+        case KeyCode::F6:           return SDLK_F6;
+        case KeyCode::F7:           return SDLK_F7;
+        case KeyCode::F8:           return SDLK_F8;
+        case KeyCode::F9:           return SDLK_F9;
+        case KeyCode::F10:          return SDLK_F10;
+        case KeyCode::F11:          return SDLK_F11;
+        case KeyCode::F12:          return SDLK_F12;
+        case KeyCode::F13:          return SDLK_F13;
+        case KeyCode::F14:          return SDLK_F14;
+        case KeyCode::F15:          return SDLK_F15;
+        case KeyCode::Pause:        return SDLK_PAUSE;
+        
+        default: return SDLK_UNKNOWN;
+    }
+}
+
 MouseButton SDLKeyTranslator::toMouseButton(int sdlButton)
 {
     switch (sdlButton)
@@ -147,5 +203,67 @@ MouseButton SDLKeyTranslator::toMouseButton(int sdlButton)
         case SDL_BUTTON_X2:     return MouseButton::X2;
         
         default: return MouseButton::Unknown;
+    }
+}
+
+int SDLKeyTranslator::fromMouseButton(MouseButton button)
+{
+    switch (button)
+    {
+        case MouseButton::Left:   return SDL_BUTTON_LEFT;
+        case MouseButton::Right:  return SDL_BUTTON_RIGHT;
+        case MouseButton::Middle: return SDL_BUTTON_MIDDLE;
+        case MouseButton::X1:     return SDL_BUTTON_X1;
+        case MouseButton::X2:     return SDL_BUTTON_X2;
+        
+        default: return SDLK_UNKNOWN;
+    }
+}
+
+GamepadButton SDLKeyTranslator::toGamepadButton(int sdlButton)
+{
+    switch (sdlButton)
+    {
+        case SDL_CONTROLLER_BUTTON_A:               return GamepadButton::A;
+        case SDL_CONTROLLER_BUTTON_B:               return GamepadButton::B;
+        case SDL_CONTROLLER_BUTTON_X:               return GamepadButton::X;
+        case SDL_CONTROLLER_BUTTON_Y:               return GamepadButton::Y;
+        case SDL_CONTROLLER_BUTTON_BACK:            return GamepadButton::Back;
+        case SDL_CONTROLLER_BUTTON_GUIDE:           return GamepadButton::Guide;
+        case SDL_CONTROLLER_BUTTON_START:           return GamepadButton::Start;
+        case SDL_CONTROLLER_BUTTON_LEFTSTICK:       return GamepadButton::LeftStick;
+        case SDL_CONTROLLER_BUTTON_RIGHTSTICK:      return GamepadButton::RightStick;
+        case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:    return GamepadButton::LeftShoulder;
+        case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:   return GamepadButton::RightShoulder;
+        case SDL_CONTROLLER_BUTTON_DPAD_UP:         return GamepadButton::DpadUp;
+        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:       return GamepadButton::DpadDown;
+        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:       return GamepadButton::DpadLeft;
+        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:      return GamepadButton::DpadRight;
+        
+        default: return GamepadButton::Unknown;
+    }
+}
+
+int SDLKeyTranslator::fromGamepadButton(GamepadButton button)
+{
+    switch (button)
+    {
+        case GamepadButton::A:             return SDL_CONTROLLER_BUTTON_A;
+        case GamepadButton::B:             return SDL_CONTROLLER_BUTTON_B;
+        case GamepadButton::X:             return SDL_CONTROLLER_BUTTON_X;
+        case GamepadButton::Y:             return SDL_CONTROLLER_BUTTON_Y;
+        case GamepadButton::Back:          return SDL_CONTROLLER_BUTTON_BACK;
+        case GamepadButton::Guide:         return SDL_CONTROLLER_BUTTON_GUIDE;
+        case GamepadButton::Start:         return SDL_CONTROLLER_BUTTON_START;
+        case GamepadButton::LeftStick:     return SDL_CONTROLLER_BUTTON_LEFTSTICK;
+        case GamepadButton::RightStick:    return SDL_CONTROLLER_BUTTON_RIGHTSTICK;
+        case GamepadButton::LeftShoulder:  return SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
+        case GamepadButton::RightShoulder: return SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
+        case GamepadButton::DpadUp:        return SDL_CONTROLLER_BUTTON_DPAD_UP;
+        case GamepadButton::DpadDown:      return SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+        case GamepadButton::DpadLeft:      return SDL_CONTROLLER_BUTTON_DPAD_LEFT;
+        case GamepadButton::DpadRight:     return SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+        
+        default: return SDLK_UNKNOWN;
     }
 }
