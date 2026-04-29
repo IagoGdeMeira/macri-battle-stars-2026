@@ -2,6 +2,8 @@
 #define sdl_mouse_adapter_h
 
 #include "../../engine/include/InputAdapter/InputAdapter.h"
+#include "../../engine/include/MouseButton/MouseButton.h"
+
 #include <unordered_map>
 
 class EventBus;

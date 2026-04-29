@@ -27,4 +27,5 @@ target_link_libraries(MacriBattleStars
         app
         engine
         game
+        platform
 )

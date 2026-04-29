@@ -4,8 +4,10 @@ target_sources(platform
     PRIVATE
         src/JsonNode.cpp
         src/JsonParser.cpp
+        src/SDLGamepadAdapter.cpp
         src/SDLKeyboardAdapter.cpp
         src/SDLKeyTranslator.cpp
+        src/SDLMouseAdapter.cpp
         src/SDLRenderer.cpp
         src/SDLSystemInitializer.cpp
         src/SDLWindow.cpp

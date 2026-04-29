@@ -2,6 +2,8 @@ add_executable(platform_tests
     JsonNodeTests.cpp
     JsonParserTests.cpp
     SDLKeyboardAdapterTests.cpp
+    SDLMouseAdapterTests.cpp
+    SDLGamepadAdapterTests.cpp
     SDLKeyTranslatorTests.cpp
     SDLRendererTests.cpp
     SDLSystemInitializerTests.cpp

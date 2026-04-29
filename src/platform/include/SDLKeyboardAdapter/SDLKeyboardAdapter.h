@@ -8,17 +8,19 @@
 #include <unordered_map>
 
 class EventBus;
-class InputContext;
+struct InputContext;
 
 class SDLKeyboardAdapter : public InputAdapter
 {
 public:
     SDLKeyboardAdapter(EventBus& eventBus, const InputContext& inputContext);
+
     void poll() override;
 
 private:
     EventBus& eventBus;
     std::unordered_map<KeyCode, uint32_t> keyToPlayer;
+    
     void buildKeyPlayerMap(const InputContext& context);
 };
 

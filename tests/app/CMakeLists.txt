@@ -5,8 +5,9 @@ add_executable(app_tests
 target_link_libraries(app_tests
     PRIVATE
         app
-        engine
         domain
+        engine
+        platform
         Catch2::Catch2WithMain
 )
 
