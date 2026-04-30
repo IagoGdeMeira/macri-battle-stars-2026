@@ -1,5 +1,7 @@
 #include "../include/InputMapper/InputMapper.h"
 
+#include <stdexcept>
+
 InputAction InputMapper::stringToAction(const std::string& actionStr)
 {
     if (actionStr == "MoveUp")      return InputAction::MoveUp;
@@ -11,6 +13,22 @@ InputAction InputMapper::stringToAction(const std::string& actionStr)
     if (actionStr == "Defend")      return InputAction::Defend;
     
     return InputAction::None;
+}
+
+std::string InputMapper::actionToString(InputAction action)
+{
+    switch (action)
+    {
+        case InputAction::MoveUp:     return "MoveUp";
+        case InputAction::MoveDown:   return "MoveDown";
+        case InputAction::MoveLeft:   return "MoveLeft";
+        case InputAction::MoveRight:  return "MoveRight";
+        case InputAction::Jump:       return "Jump";
+        case InputAction::Attack:     return "Attack";
+        case InputAction::Defend:     return "Defend";
+        
+        default: return "None";
+    }
 }
 
 KeyCode InputMapper::stringToKey(const std::string& keyStr)
@@ -118,22 +136,6 @@ KeyCode InputMapper::stringToKey(const std::string& keyStr)
     if (keyStr == "Pause")      return KeyCode::Pause;
     
     return KeyCode::Unknown;
-}
-
-std::string InputMapper::actionToString(InputAction action)
-{
-    switch (action)
-    {
-        case InputAction::MoveUp:     return "MoveUp";
-        case InputAction::MoveDown:   return "MoveDown";
-        case InputAction::MoveLeft:   return "MoveLeft";
-        case InputAction::MoveRight:  return "MoveRight";
-        case InputAction::Jump:       return "Jump";
-        case InputAction::Attack:     return "Attack";
-        case InputAction::Defend:     return "Defend";
-        
-        default: return "None";
-    }
 }
 
 std::string InputMapper::keyToString(KeyCode keyCode)
@@ -244,4 +246,89 @@ std::string InputMapper::keyToString(KeyCode keyCode)
 
         default: return "Unknown";
     }
+}
+
+MouseButton InputMapper::stringToMouseButton(const std::string& buttonStr)
+{
+    if (buttonStr == "LeftButton")   return MouseButton::Left;
+    if (buttonStr == "RightButton")  return MouseButton::Right;
+    if (buttonStr == "MiddleButton") return MouseButton::Middle;
+    if (buttonStr == "X1")           return MouseButton::X1;
+    if (buttonStr == "X2")           return MouseButton::X2;
+    
+    return MouseButton::Unknown;
+}
+
+std::string InputMapper::mouseButtonToString(MouseButton button)
+{
+    switch (button)
+    {
+        case MouseButton::Left:   return "LeftButton";
+        case MouseButton::Right:  return "RightButton";
+        case MouseButton::Middle: return "MiddleButton";
+        case MouseButton::X1:     return "X1";
+        case MouseButton::X2:     return "X2";
+
+        default: return "Unknown";
+    }
+}
+
+GamepadButton InputMapper::stringToGamepadButton(const std::string& buttonStr)
+{
+    if (buttonStr == "A")             return GamepadButton::A;
+    if (buttonStr == "B")             return GamepadButton::B;
+    if (buttonStr == "X")             return GamepadButton::X;
+    if (buttonStr == "Y")             return GamepadButton::Y;
+    if (buttonStr == "Back")          return GamepadButton::Back;
+    if (buttonStr == "Guide")         return GamepadButton::Guide;
+    if (buttonStr == "Start")         return GamepadButton::Start;
+    if (buttonStr == "LeftStick")     return GamepadButton::LeftStick;
+    if (buttonStr == "RightStick")    return GamepadButton::RightStick;
+    if (buttonStr == "LeftShoulder")  return GamepadButton::LeftShoulder;
+    if (buttonStr == "RightShoulder") return GamepadButton::RightShoulder;
+    if (buttonStr == "DpadUp")        return GamepadButton::DpadUp;
+    if (buttonStr == "DpadDown")      return GamepadButton::DpadDown;
+    if (buttonStr == "DpadLeft")      return GamepadButton::DpadLeft;
+    if (buttonStr == "DpadRight")     return GamepadButton::DpadRight;
+
+    return GamepadButton::Unknown;
+}
+
+std::string InputMapper::gamepadButtonToString(GamepadButton button)
+{
+    switch (button)
+    {
+        case GamepadButton::A:             return "A";
+        case GamepadButton::B:             return "B";
+        case GamepadButton::X:             return "X";
+        case GamepadButton::Y:             return "Y";
+        case GamepadButton::Back:          return "Back";
+        case GamepadButton::Guide:         return "Guide";
+        case GamepadButton::Start:         return "Start";
+        case GamepadButton::LeftStick:     return "LeftStick";
+        case GamepadButton::RightStick:    return "RightStick";
+        case GamepadButton::LeftShoulder:  return "LeftShoulder";
+        case GamepadButton::RightShoulder: return "RightShoulder";
+        case GamepadButton::DpadUp:        return "DpadUp";
+        case GamepadButton::DpadDown:      return "DpadDown";
+        case GamepadButton::DpadLeft:      return "DpadLeft";
+        case GamepadButton::DpadRight:     return "DpadRight";
+
+        default: return "Unknown";
+    }
+}
+
+InputSource InputMapper::stringToSource(const std::string& sourceStr)
+{
+    size_t dot = sourceStr.find('.');
+    if (dot == std::string::npos) throw std::runtime_error("Invalid source format: " + sourceStr);
+
+    std::string device = sourceStr.substr(0, dot);
+    std::string code = sourceStr.substr(dot + 1);
+
+    if (device == "Keyboard")   return InputSource::keyboard(InputMapper::stringToKey(code));
+    if (device == "Mouse")      return InputSource::mouse(InputMapper::stringToMouseButton(code));
+    if (device == "Gamepad")    return InputSource::gamepad(InputMapper::stringToGamepadButton(code));
+    
+    throw std::runtime_error("Unknown device in source: " + device);
 }

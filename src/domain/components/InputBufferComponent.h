@@ -5,11 +5,7 @@
 
 #include <deque>
 
-struct InputBufferEntry
-{
-    InputAction action;
-    float time;
-};
+struct InputBufferEntry { InputAction action; float time; };
 
 struct InputBufferComponent { std::deque<InputBufferEntry> buffer; };
 

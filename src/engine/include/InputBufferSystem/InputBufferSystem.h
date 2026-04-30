@@ -1,13 +1,11 @@
 #ifndef input_buffer_system_h
 #define input_buffer_system_h
 
-#include "../System/System.h"
 #include "../EventBus/EventBus.h"
-#include "../events/KeyEvent.h"
 #include "../InputContext/InputContext.h"
+#include "../System/System.h"
 
-#include "../../domain/components/InputBufferComponent.h"
-#include "../../domain/components/PlayerComponent.h"
+#include "../../events/InputEvent.h"
 
 #include <vector>
 
@@ -20,9 +18,8 @@ public:
 
 private:
     InputContext& context;
-    std::vector<KeyEvent> events;
-
+    std::vector<DigitalInputEvent> events;
     float maxBufferTime = 0.5f;
-};
+};;
 
 #endif // input_buffer_system_h

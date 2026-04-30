@@ -2,8 +2,14 @@
 
 #include "../include/UpdateContext/UpdateContext.h"
 
+#include "../../domain/components/InputBufferComponent.h"
+#include "../../domain/components/PlayerComponent.h"
+
 InputBufferSystem::InputBufferSystem(EventBus& bus, InputContext& context) : context(context)
-{ bus.subscribe<KeyEvent>([this](const KeyEvent& e) { if (e.pressed) this->events.push_back(e); }); }
+{
+    bus.subscribe<DigitalInputEvent>([this](const DigitalInputEvent& e)
+    { if (e.pressed) this->events.push_back(e); });
+}
 
 void InputBufferSystem::update(UpdateContext& ctx)
 {
@@ -19,17 +25,16 @@ void InputBufferSystem::update(UpdateContext& ctx)
 
     for (const auto& e : this->events)
     {
-        auto& binding = this->context.bindings[e.player];
-
-        auto it = binding.keyMap.find(e.key);
+        auto& binding = this->context.bindings[e.playerId];
+        auto it = binding.keyMap.find(e.source);
         if (it == binding.keyMap.end()) continue;
 
-        auto action = it->second;
+        InputAction action = it->second;
 
         for (auto [entity, buffer, player] : view)
         {
-            if (player.id != e.player) continue;
-            buffer.buffer.push_back({ action, 0.f });
+            if (player.id != e.playerId) continue;
+            buffer.buffer.push_back({action, 0.0f});
         }
     }
 

@@ -22,8 +22,8 @@ class DigitalInputEvent : public InputEvent
 public:
     bool pressed;
 
-    DigitalInputEvent(InputSource src, uint32_t player, bool pressed)
-        : InputEvent(src, player), pressed(pressed) {}
+    DigitalInputEvent(InputSource src, uint32_t player, bool pressed) :
+        InputEvent(src, player), pressed(pressed) {}
 };
 
 class AnalogInputEvent : public InputEvent
@@ -31,8 +31,8 @@ class AnalogInputEvent : public InputEvent
 public:
     float value;
 
-    AnalogInputEvent(InputSource src, uint32_t player, float value)
-        : InputEvent(src, player), value(value) {}
+    AnalogInputEvent(InputSource src, uint32_t player, float value) :
+        InputEvent(src, player), value(value) {}
 };
 
 #endif // input_event_h

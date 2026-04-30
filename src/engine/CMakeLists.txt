@@ -6,6 +6,7 @@ target_sources(engine
         src/Engine.cpp
         src/InputBindingLoader.cpp
         src/InputBufferSystem.cpp
+        src/InputManager.cpp
         src/InputMapper.cpp
         src/InputSystem.cpp
         src/MovementSystem.cpp

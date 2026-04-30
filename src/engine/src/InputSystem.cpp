@@ -2,23 +2,32 @@
 
 #include "../include/UpdateContext/UpdateContext.h"
 
+#include "../../domain/components/AnalogInputComponent.h"
+#include "../../domain/components/InputComponent.h"
+#include "../../domain/components/PlayerComponent.h"
 #include "../../domain/include/View/View.h"
 
 InputSystem::InputSystem(EventBus& bus, InputContext& inputContext) : context(inputContext)
-{ bus.subscribe<KeyEvent>([this](const KeyEvent& event) { this->events.push_back(event); }); }
+{
+    bus.subscribe<DigitalInputEvent>([this](const DigitalInputEvent& event)
+    { this->digitalEvents.push_back(event); });
+
+    bus.subscribe<AnalogInputEvent>([this](const AnalogInputEvent& event)
+    { this->analogEvents.push_back(event); });
+}
 
 void InputSystem::update(UpdateContext& ctx)
 {
-    for (const auto& event : this->events)
-    { this->keyStates[event.player][event.key] = event.pressed; }
+    auto& comp = ctx.world.components();
 
-    auto view = View<InputComponent, PlayerComponent>(ctx.world.components());
+    for (const auto& e : this->digitalEvents) this->sourceStates[e.playerId][e.source] = e.pressed;
 
-    for (auto [entity, input, player] : view)
+    auto digitalView = View<InputComponent, PlayerComponent>(comp);
+    for (auto [entity, input, player] : digitalView)
     {
-        auto& binding = this->context.bindings[player.id];
-        auto& playerKeys = this->keyStates[player.id];
-        auto& previousKeys = this->previousKeyStates[player.id];
+        auto& binding = context.bindings[player.id];
+        auto& playerSources = sourceStates[player.id];
+        auto& previousSources = previousSourceStates[player.id];
 
         for (auto& [action, state] : input.actions)
         {
@@ -26,21 +35,31 @@ void InputSystem::update(UpdateContext& ctx)
             state.heldTime += ctx.deltaTime;
         }
 
-        for (const auto& [key, action] : binding.keyMap)
+        for (const auto& [source, action] : binding.keyMap)
         {
-            const bool isPressed = playerKeys.contains(key)
-                && playerKeys.at(key);
-            const bool wasPressed = previousKeys.contains(key)
-                && previousKeys.at(key);
+            bool isPressed = playerSources.count(source) && playerSources.at(source);
+            bool wasPressed = previousSources.count(source) && previousSources.at(source);
 
             auto& state = input.actions[action];
             state.pressed = isPressed;
-
-            if (isPressed && !wasPressed) state.heldTime = 0.f;
+            if (isPressed && !wasPressed) state.heldTime = 0.0f;
         }
 
-        previousKeys = playerKeys;
+        previousSources = playerSources;
     }
-    
-    this->events.clear();
+
+    auto analogView = View<AnalogInputComponent, PlayerComponent>(comp);
+    for (auto& e : this->analogEvents)
+    {
+        for (auto [entity, analog, player] : analogView)
+        {
+            if (player.id != e.playerId) continue;
+
+            if (e.source.type() == InputSource::Type::Mouse || e.source.type() == InputSource::Type::Gamepad)
+            { analog.moveX += e.value; }
+        }
+    }
+
+    this->digitalEvents.clear();
+    this->analogEvents.clear();
 }

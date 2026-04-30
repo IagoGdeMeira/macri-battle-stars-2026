@@ -5,11 +5,9 @@
 #include "../InputContext/InputContext.h"
 #include "../System/System.h"
 
-#include "../../events/KeyEvent.h"
+#include "../../events/InputEvent.h"
 
-#include "../../../domain/components/InputComponent.h"
-#include "../../../domain/components/PlayerComponent.h"
-
+#include <cstdint>
 #include <unordered_map>
 #include <vector>
 
@@ -21,11 +19,14 @@ public:
     void update(UpdateContext& ctx) override;
 
 private:
-    InputContext& context;
-    std::vector<KeyEvent> events;
+    using PlayerInputState = std::unordered_map<InputSource, bool, InputSource::Hash>;
 
-    std::unordered_map<PlayerId, std::unordered_map<KeyCode, bool>> keyStates;
-    std::unordered_map<PlayerId, std::unordered_map<KeyCode, bool>> previousKeyStates;
+    InputContext& context;
+    std::vector<DigitalInputEvent> digitalEvents;
+    std::vector<AnalogInputEvent> analogEvents;
+
+    std::unordered_map<uint32_t, PlayerInputState> sourceStates;
+    std::unordered_map<uint32_t, PlayerInputState> previousSourceStates;
 };
 
 #endif // input_system_h

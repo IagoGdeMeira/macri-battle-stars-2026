@@ -5,13 +5,8 @@
 
 #include <unordered_map>
 
-struct InputState
-{
-    bool pressed = false;
-    float heldTime = 0.0f;
-};
+struct InputState { bool pressed = false; float heldTime = 0.0f; };
 
-struct InputComponent
-{ std::unordered_map<InputAction, InputState> actions; };
+struct InputComponent { std::unordered_map<InputAction, InputState> actions; };
 
 #endif // input_component_h
