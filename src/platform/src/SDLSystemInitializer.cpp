@@ -9,7 +9,7 @@ SDLSystemInitializer::~SDLSystemInitializer()
 
 void SDLSystemInitializer::initialize()
 {
-    if (SDL_Init(flags) != 0)
+    if (SDL_Init(this->flags) != 0)
     { throw std::runtime_error(std::string("SDL_Init failed: ") + SDL_GetError()); }
 
     this->initialized = true;

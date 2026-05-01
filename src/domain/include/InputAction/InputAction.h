@@ -8,7 +8,8 @@ enum class InputAction
     MoveDown,
     MoveLeft,
     MoveRight,
-    Attack,
+    Punch,
+    Kick,
     Defend,
     Jump
 };

@@ -1,6 +1,7 @@
 #include "../../src/platform/include/SDLGamepadAdapter/SDLGamepadAdapter.h"
 
 #include "../../src/engine/events/InputEvent.h"
+#include "../../src/engine/events/PlatformEvent.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
 #include "../../src/engine/include/InputSource/InputSource.h"
 
@@ -9,13 +10,13 @@
 
 #include <SDL.h>
 
+#include <memory>
 #include <vector>
 
 TEST_CASE("SDLGamepadAdapter emits button and axis events from a virtual joystick",
     "[integration][sdl_gamepad_adapter]"
 ) {
     REQUIRE(SDL_Init(SDL_INIT_EVENTS | SDL_INIT_JOYSTICK) == 0);
-    SDL_JoystickEventState(SDL_ENABLE);
 
     const int deviceIndex = SDL_JoystickAttachVirtual(SDL_JOYSTICK_TYPE_GAMECONTROLLER, 2, 2, 0);
     REQUIRE(deviceIndex >= 0);
@@ -33,30 +34,13 @@ TEST_CASE("SDLGamepadAdapter emits button and axis events from a virtual joystic
         bus.subscribe<AnalogInputEvent>([&](const AnalogInputEvent& event)
         { receivedAxes.push_back(event); });
 
-        SDL_Event buttonDown {};
-        buttonDown.type = SDL_JOYBUTTONDOWN;
-        buttonDown.jbutton.button = SDL_CONTROLLER_BUTTON_A;
+        std::vector<std::unique_ptr<PlatformEvent>> events;
+        events.push_back(std::make_unique<GamepadButtonEvent>(static_cast<uint32_t>(GamepadButton::A), true));
+        events.push_back(std::make_unique<GamepadButtonEvent>(static_cast<uint32_t>(GamepadButton::A), false));
+        events.push_back(std::make_unique<GamepadAxisEvent>(0, 16384.0f / 32767.0f));
+        events.push_back(std::make_unique<GamepadAxisEvent>(1, -16384.0f / 32767.0f));
 
-        SDL_Event buttonUp {};
-        buttonUp.type = SDL_JOYBUTTONUP;
-        buttonUp.jbutton.button = SDL_CONTROLLER_BUTTON_A;
-
-        SDL_Event axisX {};
-        axisX.type = SDL_JOYAXISMOTION;
-        axisX.jaxis.axis = 0;
-        axisX.jaxis.value = 16384;
-
-        SDL_Event axisY {};
-        axisY.type = SDL_JOYAXISMOTION;
-        axisY.jaxis.axis = 1;
-        axisY.jaxis.value = -16384;
-
-        REQUIRE(SDL_PushEvent(&buttonDown) == 1);
-        REQUIRE(SDL_PushEvent(&buttonUp) == 1);
-        REQUIRE(SDL_PushEvent(&axisX) == 1);
-        REQUIRE(SDL_PushEvent(&axisY) == 1);
-
-        adapter.poll();
+        adapter.processEvents(events);
     }
 
     REQUIRE(receivedButtons.size() == 2);

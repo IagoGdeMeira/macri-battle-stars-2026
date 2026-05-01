@@ -6,7 +6,8 @@ TEST_CASE("InputMapper converts known and unknown action strings",
     "[unit][input_mapper]"
 ) {
     REQUIRE(InputMapper::stringToAction("MoveUp") == InputAction::MoveUp);
-    REQUIRE(InputMapper::stringToAction("Attack") == InputAction::Attack);
+    REQUIRE(InputMapper::stringToAction("Punch") == InputAction::Punch);
+    REQUIRE(InputMapper::stringToAction("Kick") == InputAction::Kick);
     REQUIRE(InputMapper::stringToAction("invalid") == InputAction::None);
 }
 
@@ -23,6 +24,8 @@ TEST_CASE("InputMapper converts enums to strings with fallback",
     "[unit][input_mapper]"
 ) {
     REQUIRE(InputMapper::actionToString(InputAction::Defend) == "Defend");
+    REQUIRE(InputMapper::actionToString(InputAction::Punch) == "Punch");
+    REQUIRE(InputMapper::actionToString(InputAction::Kick) == "Kick");
     REQUIRE(InputMapper::actionToString(InputAction::None) == "None");
 
     REQUIRE(InputMapper::keyToString(KeyCode::F12) == "F12");
@@ -32,8 +35,11 @@ TEST_CASE("InputMapper converts enums to strings with fallback",
 TEST_CASE("InputMapper supports round-trip conversion for representative values",
     "[unit][input_mapper]"
 ) {
-    const auto action = InputAction::Jump;
+    const auto action = InputAction::Punch;
     REQUIRE(InputMapper::stringToAction(InputMapper::actionToString(action)) == action);
+
+    const auto kick = InputAction::Kick;
+    REQUIRE(InputMapper::stringToAction(InputMapper::actionToString(kick)) == kick);
 
     const auto key = KeyCode::Left;
     REQUIRE(InputMapper::stringToKey(InputMapper::keyToString(key)) == key);

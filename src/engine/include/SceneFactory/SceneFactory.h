@@ -3,16 +3,17 @@
 
 #include "../include/ISceneFactory/ISceneFactory.h"
 
+#include "../../game/include/Camera2D/Camera2D.h"
+#include "../../game/include/CharacterLoader/CharacterLoader.h"
+#include "../../game/include/CharacterRoster/CharacterRoster.h"
+#include "../../game/include/MapRoster/MapRoster.h"
+
 #include <any>
 #include <memory>
 #include <vector>
 
-class Camera2D;
-class CharacterLoader;
-class CharacterRoster;
 class DataParser;
 class Engine;
-class MapRoster;
 class ResourceManager;
 class Window;
 

@@ -119,11 +119,11 @@ public:
 
         static std::unique_ptr<DataNode> makeBindingsRoot()
         {
-            auto makeBinding = [](const std::string& action, const std::string& key)
+            auto makeBinding = [](const std::string& action, const std::string& source)
             {
                 auto binding = std::make_unique<StubNode>();
                 binding->setString("action", action);
-                binding->setString("key", key);
+                binding->setString("source", source);
                 return binding;
             };
 
@@ -131,15 +131,15 @@ public:
             player1->setInt("id", 1);
 
             std::vector<std::unique_ptr<DataNode>> player1Bindings;
-            player1Bindings.push_back(makeBinding("Attack", "A"));
-            player1Bindings.push_back(makeBinding("Jump", "Space"));
+            player1Bindings.push_back(makeBinding("Punch", "Keyboard.A"));
+            player1Bindings.push_back(makeBinding("Jump", "Keyboard.Space"));
             player1->setArray("bindings", std::move(player1Bindings));
 
             auto player2 = std::make_unique<StubNode>();
             player2->setInt("id", 2);
 
             std::vector<std::unique_ptr<DataNode>> player2Bindings;
-            player2Bindings.push_back(makeBinding("Defend", "LShift"));
+            player2Bindings.push_back(makeBinding("Defend", "Keyboard.LShift"));
             player2->setArray("bindings", std::move(player2Bindings));
 
             auto root = std::make_unique<StubNode>();
@@ -165,9 +165,9 @@ TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader builds context f
     const auto context = loader.load("assets/inputs/input_bindings.json");
 
     REQUIRE(context.bindings.size() == 2);
-    REQUIRE(context.bindings.at(1).keyMap.at(KeyCode::A) == InputAction::Attack);
-    REQUIRE(context.bindings.at(1).keyMap.at(KeyCode::Space) == InputAction::Jump);
-    REQUIRE(context.bindings.at(2).keyMap.at(KeyCode::LShift) == InputAction::Defend);
+    REQUIRE(context.bindings.at(1).keyMap.at(InputSource::keyboard(KeyCode::A)) == InputAction::Punch);
+    REQUIRE(context.bindings.at(1).keyMap.at(InputSource::keyboard(KeyCode::Space)) == InputAction::Jump);
+    REQUIRE(context.bindings.at(2).keyMap.at(InputSource::keyboard(KeyCode::LShift)) == InputAction::Defend);
 }
 
 TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader forwards path to parser",
@@ -181,8 +181,9 @@ TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader forwards path to
     REQUIRE(parser.lastPath == "custom/path/bindings.json");
 }
 
-TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader handles empty players list", "[unit][input_binding_loader]")
-{
+TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader handles empty players list",
+    "[unit][input_binding_loader]"
+) {
     auto root = std::make_unique<StubNode>();
     root->setArray("players", {});
 
@@ -199,7 +200,7 @@ TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader keeps unknown ma
 ) {
     auto unknownBinding = std::make_unique<StubNode>();
     unknownBinding->setString("action", "NotAnAction");
-    unknownBinding->setString("key", "NotAKey");
+    unknownBinding->setString("source", "Keyboard.NotAKey");
 
     auto player = std::make_unique<StubNode>();
     player->setInt("id", 17);
@@ -219,8 +220,8 @@ TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader keeps unknown ma
     const auto context = loader.load("ignored.json");
 
     const auto& keyMap = context.bindings.at(17).keyMap;
-    REQUIRE(keyMap.contains(KeyCode::Unknown));
-    REQUIRE(keyMap.at(KeyCode::Unknown) == InputAction::None);
+    REQUIRE(keyMap.contains(InputSource::keyboard(KeyCode::Unknown)));
+    REQUIRE(keyMap.at(InputSource::keyboard(KeyCode::Unknown)) == InputAction::None);
     REQUIRE(InputMapper::keyToString(KeyCode::Unknown) == "Unknown");
     REQUIRE(InputMapper::actionToString(InputAction::None) == "None");
 }

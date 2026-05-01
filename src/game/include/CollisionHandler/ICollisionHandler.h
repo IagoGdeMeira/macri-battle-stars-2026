@@ -5,9 +5,8 @@
 
 #include <optional>
 
-class UpdateContext;
-
 struct TransformComponent;
+struct UpdateContext;
 
 class ICollisionHandler
 {

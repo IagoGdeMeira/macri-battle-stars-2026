@@ -17,8 +17,8 @@ TEST_CASE("Combo uses expected defaults",
 TEST_CASE("ComboStep stores action and maxDelay",
     "[unit][combo]"
 ) {
-    ComboStep step { InputAction::Attack, 120 };
+    ComboStep step { InputAction::Punch, 120 };
 
-    REQUIRE(step.action == InputAction::Attack);
+    REQUIRE(step.action == InputAction::Punch);
     REQUIRE(step.maxDelay == 120);
 }

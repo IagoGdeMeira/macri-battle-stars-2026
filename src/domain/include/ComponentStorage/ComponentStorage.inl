@@ -50,12 +50,15 @@ void ComponentStorage<T>::remove(Entity entity)
     uint32_t index = this->sparse[id];
     uint32_t lastIndex = static_cast<uint32_t>(this->denseComponents.size() - 1);
 
-    Entity lastEntity = this->denseEntities[lastIndex];
+    if (index != lastIndex)
+    {
+        Entity lastEntity = this->denseEntities[lastIndex];
 
-    this->denseEntities[index] = lastEntity;
-    this->denseComponents[index] = std::move(this->denseComponents[lastIndex]);
+        this->denseEntities[index] = lastEntity;
+        this->denseComponents[index] = std::move(this->denseComponents[lastIndex]);
 
-    this->sparse[lastEntity.id] = index;
+        this->sparse[lastEntity.id] = index;
+    }
 
     this->denseEntities.pop_back();
     this->denseComponents.pop_back();

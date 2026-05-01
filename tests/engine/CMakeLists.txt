@@ -4,6 +4,7 @@ add_executable(engine_tests
     EventBusTests.cpp
     InputBindingLoaderTests.cpp
     InputBufferSystemTests.cpp
+    InputManagerTests.cpp
     InputMapperTests.cpp
     InputSystemTests.cpp
     MovementSystemTests.cpp

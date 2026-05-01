@@ -5,6 +5,7 @@
 #include "../../engine/include/InputSource/InputSource.h"
 
 #include <cstdint>
+#include <memory>
 #include <unordered_map>
 
 class EventBus;
@@ -15,7 +16,7 @@ class SDLKeyboardAdapter : public InputAdapter
 public:
     SDLKeyboardAdapter(EventBus& eventBus, const InputContext& inputContext);
 
-    void poll() override;
+    void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events) override;
 
 private:
     EventBus& eventBus;

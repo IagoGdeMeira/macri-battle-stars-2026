@@ -1,10 +1,13 @@
 #include "../../src/engine/include/InputSystem/InputSystem.h"
 
+#include "../../src/domain/components/AnalogInputComponent.h"
 #include "../../src/domain/components/InputComponent.h"
 #include "../../src/domain/components/PlayerComponent.h"
+#include "../../src/domain/include/InputAction/InputAction.h"
 
-#include "../../src/engine/events/KeyEvent.h"
+#include "../../src/engine/events/InputEvent.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/InputSource/InputSource.h"
 #include "../../src/engine/include/Scene/Scene.h"
 
 #include <catch2/catch_approx.hpp>
@@ -15,8 +18,10 @@ class InputSystemFixture
 public:
     InputSystemFixture()
     {
-        this->scene.world().components().registerComponent<InputComponent>();
-        this->scene.world().components().registerComponent<PlayerComponent>();
+        auto& components = this->scene.world().components();
+        components.registerComponent<InputComponent>();
+        components.registerComponent<PlayerComponent>();
+        components.registerComponent<AnalogInputComponent>();
     }
 
     EventBus bus;
@@ -27,19 +32,20 @@ TEST_CASE_METHOD(InputSystemFixture, "InputSystem updates mapped action for matc
     "[integration][input_system]"
 ) {
     const auto entity = this->scene.world().entities().create();
-    this->scene.world().components().add<InputComponent>(entity, InputComponent{});
-    this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{1});
+    auto& components = this->scene.world().components();
+    components.add<InputComponent>(entity, InputComponent{});
+    components.add<PlayerComponent>(entity, PlayerComponent{1});
 
     InputContext context;
-    context.bindings[1].keyMap[KeyCode::A] = InputAction::Attack;
+    context.bindings[1].keyMap[InputSource::keyboard(KeyCode::A)] = InputAction::Punch;
 
-    this->scene.systems().addSystem<InputSystem>(bus, context);
+    this->scene.systems().addSystem<InputSystem>(this->bus, context);
 
-    bus.emit<KeyEvent>(KeyCode::A, true, 1);
+    this->bus.emit<DigitalInputEvent>(InputSource::keyboard(KeyCode::A), 1, true);
     this->scene.update(0.016f);
 
     const auto& input = this->scene.world().components().get<InputComponent>(entity);
-    REQUIRE(input.actions.at(InputAction::Attack).pressed == true);
+    REQUIRE(input.actions.at(InputAction::Punch).pressed == true);
 }
 
 TEST_CASE_METHOD(InputSystemFixture, "InputSystem keeps heldTime progression when mapped key is released",
@@ -50,15 +56,16 @@ TEST_CASE_METHOD(InputSystemFixture, "InputSystem keeps heldTime progression whe
     InputComponent input;
     input.actions[InputAction::MoveLeft] = InputState{true, 2.5f};
 
-    this->scene.world().components().add<InputComponent>(entity, input);
-    this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{7});
+    auto& components = this->scene.world().components();
+    components.add<InputComponent>(entity, input);
+    components.add<PlayerComponent>(entity, PlayerComponent{7});
 
     InputContext context;
-    context.bindings[7].keyMap[KeyCode::Left] = InputAction::MoveLeft;
+    context.bindings[7].keyMap[InputSource::keyboard(KeyCode::Left)] = InputAction::MoveLeft;
 
     this->scene.systems().addSystem<InputSystem>(this->bus, context);
 
-    this->bus.emit<KeyEvent>(KeyCode::Left, false, 7);
+    this->bus.emit<DigitalInputEvent>(InputSource::keyboard(KeyCode::Left), 7, false);
     this->scene.update(0.016f);
 
     const auto& updated = this->scene.world().components().get<InputComponent>(entity);
@@ -74,15 +81,16 @@ TEST_CASE_METHOD(InputSystemFixture, "InputSystem ignores events from other play
     InputComponent input;
     input.actions[InputAction::Defend] = InputState{false, 0.0f};
 
-    this->scene.world().components().add<InputComponent>(entity, input);
-    this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{3});
+    auto& components = this->scene.world().components();
+    components.add<InputComponent>(entity, input);
+    components.add<PlayerComponent>(entity, PlayerComponent{3});
 
     InputContext context;
-    context.bindings[3].keyMap[KeyCode::RShift] = InputAction::Defend;
+    context.bindings[3].keyMap[InputSource::keyboard(KeyCode::RShift)] = InputAction::Defend;
 
     this->scene.systems().addSystem<InputSystem>(this->bus, context);
 
-    this->bus.emit<KeyEvent>(KeyCode::RShift, true, 99);
+    this->bus.emit<DigitalInputEvent>(InputSource::keyboard(KeyCode::RShift), 99, true);
     this->scene.update(0.016f);
 
     const auto& updated = this->scene.world().components().get<InputComponent>(entity);

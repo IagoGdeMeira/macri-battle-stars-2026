@@ -1,7 +1,6 @@
 #include "../include/JsonNode/JsonNode.h"
 
-bool JsonNode::has(const std::string& key) const
-{ return this->data.contains(key); }
+bool JsonNode::has(const std::string& key) const { return this->data.contains(key); }
 
 std::string JsonNode::getString(const std::string& key, const std::string& fallback) const
 {

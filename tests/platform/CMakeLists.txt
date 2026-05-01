@@ -4,8 +4,10 @@ add_executable(platform_tests
     SDLKeyboardAdapterTests.cpp
     SDLMouseAdapterTests.cpp
     SDLGamepadAdapterTests.cpp
+    SDLPlatformEventProviderTests.cpp
     SDLKeyTranslatorTests.cpp
     SDLRendererTests.cpp
+    SDLSystemAdapterTests.cpp
     SDLSystemInitializerTests.cpp
     SDLWindowTests.cpp
 )

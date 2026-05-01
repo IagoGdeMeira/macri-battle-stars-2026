@@ -20,7 +20,7 @@ TEST_CASE("ComboSystem emits best matching combo by priority",
     const auto entity = scene.world().entities().create();
 
     InputBufferComponent buffer;
-    buffer.buffer.push_back({ InputAction::Attack, 0.05f });
+    buffer.buffer.push_back({ InputAction::Punch, 0.05f });
     buffer.buffer.push_back({ InputAction::Jump, 0.05f });
 
     scene.world().components().add<InputBufferComponent>(entity, buffer);
@@ -31,7 +31,7 @@ TEST_CASE("ComboSystem emits best matching combo by priority",
     low.priority = 1;
     low.steps =
     {
-        { InputAction::Attack, 200 },
+        { InputAction::Punch, 200 },
         { InputAction::Jump, 200 }
     };
 
@@ -41,7 +41,7 @@ TEST_CASE("ComboSystem emits best matching combo by priority",
     high.priority = 10;
     high.steps =
     {
-        { InputAction::Attack, 200 },
+        { InputAction::Punch, 200 },
         { InputAction::Jump, 200 }
     };
 
@@ -69,14 +69,14 @@ TEST_CASE("ComboSystem clears buffer when combo consumes input",
     const auto entity = scene.world().entities().create();
 
     InputBufferComponent buffer;
-    buffer.buffer.push_back({ InputAction::Attack, 0.01f });
+    buffer.buffer.push_back({ InputAction::Punch, 0.01f });
 
     scene.world().components().add<InputBufferComponent>(entity, buffer);
 
     Combo combo;
     combo.name = "single";
     combo.consumeInput = true;
-    combo.steps = { { InputAction::Attack, 100 } };
+    combo.steps = { { InputAction::Punch, 100 } };
 
     scene.systems().addSystem<ComboSystem>(bus, std::vector<Combo> { combo });
 

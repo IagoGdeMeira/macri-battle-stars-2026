@@ -2,8 +2,10 @@
 
 #include "../../src/domain/components/InputBufferComponent.h"
 #include "../../src/domain/components/PlayerComponent.h"
+#include "../../src/domain/include/InputAction/InputAction.h"
 
-#include "../../src/engine/events/KeyEvent.h"
+#include "../../src/engine/events/InputEvent.h"
+#include "../../src/engine/include/InputSource/InputSource.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
 #include "../../src/engine/include/Scene/Scene.h"
 
@@ -25,16 +27,16 @@ TEST_CASE("InputBufferSystem pushes mapped pressed key to matching player",
     scene.world().components().add<PlayerComponent>(entity, PlayerComponent { 1 });
 
     InputContext context;
-    context.bindings[1].keyMap[KeyCode::A] = InputAction::Attack;
+    context.bindings[1].keyMap[InputSource::keyboard(KeyCode::A)] = InputAction::Punch;
 
     scene.systems().addSystem<InputBufferSystem>(bus, context);
 
-    bus.emit<KeyEvent>(KeyCode::A, true, 1);
+    bus.emit<DigitalInputEvent>(InputSource::keyboard(KeyCode::A), 1, true);
     scene.update(0.016f);
 
     const auto& updated = scene.world().components().get<InputBufferComponent>(entity);
     REQUIRE(updated.buffer.size() == 1);
-    REQUIRE(updated.buffer.back().action == InputAction::Attack);
+    REQUIRE(updated.buffer.back().action == InputAction::Punch);
     REQUIRE(updated.buffer.back().time == 0.0f);
 }
 
@@ -53,11 +55,11 @@ TEST_CASE("InputBufferSystem ignores key release events",
     scene.world().components().add<PlayerComponent>(entity, PlayerComponent { 1 });
 
     InputContext context;
-    context.bindings[1].keyMap[KeyCode::A] = InputAction::Attack;
+    context.bindings[1].keyMap[InputSource::keyboard(KeyCode::A)] = InputAction::Punch;
 
     scene.systems().addSystem<InputBufferSystem>(bus, context);
 
-    bus.emit<KeyEvent>(KeyCode::A, false, 1);
+    bus.emit<DigitalInputEvent>(InputSource::keyboard(KeyCode::A), 1, false);
     scene.update(0.016f);
 
     const auto& updated = scene.world().components().get<InputBufferComponent>(entity);

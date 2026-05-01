@@ -32,13 +32,13 @@ TEST_CASE_METHOD(TriggerGenerationSystemFixture,
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Attack] = InputState{true, 0.0f};
+    input.actions[InputAction::Punch] = InputState{true, 0.0f};
 
     this->scene.world().components().add<InputComponent>(entity, input);
     this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{1});
 
     TriggerContext context;
-    context.bindings[InputAction::Attack] = {TriggerId::Jumped, TriggerId::Punched};
+    context.bindings[InputAction::Punch] = {TriggerId::Jumped, TriggerId::Punched};
 
     std::vector<TriggerEvent> events;
     this->bus.subscribe<TriggerEvent>([&](const TriggerEvent& event)
@@ -56,20 +56,48 @@ TEST_CASE_METHOD(TriggerGenerationSystemFixture,
 }
 
 TEST_CASE_METHOD(TriggerGenerationSystemFixture,
+    "TriggerGenerationSystem emits kick triggers for pressed kick input",
+    "[integration][trigger_generation_system]"
+) {
+    const auto entity = this->scene.world().entities().create();
+
+    InputComponent input;
+    input.actions[InputAction::Kick] = InputState{true, 0.0f};
+
+    this->scene.world().components().add<InputComponent>(entity, input);
+    this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{2});
+
+    TriggerContext context;
+    context.bindings[InputAction::Kick] = {TriggerId::Kicked};
+
+    std::vector<TriggerEvent> events;
+    this->bus.subscribe<TriggerEvent>([&](const TriggerEvent& event)
+    { events.push_back(event); });
+
+    this->scene.systems().addSystem<TriggerGenerationSystem>(this->bus, context);
+
+    this->scene.update(0.016f);
+
+    REQUIRE(events.size() == 1);
+    REQUIRE(events[0].entity == entity);
+    REQUIRE(events[0].trigger == TriggerId::Kicked);
+}
+
+TEST_CASE_METHOD(TriggerGenerationSystemFixture,
     "TriggerGenerationSystem ignores unpressed and unmapped actions",
     "[integration][trigger_generation_system]"
 ) {
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Attack] = InputState{false, 0.0f};
+    input.actions[InputAction::Kick] = InputState{false, 0.0f};
     input.actions[InputAction::Jump] = InputState{true, 0.0f};
 
     this->scene.world().components().add<InputComponent>(entity, input);
     this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{2});
 
     TriggerContext context;
-    context.bindings[InputAction::Attack] = {TriggerId::Blocked};
+    context.bindings[InputAction::Kick] = {TriggerId::Blocked};
 
     int eventCount = 0;
     this->bus.subscribe<TriggerEvent>([&](const TriggerEvent&)

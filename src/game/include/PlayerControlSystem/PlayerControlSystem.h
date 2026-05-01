@@ -1,6 +1,11 @@
 #ifndef player_control_system_h
 #define player_control_system_h
 
+#include "../../../domain/components/InputComponent.h"
+#include "../../../domain/include/Entity/Entity.h"
+#include "../../../domain/include/InputAction/InputAction.h"
+#include "../../../domain/include/StateId/StateId.h"
+
 #include "../../../engine/include/EventBus/EventBus.h"
 #include "../../../engine/include/System/System.h"
 
@@ -15,6 +20,12 @@ private:
     EventBus& bus;
     float moveSpeed;
     float jumpImpulse;
+
+    bool canMove(StateId state) const;
+    bool hasInputAction(InputComponent& input, InputAction action) const; 
+    void applyMovement(UpdateContext& ctx, Entity entity, bool canMove) const;
+    void applyJump(UpdateContext& ctx, Entity entity) const;
+    void emitTriggers(UpdateContext& ctx, Entity entity, bool canMove);
 };
 
 #endif

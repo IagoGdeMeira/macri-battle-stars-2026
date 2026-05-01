@@ -4,17 +4,17 @@
 
 #include <chrono>
 
+Engine::Engine(Window& window, ISceneFactory& factory) : window(window), sceneManager(factory)
+{ this->eventBus.subscribe<QuitEvent>([this](const QuitEvent&) { this->stop(); }); }
+
 void Engine::run()
 {
     using clock = std::chrono::high_resolution_clock;
-
-    this->eventBus.subscribe<QuitEvent>([this](const QuitEvent&) { this->stop(); });
-
     auto lastTime = clock::now();
 
     while (this->running)
     {
-        if (this->input) this->input->poll();
+        this->inputManager.poll();
 
         auto now = clock::now();
         float deltaTime = std::chrono::duration<float>(now - lastTime).count();
@@ -26,3 +26,4 @@ void Engine::run()
         if (this->renderer) this->renderer->present();
     }
 }
+    

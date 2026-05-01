@@ -6,12 +6,14 @@
 #include "../../engine/include/Engine/Engine.h"
 #include "../../engine/include/InputAdapter/InputAdapter.h"
 #include "../../engine/include/InputContext/InputContext.h"
+#include "../../engine/include/PlatformInputFactory/PlatformInputFactory.h"
 #include "../../engine/include/SceneFactory/SceneFactory.h"
 #include "../../engine/include/Renderer/Renderer.h"
 #include "../../engine/include/ResourceManager/ResourceManager.h"
 #include "../../engine/include/ThreadPool/ThreadPool.h"
 #include "../../engine/include/Window/Window.h"
 
+#include "../../game/include/Camera2D/Camera2D.h"
 #include "../../game/include/CharacterLoader/CharacterLoader.h"
 #include "../../game/include/Combo/Combo.h"
 #include "../../game/include/MapRoster/MapRoster.h"
@@ -24,7 +26,6 @@
 #include <vector>
 
 class AnimationLoader;
-class Camera2D;
 class CharacterDefinitionLoader;
 class CharacterRoster;
 class MapLoader;
@@ -35,11 +36,11 @@ class TextureLoader;
 class Application
 {
 public:
-    Application();
-    ~Application();
+    Application() = default;
+    ~Application() = default;
 
     Application(const Application&) = delete;
-    Application &operator=(const Application&) = delete;
+    Application& operator=(const Application&) = delete;
 
     Application& setWindowTitle(const std::string& title);
     Application& setWindowSize(int width, int height);
@@ -55,8 +56,8 @@ private:
     std::unique_ptr<Window> window;
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<SceneFactory> sceneFactory;
+    std::unique_ptr<PlatformInputFactory> platformInputFactory;
     std::unique_ptr<Engine> engine;
-    std::unique_ptr<InputAdapter> inputAdapter;
     std::unique_ptr<JsonParser> parser;
     std::unique_ptr<ThreadPool> threadPool;
 
@@ -78,6 +79,7 @@ private:
     void initSystems();
     void initLoaders();
     void loadGameData();
+    void setupInput();
     void setupInitialScene();
 };
 

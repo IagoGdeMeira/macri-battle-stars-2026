@@ -22,7 +22,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # ===============================
 
 if(MSVC)
-    add_compile_options(/W4 /permissive-)
+    add_compile_options(/W4 /permissive- /FS)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()

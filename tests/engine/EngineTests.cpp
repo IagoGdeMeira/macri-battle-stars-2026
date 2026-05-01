@@ -1,7 +1,9 @@
 #include "../../src/engine/include/Engine/Engine.h"
 
+#include "../../src/engine/events/PlatformEvent.h"
 #include "../../src/engine/events/QuitEvent.h"
 #include "../../src/engine/include/InputAdapter/InputAdapter.h"
+#include "../../src/engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
 #include "../../src/engine/include/Scene/Scene.h"
 #include "../../src/engine/include/SceneId/SceneId.h"
 #include "../../src/engine/include/Window/Window.h"
@@ -125,9 +127,9 @@ protected:
 TEST_CASE_METHOD(EngineFixture, "Engine must stop when QuitEvent is emitted",
     "[unit][engine]"
 ) {
-    engine.scenes().changeScene(SceneId::Title, std::monostate{});
+    this->engine.scenes().changeScene(SceneId::Title, std::monostate{});
 
-    REQUIRE_NOTHROW(engine.run());
+    REQUIRE_NOTHROW(this->engine.run());
 }
 
 TEST_CASE_METHOD(EngineFixture, "Engine must keep looping until stopped",
@@ -136,8 +138,8 @@ TEST_CASE_METHOD(EngineFixture, "Engine must keep looping until stopped",
     int updates = 0;
     const int maxUpdates = 5;
 
-    engine.scenes().changeScene(SceneId::Selection, CountedQuitSceneData{ &updates, maxUpdates });
-    engine.run();
+    this->engine.scenes().changeScene(SceneId::Selection, CountedQuitSceneData{ &updates, maxUpdates });
+    this->engine.run();
 
     REQUIRE(updates == maxUpdates);
 }
@@ -145,12 +147,12 @@ TEST_CASE_METHOD(EngineFixture, "Engine must keep looping until stopped",
 TEST_CASE_METHOD(EngineFixture, "Engine stops when stop is called", 
     "[unit][engine]"
 ) {
-    engine.scenes().changeScene(SceneId::Game, std::monostate{});
+    this->engine.scenes().changeScene(SceneId::Game, std::monostate{});
 
-    std::thread t([&]() { engine.run(); });
+    std::thread t([&]() { this->engine.run(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    engine.stop();
+    this->engine.stop();
 
     t.join();
 
@@ -160,15 +162,32 @@ TEST_CASE_METHOD(EngineFixture, "Engine stops when stop is called",
 TEST_CASE_METHOD(EngineFixture, "Engine must poll configured input adapter",
     "[unit][engine]"
 ) {
+    class StubProvider : public IPlatformEventProvider
+    {
+    public:
+        explicit StubProvider(int& polls) : polls(&polls) {}
+
+        std::vector<std::unique_ptr<PlatformEvent>> pollEvents() override
+        {
+            ++(*this->polls);
+
+            std::vector<std::unique_ptr<PlatformEvent>> events;
+            events.push_back(std::make_unique<QuitPlatformEvent>());
+            return events;
+        }
+
+        int* polls;
+    };
+
     class StubInputAdapter : public InputAdapter
     {
     public:
         StubInputAdapter(EventBus& bus, int& polls) : bus(bus), polls(polls) {}
 
-        void poll() override
+        void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events) override
         {
-            polls++;
-            this->bus.emit<QuitEvent>();
+            ++this->polls;
+            if (!events.empty()) this->bus.emit<QuitEvent>();
         }
 
     private:
@@ -176,14 +195,16 @@ TEST_CASE_METHOD(EngineFixture, "Engine must poll configured input adapter",
         int& polls;
     };
 
-    int polls = 0;
-    StubInputAdapter adapter(engine.events(), polls);
+    int providerPolls = 0;
+    int adapterPolls = 0;
 
-    engine.setInputAdapter(adapter);
-    engine.scenes().changeScene(SceneId::Game, std::monostate{});
-    engine.run();
+    this->engine.input().setProvider(std::make_unique<StubProvider>(providerPolls));
+    this->engine.input().addAdapter(std::make_unique<StubInputAdapter>(this->engine.events(), adapterPolls));
+    this->engine.scenes().changeScene(SceneId::Game, std::monostate{});
+    this->engine.run();
 
-    REQUIRE(polls > 0);
+    REQUIRE(providerPolls > 0);
+    REQUIRE(adapterPolls > 0);
 }
 
 TEST_CASE_METHOD(EngineFixture, "Engine presents frames when renderer is configured",
@@ -197,9 +218,8 @@ TEST_CASE_METHOD(EngineFixture, "Engine presents frames when renderer is configu
         void clear() override {}
         void present() override { ++this->presentCalls; }
         std::shared_ptr<Texture> createTexture(const std::string&) override
-        {
-            return std::make_shared<Texture>();
-        }
+        { return std::make_shared<Texture>(); }
+        
         void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
         void drawRectOutline(const Rectangle&, const Renderer::Color&) override {}
         void drawRectFilled(const Rectangle&, const Renderer::Color&) override {}
@@ -209,10 +229,10 @@ TEST_CASE_METHOD(EngineFixture, "Engine presents frames when renderer is configu
     };
 
     StubRenderer renderer;
-    engine.setRenderer(renderer);
-    engine.scenes().changeScene(SceneId::Title, std::monostate{});
+    this->engine.setRenderer(renderer);
+    this->engine.scenes().changeScene(SceneId::Title, std::monostate{});
 
-    engine.run();
+    this->engine.run();
 
     REQUIRE(renderer.presentCalls == 1);
 }
@@ -222,8 +242,8 @@ TEST_CASE_METHOD(EngineFixture, "Engine render phase calls scene render",
 ) {
     int renders = 0;
 
-    engine.scenes().changeScene(SceneId::Game, RenderQuitSceneData{ &renders, 3 });
-    engine.run();
+    this->engine.scenes().changeScene(SceneId::Game, RenderQuitSceneData{ &renders, 3 });
+    this->engine.run();
 
     REQUIRE(renders == 3);
 }
@@ -231,7 +251,7 @@ TEST_CASE_METHOD(EngineFixture, "Engine render phase calls scene render",
 TEST_CASE_METHOD(EngineFixture, "Engine run works without renderer configured",
     "[unit][engine]"
 ) {
-    engine.scenes().changeScene(SceneId::Title, std::monostate{});
+    this->engine.scenes().changeScene(SceneId::Title, std::monostate{});
 
-    REQUIRE_NOTHROW(engine.run());
+    REQUIRE_NOTHROW(this->engine.run());
 }

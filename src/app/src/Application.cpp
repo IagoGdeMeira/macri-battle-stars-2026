@@ -2,6 +2,7 @@
 
 #include "../../engine/include/Engine/Engine.h"
 #include "../../engine/include/InputBindingLoader/InputBindingLoader.h"
+#include "../../engine/include/InputManager/InputManager.h"
 #include "../../engine/include/ResourceManager/ResourceManager.h"
 #include "../../engine/include/ResourceLoader/SyncLoader.h"
 
@@ -23,13 +24,15 @@
 #include "../../game/scenes/GameScene/GameScene.h"
 
 #include "../../platform/include/JsonParser/JsonParser.h"
+#include "../../platform/include/SDLGamepadAdapter/SDLGamepadAdapter.h"
 #include "../../platform/include/SDLKeyboardAdapter/SDLKeyboardAdapter.h"
+#include "../../platform/include/SDLMouseAdapter/SDLMouseAdapter.h"
+#include "../../platform/include/SDLPlatformEventProvider/SDLPlatformEventProvider.h"
+#include "../../platform/include/SDLPlatformInputFactory/SDLPlatformInputFactory.h"
 #include "../../platform/include/SDLRenderer/SDLRenderer.h"
+#include "../../platform/include/SDLSystemAdapter/SDLSystemAdapter.h"
 #include "../../platform/include/SDLSystemInitializer/SDLSystemInitializer.h"
 #include "../../platform/include/SDLWindow/SDLWindow.h"
-
-Application::Application() = default;
-Application::~Application() = default;
 
 Application& Application::setWindowTitle(const std::string& title)
 {
@@ -51,6 +54,7 @@ int Application::run()
     this->loadGameData();
 
     this->setupInitialScene();
+    this->setupInput();
 
     this->engine->run();
     return 0;
@@ -69,6 +73,7 @@ void Application::initSystems()
         static_cast<SDLWindow*>(this->window.get())->getNativeHandle());
 
     this->camera = std::make_unique<Camera2D>();
+
 }
 
 void Application::initLoaders()
@@ -112,6 +117,23 @@ void Application::loadGameData()
         mapRosterLoader.load("assets/maps/roster.json"));
 }
 
+void Application::setupInput()
+{
+    auto& inputManager = this->engine->input();
+
+    auto provider = std::make_unique<SDLPlatformEventProvider>();
+    inputManager.setProvider(std::move(provider));
+
+    this->platformInputFactory = std::make_unique<SDLPlatformInputFactory>(this->engine->events());
+
+    inputManager.addAdapter(this->platformInputFactory->createKeyboardAdapter(*this->inputContext));
+
+    auto gamepadAdapters = this->platformInputFactory->createGamepadAdapters(1);
+    for (auto& adapter : gamepadAdapters) inputManager.addAdapter(std::move(adapter));
+
+    inputManager.addAdapter(this->platformInputFactory->createSystemAdapter());
+}
+
 void Application::setupInitialScene()
 {
     this->sceneFactory = std::make_unique<SceneFactory>(
@@ -130,14 +152,10 @@ void Application::setupInitialScene()
     this->sceneFactory->engine = this->engine.get();
     this->engine->setRenderer(*this->renderer);
 
-    this->inputAdapter = std::make_unique<SDLKeyboardAdapter>(this->engine->events(), *this->inputContext);
-    this->engine->setInputAdapter(*this->inputAdapter);
-
     std::vector<GameScene::PlayerSlot> slots;
 
     const auto& availableCharacters = this->characterRoster->getAll();
-    if (availableCharacters.empty())
-    { throw std::runtime_error("No characters found in roster. Cannot start GameScene."); }
+    if (availableCharacters.empty()) throw std::runtime_error("No characters found in roster. Cannot start GameScene");
 
     const std::string& defaultCharId = availableCharacters.front().id;
     const CharacterEntry* defaultEntry = this->characterRoster->findById(defaultCharId);
@@ -168,4 +186,5 @@ void Application::setupInitialScene()
             .mapData = std::move(defaultMap),
             .resourceManager = *this->resourceManager
         }));
+
 }

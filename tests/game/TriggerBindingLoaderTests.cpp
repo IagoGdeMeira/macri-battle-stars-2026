@@ -140,7 +140,8 @@ public:
             auto root = std::make_unique<StubNode>();
             std::vector<std::unique_ptr<DataNode>> bindings;
             bindings.push_back(makeBinding("Jump", {"Jumped", "TouchedWall"}));
-            bindings.push_back(makeBinding("Attack", {"Punched"}));
+            bindings.push_back(makeBinding("Punch", {"Punched"}));
+            bindings.push_back(makeBinding("Kick", {"Kicked"}));
             root->setArray("bindings", std::move(bindings));
 
             return root;
@@ -159,12 +160,14 @@ TEST_CASE_METHOD(TriggerBindingLoaderFixture, "TriggerBindingLoader builds trigg
 
     const auto context = loader.load("assets/triggers/trigger_bindings.json");
 
-    REQUIRE(context.bindings.size() == 2);
+    REQUIRE(context.bindings.size() == 3);
     REQUIRE(context.bindings.at(InputAction::Jump).size() == 2);
     REQUIRE(context.bindings.at(InputAction::Jump)[0] == TriggerId::Jumped);
     REQUIRE(context.bindings.at(InputAction::Jump)[1] == TriggerId::TouchedWall);
-    REQUIRE(context.bindings.at(InputAction::Attack).size() == 1);
-    REQUIRE(context.bindings.at(InputAction::Attack)[0] == TriggerId::Punched);
+    REQUIRE(context.bindings.at(InputAction::Punch).size() == 1);
+    REQUIRE(context.bindings.at(InputAction::Punch)[0] == TriggerId::Punched);
+    REQUIRE(context.bindings.at(InputAction::Kick).size() == 1);
+    REQUIRE(context.bindings.at(InputAction::Kick)[0] == TriggerId::Kicked);
 }
 
 TEST_CASE_METHOD(TriggerBindingLoaderFixture, "TriggerBindingLoader forwards the file path to the parser",

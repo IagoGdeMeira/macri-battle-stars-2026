@@ -120,7 +120,7 @@ public:
     std::unique_ptr<DataNode> makeCombosRoot() const
     {
         auto step1 = std::make_unique<StubNode>();
-        step1->setString("action", "Attack");
+        step1->setString("action", "Punch");
         step1->setFloat("maxDelay", 150.0f);
 
         auto step2 = std::make_unique<StubNode>();
@@ -177,7 +177,7 @@ TEST_CASE_METHOD(ComboLoaderFixture, "ComboLoader parses combos with optional fi
     REQUIRE(combos[0].priority == 10);
     REQUIRE(combos[0].consumeInput == false);
     REQUIRE(combos[0].steps.size() == 2);
-    REQUIRE(combos[0].steps[0].action == InputAction::Attack);
+    REQUIRE(combos[0].steps[0].action == InputAction::Punch);
     REQUIRE(combos[0].steps[0].maxDelay == 150);
     REQUIRE(combos[0].steps[1].action == InputAction::Jump);
     REQUIRE(combos[0].steps[1].maxDelay == 100);

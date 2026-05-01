@@ -76,7 +76,7 @@ TEST_CASE_METHOD(ConditionFactoryFixture, "ConditionFactory creates input_presse
     "[unit][condition_factory]"
 ) {
     this->node.setString("type", "input_pressed");
-    this->node.setString("action", "Attack");
+    this->node.setString("action", "Punch");
 
     auto condition = ConditionFactory::create(this->node);
 

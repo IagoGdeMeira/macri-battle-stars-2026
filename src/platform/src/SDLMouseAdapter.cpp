@@ -6,44 +6,29 @@
 
 #include <SDL.h>
 
-SDLMouseAdapter::SDLMouseAdapter(EventBus& eventBus, uint32_t assignedPlayer)
-    : eventBus(eventBus), playerId(assignedPlayer)
-{
-    this->previousButtonState[MouseButton::Left]   = false;
-    this->previousButtonState[MouseButton::Right]  = false;
-    this->previousButtonState[MouseButton::Middle] = false;
-}
+SDLMouseAdapter::SDLMouseAdapter(EventBus& eventBus, uint32_t assignedPlayer) :
+    eventBus(eventBus), playerId(assignedPlayer) {}
 
-void SDLMouseAdapter::poll()
+void SDLMouseAdapter::processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events)
 {
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
+    for (const auto& e : events)
     {
-        if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
+        if (e->type() != PlatformEvent::Type::Mouse) continue;
+        
+        if (const auto* btnEvent = dynamic_cast<const MouseButtonEvent*>(e.get()))
         {
-            bool pressed = (event.type == SDL_MOUSEBUTTONDOWN);
-            MouseButton btn;
-            switch (event.button.button)
-            {
-                case SDL_BUTTON_LEFT:   btn = MouseButton::Left;   break;
-                case SDL_BUTTON_RIGHT:  btn = MouseButton::Right;  break;
-                case SDL_BUTTON_MIDDLE: btn = MouseButton::Middle; break;
-                default: continue;
-            }
-            if (this->previousButtonState[btn] != pressed)
-            {
-                this->previousButtonState[btn] = pressed;
-                this->eventBus.emit<DigitalInputEvent>(
-                    InputSource::mouse(btn), this->playerId, pressed);
-            }
+            auto src = InputSource::mouse(static_cast<MouseButton>(btnEvent->button));
+            this->eventBus.emit<DigitalInputEvent>(src, this->playerId, btnEvent->pressed);
         }
-        else if (event.type == SDL_MOUSEMOTION)
+        else if (const auto* motionEvent = dynamic_cast<const MouseMotionEvent*>(e.get()))
         {
-            float normalizedX = static_cast<float>(event.motion.xrel) / 100.0f;
+            float normalizedX = motionEvent->deltaX / 100.0f;
             if (normalizedX > 1.0f) normalizedX = 1.0f;
             if (normalizedX < -1.0f) normalizedX = -1.0f;
-            this->eventBus.emit<AnalogInputEvent>(
-                InputSource::mouse(MouseButton::Left), this->playerId, normalizedX);
+
+            auto src = InputSource::mouse(MouseButton::Left);
+            this->eventBus.emit<AnalogInputEvent>(src, this->playerId, normalizedX);
         }
+        
     }
 }

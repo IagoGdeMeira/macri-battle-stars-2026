@@ -16,33 +16,27 @@ SDLGamepadAdapter::SDLGamepadAdapter(EventBus& eventBus, uint32_t assignedPlayer
 
 SDLGamepadAdapter::~SDLGamepadAdapter() { if (this->joystick) SDL_JoystickClose(this->joystick); }
 
-void SDLGamepadAdapter::poll()
+void SDLGamepadAdapter::processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events)
 {
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
+    for (const auto& e : events)
     {
-        if (event.type == SDL_JOYBUTTONDOWN)
+        if (e->type() != PlatformEvent::Type::Gamepad) continue;
+        
+        if (auto* btnEvent = dynamic_cast<const GamepadButtonEvent*>(e.get()))
         {
-            GamepadButton btn = SDLKeyTranslator::toGamepadButton(event.jbutton.button);
-            this->eventBus.emit<DigitalInputEvent>(InputSource::gamepad(btn), this->playerId, true);
+            auto src = InputSource::gamepad(static_cast<GamepadButton>(btnEvent->button));
+            this->eventBus.emit<DigitalInputEvent>(src, this->playerId, btnEvent->pressed);
         }
-        else if (event.type == SDL_JOYBUTTONUP)
+        else if (auto* axisEvent = dynamic_cast<const GamepadAxisEvent*>(e.get()))
         {
-            GamepadButton btn = SDLKeyTranslator::toGamepadButton(event.jbutton.button);
-            this->eventBus.emit<DigitalInputEvent>(InputSource::gamepad(btn), this->playerId, false);
-        }
-        else if (event.type == SDL_JOYAXISMOTION)
-        {
-            float value = static_cast<float>(event.jaxis.value) / 32767.0f;
-            if (event.jaxis.axis == 0)
-            { 
-                this->eventBus.emit<AnalogInputEvent>(InputSource::gamepad(
-                    GamepadButton::LeftStick), this->playerId, value);
-            }
-            else if (event.jaxis.axis == 1)
+            switch (axisEvent->axis)
             {
-                this->eventBus.emit<AnalogInputEvent>(InputSource::gamepad(
-                    GamepadButton::LeftStick), this->playerId, value);
+                case 0: case 1:
+                {
+                    auto src = InputSource::gamepad(GamepadButton::LeftStick);
+                    this->eventBus.emit<AnalogInputEvent>(src, this->playerId, axisEvent->value);
+                    break;
+                }
             }
         }
     }

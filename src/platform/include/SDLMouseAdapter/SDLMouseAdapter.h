@@ -2,9 +2,8 @@
 #define sdl_mouse_adapter_h
 
 #include "../../engine/include/InputAdapter/InputAdapter.h"
-#include "../../engine/include/MouseButton/MouseButton.h"
 
-#include <unordered_map>
+#include <memory>
 
 class EventBus;
 
@@ -12,12 +11,12 @@ class SDLMouseAdapter : public InputAdapter
 {
 public:
     SDLMouseAdapter(EventBus& eventBus, uint32_t assignedPlayer);
-    void poll() override;
+    
+    void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events) override;
 
 private:
     EventBus& eventBus;
     uint32_t playerId;
-    std::unordered_map<MouseButton, bool> previousButtonState;
 };
 
 #endif // sdl_mouse_adapter_h

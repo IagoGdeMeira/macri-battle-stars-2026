@@ -58,7 +58,7 @@ public:
 class StubInputAdapter : public InputAdapter
 {
 public:
-    void poll() override {}
+    void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>&) override {}
 };
 
 TEST_CASE("Application setWindowTitle returns Application for chaining",
