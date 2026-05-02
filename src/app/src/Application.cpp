@@ -138,17 +138,20 @@ void Application::setupInput()
 
 void Application::setupInitialScene()
 {
-    this->sceneFactory = std::make_unique<SceneFactory>(
-        *this->window,
-        *this->inputContext,
-        *this->triggerContext,
-        *this->characterRoster,
-        *this->characterLoader,
-        *this->camera,
-        this->globalCombos,
-        *this->mapRoster,
-        *this->parser,
-        *this->resourceManager);
+    this->sceneFactory = std::make_unique<SceneFactory>(SceneFactory::Config
+    {
+        .window = *this->window,
+        .inputContext = *this->inputContext,
+        .triggerContext = *this->triggerContext,
+        .characterRoster = *this->characterRoster,
+        .characterLoader = *this->characterLoader,
+        .camera = *this->camera,
+        .globalCombos = this->globalCombos,
+        .mapRoster = *this->mapRoster,
+        .parser = *this->parser,
+        .resourceManager = *this->resourceManager,
+        .textureLoader = *this->textureLoader
+    });
 
     this->engine = std::make_unique<Engine>(*this->window, *this->sceneFactory);
     this->sceneFactory->engine = this->engine.get();
@@ -172,21 +175,19 @@ void Application::setupInitialScene()
     for (const auto& [playerId, _] : this->inputContext->bindings)
     { slots.push_back({ .playerId = playerId, .characterDefPath = defaultEntry->definitionPath }); }
 
-    this->engine->scenes().changeScene(
-        SceneId::Game,
-        std::move(GameScene::Config
-        {
-            .eventBus = this->engine->events(),
-            .input = *this->inputContext,
-            .triggerContext = std::move(*this->triggerContext),
-            .combos = std::move(this->globalCombos),
-            .camera = *this->camera,
-            .window = *this->window,
-            .characterLoader = *this->characterLoader,
-            .playerSlots = std::move(slots),
-            .renderer = *this->renderer,
-            .mapData = std::move(defaultMap),
-            .resourceManager = *this->resourceManager
-        }));
-
+    this->engine->scenes().changeScene(SceneId::Game, std::move(GameScene::Config
+    {
+        .eventBus = this->engine->events(),
+        .input = *this->inputContext,
+        .triggerContext = std::move(*this->triggerContext),
+        .combos = std::move(this->globalCombos),
+        .camera = *this->camera,
+        .window = *this->window,
+        .characterLoader = *this->characterLoader,
+        .playerSlots = std::move(slots),
+        .renderer = *this->renderer,
+        .mapData = std::move(defaultMap),
+        .resourceManager = *this->resourceManager,
+        .textureLoader = *this->textureLoader
+    }));
 }

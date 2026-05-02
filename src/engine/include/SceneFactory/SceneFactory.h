@@ -24,18 +24,33 @@ struct TriggerContext;
 class SceneFactory : public ISceneFactory
 {
 public:
-    SceneFactory(
-        Window& window,
-        InputContext& inputContext,
-        TriggerContext& triggerContext,
-        CharacterRoster& characterRoster,
-        CharacterLoader& characterLoader,
-        Camera2D& camera,
-        std::vector<Combo>& globalCombos,
-        MapRoster& mapRoster,
-        DataParser& parser,
-        ResourceManager& resourceManager
-    );
+    struct Config
+    {
+        Window& window;
+        InputContext& inputContext;
+        TriggerContext& triggerContext;
+        CharacterRoster& characterRoster;
+        CharacterLoader& characterLoader;
+        Camera2D& camera;
+        std::vector<Combo>& globalCombos;
+        MapRoster& mapRoster;
+        DataParser& parser;
+        ResourceManager& resourceManager;
+        TextureLoader& textureLoader;
+    };
+
+    explicit SceneFactory(Config&& config) :
+        window(config.window),
+        inputContext(config.inputContext),
+        triggerContext(config.triggerContext),
+        characterRoster(config.characterRoster),
+        characterLoader(config.characterLoader),
+        camera(config.camera),
+        globalCombos(config.globalCombos),
+        mapRoster(config.mapRoster),
+        parser(config.parser),
+        resourceManager(config.resourceManager),
+        textureLoader(config.textureLoader) {}
 
     std::unique_ptr<Scene> createScene(SceneId id, std::any data) override;
 
@@ -52,6 +67,7 @@ private:
     MapRoster& mapRoster;
     DataParser& parser;
     ResourceManager& resourceManager;
+    TextureLoader& textureLoader;
 };
 
 #endif // scene_factory_h

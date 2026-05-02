@@ -11,30 +11,6 @@
 
 #include <stdexcept>
 
-SceneFactory::SceneFactory(
-    Window& window,
-    InputContext& inputContext,
-    TriggerContext& triggerContext,
-    CharacterRoster& characterRoster,
-    CharacterLoader& characterLoader,
-    Camera2D& camera,
-    std::vector<Combo>& globalCombos,
-    MapRoster& mapRoster,
-    DataParser& parser,
-    ResourceManager& resourceManager
-) :
-    window(window),
-    inputContext(inputContext),
-    triggerContext(triggerContext),
-    characterRoster(characterRoster),
-    characterLoader(characterLoader),
-    camera(camera),
-    globalCombos(globalCombos),
-    mapRoster(mapRoster),
-    parser(parser),
-    resourceManager(resourceManager)
-{}
-
 std::unique_ptr<Scene> SceneFactory::createScene(SceneId id, std::any data)
 {
     if (this->engine == nullptr) throw std::runtime_error("SceneFactory engine is not bound");
@@ -89,7 +65,8 @@ std::unique_ptr<Scene> SceneFactory::createScene(SceneId id, std::any data)
                 .playerSlots = std::move(slots),
                 .renderer = renderer,
                 .mapData = std::move(mapData),
-                .resourceManager = this->resourceManager
+                .resourceManager = this->resourceManager,
+                .textureLoader = this->textureLoader
             };
             return std::make_unique<GameScene>(std::move(cfg));
         }

@@ -4,14 +4,16 @@
 #include "../../include/Camera2D/Camera2D.h"
 #include "../../include/CharacterLoader/CharacterLoader.h"
 #include "../../include/Combo/Combo.h"
+#include "../../include/EntityFactory/EntityFactory.h"
 #include "../../include/MapData/MapData.h"
 #include "../../include/TriggerContext/TriggerContext.h"
 #include "../../include/RenderSystem/RenderSystem.h"
 
-#include "../../../engine/include/InputContext/InputContext.h"
 #include "../../../engine/include/EventBus/EventBus.h"
+#include "../../../engine/include/InputContext/InputContext.h"
 #include "../../../engine/include/Renderer/Renderer.h"
 #include "../../../engine/include/ResourceManager/ResourceManager.h"
+#include "../../../engine/include/TextureLoader/TextureLoader.h"
 #include "../../../engine/include/Scene/Scene.h"
 #include "../../../engine/include/Window/Window.h"
 
@@ -41,9 +43,10 @@ public:
         Renderer& renderer;
         MapData mapData;
         ResourceManager& resourceManager;
+        TextureLoader& textureLoader;
     };
 
-    GameScene(Config&& config);
+    explicit GameScene(Config&& config);
 
     void init() override;
     void render() override;
@@ -67,8 +70,10 @@ private:
     Renderer& renderer;
     MapData mapData;
     ResourceManager& resourceManager;
+    TextureLoader& textureLoader;
 
     std::unique_ptr<RenderSystem> renderSystem;
+    std::unique_ptr<EntityFactory> entityFactory;
 };
 
 #endif // game_scene_h

@@ -102,10 +102,22 @@ public:
             this->animationLoader,
             this->machineLoader,
             this->resourceManager, 
-            this->textureLoader}),
-        sceneFactory(window, inputContext, triggerContext, roster, characterLoader, camera, combos,
-            mapRoster, parser, resourceManager),
-        engine(window, sceneFactory)
+            this->textureLoader
+        }),
+        sceneFactory({
+            this->window,
+            this->inputContext,
+            this->triggerContext,
+            this->roster,
+            this->characterLoader,
+            this->camera,
+            this->combos,
+            this->mapRoster,
+            this->parser,
+            this->resourceManager,
+            this->textureLoader
+        }),
+        engine(this->window, this->sceneFactory)
     {
         this->sceneFactory.engine = &this->engine;
         this->roster.addEntry(CharacterEntry{ "fighter_01", "Fighter 01", "assets/characters/fighter_01.json" });

@@ -1,5 +1,6 @@
 #include "../../scenes/GameScene/GameScene.h"
 
+#include "../../include/AirFrictionSystem/AirFrictionSystem.h"
 #include "../../include/AnimationStateSystem/AnimationStateSystem.h"
 #include "../../include/AnimationSystem/AnimationSystem.h"
 #include "../../include/CameraControllerSystem/CameraControllerSystem.h"
@@ -7,11 +8,21 @@
 #include "../../include/ComboSystem/ComboSystem.h"
 #include "../../include/ComponentRegistry/ComponentRegistry.h"
 #include "../../include/DamageSystem/DamageSystem.h"
+#include "../../include/DynamicPushboxResolutionSystem/DynamicPushboxResolutionSystem.h"
+#include "../../include/FrictionSystem/FrictionSystem.h"
+#include "../../include/GravitySystem/GravitySystem.h"
+#include "../../include/GroundDetectionSystem/GroundDetectionSystem.h"
 #include "../../include/LocalToWorldSystem/LocalToWorldSystem.h"
+#include "../../include/PlayerControlSystem/PlayerControlSystem.h"
 #include "../../include/RenderSystem/RenderSystem.h"
 #include "../../include/StateSystem/StateSystem.h"
+#include "../../include/StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
 #include "../../include/TriggerGenerationSystem/TriggerGenerationSystem.h"
 
+#include "../../../domain/components/AirFrictionComponent.h"
+#include "../../../domain/components/AnalogInputComponent.h"
+#include "../../../domain/components/GravityComponent.h"
+#include "../../../domain/components/GroundedComponent.h"
 #include "../../../domain/components/InputBufferComponent.h"
 #include "../../../domain/components/InputComponent.h"
 #include "../../../domain/components/ParallaxComponent.h"
@@ -42,28 +53,43 @@ GameScene::GameScene(Config&& config) :
     playerSlots(std::move(config.playerSlots)),
     renderer(config.renderer),
     mapData(std::move(config.mapData)),
-    resourceManager(config.resourceManager)
+    resourceManager(config.resourceManager),
+    textureLoader(config.textureLoader)
 {
-    systemManager.addSystem<InputSystem>(config.eventBus, this->input);
-    systemManager.addSystem<TriggerGenerationSystem>(config.eventBus, this->triggerContext);
-    systemManager.addSystem<InputBufferSystem>(config.eventBus, this->input);
-    systemManager.addSystem<ComboSystem>(config.eventBus, this->combos);
+    auto& systems = this->systemManager;
+    systems.addSystem<InputSystem>(this->eventBus, this->input);
+    systems.addSystem<TriggerGenerationSystem>(this->eventBus, this->triggerContext);
+    systems.addSystem<InputBufferSystem>(this->eventBus, this->input);
+    systems.addSystem<ComboSystem>(this->eventBus, this->combos);
 
-    systemManager.addSystem<StateSystem>(config.eventBus);
+    systems.addSystem<StateSystem>(this->eventBus);
 
-    systemManager.addSystem<MovementSystem>();
-    systemManager.addSystem<LocalToWorldSystem>();
+    systems.addSystem<PlayerControlSystem>(this->eventBus, 300.0f, -500.0f);
 
-    systemManager.addSystem<AnimationStateSystem>(config.eventBus);
-    systemManager.addSystem<AnimationSystem>();
+    systems.addSystem<GravitySystem>(this->mapData.gravity);
+    systems.addSystem<AirFrictionSystem>(this->mapData.airFriction);
+    systems.addSystem<MovementSystem>();
+    systems.addSystem<LocalToWorldSystem>();
 
-    systemManager.addSystem<CollisionDetectionSystem>();
-    systemManager.addSystem<DamageSystem>(config.eventBus);
+    systems.addSystem<AnimationStateSystem>(this->eventBus);
+    systems.addSystem<AnimationSystem>();
 
-    systemManager.addSystem<CameraControllerSystem>(this->camera, this->window);
+    systems.addSystem<CollisionDetectionSystem>();
+    systems.addSystem<GroundDetectionSystem>(this->eventBus);
+    systems.addSystem<StaticPushboxResolutionSystem>(this->eventBus);
+    systems.addSystem<DynamicPushboxResolutionSystem>(this->eventBus);
+    systems.addSystem<FrictionSystem>(this->mapData.floorFriction);
 
-    this->renderSystem = std::make_unique<RenderSystem>(
-        config.eventBus, config.renderer, config.camera);
+    systems.addSystem<DamageSystem>(this->eventBus);
+
+    systems.addSystem<CameraControllerSystem>(this->camera, this->window);
+
+    this->renderSystem = std::make_unique<RenderSystem>(this->eventBus, this->renderer, this->camera);
+
+    auto& world = this->world();
+    auto& resources = this->resourceManager;
+    auto& textures = this->textureLoader;
+    this->entityFactory = std::make_unique<EntityFactory>(world, resources, textures);
 }
 
 void GameScene::init() { this->prepareScene(); }
@@ -86,32 +112,14 @@ void GameScene::prepareScene()
 void GameScene::prepareComponents() { ComponentRegistry::registerAll(this->world().components()); }
 
 void GameScene::prepareBackgroundLayers()
-{
-    auto& components = this->world().components();
-    auto& entities = this->world().entities();
-
-    for (const auto& layer : this->mapData.backgroundLayers)
-    {
-        Entity bg = entities.create();
-
-        auto bgParallax = ParallaxComponent { layer.parallaxFactorX, layer.parallaxFactorY };
-        components.add<ParallaxComponent>(bg, bgParallax);
-
-        components.add<RenderComponent>(bg, RenderComponent{ 0, layer.zIndex });
-    }
-}
+{ for (const auto& layer : this->mapData.backgroundLayers) this->entityFactory->createBackgroundLayer(layer); }
 
 void GameScene::prepareFloor()
 {
-    auto& components = this->world().components();
-    auto& entities = this->world().entities();
-
-    Entity floor = entities.create();
-    auto floorTransform = TransformComponent { this->mapData.floorWidth * 0.5f, this->mapData.floorY };
-    components.add<TransformComponent>(floor, floorTransform);
-
-    auto floorCollider = RectangleColliderComponent { this->mapData.floorWidth, this->mapData.floorHeight };
-    components.add<RectangleColliderComponent>(floor, floorCollider);
+    Position floorPos{this->mapData.floorWidth * 0.5f, this->mapData.floorY};
+    Entity floorBody = this->entityFactory->createStaticBody(floorPos);
+    this->entityFactory->addStaticCollider(floorBody,
+        Rectangle{{0, 0}, this->mapData.floorWidth, this->mapData.floorHeight});
 }
 
 void GameScene::prepareWalls()
@@ -143,15 +151,19 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
 
     Entity entity = this->characterLoader.create(world, slot.characterDefPath);
 
-    components.add<PlayerComponent>(entity, PlayerComponent{slot.playerId});
+    components.add<PlayerComponent>(entity, PlayerComponent{ slot.playerId });
     components.add<InputComponent>(entity, InputComponent{});
     components.add<InputBufferComponent>(entity, InputBufferComponent{});
+    components.add<AnalogInputComponent>(entity, AnalogInputComponent{});
     components.add<TransformComponent>(entity, TransformComponent{});
     components.add<VelocityComponent>(entity, VelocityComponent{});
+    components.add<GravityComponent>(entity, GravityComponent{});
+    components.add<AirFrictionComponent>(entity, AirFrictionComponent{});
+    components.add<GroundedComponent>(entity, GroundedComponent{});
 
     float spawnX = 400.0f;
-    for (const auto& sp : this->mapData.spawnPoints) if (sp.playerId == slot.playerId)
-    { spawnX = sp.x; break; }
+    for (const auto& sp : this->mapData.spawnPoints)
+    { if (sp.playerId == slot.playerId) { spawnX = sp.x; break; } }
 
     auto& transform = components.get<TransformComponent>(entity);
     transform.x = spawnX;
@@ -162,7 +174,7 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
         transform.y = this->mapData.floorY - (sprite.height * 0.5f);
     }
     else transform.y = this->mapData.floorY - 32.0f;
-
+    
     if (components.has<StateComponent>(entity))
     { components.get<StateComponent>(entity).current = StateId::Idle; }
 }

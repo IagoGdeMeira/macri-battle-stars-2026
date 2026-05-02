@@ -308,7 +308,8 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
         .playerSlots = std::move(playerSlots),
         .renderer = this->renderer,
         .mapData = std::move(mapData),
-        .resourceManager = this->resourceManager
+        .resourceManager = this->resourceManager,
+        .textureLoader = textureLoader
     });
 
     auto& components = scene.world().components();
