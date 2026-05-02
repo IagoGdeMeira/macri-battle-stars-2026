@@ -10,7 +10,7 @@
 
 StateMachine StateMachineLoader::load(const std::string& path) const
 {
-    auto root = parser.parse(path);
+    auto root = this->parser.parse(path);
 
     StateMachine machine;
 
@@ -92,7 +92,7 @@ StateMachine StateMachineLoader::load(const std::string& path) const
 
 StateMachine StateMachineLoader::load(const std::string& path, const StateIdMapper& mapper) const
 {
-    auto root = parser.parse(path);
+    auto root = this->parser.parse(path);
 
     StateMachine machine;
 

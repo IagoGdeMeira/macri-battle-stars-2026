@@ -10,7 +10,7 @@ public:
     TextureLoader(Renderer& renderer) : renderer(renderer) {}
 
     std::shared_ptr<Texture> load(const std::string& path) override
-    { return renderer.createTexture(path); }
+    { return this->renderer.createTexture(path); }
 
 private:
     Renderer& renderer;

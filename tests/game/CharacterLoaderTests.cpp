@@ -14,13 +14,13 @@
 #include "../../src/engine/include/DataParser/DataParser.h"
 #include "../../src/engine/include/Renderer/Renderer.h"
 #include "../../src/engine/include/ResourceManager/ResourceManager.h"
+#include "../../src/engine/include/TextureLoader/TextureLoader.h"
 #include "../../src/engine/include/ThreadPool/ThreadPool.h"
 
 #include "../../src/game/include/AnimationLoader/AnimationLoader.h"
 #include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 #include "../../src/game/include/StateIdMapper/StateIdMapper.h"
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
-#include "../../src/game/include/TextureLoader/TextureLoader.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -53,7 +53,7 @@ public:
                 converted.push_back(*typed);
             }
 
-            arrays[key] = std::move(converted);
+            this->arrays[key] = std::move(converted);
         }
 
         bool has(const std::string& key) const override
@@ -126,7 +126,7 @@ public:
         {
             this->lastPath = filePath;
 
-            auto* typed = dynamic_cast<Node*>(root.get());
+            auto* typed = dynamic_cast<Node*>(this->root.get());
             if (!typed) throw std::runtime_error("Unexpected root node type in fake parser");
 
             return std::make_unique<Node>(*typed);
@@ -136,12 +136,19 @@ public:
         std::unique_ptr<DataNode> root;
     };
 
+    class StubTexture : public Texture
+    {
+    public:
+        int getWidth() const override { return 64; }
+        int getHeight() const override { return 96; }
+    };
+
     class StubRenderer : public Renderer
     {
     public:
         int createTextureCalls = 0;
         std::string lastTexturePath;
-        std::shared_ptr<Texture> textureToReturn = std::make_shared<Texture>();
+        std::shared_ptr<Texture> textureToReturn = std::make_shared<StubTexture>();
 
         void clear() override {}
         void present() override {}
@@ -156,16 +163,16 @@ public:
         void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
         { (void)texture; (void)params; }
 
-        void drawRectOutline(const Rectangle& rect, const Renderer::Color& color) override
+        void drawRectOutline(const Rectangle& rect, const Color& color) override
         { (void)rect; (void)color; }
 
-        void drawRectFilled(const Rectangle& rect, const Renderer::Color& color) override
+        void drawRectFilled(const Rectangle& rect, const Color& color) override
         { (void)rect; (void)color; }
 
-        void drawCircleOutline(const Circle& circle, const Renderer::Color& color) override
+        void drawCircleOutline(const Circle& circle, const Color& color) override
         { (void)circle; (void)color; }
 
-        void drawCircleFilled(const Circle& circle, const Renderer::Color& color) override
+        void drawCircleFilled(const Circle& circle, const Color& color) override
         { (void)circle; (void)color; }
 
         void setViewport(const Viewport& viewport) override
@@ -174,12 +181,13 @@ public:
 
     CharacterLoaderFixture() : resourceManager(threadPool)
     {
-        this->world.components().registerComponent<SpriteComponent>();
-        this->world.components().registerComponent<StateComponent>();
-        this->world.components().registerComponent<StateMappingComponent>();
-        this->world.components().registerComponent<StateMachineComponent>();
-        this->world.components().registerComponent<AnimationControllerComponent>();
-        this->world.components().registerComponent<AnimationComponent>();
+        auto& components = this->world.components();
+        components.registerComponent<SpriteComponent>();
+        components.registerComponent<StateComponent>();
+        components.registerComponent<StateMappingComponent>();
+        components.registerComponent<StateMachineComponent>();
+        components.registerComponent<AnimationControllerComponent>();
+        components.registerComponent<AnimationComponent>();
     }
 
     std::unique_ptr<DataNode> makeDefinitionRoot() const
@@ -252,13 +260,13 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     StateMachineLoader machineLoader(stateMachineParser);
     TextureLoader textureLoader(renderer);
 
-    CharacterLoader loader(
-        definitionLoader,
-        animationLoader,
-        machineLoader,
-        resourceManager,
-        textureLoader
-    );
+    CharacterLoader loader({
+        .defLoader = definitionLoader,
+        .animLoader = animationLoader,
+        .fsmLoader = machineLoader,
+        .resourceManager = this->resourceManager,
+        .textureLoader = textureLoader
+    });
 
     const auto entity = loader.create(this->world, "assets/characters/fighter_01.json");
 
@@ -358,13 +366,14 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     StateMachineLoader machineLoader(stateMachineParser);
     TextureLoader textureLoader(renderer);
 
-    CharacterLoader loader(
-        definitionLoader,
-        animationLoader,
-        machineLoader,
-        resourceManager,
-        textureLoader
-    );
+    CharacterLoader loader(CharacterLoader::Config
+    {
+        .defLoader = definitionLoader,
+        .animLoader = animationLoader,
+        .fsmLoader = machineLoader,
+        .resourceManager = this->resourceManager,
+        .textureLoader = textureLoader
+    });
 
     const auto entity = loader.create(this->world, "assets/characters/fighter_custom.json");
 

@@ -5,6 +5,7 @@
 #include "../../src/domain/components/ShapeRenderComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/TransformComponent.h"
+#include "../../src/domain/include/Color/Color.h"
 #include "../../src/domain/include/World/World.h"
 
 #include "../../src/engine/events/WindowResizedEvent.h"
@@ -33,6 +34,12 @@ public:
     }
 
 protected:
+    struct StubTexture : Texture
+    {
+        int getWidth() const override { return 16; }
+        int getHeight() const override { return 8; }
+    };
+
     struct StubRenderer : Renderer
     {
         int clearCalls = 0;
@@ -58,7 +65,7 @@ protected:
         bool lastUseSourceRect = false;
         Rectangle lastRect;
         Circle lastCircle;
-        Renderer::Color lastColor;
+        Color lastColor;
         int viewportX = 0;
         int viewportY = 0;
         int viewportWidth = 0;
@@ -71,7 +78,7 @@ protected:
         std::shared_ptr<Texture> createTexture(const std::string& filePath) override
         {
             (void)filePath;
-            return std::make_shared<Texture>();
+            return std::make_shared<StubTexture>();
         }
 
         void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
@@ -92,28 +99,28 @@ protected:
             this->lastUseSourceRect = params.useSourceRect;
         }
 
-        void drawRectOutline(const Rectangle& rect, const Renderer::Color& color) override
+        void drawRectOutline(const Rectangle& rect, const Color& color) override
         {
             this->drawRectOutlineCalls++;
             this->lastRect = rect;
             this->lastColor = color;
         }
 
-        void drawRectFilled(const Rectangle& rect, const Renderer::Color& color) override
+        void drawRectFilled(const Rectangle& rect, const Color& color) override
         {
             this->drawRectFilledCalls++;
             this->lastRect = rect;
             this->lastColor = color;
         }
 
-        void drawCircleOutline(const Circle& circle, const Renderer::Color& color) override
+        void drawCircleOutline(const Circle& circle, const Color& color) override
         {
             this->drawCircleOutlineCalls++;
             this->lastCircle = circle;
             this->lastColor = color;
         }
 
-        void drawCircleFilled(const Circle& circle, const Renderer::Color& color) override
+        void drawCircleFilled(const Circle& circle, const Color& color) override
         {
             this->drawCircleFilledCalls++;
             this->lastCircle = circle;
@@ -169,7 +176,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
     auto& components = this->world.components();
 
     components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
-    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
+    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
     components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.0f, 0.0f);
@@ -194,7 +201,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards rotation and flip f
     auto& components = this->world.components();
 
     components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, -2.0f, -3.0f, 37.5f });
-    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8 });
+    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
     components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.0f, 0.0f);
@@ -217,7 +224,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards sprite source rect 
     auto& components = this->world.components();
 
     components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
-    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<Texture>(), 16, 8, 4, 6, 8, 10, true });
+    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8, 4, 6, 8, 10, true });
     components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->system.draw(this->context);
@@ -256,7 +263,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws filled rectangle shape
     shape->height = 8.0f;
 
     components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
-    components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Renderer::Color{ 1, 2, 3, 4 }, true });
+    components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{ 1, 2, 3, 4 }, true });
 
     this->system.draw(this->context);
 
@@ -283,7 +290,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws outlined circle shapes
 
     this->camera.setZoom(2.0f);
     components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, -3.0f, 0.0f });
-    components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Renderer::Color{ 9, 8, 7, 6 }, false });
+    components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{ 9, 8, 7, 6 }, false });
 
     this->system.draw(this->context);
 

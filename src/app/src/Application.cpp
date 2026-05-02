@@ -5,6 +5,7 @@
 #include "../../engine/include/InputManager/InputManager.h"
 #include "../../engine/include/ResourceManager/ResourceManager.h"
 #include "../../engine/include/ResourceLoader/SyncLoader.h"
+#include "../../engine/include/TextureLoader/TextureLoader.h"
 
 #include "../../game/include/AnimationLoader/AnimationLoader.h"
 #include "../../game/include/Camera2D/Camera2D.h"
@@ -18,7 +19,6 @@
 #include "../../game/include/MapLoader/MapLoader.h"
 #include "../../game/include/MapRosterLoader/MapRosterLoader.h"
 #include "../../game/include/StateMachineLoader/StateMachineLoader.h"
-#include "../../game/include/TextureLoader/TextureLoader.h"
 #include "../../game/include/TriggerBindingLoader/TriggerBindingLoader.h"
 
 #include "../../game/scenes/GameScene/GameScene.h"
@@ -87,12 +87,14 @@ void Application::initLoaders()
     this->fsmLoader = std::make_unique<StateMachineLoader>(*this->parser);
     this->textureLoader = std::make_unique<TextureLoader>(*this->renderer);
 
-    this->characterLoader = std::make_unique<CharacterLoader>(
-        *this->charDefLoader,
-        *this->animLoader,
-        *this->fsmLoader,
-        *this->resourceManager,
-        *this->textureLoader);
+    this->characterLoader = std::make_unique<CharacterLoader>(CharacterLoader::Config
+    {
+        .defLoader = *this->charDefLoader,
+        .animLoader = *this->animLoader,
+        .fsmLoader = *this->fsmLoader,
+        .resourceManager = *this->resourceManager,
+        .textureLoader = *this->textureLoader
+    });
 }
 
 void Application::loadGameData()

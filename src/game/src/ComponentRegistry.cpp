@@ -1,6 +1,7 @@
 #include "../include/ComponentRegistry/ComponentRegistry.h"
 
 #include "../../domain/components/AirFrictionComponent.h"
+#include "../../domain/components/AnalogInputComponent.h"
 #include "../../domain/components/AnimationComponent.h"
 #include "../../domain/components/AnimationControllerComponent.h"
 #include "../../domain/components/CircleColliderComponent.h"
@@ -11,6 +12,7 @@
 #include "../../domain/components/HurtboxComponent.h"
 #include "../../domain/components/InputBufferComponent.h"
 #include "../../domain/components/InputComponent.h"
+#include "../../domain/components/LifetimeComponent.h"
 #include "../../domain/components/LocalTransform.h"
 #include "../../domain/components/ParentComponent.h"
 #include "../../domain/components/ParallaxComponent.h"
@@ -18,6 +20,7 @@
 #include "../../domain/components/PushboxComponent.h"
 #include "../../domain/components/RectangleColliderComponent.h"
 #include "../../domain/components/RenderComponent.h"
+#include "../../domain/components/ShapeRenderComponent.h"
 #include "../../domain/components/SpriteComponent.h"
 #include "../../domain/components/StateComponent.h"
 #include "../../domain/components/StateMappingComponent.h"
@@ -29,28 +32,31 @@
 
 void ComponentRegistry::registerAll(ComponentManager& components)
 {
-    components.registerComponent<PlayerComponent>();
-    components.registerComponent<InputComponent>();
-    components.registerComponent<InputBufferComponent>();
-    components.registerComponent<StateComponent>();
-    components.registerComponent<StateMappingComponent>();
-    components.registerComponent<StateMachineComponent>();
-    components.registerComponent<TransformComponent>();
-    components.registerComponent<VelocityComponent>();
-    components.registerComponent<GroundedComponent>();
-    components.registerComponent<GravityComponent>();
     components.registerComponent<AirFrictionComponent>();
-    components.registerComponent<RectangleColliderComponent>();
-    components.registerComponent<CircleColliderComponent>();
-    components.registerComponent<SpriteComponent>();
+    components.registerComponent<AnalogInputComponent>();
     components.registerComponent<AnimationComponent>();
     components.registerComponent<AnimationControllerComponent>();
-    components.registerComponent<ParallaxComponent>();
-    components.registerComponent<RenderComponent>();
-    components.registerComponent<ParentComponent>();
-    components.registerComponent<LocalTransform>();
+    components.registerComponent<CircleColliderComponent>();
+    components.registerComponent<GravityComponent>();
+    components.registerComponent<GroundedComponent>();
+    components.registerComponent<HealthComponent>();
     components.registerComponent<HitboxComponent>();
     components.registerComponent<HurtboxComponent>();
-    components.registerComponent<HealthComponent>();
+    components.registerComponent<InputBufferComponent>();
+    components.registerComponent<InputComponent>();
+    components.registerComponent<LifetimeComponent>();
+    components.registerComponent<LocalTransform>();
+    components.registerComponent<ParallaxComponent>();
+    components.registerComponent<ParentComponent>();
+    components.registerComponent<PlayerComponent>();
     components.registerComponent<PushboxComponent>();
+    components.registerComponent<RectangleColliderComponent>();
+    components.registerComponent<RenderComponent>();
+    components.registerComponent<ShapeRenderComponent>();
+    components.registerComponent<SpriteComponent>();
+    components.registerComponent<StateComponent>();
+    components.registerComponent<StateMachineComponent>();
+    components.registerComponent<StateMappingComponent>();
+    components.registerComponent<TransformComponent>();
+    components.registerComponent<VelocityComponent>();
 }

@@ -1,5 +1,7 @@
 #include "../../src/app/include/Application/Application.h"
 
+#include "../../src/domain/include/Color/Color.h"
+
 #include "../../src/engine/include/InputAdapter/InputAdapter.h"
 #include "../../src/engine/include/Renderer/Renderer.h"
 #include "../../src/engine/include/Window/Window.h"
@@ -9,59 +11,60 @@
 #include <memory>
 #include <string>
 
-class StubWindow : public Window
+class ApplicationFixture
 {
 public:
-    int width = 0;
-    int height = 0;
-    std::string title;
-
-    void create(int w, int h, const char* t) override
+    class StubTexture : public Texture
     {
-        this->width = w;
-        this->height = h;
-        this->title = t;
-    }
+    public:
+        int getWidth() const override { return 64; }
+        int getHeight() const override { return 96; }
+    };
 
-    void getSize(int& w, int& h) override
+    class StubWindow : public Window
     {
-        w = this->width;
-        h = this->height;
-    }
+    public:
+        int width = 0;
+        int height = 0;
+        std::string title;
 
-    void setResolution(int w, int h) override
+        void create(int w, int h, const char* t) override
+        { this->width = w; this->height = h; this->title = t; }
+
+        void getSize(int& w, int& h) override
+        { w = this->width; h = this->height; }
+
+        void setResolution(int w, int h) override
+        { this->width = w; this->height = h; }
+
+        void setFullscreen(bool) override {}
+    };
+
+    class StubRenderer : public Renderer
     {
-        this->width = w;
-        this->height = h;
-    }
+    public:
+        void clear() override {}
+        void present() override {}
 
-    void setFullscreen(bool) override {}
+        std::shared_ptr<Texture> createTexture(const std::string&) override
+        { return std::make_shared<StubTexture>(); }
+
+        void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
+        void drawRectOutline(const Rectangle&, const Color&) override {}
+        void drawRectFilled(const Rectangle&, const Color&) override {}
+        void drawCircleOutline(const Circle&, const Color&) override {}
+        void drawCircleFilled(const Circle&, const Color&) override {}
+        void setViewport(const Viewport&) override {}
+    };
+
+    class StubInputAdapter : public InputAdapter
+    {
+    public:
+        void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>&) override {}
+    };
 };
 
-class StubRenderer : public Renderer
-{
-public:
-    void clear() override {}
-    void present() override {}
-
-    std::shared_ptr<Texture> createTexture(const std::string&) override
-    { return std::make_shared<Texture>(); }
-
-    void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
-    void drawRectOutline(const Rectangle&, const Renderer::Color&) override {}
-    void drawRectFilled(const Rectangle&, const Renderer::Color&) override {}
-    void drawCircleOutline(const Circle&, const Renderer::Color&) override {}
-    void drawCircleFilled(const Circle&, const Renderer::Color&) override {}
-    void setViewport(const Viewport&) override {}
-};
-
-class StubInputAdapter : public InputAdapter
-{
-public:
-    void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>&) override {}
-};
-
-TEST_CASE("Application setWindowTitle returns Application for chaining",
+TEST_CASE_METHOD(ApplicationFixture, "Application setWindowTitle returns Application for chaining",
     "[unit][application]"
 ) {
     Application app;
@@ -69,7 +72,7 @@ TEST_CASE("Application setWindowTitle returns Application for chaining",
     REQUIRE(&result == &app);
 }
 
-TEST_CASE("Application setWindowSize returns Application for chaining",
+TEST_CASE_METHOD(ApplicationFixture, "Application setWindowSize returns Application for chaining",
     "[unit][application]"
 ) {
     Application app;
@@ -77,17 +80,18 @@ TEST_CASE("Application setWindowSize returns Application for chaining",
     REQUIRE(&result == &app);
 }
 
-TEST_CASE("Application builder methods can be chained",
+TEST_CASE_METHOD(ApplicationFixture, "Application builder methods can be chained",
     "[unit][application]"
 ) {
     Application app;
-    Application& result = app.setWindowTitle("Chained")
-                              .setWindowSize(1920, 1080)
-                              .setWindowTitle("Final Title");
+    Application& result = 
+        app.setWindowTitle("Chained")
+            .setWindowSize(1920, 1080)
+            .setWindowTitle("Final Title");
     REQUIRE(&result == &app);
 }
 
-TEST_CASE("Application default constructor initializes default values",
+TEST_CASE_METHOD(ApplicationFixture, "Application default constructor initializes default values",
     "[unit][application]"
 ) {
     Application app;
@@ -98,7 +102,7 @@ TEST_CASE("Application default constructor initializes default values",
     );
 }
 
-TEST_CASE("Application setWindowTitle updates internal title",
+TEST_CASE_METHOD(ApplicationFixture, "Application setWindowTitle updates internal title",
     "[unit][application]"
 ) {
     Application app;
@@ -108,7 +112,7 @@ TEST_CASE("Application setWindowTitle updates internal title",
     REQUIRE_NOTHROW(app.setWindowTitle("Final"));
 }
 
-TEST_CASE("Application setWindowSize updates internal dimensions",
+TEST_CASE_METHOD(ApplicationFixture, "Application setWindowSize updates internal dimensions",
     "[unit][application]"
 ) {
     Application app;
@@ -118,7 +122,7 @@ TEST_CASE("Application setWindowSize updates internal dimensions",
     REQUIRE_NOTHROW(app.setWindowSize(640, 480));
 }
 
-TEST_CASE("Application is non-copyable",
+TEST_CASE_METHOD(ApplicationFixture, "Application is non-copyable",
     "[unit][application]"
 ) {
     Application app;
@@ -126,7 +130,7 @@ TEST_CASE("Application is non-copyable",
     REQUIRE(true);
 }
 
-TEST_CASE("Application default window title is set correctly",
+TEST_CASE_METHOD(ApplicationFixture, "Application default window title is set correctly",
     "[unit][application]"
 ) {
     Application app;
@@ -137,10 +141,9 @@ TEST_CASE("Application default window title is set correctly",
     );
 }
 
-TEST_CASE("Application default window size is 800x600",
+TEST_CASE_METHOD(ApplicationFixture, "Application default window size is 800x600",
     "[unit][application]"
 ) {
     Application app;
-    // Verify default size can be used (indirectly)
     REQUIRE_NOTHROW(app.setWindowSize(800, 600));
 }

@@ -31,7 +31,6 @@ add_executable(game_tests
     StateMachineLoaderTests.cpp
     StateMapperTests.cpp
     StateSystemTests.cpp
-    TextureLoaderTests.cpp
     TriggerBindingLoaderTests.cpp
     TriggerGenerationSystemTests.cpp
     TriggerMapperTests.cpp

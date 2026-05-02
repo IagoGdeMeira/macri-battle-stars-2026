@@ -89,11 +89,8 @@ void PlayerControlSystem::applyMovement(UpdateContext& ctx, Entity entity, bool 
 {
     auto& comp = ctx.world.components();
     auto& velocity = comp.get<VelocityComponent>(entity);
-    if (!canMove)
-    {
-        velocity.vx = 0.0f;
-        return;
-    }
+    
+    if (!canMove) { velocity.vx = 0.0f; return; }
 
     auto& input  = comp.get<InputComponent>(entity);
     auto& analog = comp.get<AnalogInputComponent>(entity);

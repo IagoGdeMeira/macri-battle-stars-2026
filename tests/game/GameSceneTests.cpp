@@ -8,6 +8,7 @@
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/StateComponent.h"
 #include "../../src/domain/components/StateMachineComponent.h"
+#include "../../src/domain/include/Color/Color.h"
 #include "../../src/domain/include/View/View.h"
 #include "../../src/domain/include/TriggerId/TriggerId.h"
 
@@ -17,6 +18,7 @@
 #include "../../src/engine/include/InputBinding/InputBinding.h"
 #include "../../src/engine/include/ResourceManager/ResourceManager.h"
 #include "../../src/engine/include/Renderer/Renderer.h"
+#include "../../src/engine/include/TextureLoader/TextureLoader.h"
 #include "../../src/engine/include/ThreadPool/ThreadPool.h"
 #include "../../src/engine/include/Window/Window.h"
 
@@ -26,7 +28,6 @@
 #include "../../src/game/include/CharacterLoader/CharacterLoader.h"
 #include "../../src/game/include/MapData/MapData.h"
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
-#include "../../src/game/include/TextureLoader/TextureLoader.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -60,7 +61,7 @@ public:
                 converted.push_back(*typed);
             }
 
-            arrays[key] = std::move(converted);
+            this->arrays[key] = std::move(converted);
         }
 
         bool has(const std::string& key) const override
@@ -141,33 +142,37 @@ public:
         std::unique_ptr<DataNode> root;
     };
 
+    class StubTexture : public Texture
+    {
+    public:
+        int getWidth() const override { return 64; }
+        int getHeight() const override { return 96; }
+    };
+
     class StubRenderer : public Renderer
     {
     public:
-        std::shared_ptr<Texture> textureToReturn = std::make_shared<Texture>();
+        std::shared_ptr<Texture> textureToReturn = std::make_shared<StubTexture>();
 
         void clear() override {}
         void present() override {}
 
         std::shared_ptr<Texture> createTexture(const std::string& filePath) override
-        {
-            (void)filePath;
-            return this->textureToReturn;
-        }
+        { (void)filePath; return this->textureToReturn; }
 
         void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
         { (void)texture; (void)params; }
 
-        void drawRectOutline(const Rectangle& rect, const Renderer::Color& color) override
+        void drawRectOutline(const Rectangle& rect, const Color& color) override
         { (void)rect; (void)color; }
 
-        void drawRectFilled(const Rectangle& rect, const Renderer::Color& color) override
+        void drawRectFilled(const Rectangle& rect, const Color& color) override
         { (void)rect; (void)color; }
 
-        void drawCircleOutline(const Circle& circle, const Renderer::Color& color) override
+        void drawCircleOutline(const Circle& circle, const Color& color) override
         { (void)circle; (void)color; }
 
-        void drawCircleFilled(const Circle& circle, const Renderer::Color& color) override
+        void drawCircleFilled(const Circle& circle, const Color& color) override
         { (void)circle; (void)color; }
 
         void setViewport(const Viewport& viewport) override
@@ -177,28 +182,17 @@ public:
     class StubWindow : public Window
     {
     public:
-        void create(int w, int h, const char* /*title*/) override
-        {
-            this->width = w;
-            this->height = h;
-        }
+        void create(int w, int h, const char*) override
+        { this->width = w; this->height = h; }
 
         void setResolution(int w, int h) override
-        {
-            this->width = w;
-            this->height = h;
-        }
+        { this->width = w; this->height = h; }
 
         void setFullscreen(bool enabled) override
-        {
-            this->fullscreen = enabled;
-        }
+        { this->fullscreen = enabled; }
 
         void getSize(int& w, int& h) override
-        {
-            w = this->width;
-            h = this->height;
-        }
+        { w = this->width; h = this->height; }
 
     private:
         int width = 800;
@@ -259,7 +253,7 @@ public:
     }
 
     ThreadPool threadPool { 1 };
-    ResourceManager resourceManager { threadPool };
+    ResourceManager resourceManager { this->threadPool };
     StubRenderer renderer;
 };
 
@@ -282,15 +276,16 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
     CharacterDefinitionLoader definitionLoader(definitionParser);
     AnimationLoader animationLoader(animationParser);
     StateMachineLoader machineLoader(stateMachineParser);
-    TextureLoader textureLoader(renderer);
+    TextureLoader textureLoader(this->renderer);
 
-    CharacterLoader characterLoader(
-        definitionLoader,
-        animationLoader,
-        machineLoader,
-        resourceManager,
-        textureLoader
-    );
+    CharacterLoader characterLoader(CharacterLoader::Config
+    {
+        .defLoader = definitionLoader,
+        .animLoader = animationLoader,
+        .fsmLoader = machineLoader,
+        .resourceManager = this->resourceManager,
+        .textureLoader = textureLoader
+    });
 
     std::vector<GameScene::PlayerSlot> playerSlots;
     playerSlots.push_back(GameScene::PlayerSlot{ 7, "assets/characters/fighter_01.json" });
@@ -311,9 +306,9 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
         .window = window,
         .characterLoader = characterLoader,
         .playerSlots = std::move(playerSlots),
-        .renderer = renderer,
+        .renderer = this->renderer,
         .mapData = std::move(mapData),
-        .resourceManager = resourceManager
+        .resourceManager = this->resourceManager
     });
 
     auto& components = scene.world().components();
@@ -324,22 +319,23 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
 
     scene.init();
 
-    View<PlayerComponent,
-         InputComponent,
-         InputBufferComponent,
-         StateComponent,
-         StateMachineComponent>
-        view(components);
+    View<
+        PlayerComponent,
+        InputBufferComponent,
+        InputComponent,
+        StateComponent,
+        StateMachineComponent
+    > view(components);
 
     size_t count = 0;
-    for (auto [entity, player, inputComponent, buffer, state, stateMachine] : view)
+    for (auto [entity, player, buffer, inputComp, state, stateMachine] : view)
     {
         ++count;
         (void)entity;
         (void)stateMachine;
 
         REQUIRE(player.id == 7);
-        REQUIRE(inputComponent.actions.empty());
+        REQUIRE(inputComp.actions.empty());
         REQUIRE(buffer.buffer.empty());
         REQUIRE(state.current == StateId::Idle);
         REQUIRE(state.timeInState == 0.0f);

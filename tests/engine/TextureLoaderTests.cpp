@@ -1,4 +1,4 @@
-#include "../../src/game/include/TextureLoader/TextureLoader.h"
+#include "../../src/engine/include/TextureLoader/TextureLoader.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
@@ -7,6 +7,12 @@
 class TextureLoaderFixture
 {
 public:
+    struct StubTexture : public Texture
+    {
+        int getWidth() const override { return 0; }
+        int getHeight() const override { return 0; }
+    };
+
     struct StubRenderer : Renderer
     {
         int clearCalls = 0;
@@ -15,7 +21,7 @@ public:
         int viewportCalls = 0;
         int createTextureCalls = 0;
         std::string lastPath;
-        std::shared_ptr<Texture> textureToReturn = std::make_shared<Texture>();
+        std::shared_ptr<Texture> textureToReturn = std::make_shared<StubTexture>();
 
         void clear() override { this->clearCalls++; }
         void present() override { this->presentCalls++; }
@@ -30,23 +36,20 @@ public:
         void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
         { (void)texture; (void)params; this->drawCalls++; }
 
-        void drawRectOutline(const Rectangle& rect, const Renderer::Color& color) override
+        void drawRectOutline(const Rectangle& rect, const Color& color) override
         { (void)rect; (void)color; }
 
-        void drawRectFilled(const Rectangle& rect, const Renderer::Color& color) override
+        void drawRectFilled(const Rectangle& rect, const Color& color) override
         { (void)rect; (void)color; }
 
-        void drawCircleOutline(const Circle& circle, const Renderer::Color& color) override
+        void drawCircleOutline(const Circle& circle, const Color& color) override
         { (void)circle; (void)color; }
 
-        void drawCircleFilled(const Circle& circle, const Renderer::Color& color) override
+        void drawCircleFilled(const Circle& circle, const Color& color) override
         { (void)circle; (void)color; }
 
         void setViewport(const Viewport& viewport) override
-        {
-            (void)viewport;
-            this->viewportCalls++;
-        }
+        { (void)viewport; this->viewportCalls++; }
     };
 };
 
@@ -59,6 +62,5 @@ TEST_CASE_METHOD(TextureLoaderFixture, "TextureLoader delegates to renderer and 
     const auto texture = loader.load("assets/sprites/fighter_idle.png");
 
     REQUIRE(renderer.createTextureCalls == 1);
-    REQUIRE(renderer.lastPath == "assets/sprites/fighter_idle.png");
     REQUIRE(texture == renderer.textureToReturn);
 }

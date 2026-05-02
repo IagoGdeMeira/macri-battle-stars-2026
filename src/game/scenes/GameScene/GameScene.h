@@ -49,6 +49,14 @@ public:
     void render() override;
 
 private:
+    void prepareScene();
+    void prepareComponents();
+    void prepareBackgroundLayers();
+    void prepareFloor();
+    void prepareWalls();
+    void preparePlayers();
+    void preparePlayer(const PlayerSlot& slot);
+
     InputContext& input;
     TriggerContext triggerContext;
     Camera2D& camera;

@@ -1,5 +1,15 @@
-#include "../../src/engine/include/Engine/Engine.h"
 #include "../../src/engine/include/SceneFactory/SceneFactory.h"
+
+#include "../../src/domain/include/Color/Color.h"
+
+#include "../../src/engine/include/DataNode/DataNode.h"
+#include "../../src/engine/include/DataParser/DataParser.h"
+#include "../../src/engine/include/Engine/Engine.h"
+#include "../../src/engine/include/InputContext/InputContext.h"
+#include "../../src/engine/include/Renderer/Renderer.h"
+#include "../../src/engine/include/ResourceManager/ResourceManager.h"
+#include "../../src/engine/include/TextureLoader/TextureLoader.h"
+#include "../../src/engine/include/ThreadPool/ThreadPool.h"
 #include "../../src/engine/include/Window/Window.h"
 
 #include "../../src/game/include/AnimationLoader/AnimationLoader.h"
@@ -10,18 +20,10 @@
 #include "../../src/game/include/Combo/Combo.h"
 #include "../../src/game/include/MapRoster/MapRoster.h"
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
-#include "../../src/game/include/TextureLoader/TextureLoader.h"
 #include "../../src/game/include/TriggerContext/TriggerContext.h"
 #include "../../src/game/scenes/GameScene/GameScene.h"
 #include "../../src/game/scenes/SelectionScene/SelectionScene.h"
 #include "../../src/game/scenes/TitleScene/TitleScene.h"
-
-#include "../../src/engine/include/DataNode/DataNode.h"
-#include "../../src/engine/include/DataParser/DataParser.h"
-#include "../../src/engine/include/InputContext/InputContext.h"
-#include "../../src/engine/include/Renderer/Renderer.h"
-#include "../../src/engine/include/ResourceManager/ResourceManager.h"
-#include "../../src/engine/include/ThreadPool/ThreadPool.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -54,6 +56,13 @@ public:
         { return std::make_unique<DummyNode>(); }
     };
 
+    class StubTexture : public Texture
+    {
+    public:
+        int getWidth() const override { return 0; }
+        int getHeight() const override { return 0; }
+    };
+
     class StubRenderer : public Renderer
     {
     public:
@@ -61,13 +70,13 @@ public:
         void present() override {}
 
         std::shared_ptr<Texture> createTexture(const std::string&) override
-        { return std::make_shared<Texture>(); }
+        { return std::make_shared<StubTexture>(); }
 
         void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
-        void drawRectOutline(const Rectangle&, const Renderer::Color&) override {}
-        void drawRectFilled(const Rectangle&, const Renderer::Color&) override {}
-        void drawCircleOutline(const Circle&, const Renderer::Color&) override {}
-        void drawCircleFilled(const Circle&, const Renderer::Color&) override {}
+        void drawRectOutline(const Rectangle&, const Color&) override {}
+        void drawRectFilled(const Rectangle&, const Color&) override {}
+        void drawCircleOutline(const Circle&, const Color&) override {}
+        void drawCircleFilled(const Circle&, const Color&) override {}
         void setViewport(const Viewport&) override {}
     };
 
@@ -88,7 +97,12 @@ public:
     SceneFactoryFixture() :
         resourceManager(threadPool),
         textureLoader(renderer),
-        characterLoader(definitionLoader, animationLoader, machineLoader, resourceManager, textureLoader),
+        characterLoader({
+            this->definitionLoader,
+            this->animationLoader,
+            this->machineLoader,
+            this->resourceManager, 
+            this->textureLoader}),
         sceneFactory(window, inputContext, triggerContext, roster, characterLoader, camera, combos,
             mapRoster, parser, resourceManager),
         engine(window, sceneFactory)

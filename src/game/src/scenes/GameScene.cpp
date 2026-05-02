@@ -66,15 +66,30 @@ GameScene::GameScene(Config&& config) :
         config.eventBus, config.renderer, config.camera);
 }
 
-void GameScene::init()
+void GameScene::init() { this->prepareScene(); }
+
+void GameScene::render()
 {
-    auto& world = this->world();
+    RenderContext ctx { this->world(), this->eventBus };
+    this->renderSystem->draw(ctx);
+}
+
+void GameScene::prepareScene()
+{
+    this->prepareComponents();
+    this->prepareBackgroundLayers();
+    this->prepareFloor();
+    this->prepareWalls();
+    this->preparePlayers();
+}
+
+void GameScene::prepareComponents() { ComponentRegistry::registerAll(this->world().components()); }
+
+void GameScene::prepareBackgroundLayers()
+{
     auto& components = this->world().components();
     auto& entities = this->world().entities();
 
-    ComponentRegistry::registerAll(components);
-
-    // Create background entities based on map data
     for (const auto& layer : this->mapData.backgroundLayers)
     {
         Entity bg = entities.create();
@@ -84,16 +99,26 @@ void GameScene::init()
 
         components.add<RenderComponent>(bg, RenderComponent{ 0, layer.zIndex });
     }
+}
 
-    // Create floor entity with collider based on map data
+void GameScene::prepareFloor()
+{
+    auto& components = this->world().components();
+    auto& entities = this->world().entities();
+
     Entity floor = entities.create();
     auto floorTransform = TransformComponent { this->mapData.floorWidth * 0.5f, this->mapData.floorY };
     components.add<TransformComponent>(floor, floorTransform);
-    
+
     auto floorCollider = RectangleColliderComponent { this->mapData.floorWidth, this->mapData.floorHeight };
     components.add<RectangleColliderComponent>(floor, floorCollider);
+}
 
-    // Create wall entities based on map data
+void GameScene::prepareWalls()
+{
+    auto& components = this->world().components();
+    auto& entities = this->world().entities();
+
     for (const auto& wall : this->mapData.walls)
     {
         Entity w = entities.create();
@@ -104,43 +129,40 @@ void GameScene::init()
             wall.position.y + wall.height * 0.5f
         };
         components.add<TransformComponent>(w, wallTransform);
-
         components.add<RectangleColliderComponent>(w, RectangleColliderComponent{wall.width, wall.height});
-    }
-
-    // Create player entities based on player slots and map spawn points
-    for (const auto& slot : this->playerSlots)
-    {
-        Entity entity = this->characterLoader.create(world, slot.characterDefPath);
-
-        components.add<PlayerComponent>(entity, PlayerComponent{slot.playerId});
-        components.add<InputComponent>(entity, InputComponent{});
-        components.add<InputBufferComponent>(entity, InputBufferComponent{});
-        components.add<TransformComponent>(entity, TransformComponent{});
-        components.add<VelocityComponent>(entity, VelocityComponent{});
-
-        float spawnX = 400.0f;
-        for (const auto& sp : this->mapData.spawnPoints) if (sp.playerId == slot.playerId)
-        { spawnX = sp.x; break; }
-
-        auto& transform = components.get<TransformComponent>(entity);
-        transform.x = spawnX;
-
-        if (components.has<SpriteComponent>(entity))
-        {
-            const auto& sprite = components.get<SpriteComponent>(entity);
-            transform.y = this->mapData.floorY - (sprite.height * 0.5f);
-        }
-        else transform.y = this->mapData.floorY - 32.0f;
-        
-
-        if (components.has<StateComponent>(entity))
-        { components.get<StateComponent>(entity).current = StateId::Idle; }
     }
 }
 
-void GameScene::render()
+void GameScene::preparePlayers()
+{ for (const auto& slot : this->playerSlots) this->preparePlayer(slot); }
+
+void GameScene::preparePlayer(const PlayerSlot& slot)
 {
-    RenderContext ctx { this->world(), this->eventBus };
-    this->renderSystem->draw(ctx);
+    auto& world = this->world();
+    auto& components = world.components();
+
+    Entity entity = this->characterLoader.create(world, slot.characterDefPath);
+
+    components.add<PlayerComponent>(entity, PlayerComponent{slot.playerId});
+    components.add<InputComponent>(entity, InputComponent{});
+    components.add<InputBufferComponent>(entity, InputBufferComponent{});
+    components.add<TransformComponent>(entity, TransformComponent{});
+    components.add<VelocityComponent>(entity, VelocityComponent{});
+
+    float spawnX = 400.0f;
+    for (const auto& sp : this->mapData.spawnPoints) if (sp.playerId == slot.playerId)
+    { spawnX = sp.x; break; }
+
+    auto& transform = components.get<TransformComponent>(entity);
+    transform.x = spawnX;
+
+    if (components.has<SpriteComponent>(entity))
+    {
+        const auto& sprite = components.get<SpriteComponent>(entity);
+        transform.y = this->mapData.floorY - (sprite.height * 0.5f);
+    }
+    else transform.y = this->mapData.floorY - 32.0f;
+
+    if (components.has<StateComponent>(entity))
+    { components.get<StateComponent>(entity).current = StateId::Idle; }
 }

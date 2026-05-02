@@ -13,6 +13,20 @@ public:
 
     SDL_Texture* get() const { return this->texture; }
 
+    int getWidth() const override
+    {
+        int width = 0;
+        if (this->texture) SDL_QueryTexture(this->texture, nullptr, nullptr, &width, nullptr);
+        return width;
+    }
+
+    int getHeight() const override
+    {
+        int height = 0;
+        if (this->texture) SDL_QueryTexture(this->texture, nullptr, nullptr, nullptr, &height);
+        return height;
+    }
+
 private:
     SDL_Texture* texture = nullptr;
 };

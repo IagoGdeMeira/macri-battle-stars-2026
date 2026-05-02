@@ -21,10 +21,10 @@ public:
     std::shared_ptr<Texture> createTexture(const std::string& path) override;
 
     void drawTexture(const Texture& texture, const DrawTextureParams& params) override;
-    void drawRectOutline(const Rectangle& rect, const Renderer::Color& color) override;
-    void drawRectFilled(const Rectangle& rect, const Renderer::Color& color) override;
-    void drawCircleOutline(const Circle& circle, const Renderer::Color& color) override;
-    void drawCircleFilled(const Circle& circle, const Renderer::Color& color) override;
+    void drawRectOutline(const Rectangle& rect, const Color& color) override;
+    void drawRectFilled(const Rectangle& rect, const Color& color) override;
+    void drawCircleOutline(const Circle& circle, const Color& color) override;
+    void drawCircleFilled(const Circle& circle, const Color& color) override;
 
     void setViewport(const Viewport& viewport) override;
 

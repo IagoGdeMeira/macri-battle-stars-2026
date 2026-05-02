@@ -1,5 +1,7 @@
 #include "../../src/engine/include/Engine/Engine.h"
 
+#include "../../src/domain/include/Color/Color.h"
+
 #include "../../src/engine/events/PlatformEvent.h"
 #include "../../src/engine/events/QuitEvent.h"
 #include "../../src/engine/include/InputAdapter/InputAdapter.h"
@@ -210,6 +212,13 @@ TEST_CASE_METHOD(EngineFixture, "Engine must poll configured input adapter",
 TEST_CASE_METHOD(EngineFixture, "Engine presents frames when renderer is configured",
     "[unit][engine]"
 ) {
+    class StubTexture : public Texture
+    {
+    public:
+        int getWidth() const override { return 0; }
+        int getHeight() const override { return 0; }
+    };
+
     class StubRenderer : public Renderer
     {
     public:
@@ -218,13 +227,13 @@ TEST_CASE_METHOD(EngineFixture, "Engine presents frames when renderer is configu
         void clear() override {}
         void present() override { ++this->presentCalls; }
         std::shared_ptr<Texture> createTexture(const std::string&) override
-        { return std::make_shared<Texture>(); }
+        { return std::make_shared<StubTexture>(); }
         
         void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
-        void drawRectOutline(const Rectangle&, const Renderer::Color&) override {}
-        void drawRectFilled(const Rectangle&, const Renderer::Color&) override {}
-        void drawCircleOutline(const Circle&, const Renderer::Color&) override {}
-        void drawCircleFilled(const Circle&, const Renderer::Color&) override {}
+        void drawRectOutline(const Rectangle&, const Color&) override {}
+        void drawRectFilled(const Rectangle&, const Color&) override {}
+        void drawCircleOutline(const Circle&, const Color&) override {}
+        void drawCircleFilled(const Circle&, const Color&) override {}
         void setViewport(const Viewport&) override {}
     };
 

@@ -16,6 +16,13 @@
 class AnimationSystemFixture
 {
 public:
+    class StubTexture : public Texture
+    {
+    public:
+        int getWidth() const override { return 16; }
+        int getHeight() const override { return 16; }
+    };
+
     AnimationSystemFixture() : system(), context{ world, bus, commandBuffer, 0.0f }
     {
         this->world.components().registerComponent<AnimationComponent>();
@@ -47,7 +54,7 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem advances sprite source
             0
         });
 
-    this->world.components().add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<Texture>(), 16, 16 });
+    this->world.components().add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
 
     this->context.deltaTime = 0.1f;
     this->system.update(this->context);
@@ -74,7 +81,7 @@ TEST_CASE_METHOD(AnimationSystemFixture,
         AnimationComponent { Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.0f, 1 });
 
     this->world.components().add<SpriteComponent>(
-        entity, SpriteComponent{ std::make_shared<Texture>(), 16, 16 });
+        entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
 
     this->context.deltaTime = 0.1f;
     this->system.update(this->context);
@@ -97,7 +104,7 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem holds the last frame w
     this->world.components().add<AnimationComponent>(entity,
         AnimationComponent{Animation {{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, false}, 0.0f, 1});
 
-    this->world.components().add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<Texture>(), 16, 16 });
+    this->world.components().add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
 
     this->context.deltaTime = 0.3f;
     this->system.update(this->context);

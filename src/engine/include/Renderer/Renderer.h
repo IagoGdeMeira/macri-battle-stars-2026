@@ -5,6 +5,8 @@
 #include "../Texture/Texture.h"
 #include "../Viewport/Viewport.h"
 
+#include "../../domain/include/Color/Color.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -12,8 +14,6 @@
 class Renderer
 {
 public:
-    struct Color { std::uint8_t r = 255, g = 255, b = 255, a = 255; };
-
     struct DrawTextureParams
     {
         Rectangle dest;

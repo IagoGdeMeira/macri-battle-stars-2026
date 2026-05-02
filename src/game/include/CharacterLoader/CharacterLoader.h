@@ -4,27 +4,30 @@
 #include "../AnimationLoader/AnimationLoader.h"
 #include "../CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 #include "../StateMachineLoader/StateMachineLoader.h"
-#include "../TextureLoader/TextureLoader.h"
 
 #include "../../domain/include/World/World.h"
 
 #include "../../engine/include/ResourceManager/ResourceManager.h"
+#include "../../engine/include/TextureLoader/TextureLoader.h"
 
 class CharacterLoader
 {
 public:
-    CharacterLoader(
-        CharacterDefinitionLoader& defLoader,
-        AnimationLoader& animLoader,
-        StateMachineLoader& fsmLoader,
-        ResourceManager& resourceManager,
-        TextureLoader& textureLoader
-    ) : 
-        defLoader(defLoader),
-        animLoader(animLoader),
-        fsmLoader(fsmLoader),
-        resourceManager(resourceManager),
-        textureLoader(textureLoader) {}
+    struct Config
+    {
+        CharacterDefinitionLoader& defLoader;
+        AnimationLoader& animLoader;
+        StateMachineLoader& fsmLoader;
+        ResourceManager& resourceManager;
+        TextureLoader& textureLoader;
+    };
+
+    CharacterLoader(Config&& config) :
+        defLoader(config.defLoader),
+        animLoader(config.animLoader),
+        fsmLoader(config.fsmLoader),
+        resourceManager(config.resourceManager),
+        textureLoader(config.textureLoader) {}
 
     Entity create(World& world, const std::string& path) const;
 

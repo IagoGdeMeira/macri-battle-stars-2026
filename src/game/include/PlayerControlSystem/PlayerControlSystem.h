@@ -28,4 +28,4 @@ private:
     void emitTriggers(UpdateContext& ctx, Entity entity, bool canMove);
 };
 
-#endif
+#endif // player_control_system_h

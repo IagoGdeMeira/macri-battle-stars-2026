@@ -13,7 +13,7 @@
 
 StateSystem::StateSystem(EventBus& eventBus) : bus(eventBus)
 {
-    bus.subscribe<TriggerEvent>([this](const TriggerEvent& event)
+    this->bus.subscribe<TriggerEvent>([this](const TriggerEvent& event)
     { this->events.push_back(event); });
 }
 
@@ -49,14 +49,8 @@ void StateSystem::update(UpdateContext& ctx)
             if (!this->conditionsAreValid(transition, cctx)) continue;
 
             bool matched = false;
-            for (auto trigger : triggers)
-            {
-                if (this->hasTrigger(transition, trigger))
-                {
-                    matched = true;
-                    break;
-                }
-            }
+            for (auto trigger : triggers) if (this->hasTrigger(transition, trigger))
+            { matched = true; break; }
 
             if (!matched) continue;
 
@@ -93,9 +87,7 @@ bool StateSystem::hasTrigger(const StateTransition& transition, TriggerId trigge
 
 bool StateSystem::conditionsAreValid(const StateTransition& transition, ConditionContext& ctx)
 {
-    for (const auto& cond : transition.conditions)
-    { if (!cond->evaluate(ctx)) return false; }
-
+    for (const auto& cond : transition.conditions) if (!cond->evaluate(ctx)) return false;
     return true;
 }
 

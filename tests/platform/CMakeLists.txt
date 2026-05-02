@@ -9,6 +9,7 @@ add_executable(platform_tests
     SDLRendererTests.cpp
     SDLSystemAdapterTests.cpp
     SDLSystemInitializerTests.cpp
+    SDLTextureTests.cpp
     SDLWindowTests.cpp
 )
 

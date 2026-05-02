@@ -14,6 +14,7 @@ add_executable(engine_tests
     SceneManagerTests.cpp
     SceneTests.cpp
     SystemManagerTests.cpp
+    TextureLoaderTests.cpp
 )
 
 target_link_libraries(engine_tests
