@@ -378,3 +378,154 @@ TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader rejects collid
 
     REQUIRE_THROWS_AS(loader.load("assets/collision/bad_collider.json"), std::runtime_error);
 }
+
+TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader parses pushboxes with correct properties",
+    "[unit][collision_clip_loader]"
+) {
+    auto pushbox = std::make_unique<Node>();
+    pushbox->setFloat("radius", 12.0f);
+    pushbox->setFloat("offsetX", 2.0f);
+    pushbox->setFloat("offsetY", -1.0f);
+    pushbox->setFloat("mass", 0.5f);
+    pushbox->setFloat("pushResistance", 2.0f);
+    pushbox->setString("type", "Static");
+
+    auto frame = std::make_unique<Node>();
+    frame->setFloat("duration", 0.15f);
+
+    std::vector<std::unique_ptr<DataNode>> pushboxes;
+    pushboxes.push_back(std::move(pushbox));
+    frame->setArray("pushboxes", std::move(pushboxes));
+
+    auto clip = std::make_unique<Node>();
+    clip->setString("state", "Idle");
+    clip->setBool("loop", false);
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame));
+    clip->setArray("frames", std::move(frames));
+
+    auto rootNode = std::make_unique<Node>();
+    std::vector<std::unique_ptr<DataNode>> clips;
+    clips.push_back(std::move(clip));
+    rootNode->setArray("collisionClips", std::move(clips));
+
+    Parser parser(std::move(rootNode));
+    CollisionClipLoader loader(parser);
+
+    const auto clips_map = loader.load("assets/collision/with_pushbox.json");
+
+    REQUIRE(clips_map.size() == 1);
+    REQUIRE(clips_map.contains(StateId::Idle));
+
+    const auto& idle = clips_map.at(StateId::Idle);
+    REQUIRE(idle.frames.size() == 1);
+    REQUIRE(idle.frames[0].pushboxes.size() == 1);
+
+    const auto& pb = idle.frames[0].pushboxes[0];
+    REQUIRE(pb.mass == 0.5f);
+    REQUIRE(pb.pushResistance == 2.0f);
+    REQUIRE(pb.type == PushboxDef::Type::Static);
+    REQUIRE(pb.collider != nullptr);
+
+    auto* circle = dynamic_cast<CircleDef*>(pb.collider.get());
+    REQUIRE(circle != nullptr);
+    REQUIRE(circle->radius == 12.0f);
+    REQUIRE(circle->offsetX == 2.0f);
+    REQUIRE(circle->offsetY == -1.0f);
+}
+
+TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader parses dynamic pushboxes by default",
+    "[unit][collision_clip_loader]"
+) {
+    auto pushbox = std::make_unique<Node>();
+    pushbox->setFloat("radius", 10.0f);
+
+    auto frame = std::make_unique<Node>();
+    frame->setFloat("duration", 0.1f);
+
+    std::vector<std::unique_ptr<DataNode>> pushboxes;
+    pushboxes.push_back(std::move(pushbox));
+    frame->setArray("pushboxes", std::move(pushboxes));
+
+    auto clip = std::make_unique<Node>();
+    clip->setString("state", "Idle");
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame));
+    clip->setArray("frames", std::move(frames));
+
+    auto rootNode = std::make_unique<Node>();
+    std::vector<std::unique_ptr<DataNode>> clips;
+    clips.push_back(std::move(clip));
+    rootNode->setArray("collisionClips", std::move(clips));
+
+    Parser parser(std::move(rootNode));
+    CollisionClipLoader loader(parser);
+
+    const auto clips_map = loader.load("assets/collision/dynamic_default.json");
+
+    const auto& idle = clips_map.at(StateId::Idle);
+    const auto& pb = idle.frames[0].pushboxes[0];
+
+    REQUIRE(pb.type == PushboxDef::Type::Dynamic);
+    REQUIRE(pb.mass == 1.0f);
+    REQUIRE(pb.pushResistance == 1.0f);
+}
+
+TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader parses mixed colliders in same frame",
+    "[unit][collision_clip_loader]"
+) {
+    auto hitbox = std::make_unique<Node>();
+    hitbox->setFloat("radius", 5.0f);
+    hitbox->setInt("damage", 15);
+
+    auto hurtbox = std::make_unique<Node>();
+    hurtbox->setFloat("width", 20.0f);
+    hurtbox->setFloat("height", 15.0f);
+    hurtbox->setFloat("damageMultiplier", 0.8f);
+
+    auto pushbox = std::make_unique<Node>();
+    pushbox->setFloat("radius", 25.0f);
+    pushbox->setFloat("mass", 1.5f);
+
+    auto frame = std::make_unique<Node>();
+    frame->setFloat("duration", 0.2f);
+
+    std::vector<std::unique_ptr<DataNode>> hitboxes, hurtboxes, pushboxes;
+    hitboxes.push_back(std::move(hitbox));
+    hurtboxes.push_back(std::move(hurtbox));
+    pushboxes.push_back(std::move(pushbox));
+
+    frame->setArray("hitboxes", std::move(hitboxes));
+    frame->setArray("hurtboxes", std::move(hurtboxes));
+    frame->setArray("pushboxes", std::move(pushboxes));
+
+    auto clip = std::make_unique<Node>();
+    clip->setString("state", "Idle");
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame));
+    clip->setArray("frames", std::move(frames));
+
+    auto rootNode = std::make_unique<Node>();
+    std::vector<std::unique_ptr<DataNode>> clips;
+    clips.push_back(std::move(clip));
+    rootNode->setArray("collisionClips", std::move(clips));
+
+    Parser parser(std::move(rootNode));
+    CollisionClipLoader loader(parser);
+
+    const auto clips_map = loader.load("assets/collision/mixed.json");
+
+    const auto& idle = clips_map.at(StateId::Idle);
+    const auto& frame_data = idle.frames[0];
+
+    REQUIRE(frame_data.hitboxes.size() == 1);
+    REQUIRE(frame_data.hurtboxes.size() == 1);
+    REQUIRE(frame_data.pushboxes.size() == 1);
+
+    REQUIRE(frame_data.hitboxes[0].damage == 15);
+    REQUIRE(frame_data.hurtboxes[0].damageMultiplier == 0.8f);
+    REQUIRE(frame_data.pushboxes[0].mass == 1.5f);
+}

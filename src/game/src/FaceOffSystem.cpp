@@ -11,8 +11,6 @@
 #include <algorithm>
 #include <vector>
 
-FaceOffSystem::FaceOffSystem(EventBus& bus) : bus(bus) {}
-
 void FaceOffSystem::update(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();

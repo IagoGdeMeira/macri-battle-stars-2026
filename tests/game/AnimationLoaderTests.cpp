@@ -160,10 +160,10 @@ TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader parses mapped states a
     const auto animations = loader.load("assets/animations/fighter.json");
 
     REQUIRE(parser.lastPath == "assets/animations/fighter.json");
-    REQUIRE(animations.size() == 1);
-    REQUIRE(animations.contains(StateId::Idle));
+    REQUIRE(animations.right.size() == 1);
+    REQUIRE(animations.right.contains(StateId::Idle));
 
-    const auto& idle = animations.at(StateId::Idle);
+    const auto& idle = animations.right.at(StateId::Idle);
     REQUIRE(idle.frameDuration == 0.08f);
     REQUIRE(idle.loop == true);
     REQUIRE(idle.frames.size() == 2);
@@ -234,10 +234,10 @@ TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader resolves custom state 
 
     const auto loaded = loader.load("assets/animations/custom.json", mapper);
 
-    REQUIRE(loaded.size() == 1);
-    REQUIRE(loaded.contains(customState));
-    REQUIRE(loaded.at(customState).frameDuration == 0.2f);
-    REQUIRE(loaded.at(customState).loop == false);
+    REQUIRE(loaded.right.size() == 1);
+    REQUIRE(loaded.right.contains(customState));
+    REQUIRE(loaded.right.at(customState).frameDuration == 0.2f);
+    REQUIRE(loaded.right.at(customState).loop == false);
 }
 
 TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader with mapper rejects unmapped custom state",

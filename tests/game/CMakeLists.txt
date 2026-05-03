@@ -14,6 +14,7 @@ add_executable(game_tests
     CharacterDefinitionLoaderTests.cpp
     CharacterLoaderTests.cpp
     CollisionClipLoaderTests.cpp
+    CollisionClipPlayerSystemTests.cpp
     CollisionDetectionSystemTests.cpp
     CollisionHandlerFactoryTests.cpp
     ComboLoaderTests.cpp

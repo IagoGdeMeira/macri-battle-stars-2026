@@ -10,8 +10,7 @@ CollisionClipLoader::ClipMap CollisionClipLoader::load(const std::string& path) 
 }
 
 CollisionClipLoader::ClipMap CollisionClipLoader::load(
-    const std::string& path,
-    const StateIdMapper& mapper
+    const std::string& path, const StateIdMapper& mapper
 ) const {
     auto root = parser.parse(path);
     ClipMap result;
@@ -37,6 +36,9 @@ CollisionClipLoader::ClipMap CollisionClipLoader::load(
 
             if (frameNode->has("hurtboxes")) for (auto& node : frameNode->getArray("hurtboxes"))
             { frame.hurtboxes.push_back(this->parseHurtbox(*node)); }
+
+            if (frameNode->has("pushboxes")) for (auto& node : frameNode->getArray("pushboxes"))
+            { frame.pushboxes.push_back(this->parsePushbox(*node)); }
 
             clip.frames.push_back(std::move(frame));
         }
@@ -80,6 +82,18 @@ HurtboxDef CollisionClipLoader::parseHurtbox(const DataNode& node) const
     HurtboxDef def;
     def.collider = this->parseCollider(node);
     def.damageMultiplier = node.getFloat("damageMultiplier", 1.0f);
+    return def;
+}
+
+PushboxDef CollisionClipLoader::parsePushbox(const DataNode& node) const
+{
+    PushboxDef def;
+    def.collider = this->parseCollider(node);
+    def.mass = node.getFloat("mass", 1.0f);
+    def.pushResistance = node.getFloat("pushResistance", 1.0f);
+    def.type = node.getString("type", "Dynamic") == "Dynamic"
+        ? PushboxDef::Type::Dynamic
+        : PushboxDef::Type::Static;
     return def;
 }
 

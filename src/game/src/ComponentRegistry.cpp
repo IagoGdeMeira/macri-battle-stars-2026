@@ -4,6 +4,8 @@
 #include "../../domain/components/AnalogInputComponent.h"
 #include "../../domain/components/AnimationComponent.h"
 #include "../../domain/components/AnimationControllerComponent.h"
+#include "../../domain/components/CollisionClipDefinitionsComponent.h"
+#include "../../domain/components/CollisionClipPlayerComponent.h"
 #include "../../domain/components/CircleColliderComponent.h"
 #include "../../domain/components/GravityComponent.h"
 #include "../../domain/components/GroundedComponent.h"
@@ -37,6 +39,8 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<AnalogInputComponent>();
     components.registerComponent<AnimationComponent>();
     components.registerComponent<AnimationControllerComponent>();
+    components.registerComponent<CollisionClipDefinitionsComponent>();
+    components.registerComponent<CollisionClipPlayerComponent>();
     components.registerComponent<CircleColliderComponent>();
     components.registerComponent<GravityComponent>();
     components.registerComponent<GroundedComponent>();

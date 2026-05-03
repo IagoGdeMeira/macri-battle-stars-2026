@@ -1,6 +1,9 @@
 #ifndef animation_state_system_h
 #define animation_state_system_h
 
+#include "../events/StateChangedEvent.h"
+
+#include "../../domain/events/OrientationChangedEvent.h"
 #include "../../domain/include/Entity/Entity.h"
 #include "../../domain/include/StateId/StateId.h"
 
@@ -19,9 +22,8 @@ public:
 private:
     EventBus& bus;
 
-    struct PendingChange { Entity entity; StateId state; };
-
-    std::vector<PendingChange> changes;
+    std::vector<StateChangedEvent> stateChanges;
+    std::vector<OrientationChangedEvent> orientationChanges;
 };
 
 #endif // animation_state_system_h

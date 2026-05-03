@@ -5,6 +5,8 @@
 #include "../../src/domain/components/AnimationComponent.h"
 #include "../../src/domain/components/AnimationControllerComponent.h"
 #include "../../src/domain/components/CircleColliderComponent.h"
+#include "../../src/domain/components/CollisionClipDefinitionsComponent.h"
+#include "../../src/domain/components/CollisionClipPlayerComponent.h"
 #include "../../src/domain/components/GravityComponent.h"
 #include "../../src/domain/components/GroundedComponent.h"
 #include "../../src/domain/components/HealthComponent.h"
@@ -45,6 +47,8 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(components.storage<AnimationComponent>() != nullptr);
     REQUIRE(components.storage<AnimationControllerComponent>() != nullptr);
     REQUIRE(components.storage<CircleColliderComponent>() != nullptr);
+    REQUIRE(components.storage<CollisionClipDefinitionsComponent>() != nullptr);
+    REQUIRE(components.storage<CollisionClipPlayerComponent>() != nullptr);
     REQUIRE(components.storage<GravityComponent>() != nullptr);
     REQUIRE(components.storage<GroundedComponent>() != nullptr);
     REQUIRE(components.storage<HealthComponent>() != nullptr);

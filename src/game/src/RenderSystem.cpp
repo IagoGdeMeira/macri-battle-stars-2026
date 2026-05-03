@@ -1,4 +1,7 @@
 #include "../include/RenderSystem/RenderSystem.h"
+
+#include "../../domain/components/AnimationControllerComponent.h"
+#include "../../domain/components/OrientationComponent.h"
 #include "../../domain/components/ParallaxComponent.h"
 #include "../../domain/components/RenderComponent.h"
 #include "../../domain/components/ShapeRenderComponent.h"
@@ -6,6 +9,7 @@
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/include/View/View.h"
 #include "../../engine/events/WindowResizedEvent.h"
+
 #include <algorithm>
 #include <cmath>
 
@@ -83,13 +87,14 @@ void RenderSystem::renderShapes(RenderContext& ctx)
 
 RenderSystem::DrawCommand RenderSystem::buildDrawCommand(Entity entity, World& world, size_t order) const
 {
-    auto& comp = world.components();
-    const auto& sprite = comp.get<SpriteComponent>(entity);
-    const auto& transform = comp.get<TransformComponent>(entity);
-    const auto& render = comp.get<RenderComponent>(entity);
+    auto& components = world.components();
+    const auto& sprite = components.get<SpriteComponent>(entity);
+    const auto& transform = components.get<TransformComponent>(entity);
+    const auto& render = components.get<RenderComponent>(entity);
 
     const Position parallax = this->resolveParallax(world, entity);
-    const Position screenPos = this->worldToScreen({transform.x, transform.y}, this->worldViewport, parallax);
+    const Position screenPos = this->worldToScreen(
+        {transform.x, transform.y}, this->worldViewport, parallax);
     const SpriteTransform st = this->computeSpriteTransform(
         sprite.width, sprite.height, transform.scaleX, transform.scaleY);
 
@@ -99,8 +104,24 @@ RenderSystem::DrawCommand RenderSystem::buildDrawCommand(Entity entity, World& w
     cmd.dest.width  = static_cast<float>(st.width);
     cmd.dest.height = static_cast<float>(st.height);
     cmd.rotation = transform.rotation;
-    cmd.flipX = st.flipX;
+
+    if (components.has<OrientationComponent>(entity))
+    {
+        bool symmetric = (components.has<AnimationControllerComponent>(entity))
+            ? components.get<AnimationControllerComponent>(entity).animations.symmetric
+            : true;
+
+        if (symmetric)
+        {
+            const auto& orientation = components.get<OrientationComponent>(entity);
+            cmd.flipX = (orientation.direction == Orientation::Left);
+        }
+        else cmd.flipX = false;
+    }
+    else cmd.flipX = st.flipX;
+    
     cmd.flipY = st.flipY;
+
     cmd.layer = render.layer;
     cmd.zIndex = render.zIndex;
     cmd.order = order;
@@ -128,11 +149,11 @@ Position RenderSystem::worldToScreen(Position worldPos, const Viewport& viewport
 Position RenderSystem::resolveParallax(World& world, Entity entity) const
 {
     Position p{1.0f, 1.0f};
-    if (world.components().has<ParallaxComponent>(entity))
+    auto& components = world.components();
+    if (components.has<ParallaxComponent>(entity))
     {
-        auto& par = world.components().get<ParallaxComponent>(entity);
-        p.x = par.factorX;
-        p.y = par.factorY;
+        auto& par = components.get<ParallaxComponent>(entity);
+        p = { par.factorX, par.factorY };
     }
     return p;
 }
@@ -152,13 +173,12 @@ RenderSystem::SpriteTransform RenderSystem::computeSpriteTransform(
 
 void RenderSystem::sortCommands(std::vector<DrawCommand>& commands) const
 {
-    std::stable_sort(commands.begin(), commands.end(),
-        [](const DrawCommand& a, const DrawCommand& b)
-        {
-            if (a.layer != b.layer) return a.layer < b.layer;
-            if (a.zIndex != b.zIndex) return a.zIndex < b.zIndex;
-            return a.order < b.order;
-        });
+    std::stable_sort(commands.begin(), commands.end(), [](const DrawCommand& a, const DrawCommand& b)
+    {
+        if (a.layer != b.layer) return a.layer < b.layer;
+        if (a.zIndex != b.zIndex) return a.zIndex < b.zIndex;
+        return a.order < b.order;
+    });
 }
 
 void RenderSystem::submitCommands(const std::vector<DrawCommand>& commands) const

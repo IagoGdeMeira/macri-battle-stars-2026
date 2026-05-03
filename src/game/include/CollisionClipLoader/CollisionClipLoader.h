@@ -27,6 +27,7 @@ private:
     std::unique_ptr<ColliderDef> parseCollider(const DataNode& node) const;
     HitboxDef parseHitbox(const DataNode& node) const;
     HurtboxDef parseHurtbox(const DataNode& node) const;
+    PushboxDef parsePushbox(const DataNode& node) const;
 
     void parseOffset(float& offsetX, float& offsetY, const DataNode& node) const;
 };

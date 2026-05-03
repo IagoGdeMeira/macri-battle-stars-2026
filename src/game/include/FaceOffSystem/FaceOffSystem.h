@@ -7,7 +7,8 @@
 class FaceOffSystem : public System
 {
 public:
-    explicit FaceOffSystem(EventBus& bus);
+    explicit FaceOffSystem(EventBus& bus) : bus(bus) {}
+    
     void update(UpdateContext& ctx) override;
 
 private:

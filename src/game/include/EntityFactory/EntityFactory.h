@@ -25,9 +25,9 @@ public:
     Entity addStaticCollider(Entity parent, const Circle& circle);
     Entity createBackgroundLayer(const BackgroundLayer& layer);
 
-    Entity createPushbox(Entity parent, const PushboxDef& def);
-    Entity createHitbox(Entity parent, const HitboxDef& def);
-    Entity createHurtbox(Entity parent, const HurtboxDef& def);
+    Entity createPushbox(Entity parent, const PushboxDef& def, bool facingLeft);
+    Entity createHitbox(Entity parent, const HitboxDef& def, bool facingLeft);
+    Entity createHurtbox(Entity parent, const HurtboxDef& def, bool facingLeft);
 
     Entity createSpriteEffect(const std::string& texturePath, const Position& position, float duration);
 

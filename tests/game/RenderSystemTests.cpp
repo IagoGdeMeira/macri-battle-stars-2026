@@ -1,5 +1,7 @@
 #include "../../src/game/include/RenderSystem/RenderSystem.h"
 
+#include "../../src/domain/components/AnimationControllerComponent.h"
+#include "../../src/domain/components/OrientationComponent.h"
 #include "../../src/domain/components/ParallaxComponent.h"
 #include "../../src/domain/components/RenderComponent.h"
 #include "../../src/domain/components/ShapeRenderComponent.h"
@@ -31,6 +33,8 @@ public:
         components.registerComponent<RenderComponent>();
         components.registerComponent<ParallaxComponent>();
         components.registerComponent<ShapeRenderComponent>();
+        components.registerComponent<AnimationControllerComponent>();
+        components.registerComponent<OrientationComponent>();
     }
 
 protected:

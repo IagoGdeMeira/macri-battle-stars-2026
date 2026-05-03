@@ -301,8 +301,8 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(stateMachine.machine.transitions[0].from == StateId::Idle);
     REQUIRE(stateMachine.machine.transitions[0].to == StateId::Punching);
 
-    REQUIRE(controller.animations.size() == 1);
-    REQUIRE(controller.animations.contains(StateId::Idle));
+    REQUIRE(controller.animations.right.size() == 1);
+    REQUIRE(controller.animations.right.contains(StateId::Idle));
     REQUIRE(controller.currentState == StateId::Unknown);
 
     REQUIRE(animation.currentFrame == 0);
@@ -388,5 +388,5 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     REQUIRE(stateMachine.machine.transitions[0].to == customStateId);
 
     const auto& controller = this->world.components().get<AnimationControllerComponent>(entity);
-    REQUIRE(controller.animations.contains(customStateId));
+    REQUIRE(controller.animations.right.contains(customStateId));
 }

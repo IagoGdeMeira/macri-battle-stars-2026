@@ -129,13 +129,43 @@ void EntityFactory::addDebugVisual(Entity entity, const ColliderDef& collider, c
     comp.add<ShapeRenderComponent>(entity, std::move(shape));
 }
 
-Entity EntityFactory::createPushbox(Entity parent, const PushboxDef& def)
+Entity EntityFactory::createHitbox(Entity parent, const HitboxDef& def, bool facingLeft)
 {
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
+    float finalOffsetX = facingLeft ? -def.collider->offsetX : def.collider->offsetX;
     comp.add<ParentComponent>(e, ParentComponent{parent});
-    comp.add<LocalTransform>(e, LocalTransform{def.collider->offsetX, def.collider->offsetY});
+    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offsetY});
+    this->addColliderComponents(e, *def.collider);
+    comp.add<HitboxComponent>(e, HitboxComponent{def.damage});
+    this->addDebugVisual(e, *def.collider, def.debug);
+    return e;
+}
+
+Entity EntityFactory::createHurtbox(Entity parent, const HurtboxDef& def, bool facingLeft)
+{
+    Entity e = this->world.entities().create();
+    auto& comp = this->world.components();
+
+    float finalOffsetX = facingLeft ? -def.collider->offsetX : def.collider->offsetX;
+    comp.add<ParentComponent>(e, ParentComponent{parent});
+    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offsetY});
+    this->addColliderComponents(e, *def.collider);
+    comp.add<HurtboxComponent>(e, HurtboxComponent{def.damageMultiplier});
+    this->addDebugVisual(e, *def.collider, def.debug);
+
+    return e;
+}
+
+Entity EntityFactory::createPushbox(Entity parent, const PushboxDef& def, bool facingLeft)
+{
+    Entity e = this->world.entities().create();
+    auto& comp = this->world.components();
+
+    float finalOffsetX = facingLeft ? -def.collider->offsetX : def.collider->offsetX;
+    comp.add<ParentComponent>(e, ParentComponent{parent});
+    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offsetY});
     this->addColliderComponents(e, *def.collider);
     comp.add<PushboxComponent>(e, PushboxComponent{def.type, def.mass, def.pushResistance});
     this->addDebugVisual(e, *def.collider, def.debug);
@@ -143,33 +173,6 @@ Entity EntityFactory::createPushbox(Entity parent, const PushboxDef& def)
     return e;
 }
 
-Entity EntityFactory::createHitbox(Entity parent, const HitboxDef& def)
-{
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
-
-    comp.add<ParentComponent>(e, ParentComponent{parent});
-    comp.add<LocalTransform>(e, LocalTransform{def.collider->offsetX, def.collider->offsetY});
-    this->addColliderComponents(e, *def.collider);
-    comp.add<HitboxComponent>(e, HitboxComponent{def.damage});
-    this->addDebugVisual(e, *def.collider, def.debug);
-
-    return e;
-}
-
-Entity EntityFactory::createHurtbox(Entity parent, const HurtboxDef& def)
-{
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
-
-    comp.add<ParentComponent>(e, ParentComponent{parent});
-    comp.add<LocalTransform>(e, LocalTransform{def.collider->offsetX, def.collider->offsetY});
-    this->addColliderComponents(e, *def.collider);
-    comp.add<HurtboxComponent>(e, HurtboxComponent{def.damageMultiplier});
-    this->addDebugVisual(e, *def.collider, def.debug);
-
-    return e;
-}
 
 Entity EntityFactory::createSpriteEffect(const std::string& texturePath, const Position& position, float duration)
 {

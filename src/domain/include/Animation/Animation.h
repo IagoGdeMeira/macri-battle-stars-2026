@@ -3,11 +3,11 @@
 
 #include <vector>
 
-struct AnimationFrame { int x, y, width, height; };
-
 struct Animation
 {
-    std::vector<AnimationFrame> frames;
+    struct Frame { int x, y, width, height; };
+
+    std::vector<Frame> frames;
 
     float frameDuration = 0.1f;
     bool loop = true;
