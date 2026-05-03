@@ -14,6 +14,7 @@
 #include "../../domain/components/InputComponent.h"
 #include "../../domain/components/LifetimeComponent.h"
 #include "../../domain/components/LocalTransform.h"
+#include "../../domain/components/OrientationComponent.h"
 #include "../../domain/components/ParentComponent.h"
 #include "../../domain/components/ParallaxComponent.h"
 #include "../../domain/components/PlayerComponent.h"
@@ -46,6 +47,7 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<InputComponent>();
     components.registerComponent<LifetimeComponent>();
     components.registerComponent<LocalTransform>();
+    components.registerComponent<OrientationComponent>();
     components.registerComponent<ParallaxComponent>();
     components.registerComponent<ParentComponent>();
     components.registerComponent<PlayerComponent>();

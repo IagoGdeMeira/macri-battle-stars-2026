@@ -9,6 +9,7 @@
 #include "../../include/ComponentRegistry/ComponentRegistry.h"
 #include "../../include/DamageSystem/DamageSystem.h"
 #include "../../include/DynamicPushboxResolutionSystem/DynamicPushboxResolutionSystem.h"
+#include "../../include/FaceOffSystem/FaceOffSystem.h"
 #include "../../include/FrictionSystem/FrictionSystem.h"
 #include "../../include/GravitySystem/GravitySystem.h"
 #include "../../include/GroundDetectionSystem/GroundDetectionSystem.h"
@@ -57,34 +58,41 @@ GameScene::GameScene(Config&& config) :
     textureLoader(config.textureLoader)
 {
     auto& systems = this->systemManager;
-    systems.addSystem<InputSystem>(this->eventBus, this->input);
-    systems.addSystem<TriggerGenerationSystem>(this->eventBus, this->triggerContext);
-    systems.addSystem<InputBufferSystem>(this->eventBus, this->input);
-    systems.addSystem<ComboSystem>(this->eventBus, this->combos);
+    auto& events = this->eventBus;
 
-    systems.addSystem<StateSystem>(this->eventBus);
+    auto& inputs = this->input;
+    auto& trigger = this->triggerContext;
+    systems.addSystem<InputSystem>(events, inputs);
+    systems.addSystem<TriggerGenerationSystem>(events, trigger);
+    systems.addSystem<InputBufferSystem>(events, inputs);
+    systems.addSystem<ComboSystem>(events, this->combos);
 
-    systems.addSystem<PlayerControlSystem>(this->eventBus, 300.0f, -500.0f);
+    systems.addSystem<StateSystem>(events);
 
-    systems.addSystem<GravitySystem>(this->mapData.gravity);
-    systems.addSystem<AirFrictionSystem>(this->mapData.airFriction);
+    systems.addSystem<PlayerControlSystem>(events, 300.0f, -500.0f);
+    systems.addSystem<FaceOffSystem>(events);
+
+    auto& map = this->mapData;
+    systems.addSystem<GravitySystem>(map.gravity);
+    systems.addSystem<AirFrictionSystem>(map.airFriction);
     systems.addSystem<MovementSystem>();
     systems.addSystem<LocalToWorldSystem>();
 
-    systems.addSystem<AnimationStateSystem>(this->eventBus);
+    systems.addSystem<AnimationStateSystem>(events);
     systems.addSystem<AnimationSystem>();
 
     systems.addSystem<CollisionDetectionSystem>();
-    systems.addSystem<GroundDetectionSystem>(this->eventBus);
-    systems.addSystem<StaticPushboxResolutionSystem>(this->eventBus);
-    systems.addSystem<DynamicPushboxResolutionSystem>(this->eventBus);
-    systems.addSystem<FrictionSystem>(this->mapData.floorFriction);
+    systems.addSystem<GroundDetectionSystem>(events);
+    systems.addSystem<StaticPushboxResolutionSystem>(events);
+    systems.addSystem<DynamicPushboxResolutionSystem>(events);
+    systems.addSystem<FrictionSystem>(map.floorFriction);
 
-    systems.addSystem<DamageSystem>(this->eventBus);
+    systems.addSystem<DamageSystem>(events);
 
-    systems.addSystem<CameraControllerSystem>(this->camera, this->window);
+    auto& cam = this->camera;
+    systems.addSystem<CameraControllerSystem>(cam, this->window);
 
-    this->renderSystem = std::make_unique<RenderSystem>(this->eventBus, this->renderer, this->camera);
+    this->renderSystem = std::make_unique<RenderSystem>(events, this->renderer, cam);
 
     auto& world = this->world();
     auto& resources = this->resourceManager;
