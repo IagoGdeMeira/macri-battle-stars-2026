@@ -25,6 +25,7 @@ target_sources(game
         src/DamageSystem.cpp
         src/DynamicPushboxResolutionSystem.cpp
         src/EntityFactory.cpp
+        src/FaceOffSystem.cpp
         src/FrictionSystem.cpp
         src/GravitySystem.cpp
         src/GroundDetectionSystem.cpp

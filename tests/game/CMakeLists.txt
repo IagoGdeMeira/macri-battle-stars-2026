@@ -21,6 +21,7 @@ add_executable(game_tests
     ComboTests.cpp
     ConditionFactoryTests.cpp
     DynamicPushboxResolutionSystemTests.cpp
+    FaceOffSystemTests.cpp
     FrictionSystemTests.cpp
     GameSceneTests.cpp
     GravitySystemTests.cpp
