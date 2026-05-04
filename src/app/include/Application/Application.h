@@ -28,6 +28,7 @@
 class AnimationLoader;
 class CharacterDefinitionLoader;
 class CharacterRoster;
+class CollisionClipLoader;
 class MapLoader;
 class MapRoster;
 class StateMachineLoader;
@@ -65,6 +66,7 @@ private:
     std::unique_ptr<AnimationLoader> animLoader;
     std::unique_ptr<StateMachineLoader> fsmLoader;
     std::unique_ptr<TextureLoader> textureLoader;
+    std::unique_ptr<CollisionClipLoader> clipLoader;
 
     std::unique_ptr<ResourceManager> resourceManager;
     std::unique_ptr<CharacterLoader> characterLoader;

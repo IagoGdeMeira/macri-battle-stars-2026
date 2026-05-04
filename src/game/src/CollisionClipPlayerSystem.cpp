@@ -1,15 +1,14 @@
-// src/game/src/CollisionClipPlayerSystem.cpp
 #include "../include/CollisionClipPlayerSystem/CollisionClipPlayerSystem.h"
 
-#include "../../events/StateChangedEvent.h"
+#include "../events/StateChangedEvent.h"
 
-#include "../../../domain/events/OrientationChangedEvent.h"
-#include "../../../domain/components/CollisionClipPlayerComponent.h"
-#include "../../../domain/components/CollisionClipDefinitionsComponent.h"
-#include "../../../domain/components/OrientationComponent.h"
-#include "../../../domain/include/View/View.h"
+#include "../../domain/events/OrientationChangedEvent.h"
+#include "../../domain/components/CollisionClipPlayerComponent.h"
+#include "../../domain/components/CollisionClipDefinitionsComponent.h"
+#include "../../domain/components/OrientationComponent.h"
+#include "../../domain/include/View/View.h"
 
-#include "../../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/include/UpdateContext/UpdateContext.h"
 
 CollisionClipPlayerSystem::CollisionClipPlayerSystem(EventBus& bus, EntityFactory& factory)
     : bus(bus), factory(factory)
@@ -43,7 +42,7 @@ void CollisionClipPlayerSystem::update(UpdateContext& ctx)
         }
         else player.playing = false;
         
-        this->refreshColliders(ctx, sc.entity, player);
+        this->refreshColliders(ctx, sc.entity);
     }
     this->stateChanges.clear();
 
@@ -61,16 +60,16 @@ void CollisionClipPlayerSystem::update(UpdateContext& ctx)
         player.elapsedTime -= frame.duration;
         player.currentFrame++;
 
-        if (player.currentFrame >= (int)player.currentClip->frames.size())
+        if (player.currentFrame >= static_cast<int>(player.currentClip->frames.size()))
         {
             if (player.currentClip->loop) player.currentFrame = 0;
             else
             {
                 player.playing = false;
-                player.currentFrame = player.currentClip->frames.size() - 1;
+                player.currentFrame = static_cast<int>(player.currentClip->frames.size()) - 1;
             }
         }
-        this->refreshColliders(ctx, entity, player);    
+        this->refreshColliders(ctx, entity);    
     }
 
     for (const auto& oc : this->orientationChanges)
@@ -79,15 +78,15 @@ void CollisionClipPlayerSystem::update(UpdateContext& ctx)
         if (!components.has<CollisionClipDefinitionsComponent>(oc.entity)) continue;
 
         auto& player = components.get<CollisionClipPlayerComponent>(oc.entity);
-        if (player.playing) this->refreshColliders(ctx, oc.entity, player);
+        if (player.playing) this->refreshColliders(ctx, oc.entity);
     }
     this->orientationChanges.clear();
 }
 
-void CollisionClipPlayerSystem::refreshColliders(
-    UpdateContext& ctx, Entity owner, CollisionClipPlayerComponent& player)
+void CollisionClipPlayerSystem::refreshColliders(UpdateContext& ctx, Entity owner)
 {
-    auto& comp = ctx.world.components();
+    auto& components = ctx.world.components();
+    auto& player = components.get<CollisionClipPlayerComponent>(owner);
 
     auto it = this->activeColliders.find(owner);
     if (it != this->activeColliders.end())
@@ -97,8 +96,8 @@ void CollisionClipPlayerSystem::refreshColliders(
     }
     if (!player.playing || !player.currentClip) return;
 
-    bool facingLeft = comp.has<OrientationComponent>(owner)
-        ? (comp.get<OrientationComponent>(owner).direction == Orientation::Left)
+    bool facingLeft = components.has<OrientationComponent>(owner)
+        ? (components.get<OrientationComponent>(owner).direction == Orientation::Left)
         : false;
 
     const auto& frame = player.currentClip->frames[player.currentFrame];

@@ -17,6 +17,7 @@
 #include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 #include "../../src/game/include/CharacterLoader/CharacterLoader.h"
 #include "../../src/game/include/CharacterRoster/CharacterRoster.h"
+#include "../../src/game/include/CollisionClipLoader/CollisionClipLoader.h"
 #include "../../src/game/include/Combo/Combo.h"
 #include "../../src/game/include/MapRoster/MapRoster.h"
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
@@ -96,13 +97,14 @@ public:
 
     SceneFactoryFixture() :
         resourceManager(threadPool),
-        textureLoader(renderer),
+        textureLoader(this->renderer),
         characterLoader({
-            this->definitionLoader,
-            this->animationLoader,
-            this->machineLoader,
-            this->resourceManager, 
-            this->textureLoader
+            .defLoader = this->definitionLoader,
+            .animLoader = this->animationLoader,
+            .fsmLoader = this->machineLoader,
+            .resourceManager = this->resourceManager,
+            .textureLoader = this->textureLoader,
+            .clipLoader = this->clipLoader
         }),
         sceneFactory({
             this->window,
@@ -141,11 +143,13 @@ public:
     DummyParser definitionParser;
     DummyParser animationParser;
     DummyParser machineParser;
+    DummyParser clipParser;
     DummyParser parser;
 
     CharacterDefinitionLoader definitionLoader{ this->definitionParser };
     AnimationLoader animationLoader{ this->animationParser };
     StateMachineLoader machineLoader{ this->machineParser };
+    CollisionClipLoader clipLoader{ this->clipParser };
     TextureLoader textureLoader;
     CharacterLoader characterLoader;
 

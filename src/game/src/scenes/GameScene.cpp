@@ -4,6 +4,7 @@
 #include "../../include/AnimationStateSystem/AnimationStateSystem.h"
 #include "../../include/AnimationSystem/AnimationSystem.h"
 #include "../../include/CameraControllerSystem/CameraControllerSystem.h"
+#include "../../include/CollisionClipPlayerSystem/CollisionClipPlayerSystem.h"
 #include "../../include/CollisionDetectionSystem/CollisionDetectionSystem.h"
 #include "../../include/ComboSystem/ComboSystem.h"
 #include "../../include/ComponentRegistry/ComponentRegistry.h"
@@ -69,6 +70,7 @@ GameScene::GameScene(Config&& config) :
 
     systems.addSystem<StateSystem>(events);
 
+    systems.addSystem<CollisionClipPlayerSystem>(events, *this->entityFactory);
     systems.addSystem<PlayerControlSystem>(events, 300.0f, -500.0f);
     systems.addSystem<FaceOffSystem>(events);
 

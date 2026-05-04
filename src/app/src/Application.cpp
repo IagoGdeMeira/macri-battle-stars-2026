@@ -13,6 +13,7 @@
 #include "../../game/include/CharacterLoader/CharacterLoader.h"
 #include "../../game/include/CharacterRoster/CharacterRoster.h"
 #include "../../game/include/CharacterRosterLoader/CharacterRosterLoader.h"
+#include "../../game/include/CollisionClipLoader/CollisionClipLoader.h"
 #include "../../game/include/Combo/Combo.h"
 #include "../../game/include/ComboLoader/ComboLoader.h"
 #include "../../game/include/MapData/MapData.h"
@@ -87,13 +88,14 @@ void Application::initLoaders()
     this->fsmLoader = std::make_unique<StateMachineLoader>(*this->parser);
     this->textureLoader = std::make_unique<TextureLoader>(*this->renderer);
 
-    this->characterLoader = std::make_unique<CharacterLoader>(CharacterLoader::Config
-    {
+    this->clipLoader = std::make_unique<CollisionClipLoader>(*this->parser);
+    this->characterLoader = std::make_unique<CharacterLoader>(CharacterLoader::Config{
         .defLoader = *this->charDefLoader,
         .animLoader = *this->animLoader,
         .fsmLoader = *this->fsmLoader,
         .resourceManager = *this->resourceManager,
-        .textureLoader = *this->textureLoader
+        .textureLoader = *this->textureLoader,
+        .clipLoader = *this->clipLoader
     });
 }
 

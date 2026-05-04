@@ -16,6 +16,7 @@ target_sources(game
         src/CharacterRoster.cpp
         src/CharacterRosterLoader.cpp
         src/CollisionClipLoader.cpp
+        src/CollisionClipPlayerSystem.cpp
         src/CollisionDetectionSystem.cpp
         src/CollisionHandlerFactory.cpp
         src/ComboLoader.cpp

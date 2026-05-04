@@ -3,6 +3,7 @@
 
 #include "../AnimationLoader/AnimationLoader.h"
 #include "../CharacterDefinitionLoader/CharacterDefinitionLoader.h"
+#include "../CollisionClipLoader/CollisionClipLoader.h"
 #include "../StateMachineLoader/StateMachineLoader.h"
 
 #include "../../domain/include/World/World.h"
@@ -20,14 +21,10 @@ public:
         StateMachineLoader& fsmLoader;
         ResourceManager& resourceManager;
         TextureLoader& textureLoader;
+        CollisionClipLoader& clipLoader;
     };
 
-    CharacterLoader(Config&& config) :
-        defLoader(config.defLoader),
-        animLoader(config.animLoader),
-        fsmLoader(config.fsmLoader),
-        resourceManager(config.resourceManager),
-        textureLoader(config.textureLoader) {}
+    explicit CharacterLoader(Config&& config);
 
     Entity create(World& world, const std::string& path) const;
 
@@ -35,9 +32,9 @@ private:
     CharacterDefinitionLoader& defLoader;
     AnimationLoader& animLoader;
     StateMachineLoader& fsmLoader;
-
     ResourceManager& resourceManager;
     TextureLoader& textureLoader;
+    CollisionClipLoader& clipLoader;
 };
 
 #endif // character_loader_h

@@ -14,6 +14,7 @@ struct CharacterDefinition
     std::string animationsPath;
     std::string stateMachinePath;
     std::string combosPath;
+    std::string collisionsPath;
     std::vector<std::string> customStates;
 };
 

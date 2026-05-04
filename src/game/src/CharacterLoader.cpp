@@ -4,12 +4,22 @@
 
 #include "../../domain/components/AnimationComponent.h"
 #include "../../domain/components/AnimationControllerComponent.h"
+#include "../../domain/components/CollisionClipDefinitionsComponent.h"
+#include "../../domain/components/CollisionClipPlayerComponent.h"
 #include "../../domain/components/SpriteComponent.h"
 #include "../../domain/components/StateComponent.h"
 #include "../../domain/components/StateMappingComponent.h"
 #include "../../domain/components/StateMachineComponent.h"
 
 #include <memory>
+
+CharacterLoader::CharacterLoader(Config&& config) :
+    defLoader(config.defLoader),
+    animLoader(config.animLoader),
+    fsmLoader(config.fsmLoader),
+    resourceManager(config.resourceManager),
+    textureLoader(config.textureLoader),
+    clipLoader(config.clipLoader) {}
 
 Entity CharacterLoader::create(World& world, const std::string& path) const
 {
@@ -25,7 +35,6 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     sprite.width = def.spriteWidth;
     sprite.height = def.spriteHeight;
     sprite.useSourceRect = false;
-
     components.add<SpriteComponent>(entity, std::move(sprite));
 
     auto mapper = std::make_shared<StateIdMapper>();
@@ -38,9 +47,20 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 
     AnimationControllerComponent controller;
     controller.animations = this->animLoader.load(def.animationsPath, *mapper);
-
     components.add<AnimationControllerComponent>(entity, std::move(controller));
     components.add<AnimationComponent>(entity, AnimationComponent{});
+
+    if (!def.collisionsPath.empty())
+    {
+        auto clipMap = this->clipLoader.load(def.collisionsPath, *mapper);
+        CollisionClipDefinitionsComponent clipDefs;
+
+        for (auto& [state, clip] : clipMap)
+        { clipDefs.clips[state] = std::make_shared<CollisionClip>(std::move(clip)); }
+
+        components.add<CollisionClipDefinitionsComponent>(entity, std::move(clipDefs));
+    }
+    components.add<CollisionClipPlayerComponent>(entity, CollisionClipPlayerComponent{});
 
     return entity;
 }

@@ -2,6 +2,8 @@
 
 #include "../../src/domain/components/AnimationComponent.h"
 #include "../../src/domain/components/AnimationControllerComponent.h"
+#include "../../src/domain/components/CollisionClipDefinitionsComponent.h"
+#include "../../src/domain/components/CollisionClipPlayerComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/StateComponent.h"
 #include "../../src/domain/components/StateMappingComponent.h"
@@ -19,6 +21,7 @@
 
 #include "../../src/game/include/AnimationLoader/AnimationLoader.h"
 #include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
+#include "../../src/game/include/CollisionClipLoader/CollisionClipLoader.h"
 #include "../../src/game/include/StateIdMapper/StateIdMapper.h"
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
 
@@ -188,6 +191,15 @@ public:
         components.registerComponent<StateMachineComponent>();
         components.registerComponent<AnimationControllerComponent>();
         components.registerComponent<AnimationComponent>();
+        components.registerComponent<CollisionClipDefinitionsComponent>();
+        components.registerComponent<CollisionClipPlayerComponent>();
+    }
+
+    std::unique_ptr<DataNode> makeEmptyClipsRoot() const
+    {
+        auto rootNode = std::make_unique<Node>();
+        rootNode->setArray("clips", std::vector<std::unique_ptr<DataNode>>());
+        return rootNode;
     }
 
     std::unique_ptr<DataNode> makeDefinitionRoot() const
@@ -254,18 +266,21 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     Parser definitionParser(this->makeDefinitionRoot());
     Parser animationParser(this->makeAnimationRoot());
     Parser stateMachineParser(this->makeStateMachineRoot());
+    Parser clipParser(this->makeEmptyClipsRoot());
 
     CharacterDefinitionLoader definitionLoader(definitionParser);
     AnimationLoader animationLoader(animationParser);
     StateMachineLoader machineLoader(stateMachineParser);
-    TextureLoader textureLoader(renderer);
+    CollisionClipLoader clipLoader(clipParser);
+    TextureLoader textureLoader(this->renderer);
 
     CharacterLoader loader({
         .defLoader = definitionLoader,
         .animLoader = animationLoader,
         .fsmLoader = machineLoader,
         .resourceManager = this->resourceManager,
-        .textureLoader = textureLoader
+        .textureLoader = textureLoader,
+        .clipLoader = clipLoader
     });
 
     const auto entity = loader.create(this->world, "assets/characters/fighter_01.json");
@@ -273,23 +288,24 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(definitionParser.lastPath == "assets/characters/fighter_01.json");
     REQUIRE(animationParser.lastPath == "assets/animations/fighter_01.json");
     REQUIRE(stateMachineParser.lastPath == "assets/fsm/fighter_01.json");
-    REQUIRE(renderer.createTextureCalls == 1);
-    REQUIRE(renderer.lastTexturePath == "assets/sprites/fighter.png");
+    REQUIRE(this->renderer.createTextureCalls == 1);
+    REQUIRE(this->renderer.lastTexturePath == "assets/sprites/fighter.png");
 
-    REQUIRE(this->world.components().has<SpriteComponent>(entity));
-    REQUIRE(this->world.components().has<StateComponent>(entity));
-    REQUIRE(this->world.components().has<StateMappingComponent>(entity));
-    REQUIRE(this->world.components().has<StateMachineComponent>(entity));
-    REQUIRE(this->world.components().has<AnimationControllerComponent>(entity));
-    REQUIRE(this->world.components().has<AnimationComponent>(entity));
+    auto& components = this->world.components();
+    REQUIRE(components.has<SpriteComponent>(entity));
+    REQUIRE(components.has<StateComponent>(entity));
+    REQUIRE(components.has<StateMappingComponent>(entity));
+    REQUIRE(components.has<StateMachineComponent>(entity));
+    REQUIRE(components.has<AnimationControllerComponent>(entity));
+    REQUIRE(components.has<AnimationComponent>(entity));
 
-    const auto& sprite = this->world.components().get<SpriteComponent>(entity);
-    const auto& state = this->world.components().get<StateComponent>(entity);
-    const auto& stateMachine = this->world.components().get<StateMachineComponent>(entity);
-    const auto& controller = this->world.components().get<AnimationControllerComponent>(entity);
-    const auto& animation = this->world.components().get<AnimationComponent>(entity);
+    const auto& sprite = components.get<SpriteComponent>(entity);
+    const auto& state = components.get<StateComponent>(entity);
+    const auto& stateMachine = components.get<StateMachineComponent>(entity);
+    const auto& controller = components.get<AnimationControllerComponent>(entity);
+    const auto& animation = components.get<AnimationComponent>(entity);
 
-    REQUIRE(sprite.texture == renderer.textureToReturn);
+    REQUIRE(sprite.texture == this->renderer.textureToReturn);
     REQUIRE(sprite.width == 64);
     REQUIRE(sprite.height == 96);
     REQUIRE(sprite.useSourceRect == false);
@@ -360,11 +376,13 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     Parser definitionParser(std::move(definitionRoot));
     Parser animationParser(std::move(animationRoot));
     Parser stateMachineParser(std::move(machineRoot));
+    Parser clipParser(this->makeEmptyClipsRoot());
 
     CharacterDefinitionLoader definitionLoader(definitionParser);
     AnimationLoader animationLoader(animationParser);
     StateMachineLoader machineLoader(stateMachineParser);
-    TextureLoader textureLoader(renderer);
+    CollisionClipLoader clipLoader(clipParser);
+    TextureLoader textureLoader(this->renderer);
 
     CharacterLoader loader(CharacterLoader::Config
     {
@@ -372,21 +390,23 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
         .animLoader = animationLoader,
         .fsmLoader = machineLoader,
         .resourceManager = this->resourceManager,
-        .textureLoader = textureLoader
+        .textureLoader = textureLoader,
+        .clipLoader = clipLoader
     });
 
     const auto entity = loader.create(this->world, "assets/characters/fighter_custom.json");
 
-    const auto& mapping = this->world.components().get<StateMappingComponent>(entity);
+    auto& components = this->world.components();
+    const auto& mapping = components.get<StateMappingComponent>(entity);
     REQUIRE(mapping.mapper != nullptr);
 
     const auto customStateId = mapping.mapper->fromString("PowerCharge");
     REQUIRE(customStateId.isCustom());
 
-    const auto& stateMachine = this->world.components().get<StateMachineComponent>(entity);
+    const auto& stateMachine = components.get<StateMachineComponent>(entity);
     REQUIRE(stateMachine.machine.transitions.size() == 1);
     REQUIRE(stateMachine.machine.transitions[0].to == customStateId);
 
-    const auto& controller = this->world.components().get<AnimationControllerComponent>(entity);
+    const auto& controller = components.get<AnimationControllerComponent>(entity);
     REQUIRE(controller.animations.right.contains(customStateId));
 }

@@ -6,6 +6,7 @@
 
 #include "../../../domain/components/CollisionClipPlayerComponent.h"
 #include "../../../domain/events/OrientationChangedEvent.h"
+#include "../../../domain/include/Entity/Entity.h"
 
 #include "../../../engine/include/System/System.h"
 #include "../../../engine/include/EventBus/EventBus.h"
@@ -24,12 +25,12 @@ private:
     EventBus& bus;
     EntityFactory& factory;
 
-    std::unordered_map<Entity, std::vector<Entity>> activeColliders;
+    std::unordered_map<Entity, std::vector<Entity>, Entity::Hash> activeColliders;
 
     std::vector<StateChangedEvent> stateChanges;
     std::vector<OrientationChangedEvent> orientationChanges;
 
-    void refreshColliders(UpdateContext& ctx, Entity owner, CollisionClipPlayerComponent& player);
+    void refreshColliders(UpdateContext& ctx, Entity entity);
 };
 
 #endif // collision_clip_player_system_h

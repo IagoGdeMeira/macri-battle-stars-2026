@@ -1,10 +1,12 @@
 #include "../../src/game/scenes/GameScene/GameScene.h"
 
+#include "../../src/domain/components/AnimationComponent.h"
+#include "../../src/domain/components/AnimationControllerComponent.h"
+#include "../../src/domain/components/CollisionClipDefinitionsComponent.h"
+#include "../../src/domain/components/CollisionClipPlayerComponent.h"
 #include "../../src/domain/components/InputBufferComponent.h"
 #include "../../src/domain/components/InputComponent.h"
 #include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/components/AnimationComponent.h"
-#include "../../src/domain/components/AnimationControllerComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/StateComponent.h"
 #include "../../src/domain/components/StateMachineComponent.h"
@@ -26,6 +28,7 @@
 #include "../../src/game/include/Camera2D/Camera2D.h"
 #include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 #include "../../src/game/include/CharacterLoader/CharacterLoader.h"
+#include "../../src/game/include/CollisionClipLoader/CollisionClipLoader.h"
 #include "../../src/game/include/MapData/MapData.h"
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
 
@@ -252,6 +255,13 @@ public:
         return rootNode;
     }
 
+    std::unique_ptr<DataNode> makeEmptyClipsRoot() const
+    {
+        auto rootNode = std::make_unique<Node>();
+        rootNode->setArray("clips", std::vector<std::unique_ptr<DataNode>>());
+        return rootNode;
+    }
+
     ThreadPool threadPool { 1 };
     ResourceManager resourceManager { this->threadPool };
     StubRenderer renderer;
@@ -272,10 +282,12 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
     Parser definitionParser(this->makeDefinitionRoot());
     Parser animationParser(this->makeAnimationRoot());
     Parser stateMachineParser(this->makeStateMachineRoot());
+    Parser clipParser(this->makeEmptyClipsRoot());
 
     CharacterDefinitionLoader definitionLoader(definitionParser);
     AnimationLoader animationLoader(animationParser);
     StateMachineLoader machineLoader(stateMachineParser);
+    CollisionClipLoader clipLoader(clipParser);
     TextureLoader textureLoader(this->renderer);
 
     CharacterLoader characterLoader(CharacterLoader::Config
@@ -284,7 +296,8 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
         .animLoader = animationLoader,
         .fsmLoader = machineLoader,
         .resourceManager = this->resourceManager,
-        .textureLoader = textureLoader
+        .textureLoader = textureLoader,
+        .clipLoader = clipLoader
     });
 
     std::vector<GameScene::PlayerSlot> playerSlots;
