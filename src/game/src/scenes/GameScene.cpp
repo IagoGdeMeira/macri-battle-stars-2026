@@ -58,6 +58,11 @@ GameScene::GameScene(Config&& config) :
     resourceManager(config.resourceManager),
     textureLoader(config.textureLoader)
 {
+    auto& world = this->world();
+    auto& resources = this->resourceManager;
+    auto& textures = this->textureLoader;
+    this->entityFactory = std::make_unique<EntityFactory>(world, resources, textures);
+
     auto& systems = this->systemManager;
     auto& events = this->eventBus;
 
@@ -95,11 +100,6 @@ GameScene::GameScene(Config&& config) :
     systems.addSystem<CameraControllerSystem>(cam, this->window);
 
     this->renderSystem = std::make_unique<RenderSystem>(events, this->renderer, cam);
-
-    auto& world = this->world();
-    auto& resources = this->resourceManager;
-    auto& textures = this->textureLoader;
-    this->entityFactory = std::make_unique<EntityFactory>(world, resources, textures);
 }
 
 void GameScene::init() { this->prepareScene(); }
