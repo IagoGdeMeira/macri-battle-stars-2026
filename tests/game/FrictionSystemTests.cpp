@@ -1,6 +1,7 @@
 #include "../../src/game/include/FrictionSystem/FrictionSystem.h"
 
 #include "../../src/domain/components/GroundedComponent.h"
+#include "../../src/domain/components/HitstopComponent.h"
 #include "../../src/domain/components/VelocityComponent.h"
 #include "../../src/domain/include/World/World.h"
 
@@ -17,8 +18,9 @@ public:
     FrictionSystemFixture() : system(10.0f), context { world, bus, commandBuffer, 0.0f }
     {
         auto& components = this->world.components();
-        components.registerComponent<VelocityComponent>();
         components.registerComponent<GroundedComponent>();
+        components.registerComponent<HitstopComponent>();
+        components.registerComponent<VelocityComponent>();
     }
 
 protected:
@@ -125,4 +127,21 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem allows stronger friction
 
     const auto& velocity = components.get<VelocityComponent>(entity);
     REQUIRE(velocity.vx == Catch::Approx(8.5f));
+}
+
+TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem ignores entities frozen by hitstop",
+    "[integration][friction_system]"
+) {
+    auto& components = this->world.components();
+    const auto entity = this->world.entities().create();
+
+    components.add<VelocityComponent>(entity, VelocityComponent{ 10.0f, 0.0f });
+    components.add<GroundedComponent>(entity, GroundedComponent{ true, 0.0f });
+    components.add<HitstopComponent>(entity, HitstopComponent{ .remaining = 1.0f, .frozen = true });
+
+    this->context.deltaTime = 1.0f;
+    this->system.update(this->context);
+
+    const auto& velocity = components.get<VelocityComponent>(entity);
+    REQUIRE(velocity.vx == Catch::Approx(10.0f));
 }

@@ -1,6 +1,7 @@
 #include "../../src/game/include/GravitySystem/GravitySystem.h"
 
 #include "../../src/domain/components/GravityComponent.h"
+#include "../../src/domain/components/HitstopComponent.h"
 #include "../../src/domain/components/VelocityComponent.h"
 #include "../../src/domain/include/World/World.h"
 
@@ -19,6 +20,7 @@ public:
         auto& components = this->world.components();
         components.registerComponent<VelocityComponent>();
         components.registerComponent<GravityComponent>();
+        components.registerComponent<HitstopComponent>();
     }
 
 protected:

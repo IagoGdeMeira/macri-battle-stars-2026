@@ -1,5 +1,6 @@
 #include "../../src/engine/include/MovementSystem/MovementSystem.h"
 
+#include "../../src/domain/components/HitstopComponent.h"
 #include "../../src/domain/components/TransformComponent.h"
 #include "../../src/domain/components/VelocityComponent.h"
 
@@ -8,48 +9,88 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("MovementSystem updates position",
+class MovementSystemFixture
+{
+public:
+    MovementSystemFixture() : bus(), scene(bus)
+    {
+        auto& components = this->scene.world().components();
+        components.registerComponent<TransformComponent>();
+        components.registerComponent<VelocityComponent>();
+        components.registerComponent<HitstopComponent>();
+
+        this->scene.systems().addSystem<MovementSystem>();
+    }
+
+    Entity createMovingEntity(float x, float y, float vx, float vy)
+    {
+        auto entity = this->scene.world().entities().create();
+        auto& components = this->scene.world().components();
+
+        components.add<TransformComponent>(entity, TransformComponent{x, y});
+        components.add<VelocityComponent>(entity, VelocityComponent{vx, vy});
+
+        return entity;
+    }
+
+    Entity createStaticEntity(float x, float y)
+    {
+        auto entity = this->scene.world().entities().create();
+        auto& components = this->scene.world().components();
+
+        components.add<TransformComponent>(entity, TransformComponent{x, y});
+
+        return entity;
+    }
+
+    Entity createFrozenEntity(float x, float y, float vx, float vy)
+    {
+        auto entity = createMovingEntity(x, y, vx, vy);
+        this->scene.world().components().add<HitstopComponent>(entity, 
+            HitstopComponent{ .remaining = 1.0f, .frozen = true });
+
+        return entity;
+    }
+
+protected:
+    EventBus bus;
+    Scene scene;
+};
+
+TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem updates position",
     "[integration][movement_system]"
 ) {
-    EventBus bus;
-    Scene scene(bus);
+    auto e = this->createMovingEntity(0.f, 0.f, 1.f, 2.f);
 
-    auto e = scene.world().entities().create();
+    this->scene.update(1.0f);
 
-    scene.world().components().registerComponent<TransformComponent>();
-    scene.world().components().registerComponent<VelocityComponent>();
-
-    scene.world().components().add<TransformComponent>(e, TransformComponent{0.f, 0.f});
-    scene.world().components().add<VelocityComponent>(e, VelocityComponent{1.f, 2.f});
-
-    scene.systems().addSystem<MovementSystem>();
-
-    scene.update(1.0f);
-
-    auto& pos = scene.world().components().get<TransformComponent>(e);
+    auto& pos = this->scene.world().components().get<TransformComponent>(e);
 
     REQUIRE(pos.x == 1.f);
     REQUIRE(pos.y == 2.f);
 }
 
-TEST_CASE("MovementSystem does not update position without velocity",
+TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem does not update position without velocity",
     "[integration][movement_system]"
 ) {
-    EventBus bus;
-    Scene scene(bus);
+    auto e = this->createStaticEntity(0.f, 0.f);
 
-    auto e = scene.world().entities().create();
+    this->scene.update(1.0f);
 
-    scene.world().components().registerComponent<TransformComponent>();
-    scene.world().components().registerComponent<VelocityComponent>();
+    auto& pos = this->scene.world().components().get<TransformComponent>(e);
 
-    scene.world().components().add<TransformComponent>(e, TransformComponent{0.f, 0.f});
+    REQUIRE(pos.x == 0.f);
+    REQUIRE(pos.y == 0.f);
+}
 
-    scene.systems().addSystem<MovementSystem>();
+TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem does not update position when entity is frozen by hitstop",
+    "[integration][movement_system]"
+) {
+    auto e = this->createFrozenEntity(0.f, 0.f, 10.f, 20.f);
 
-    scene.update(1.0f);
+    this->scene.update(1.0f);
 
-    auto& pos = scene.world().components().get<TransformComponent>(e);
+    auto& pos = this->scene.world().components().get<TransformComponent>(e);
 
     REQUIRE(pos.x == 0.f);
     REQUIRE(pos.y == 0.f);

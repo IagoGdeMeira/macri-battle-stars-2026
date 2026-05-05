@@ -5,6 +5,7 @@
 
 #include "../../domain/components/AnalogInputComponent.h"
 #include "../../domain/components/GroundedComponent.h"
+#include "../../domain/components/HitstopComponent.h"
 #include "../../domain/components/InputComponent.h"
 #include "../../domain/components/PlayerComponent.h"
 #include "../../domain/components/StateComponent.h"
@@ -31,6 +32,9 @@ void PlayerControlSystem::update(UpdateContext& ctx)
 
     for (auto [entity, input, analog, state, velocity, player] : view)
     {
+        if (ctx.world.components().has<HitstopComponent>(entity))
+        { if (ctx.world.components().get<HitstopComponent>(entity).frozen) continue; }
+
         bool canMove = this->canMove(state.current);
 
         if (canMove)

@@ -2,6 +2,7 @@
 
 #include "../../domain/components/AirFrictionComponent.h"
 #include "../../domain/components/GroundedComponent.h"
+#include "../../domain/components/HitstopComponent.h"
 #include "../../domain/components/VelocityComponent.h"
 #include "../../domain/include/View/View.h"
 
@@ -9,14 +10,15 @@
 
 #include <cmath>
 
-AirFrictionSystem::AirFrictionSystem(float airFriction) : airFriction(airFriction) {}
-
 void AirFrictionSystem::update(UpdateContext& ctx)
 {
     auto view = View<VelocityComponent, GroundedComponent, AirFrictionComponent>(ctx.world.components());
     
     for (auto [entity, v, g, air] : view)
     {
+        if (ctx.world.components().has<HitstopComponent>(entity))
+        { if (ctx.world.components().get<HitstopComponent>(entity).frozen) continue; }
+
         if (g.onGround) continue;
 
         float effectiveX = this->airFriction * air.multiplierX;

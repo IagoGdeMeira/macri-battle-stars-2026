@@ -2,6 +2,7 @@
 
 #include "../../src/domain/components/AnalogInputComponent.h"
 #include "../../src/domain/components/GroundedComponent.h"
+#include "../../src/domain/components/HitstopComponent.h"
 #include "../../src/domain/components/InputComponent.h"
 #include "../../src/domain/components/PlayerComponent.h"
 #include "../../src/domain/components/StateComponent.h"
@@ -23,12 +24,13 @@ public:
     PlayerControlSystemFixture()
     {
         auto& components = this->scene.world().components();
-        components.registerComponent<InputComponent>();
         components.registerComponent<AnalogInputComponent>();
+        components.registerComponent<GroundedComponent>();
+        components.registerComponent<HitstopComponent>();
+        components.registerComponent<InputComponent>();
+        components.registerComponent<PlayerComponent>();
         components.registerComponent<StateComponent>();
         components.registerComponent<VelocityComponent>();
-        components.registerComponent<PlayerComponent>();
-        components.registerComponent<GroundedComponent>();
     }
 
     EventBus bus;
@@ -116,5 +118,42 @@ TEST_CASE_METHOD(PlayerControlSystemFixture,
 
     const auto& updatedVelocity = this->scene.world().components().get<VelocityComponent>(entity);
     REQUIRE(updatedVelocity.vx == Catch::Approx(0.0f));
+    REQUIRE(triggerCount == 0);
+}
+
+TEST_CASE_METHOD(PlayerControlSystemFixture,
+    "PlayerControlSystem blocks movement and triggers when frozen by hitstop",
+    "[integration][player_control_system]"
+) {
+    const auto entity = this->scene.world().entities().create();
+
+    InputComponent input;
+    input.actions[InputAction::Punch] = InputState{true, 0.0f};
+    input.actions[InputAction::MoveRight] = InputState{true, 0.0f};
+
+    AnalogInputComponent analog;
+    analog.moveX = 1.0f;
+
+    StateComponent state;
+    state.current = StateId::Idle;
+
+    VelocityComponent velocity{ 50.0f, 0.0f };
+    HitstopComponent hitstop{ .remaining = 1.0f, .frozen = true };
+
+    this->scene.world().components().add<InputComponent>(entity, input);
+    this->scene.world().components().add<AnalogInputComponent>(entity, analog);
+    this->scene.world().components().add<StateComponent>(entity, state);
+    this->scene.world().components().add<VelocityComponent>(entity, velocity);
+    this->scene.world().components().add<PlayerComponent>(entity, PlayerComponent{1});
+    this->scene.world().components().add<HitstopComponent>(entity, hitstop);
+
+    int triggerCount = 0;
+    this->bus.subscribe<TriggerEvent>([&](const TriggerEvent&) { ++triggerCount; });
+
+    this->scene.systems().addSystem<PlayerControlSystem>(this->bus, 240.0f, -420.0f);
+    this->scene.update(0.016f);
+
+    const auto& updatedVelocity = this->scene.world().components().get<VelocityComponent>(entity);
+    REQUIRE(updatedVelocity.vx == Catch::Approx(50.0f));
     REQUIRE(triggerCount == 0);
 }

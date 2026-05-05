@@ -8,7 +8,7 @@ struct VelocityComponent;
 
 class MovementSystem : public System
 {
-    void update(UpdateContext& context) override;
+    void update(UpdateContext& ctx) override;
 };
 
 #endif // movement_system_h

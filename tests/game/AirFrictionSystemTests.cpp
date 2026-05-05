@@ -2,6 +2,7 @@
 
 #include "../../src/domain/components/AirFrictionComponent.h"
 #include "../../src/domain/components/GroundedComponent.h"
+#include "../../src/domain/components/HitstopComponent.h"
 #include "../../src/domain/components/VelocityComponent.h"
 #include "../../src/domain/include/World/World.h"
 
@@ -18,9 +19,10 @@ public:
     AirFrictionSystemFixture() : system(10.0f), context { world, bus, commandBuffer, 0.0f }
     {
         auto& components = this->world.components();
-        components.registerComponent<VelocityComponent>();
-        components.registerComponent<GroundedComponent>();
         components.registerComponent<AirFrictionComponent>();
+        components.registerComponent<GroundedComponent>();
+        components.registerComponent<HitstopComponent>();
+        components.registerComponent<VelocityComponent>();
     }
 
 protected:
@@ -31,7 +33,8 @@ protected:
     UpdateContext context;
 };
 
-TEST_CASE_METHOD(AirFrictionSystemFixture, "AirFrictionSystem reduces velocity on both axes when entity is airborne",
+TEST_CASE_METHOD(AirFrictionSystemFixture,
+    "AirFrictionSystem reduces velocity on both axes when entity is airborne",
     "[unit][air_friction_system]"
 ) {
     auto& components = this->world.components();
@@ -49,7 +52,8 @@ TEST_CASE_METHOD(AirFrictionSystemFixture, "AirFrictionSystem reduces velocity o
     REQUIRE(velocity.vy == Catch::Approx(-18.0f));
 }
 
-TEST_CASE_METHOD(AirFrictionSystemFixture, "AirFrictionSystem does not affect grounded entities",
+TEST_CASE_METHOD(AirFrictionSystemFixture,
+    "AirFrictionSystem does not affect grounded entities",
     "[unit][air_friction_system]"
 ) {
     auto& components = this->world.components();
@@ -67,7 +71,8 @@ TEST_CASE_METHOD(AirFrictionSystemFixture, "AirFrictionSystem does not affect gr
     REQUIRE(velocity.vy == -8.0f);
 }
 
-TEST_CASE_METHOD(AirFrictionSystemFixture, "AirFrictionSystem applies per-axis multipliers from AirFrictionComponent",
+TEST_CASE_METHOD(AirFrictionSystemFixture,
+    "AirFrictionSystem applies per-axis multipliers from AirFrictionComponent",
     "[unit][air_friction_system]"
 ) {
     auto& components = this->world.components();
@@ -85,7 +90,8 @@ TEST_CASE_METHOD(AirFrictionSystemFixture, "AirFrictionSystem applies per-axis m
     REQUIRE(velocity.vy == Catch::Approx(8.0f));
 }
 
-TEST_CASE_METHOD(AirFrictionSystemFixture, "AirFrictionSystem clamps negative multipliers and snaps small velocity to zero",
+TEST_CASE_METHOD(AirFrictionSystemFixture,
+    "AirFrictionSystem clamps negative multipliers and snaps small velocity to zero",
     "[unit][air_friction_system]"
 ) {
     auto& components = this->world.components();
@@ -103,7 +109,8 @@ TEST_CASE_METHOD(AirFrictionSystemFixture, "AirFrictionSystem clamps negative mu
     REQUIRE(velocity.vy == 0.0f);
 }
 
-TEST_CASE_METHOD(AirFrictionSystemFixture, "AirFrictionSystem clamps decay and can stop velocity when friction is very high",
+TEST_CASE_METHOD(AirFrictionSystemFixture,
+    "AirFrictionSystem clamps decay and can stop velocity when friction is very high",
     "[unit][air_friction_system]"
 ) {
     auto& components = this->world.components();

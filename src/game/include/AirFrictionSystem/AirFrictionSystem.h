@@ -6,7 +6,7 @@
 class AirFrictionSystem : public System
 {
 public:
-    explicit AirFrictionSystem(float airFriction);
+    explicit AirFrictionSystem(float airFriction) : airFriction(airFriction) {}
     
     void update(UpdateContext& ctx) override;
 

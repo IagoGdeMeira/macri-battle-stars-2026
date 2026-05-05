@@ -1,21 +1,23 @@
 #include "../include/FrictionSystem/FrictionSystem.h"
 
-#include "../../domain/components/VelocityComponent.h"
 #include "../../domain/components/GroundedComponent.h"
+#include "../../domain/components/HitstopComponent.h"
+#include "../../domain/components/VelocityComponent.h"
 #include "../../domain/include/View/View.h"
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
 #include <cmath>
 
-FrictionSystem::FrictionSystem(float friction) : friction(friction) {}
-
 void FrictionSystem::update(UpdateContext& ctx)
 {
     auto view = View<VelocityComponent, GroundedComponent>(ctx.world.components());
     
-    for (auto [e, v, g] : view)
+    for (auto [entity, v, g] : view)
     {
+        if (ctx.world.components().has<HitstopComponent>(entity))
+        { if (ctx.world.components().get<HitstopComponent>(entity).frozen) continue; }
+
         if (!g.onGround) continue;
 
         float effectiveFriction = this->friction * (1.0f - g.frictionReduction);
