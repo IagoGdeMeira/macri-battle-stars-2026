@@ -14,6 +14,7 @@
 #include "../../domain/components/HurtboxComponent.h"
 #include "../../domain/components/InputBufferComponent.h"
 #include "../../domain/components/InputComponent.h"
+#include "../../domain/components/KnockbackComponent.h"
 #include "../../domain/components/LifetimeComponent.h"
 #include "../../domain/components/LocalTransform.h"
 #include "../../domain/components/OrientationComponent.h"
@@ -49,6 +50,7 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<HurtboxComponent>();
     components.registerComponent<InputBufferComponent>();
     components.registerComponent<InputComponent>();
+    components.registerComponent<KnockbackComponent>();
     components.registerComponent<LifetimeComponent>();
     components.registerComponent<LocalTransform>();
     components.registerComponent<OrientationComponent>();

@@ -5,6 +5,7 @@
 #include "../../domain/components/HealthComponent.h"
 #include "../../domain/components/HitboxComponent.h"
 #include "../../domain/components/HurtboxComponent.h"
+#include "../../domain/events/DamageEvent.h"
 #include "../../domain/include/Entity/Entity.h"
 
 #include "../../engine/include/EventBus/EventBus.h"
@@ -43,6 +44,7 @@ void DamageSystem::update(UpdateContext& ctx)
         auto& health = components.get<HealthComponent>(target);
         health.current -= damage;
 
+        this->bus.emit<DamageEvent>(DamageEvent{ attacker, target, damage });
         if (health.current < 0) health.current = 0;
     }
 

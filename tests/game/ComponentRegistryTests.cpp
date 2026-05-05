@@ -14,6 +14,7 @@
 #include "../../src/domain/components/HurtboxComponent.h"
 #include "../../src/domain/components/InputBufferComponent.h"
 #include "../../src/domain/components/InputComponent.h"
+#include "../../src/domain/components/KnockbackComponent.h"
 #include "../../src/domain/components/LifetimeComponent.h"
 #include "../../src/domain/components/LocalTransform.h"
 #include "../../src/domain/components/OrientationComponent.h"
@@ -56,6 +57,7 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(components.storage<HurtboxComponent>() != nullptr);
     REQUIRE(components.storage<InputBufferComponent>() != nullptr);
     REQUIRE(components.storage<InputComponent>() != nullptr);
+    REQUIRE(components.storage<KnockbackComponent>() != nullptr);
     REQUIRE(components.storage<LifetimeComponent>() != nullptr);
     REQUIRE(components.storage<LocalTransform>() != nullptr);
     REQUIRE(components.storage<OrientationComponent>() != nullptr);

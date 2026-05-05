@@ -27,6 +27,7 @@ add_executable(game_tests
     GameSceneTests.cpp
     GravitySystemTests.cpp
     GroundDetectionSystemTests.cpp
+    KnockbackSystemTests.cpp
     LocalToWorldSystemTests.cpp
     PlayerControlSystemTests.cpp
     RenderSystemTests.cpp
