@@ -8,9 +8,11 @@ target_sources(platform
         src/SDLKeyboardAdapter.cpp
         src/SDLKeyTranslator.cpp
         src/SDLMouseAdapter.cpp
+        src/SDLMusic.cpp
         src/SDLPlatformEventProvider.cpp
         src/SDLPlatformInputFactory.cpp
         src/SDLRenderer.cpp
+        src/SDLSound.cpp
         src/SDLSystemAdapter.cpp
         src/SDLSystemInitializer.cpp
         src/SDLWindow.cpp
