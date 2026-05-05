@@ -1,0 +1,136 @@
+#include "../../src/game/include/HitstopSystem/HitstopSystem.h"
+
+#include "../../src/domain/components/HitstopComponent.h"
+#include "../../src/domain/events/DamageEvent.h"
+#include "../../src/domain/include/World/World.h"
+
+#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/UpdateContext/UpdateContext.h"
+
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
+
+class HitstopSystemFixture
+{
+public:
+    HitstopSystemFixture() : system(bus), context { world, bus, commandBuffer, 0.0f }
+    { this->world.components().registerComponent<HitstopComponent>(); }
+
+protected:
+    World world;
+    EventBus bus;
+    CommandBuffer commandBuffer;
+    HitstopSystem system;
+    UpdateContext context;
+};
+
+TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem freezes attacker and target on damage",
+    "[unit][hitstop_system]"
+) {
+    auto& components = this->world.components();
+    auto& entities = this->world.entities();
+
+    auto attacker = entities.create();
+    auto target = entities.create();
+
+    components.add<HitstopComponent>(attacker, HitstopComponent{});
+    components.add<HitstopComponent>(target, HitstopComponent{});
+
+    DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
+    this->bus.emit<DamageEvent>(damage);
+
+    this->context.deltaTime = 0.016f;
+    this->system.update(this->context);
+
+    const auto& attackerHitstop = components.get<HitstopComponent>(attacker);
+    const auto& targetHitstop = components.get<HitstopComponent>(target);
+
+    REQUIRE(attackerHitstop.frozen);
+    REQUIRE(targetHitstop.frozen);
+    REQUIRE(attackerHitstop.remaining == Catch::Approx(0.084f));
+    REQUIRE(targetHitstop.remaining == Catch::Approx(0.084f));
+}
+
+TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem ignores entities without HitstopComponent",
+    "[unit][hitstop_system]"
+) {
+    auto& components = this->world.components();
+    auto& entities = this->world.entities();
+
+    auto attacker = entities.create();
+    auto target = entities.create();
+    auto spectator = entities.create();
+
+    components.add<HitstopComponent>(target, HitstopComponent{});
+    components.add<HitstopComponent>(spectator, HitstopComponent{ .remaining = 0.25f, .frozen = false });
+
+    DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
+    this->bus.emit<DamageEvent>(damage);
+
+    this->context.deltaTime = 0.016f;
+    this->system.update(this->context);
+
+    const auto& targetHitstop = components.get<HitstopComponent>(target);
+    const auto& spectatorHitstop = components.get<HitstopComponent>(spectator);
+
+    REQUIRE(targetHitstop.frozen);
+    REQUIRE(targetHitstop.remaining == Catch::Approx(0.084f));
+    REQUIRE(spectatorHitstop.frozen == false);
+    REQUIRE(spectatorHitstop.remaining == Catch::Approx(0.25f));
+}
+
+TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem releases freeze when remaining time expires",
+    "[unit][hitstop_system]"
+) {
+    auto& components = this->world.components();
+    auto& entities = this->world.entities();
+
+    auto attacker = entities.create();
+    auto target = entities.create();
+
+    components.add<HitstopComponent>(attacker, HitstopComponent{});
+    components.add<HitstopComponent>(target, HitstopComponent{});
+
+    DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
+    this->bus.emit<DamageEvent>(damage);
+
+    this->context.deltaTime = 0.2f;
+    this->system.update(this->context);
+
+    const auto& attackerHitstop = components.get<HitstopComponent>(attacker);
+    const auto& targetHitstop = components.get<HitstopComponent>(target);
+
+    REQUIRE(attackerHitstop.frozen == false);
+    REQUIRE(targetHitstop.frozen == false);
+    REQUIRE(attackerHitstop.remaining == Catch::Approx(0.0f));
+    REQUIRE(targetHitstop.remaining == Catch::Approx(0.0f));
+}
+
+TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem keeps frozen entities frozen across partial updates",
+    "[unit][hitstop_system]"
+) {
+    auto& components = this->world.components();
+    auto& entities = this->world.entities();
+
+    auto attacker = entities.create();
+    auto target = entities.create();
+
+    components.add<HitstopComponent>(attacker, HitstopComponent{});
+    components.add<HitstopComponent>(target, HitstopComponent{});
+
+    DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
+    this->bus.emit<DamageEvent>(damage);
+
+    this->context.deltaTime = 0.03f;
+    this->system.update(this->context);
+    this->system.update(this->context);
+
+    const auto& attackerHitstop = components.get<HitstopComponent>(attacker);
+    const auto& targetHitstop = components.get<HitstopComponent>(target);
+
+    REQUIRE(attackerHitstop.frozen);
+    REQUIRE(targetHitstop.frozen);
+    REQUIRE(attackerHitstop.remaining == Catch::Approx(0.04f));
+    REQUIRE(targetHitstop.remaining == Catch::Approx(0.04f));
+}

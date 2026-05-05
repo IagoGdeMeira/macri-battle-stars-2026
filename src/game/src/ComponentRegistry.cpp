@@ -11,6 +11,7 @@
 #include "../../domain/components/GroundedComponent.h"
 #include "../../domain/components/HealthComponent.h"
 #include "../../domain/components/HitboxComponent.h"
+#include "../../domain/components/HitstopComponent.h"
 #include "../../domain/components/HurtboxComponent.h"
 #include "../../domain/components/InputBufferComponent.h"
 #include "../../domain/components/InputComponent.h"
@@ -47,6 +48,7 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<GroundedComponent>();
     components.registerComponent<HealthComponent>();
     components.registerComponent<HitboxComponent>();
+    components.registerComponent<HitstopComponent>();
     components.registerComponent<HurtboxComponent>();
     components.registerComponent<InputBufferComponent>();
     components.registerComponent<InputComponent>();

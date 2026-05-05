@@ -11,6 +11,7 @@
 #include "../../src/domain/components/GroundedComponent.h"
 #include "../../src/domain/components/HealthComponent.h"
 #include "../../src/domain/components/HitboxComponent.h"
+#include "../../src/domain/components/HitstopComponent.h"
 #include "../../src/domain/components/HurtboxComponent.h"
 #include "../../src/domain/components/InputBufferComponent.h"
 #include "../../src/domain/components/InputComponent.h"
@@ -54,6 +55,7 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(components.storage<GroundedComponent>() != nullptr);
     REQUIRE(components.storage<HealthComponent>() != nullptr);
     REQUIRE(components.storage<HitboxComponent>() != nullptr);
+    REQUIRE(components.storage<HitstopComponent>() != nullptr);
     REQUIRE(components.storage<HurtboxComponent>() != nullptr);
     REQUIRE(components.storage<InputBufferComponent>() != nullptr);
     REQUIRE(components.storage<InputComponent>() != nullptr);
