@@ -15,7 +15,7 @@ public:
     void stop() override;
     void pause() override;
     void resume() override;
-    void setVolume(int volume) override;
+    void setVolume(int newVolume) override;
     int  getVolume() const override;
     bool isPlaying() const override;
 

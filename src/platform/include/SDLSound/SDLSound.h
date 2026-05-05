@@ -13,7 +13,7 @@ public:
 
     void play(bool loop = false) override;
     void stop() override;
-    void setVolume(int volume) override;
+    void setVolume(int newVolume) override;
     int  getVolume() const override;
     bool isPlaying() const override;
 
