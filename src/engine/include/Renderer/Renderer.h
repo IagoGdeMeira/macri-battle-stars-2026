@@ -28,8 +28,6 @@ public:
 
     virtual void clear() = 0;
     virtual void present() = 0;
-    
-    virtual std::shared_ptr<Texture> createTexture(const std::string& filePath) = 0;
 
     virtual void drawTexture(const Texture& texture, const DrawTextureParams& params) = 0;
     virtual void drawRectOutline(const Rectangle& rect, const Color& color) = 0;

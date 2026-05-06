@@ -1,7 +1,6 @@
 #include "../../src/platform/include/SDLSound/SDLSound.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -10,9 +9,9 @@ class SDLSoundFixture
 public:
     void configureAudioDriverForCi() const
     {
-#if defined(__linux__)
-        SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
-#endif
+        #if defined(__linux__)
+                SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
+        #endif
     }
 
     bool initAudio() const
@@ -35,7 +34,7 @@ TEST_CASE_METHOD(SDLSoundFixture, "SDLSound handles nullptr gracefully", "[unit]
 {
     SDLSound sound(nullptr);
 
-    REQUIRE(sound.getVolume() == 128);
+    REQUIRE(sound.getVolume() == 100);
 
     sound.play();
     sound.stop();

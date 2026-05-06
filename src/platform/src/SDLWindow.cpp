@@ -8,10 +8,7 @@
 
 SDLWindow::~SDLWindow() { if (this->window) SDL_DestroyWindow(this->window); }
 
-void SDLWindow::create(
-    int width,
-    int height,
-    const char* title
+void SDLWindow::create(int width, int height, const char* title
 ) {
     this->window = SDL_CreateWindow(
         title,

@@ -79,12 +79,6 @@ protected:
         void clear() override { this->clearCalls++; }
         void present() override { this->presentCalls++; }
 
-        std::shared_ptr<Texture> createTexture(const std::string& filePath) override
-        {
-            (void)filePath;
-            return std::make_shared<StubTexture>();
-        }
-
         void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
         {
             (void)texture;

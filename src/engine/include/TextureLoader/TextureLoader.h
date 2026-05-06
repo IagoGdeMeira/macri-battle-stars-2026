@@ -1,19 +1,20 @@
 #ifndef texture_loader_h
 #define texture_loader_h
 
-#include "../../engine/include/ResourceLoader/ResourceLoader.h"
-#include "../../engine/include/Renderer/Renderer.h"
+#include "../ITextureFactory/ITextureFactory.h"
+#include "../ResourceLoader/ResourceLoader.h"
+#include "../Texture/Texture.h"
 
 class TextureLoader : public ResourceLoader<Texture>
 {
 public:
-    TextureLoader(Renderer& renderer) : renderer(renderer) {}
+    explicit TextureLoader(ITextureFactory& factory) : factory(factory) {}
 
     std::shared_ptr<Texture> load(const std::string& path) override
-    { return this->renderer.createTexture(path); }
+    { return this->factory.createTexture(path); }
 
 private:
-    Renderer& renderer;
+    ITextureFactory& factory;
 };
 
 #endif // texture_loader_h

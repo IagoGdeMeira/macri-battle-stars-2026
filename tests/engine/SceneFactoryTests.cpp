@@ -26,9 +26,8 @@
 #include "../../src/game/scenes/SelectionScene/SelectionScene.h"
 #include "../../src/game/scenes/TitleScene/TitleScene.h"
 
-#include <catch2/catch_test_macros.hpp>
-
 #include <any>
+#include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -70,15 +69,19 @@ public:
         void clear() override {}
         void present() override {}
 
-        std::shared_ptr<Texture> createTexture(const std::string&) override
-        { return std::make_shared<StubTexture>(); }
-
         void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
         void drawRectOutline(const Rectangle&, const Color&) override {}
         void drawRectFilled(const Rectangle&, const Color&) override {}
         void drawCircleOutline(const Circle&, const Color&) override {}
         void drawCircleFilled(const Circle&, const Color&) override {}
         void setViewport(const Viewport&) override {}
+    };
+
+    class StubFactory : public ITextureFactory
+    {
+    public:
+        std::shared_ptr<Texture> createTexture(const std::string&) override
+        { return std::make_shared<StubTexture>(); }
     };
 
     class StubWindow : public Window
@@ -97,7 +100,7 @@ public:
 
     SceneFactoryFixture() :
         resourceManager(threadPool),
-        textureLoader(this->renderer),
+        textureLoader(this->factory),
         characterLoader({
             .defLoader = this->definitionLoader,
             .animLoader = this->animationLoader,
@@ -139,6 +142,7 @@ public:
     ThreadPool threadPool{ 1 };
     ResourceManager resourceManager;
     StubRenderer renderer;
+    StubFactory factory;
 
     DummyParser definitionParser;
     DummyParser animationParser;

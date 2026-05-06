@@ -33,7 +33,6 @@
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -160,9 +159,6 @@ public:
         void clear() override {}
         void present() override {}
 
-        std::shared_ptr<Texture> createTexture(const std::string& filePath) override
-        { (void)filePath; return this->textureToReturn; }
-
         void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
         { (void)texture; (void)params; }
 
@@ -180,6 +176,15 @@ public:
 
         void setViewport(const Viewport& viewport) override
         { (void)viewport; }
+    };
+
+    class StubFactory : public ITextureFactory
+    {
+    public:
+        std::shared_ptr<Texture> textureToReturn = std::make_shared<StubTexture>();
+
+        std::shared_ptr<Texture> createTexture(const std::string&) override
+        { return this->textureToReturn; }
     };
 
     class StubWindow : public Window
@@ -265,6 +270,7 @@ public:
     ThreadPool threadPool { 1 };
     ResourceManager resourceManager { this->threadPool };
     StubRenderer renderer;
+    StubFactory factory;
 };
 
 TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay components",
@@ -288,7 +294,7 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
     AnimationLoader animationLoader(animationParser);
     StateMachineLoader machineLoader(stateMachineParser);
     CollisionClipLoader clipLoader(clipParser);
-    TextureLoader textureLoader(this->renderer);
+    TextureLoader textureLoader(this->factory);
 
     CharacterLoader characterLoader(CharacterLoader::Config
     {

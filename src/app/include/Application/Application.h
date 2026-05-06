@@ -1,20 +1,16 @@
 #ifndef application_h
 #define application_h
 
-#include "../ISystemInitializer/ISystemInitializer.h"
+#include "../../app/include/ISystemInitializer/ISystemInitializer.h"
 
 #include "../../engine/include/Engine/Engine.h"
-#include "../../engine/include/InputAdapter/InputAdapter.h"
 #include "../../engine/include/InputContext/InputContext.h"
-#include "../../engine/include/PlatformInputFactory/PlatformInputFactory.h"
+#include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
 #include "../../engine/include/SceneFactory/SceneFactory.h"
-#include "../../engine/include/Renderer/Renderer.h"
-#include "../../engine/include/ResourceManager/ResourceManager.h"
-#include "../../engine/include/ThreadPool/ThreadPool.h"
-#include "../../engine/include/Window/Window.h"
 
 #include "../../game/include/Camera2D/Camera2D.h"
 #include "../../game/include/CharacterLoader/CharacterLoader.h"
+#include "../../game/include/CharacterRoster/CharacterRoster.h"
 #include "../../game/include/Combo/Combo.h"
 #include "../../game/include/MapRoster/MapRoster.h"
 #include "../../game/include/TriggerContext/TriggerContext.h"
@@ -25,12 +21,16 @@
 #include <string>
 #include <vector>
 
+class InputAdapter;
+class Renderer;
+class ResourceManager;
+class ThreadPool;
+class Window;
+
 class AnimationLoader;
 class CharacterDefinitionLoader;
-class CharacterRoster;
 class CollisionClipLoader;
 class MapLoader;
-class MapRoster;
 class StateMachineLoader;
 class TextureLoader;
 
@@ -39,7 +39,7 @@ class Application
 public:
     Application() = default;
     ~Application() = default;
-
+    
     Application(const Application&) = delete;
     Application& operator=(const Application&) = delete;
 
@@ -54,10 +54,10 @@ private:
     int windowHeight = 600;
 
     std::unique_ptr<ISystemInitializer> initializer;
+    std::unique_ptr<IPlatformFactory> platformFactory;
     std::unique_ptr<Window> window;
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<SceneFactory> sceneFactory;
-    std::unique_ptr<PlatformInputFactory> platformInputFactory;
     std::unique_ptr<Engine> engine;
     std::unique_ptr<JsonParser> parser;
     std::unique_ptr<ThreadPool> threadPool;
@@ -76,7 +76,7 @@ private:
 
     std::unique_ptr<InputContext> inputContext;
     std::unique_ptr<TriggerContext> triggerContext;
-    std::vector<Combo> globalCombos;
+    std::vector<Combo>  globalCombos;
 
     void initSystems();
     void initLoaders();

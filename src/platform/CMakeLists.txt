@@ -9,12 +9,16 @@ target_sources(platform
         src/SDLKeyTranslator.cpp
         src/SDLMouseAdapter.cpp
         src/SDLMusic.cpp
+        src/SDLMusicFactory.cpp
         src/SDLPlatformEventProvider.cpp
-        src/SDLPlatformInputFactory.cpp
+        src/SDLPlatformFactory.cpp
         src/SDLRenderer.cpp
         src/SDLSound.cpp
+        src/SDLSoundFactory.cpp
         src/SDLSystemAdapter.cpp
         src/SDLSystemInitializer.cpp
+        src/SDLTexture.cpp
+        src/SDLTextureFactory.cpp
         src/SDLWindow.cpp
 )
 

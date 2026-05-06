@@ -8,7 +8,6 @@
 #include "../../src/platform/include/SDLWindow/SDLWindow.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <SDL.h>
 
 class SDLRendererFixture
@@ -27,11 +26,12 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
     "[integration][sdl_renderer]"
 ) {
     this->configureVideoDriverForCi();
+    REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
 
     SDLWindow window;
     window.create(800, 600, "Renderer Test");
 
-    SDLRenderer renderer(window.getNativeHandle());
+    SDLRenderer renderer(window.get());
     SDLTexture texture(nullptr);
     Renderer::DrawTextureParams params;
     params.dest.position.x = 10.0f;

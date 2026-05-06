@@ -1,7 +1,6 @@
 #include "../../src/platform/include/SDLMusic/SDLMusic.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -10,9 +9,9 @@ class SDLMusicFixture
 public:
     void configureAudioDriverForCi() const
     {
-#if defined(__linux__)
-        SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
-#endif
+        #if defined(__linux__)
+                SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
+        #endif
     }
 
     bool initAudio() const

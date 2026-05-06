@@ -4,7 +4,6 @@
 #include "../../src/platform/include/SDLWindow/SDLWindow.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <SDL.h>
 
 class SDLTextureFixture
@@ -37,7 +36,7 @@ TEST_CASE_METHOD(SDLTextureFixture, "SDLTexture stores and retrieves SDL_Texture
     SDLWindow window;
     window.create(800, 600, "Texture Test");
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window.getNativeHandle(), -1, 0);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window.get(), -1, 0);
     REQUIRE(renderer != nullptr);
 
     SDL_Surface* surface = SDL_CreateRGBSurface(0, 32, 32, 32, 0, 0, 0, 0);
@@ -64,7 +63,7 @@ TEST_CASE_METHOD(SDLTextureFixture, "SDLTexture reports correct width from SDL_T
     SDLWindow window;
     window.create(800, 600, "Texture Test");
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window.getNativeHandle(), -1, 0);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window.get(), -1, 0);
     REQUIRE(renderer != nullptr);
 
     const int TEXTURE_WIDTH = 256;
@@ -92,7 +91,7 @@ TEST_CASE_METHOD(SDLTextureFixture, "SDLTexture reports correct height from SDL_
     SDLWindow window;
     window.create(800, 600, "Texture Test");
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window.getNativeHandle(), -1, 0);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window.get(), -1, 0);
     REQUIRE(renderer != nullptr);
 
     const int TEXTURE_HEIGHT = 192;
@@ -120,7 +119,7 @@ TEST_CASE_METHOD(SDLTextureFixture, "SDLTexture destructor releases SDL_Texture"
     SDLWindow window;
     window.create(800, 600, "Texture Test");
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window.getNativeHandle(), -1, 0);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window.get(), -1, 0);
     REQUIRE(renderer != nullptr);
 
     SDL_Surface* surface = SDL_CreateRGBSurface(0, 64, 64, 32, 0, 0, 0, 0);
@@ -147,7 +146,7 @@ TEST_CASE_METHOD(SDLTextureFixture, "SDLTexture with both width and height dimen
     SDLWindow window;
     window.create(800, 600, "Texture Test");
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window.getNativeHandle(), -1, 0);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window.get(), -1, 0);
     REQUIRE(renderer != nullptr);
 
     const int TEST_WIDTH = 512;

@@ -16,14 +16,6 @@ void SDLRenderer::clear() { SDL_RenderClear(this->renderer); }
 
 void SDLRenderer::present() { SDL_RenderPresent(this->renderer); }
 
-std::shared_ptr<Texture> SDLRenderer::createTexture(const std::string& path)
-{
-    SDL_Texture* tex = IMG_LoadTexture(this->renderer, path.c_str());
-    if (!tex) return nullptr;
-
-    return std::make_shared<SDLTexture>(tex);
-}
-
 void SDLRenderer::drawTexture(const Texture& texture, const DrawTextureParams& params)
 {
     auto& sdlTex = static_cast<const SDLTexture&>(texture);

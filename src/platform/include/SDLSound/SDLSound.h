@@ -22,7 +22,7 @@ private:
 
     Mix_Chunk* chunk;
     int channel = -1;
-    int volume = 128;
+    int volume = 100;
 
     static int scaleVolume(int userVolume);
 };

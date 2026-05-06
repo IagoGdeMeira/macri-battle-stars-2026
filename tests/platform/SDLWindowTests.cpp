@@ -1,7 +1,6 @@
 #include "../../src/platform/include/SDLWindow/SDLWindow.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <SDL.h>
 
 class SDLWindowFixture
@@ -19,7 +18,7 @@ TEST_CASE_METHOD(SDLWindowFixture, "SDLWindow starts with close flag disabled",
     "[integration][sdl_window]"
 ) {
     SDLWindow window;
-    REQUIRE(window.getNativeHandle() == nullptr);
+    REQUIRE(window.get() == nullptr);
 
     SDL_Quit();
 }
@@ -28,12 +27,13 @@ TEST_CASE_METHOD(SDLWindowFixture, "SDLWindow creates native window and reports 
     "[integration][sdl_window]"
 ) {
     this->configureVideoDriverForCi();
+    REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
 
     {
         SDLWindow window;
         window.create(800, 600, "Window Test");
 
-        REQUIRE(window.getNativeHandle() != nullptr);
+        REQUIRE(window.get() != nullptr);
 
         int width = 0;
         int height = 0;
@@ -50,6 +50,7 @@ TEST_CASE_METHOD(SDLWindowFixture, "SDLWindow updates size after setResolution",
     "[integration][sdl_window]"
 ) {
     this->configureVideoDriverForCi();
+    REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
 
     {
         SDLWindow window;

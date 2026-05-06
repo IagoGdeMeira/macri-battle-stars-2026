@@ -26,7 +26,6 @@
 #include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -156,13 +155,6 @@ public:
         void clear() override {}
         void present() override {}
 
-        std::shared_ptr<Texture> createTexture(const std::string& filePath) override
-        {
-            this->createTextureCalls++;
-            this->lastTexturePath = filePath;
-            return this->textureToReturn;
-        }
-
         void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
         { (void)texture; (void)params; }
 
@@ -180,6 +172,21 @@ public:
 
         void setViewport(const Viewport& viewport) override
         { (void)viewport; }
+    };
+
+    class StubFactory : public ITextureFactory
+    {
+    public:
+        int createTextureCalls = 0;
+        std::string lastTexturePath;
+        std::shared_ptr<Texture> textureToReturn = std::make_shared<StubTexture>();
+
+        std::shared_ptr<Texture> createTexture(const std::string& filePath) override
+        {
+            this->createTextureCalls++;
+            this->lastTexturePath = filePath;
+            return this->textureToReturn;
+        }
     };
 
     CharacterLoaderFixture() : resourceManager(threadPool)
@@ -258,6 +265,7 @@ public:
     ThreadPool threadPool { 1 };
     ResourceManager resourceManager;
     StubRenderer renderer;
+    StubFactory factory;
 };
 
 TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and required gameplay components",
@@ -272,7 +280,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     AnimationLoader animationLoader(animationParser);
     StateMachineLoader machineLoader(stateMachineParser);
     CollisionClipLoader clipLoader(clipParser);
-    TextureLoader textureLoader(this->renderer);
+    TextureLoader textureLoader(this->factory);
 
     CharacterLoader loader({
         .defLoader = definitionLoader,
@@ -288,8 +296,8 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(definitionParser.lastPath == "assets/characters/fighter_01.json");
     REQUIRE(animationParser.lastPath == "assets/animations/fighter_01.json");
     REQUIRE(stateMachineParser.lastPath == "assets/fsm/fighter_01.json");
-    REQUIRE(this->renderer.createTextureCalls == 1);
-    REQUIRE(this->renderer.lastTexturePath == "assets/sprites/fighter.png");
+    REQUIRE(this->factory.createTextureCalls == 1);
+    REQUIRE(this->factory.lastTexturePath == "assets/sprites/fighter.png");
 
     auto& components = this->world.components();
     REQUIRE(components.has<SpriteComponent>(entity));
@@ -305,7 +313,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     const auto& controller = components.get<AnimationControllerComponent>(entity);
     const auto& animation = components.get<AnimationComponent>(entity);
 
-    REQUIRE(sprite.texture == this->renderer.textureToReturn);
+    REQUIRE(sprite.texture == this->factory.textureToReturn);
     REQUIRE(sprite.width == 64);
     REQUIRE(sprite.height == 96);
     REQUIRE(sprite.useSourceRect == false);
@@ -382,7 +390,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     AnimationLoader animationLoader(animationParser);
     StateMachineLoader machineLoader(stateMachineParser);
     CollisionClipLoader clipLoader(clipParser);
-    TextureLoader textureLoader(this->renderer);
+    TextureLoader textureLoader(this->factory);
 
     CharacterLoader loader(CharacterLoader::Config
     {

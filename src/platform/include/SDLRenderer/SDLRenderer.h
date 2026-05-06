@@ -18,7 +18,7 @@ public:
     void clear() override;
     void present() override;
 
-    std::shared_ptr<Texture> createTexture(const std::string& path) override;
+    SDL_Renderer* get() const { return this->renderer; }
 
     void drawTexture(const Texture& texture, const DrawTextureParams& params) override;
     void drawRectOutline(const Rectangle& rect, const Color& color) override;

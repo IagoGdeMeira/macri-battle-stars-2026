@@ -46,9 +46,6 @@ public:
         void clear() override {}
         void present() override {}
 
-        std::shared_ptr<Texture> createTexture(const std::string&) override
-        { return std::make_shared<StubTexture>(); }
-
         void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
         void drawRectOutline(const Rectangle&, const Color&) override {}
         void drawRectFilled(const Rectangle&, const Color&) override {}

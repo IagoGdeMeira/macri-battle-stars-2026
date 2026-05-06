@@ -6,10 +6,16 @@ add_executable(platform_tests
     SDLGamepadAdapterTests.cpp
     SDLPlatformEventProviderTests.cpp
     SDLKeyTranslatorTests.cpp
+    SDLMusicTests.cpp
+    SDLMusicFactoryTests.cpp
     SDLRendererTests.cpp
+    SDLSoundTests.cpp
+    SDLSoundFactoryTests.cpp
     SDLSystemAdapterTests.cpp
     SDLSystemInitializerTests.cpp
     SDLTextureTests.cpp
+    SDLTextureFactoryTests.cpp
+    SDLPlatformFactoryTests.cpp
     SDLWindowTests.cpp
 )
 
@@ -18,6 +24,12 @@ target_link_libraries(platform_tests
         platform
         Catch2::Catch2WithMain
 )
+
+if(WIN32)
+    target_link_libraries(platform_tests PRIVATE SDL2_mixer)
+else()
+    target_link_libraries(platform_tests PRIVATE SDL2_mixer::SDL2_mixer)
+endif()
 
 add_test(NAME platform_tests COMMAND platform_tests)
 

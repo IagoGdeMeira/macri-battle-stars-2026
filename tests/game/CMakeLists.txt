@@ -47,4 +47,8 @@ target_link_libraries(game_tests
         Catch2::Catch2WithMain
 )
 
+if(MSVC)
+    target_compile_options(game_tests PRIVATE /bigobj)
+endif()
+
 add_test(NAME game_tests COMMAND game_tests)

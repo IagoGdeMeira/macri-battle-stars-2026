@@ -8,7 +8,6 @@
 #include "../../src/engine/include/KeyCode/KeyCode.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <vector>
 

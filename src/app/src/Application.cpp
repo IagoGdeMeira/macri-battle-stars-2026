@@ -1,6 +1,5 @@
 #include "../include/Application/Application.h"
 
-#include "../../engine/include/Engine/Engine.h"
 #include "../../engine/include/InputBindingLoader/InputBindingLoader.h"
 #include "../../engine/include/InputManager/InputManager.h"
 #include "../../engine/include/ResourceManager/ResourceManager.h"
@@ -8,32 +7,19 @@
 #include "../../engine/include/TextureLoader/TextureLoader.h"
 
 #include "../../game/include/AnimationLoader/AnimationLoader.h"
-#include "../../game/include/Camera2D/Camera2D.h"
 #include "../../game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
-#include "../../game/include/CharacterLoader/CharacterLoader.h"
-#include "../../game/include/CharacterRoster/CharacterRoster.h"
 #include "../../game/include/CharacterRosterLoader/CharacterRosterLoader.h"
 #include "../../game/include/CollisionClipLoader/CollisionClipLoader.h"
-#include "../../game/include/Combo/Combo.h"
 #include "../../game/include/ComboLoader/ComboLoader.h"
 #include "../../game/include/MapData/MapData.h"
 #include "../../game/include/MapLoader/MapLoader.h"
 #include "../../game/include/MapRosterLoader/MapRosterLoader.h"
 #include "../../game/include/StateMachineLoader/StateMachineLoader.h"
 #include "../../game/include/TriggerBindingLoader/TriggerBindingLoader.h"
-
 #include "../../game/scenes/GameScene/GameScene.h"
 
-#include "../../platform/include/JsonParser/JsonParser.h"
-#include "../../platform/include/SDLGamepadAdapter/SDLGamepadAdapter.h"
-#include "../../platform/include/SDLKeyboardAdapter/SDLKeyboardAdapter.h"
-#include "../../platform/include/SDLMouseAdapter/SDLMouseAdapter.h"
-#include "../../platform/include/SDLPlatformEventProvider/SDLPlatformEventProvider.h"
-#include "../../platform/include/SDLPlatformInputFactory/SDLPlatformInputFactory.h"
-#include "../../platform/include/SDLRenderer/SDLRenderer.h"
-#include "../../platform/include/SDLSystemAdapter/SDLSystemAdapter.h"
+#include "../../platform/include/SDLPlatformFactory/SDLPlatformFactory.h"
 #include "../../platform/include/SDLSystemInitializer/SDLSystemInitializer.h"
-#include "../../platform/include/SDLWindow/SDLWindow.h"
 
 Application& Application::setWindowTitle(const std::string& title)
 {
@@ -50,6 +36,11 @@ Application& Application::setWindowSize(int width, int height)
 
 int Application::run()
 {
+    this->initializer = std::make_unique<SDLSystemInitializer>();
+    this->initializer->initialize();
+
+    this->platformFactory = std::make_unique<SDLPlatformFactory>();
+
     this->initSystems();
     this->initLoaders();
     this->loadGameData();
@@ -63,18 +54,10 @@ int Application::run()
 
 void Application::initSystems()
 {
-    this->initializer = std::make_unique<SDLSystemInitializer>();
-    this->initializer->initialize();
-
-    auto sdlWindow = std::make_unique<SDLWindow>();
-    sdlWindow->create(this->windowWidth, this->windowHeight, this->windowTitle.c_str());
-    this->window = std::move(sdlWindow);
-
-    this->renderer = std::make_unique<SDLRenderer>(
-        static_cast<SDLWindow*>(this->window.get())->getNativeHandle());
+    this->window = this->platformFactory->createWindow(this->windowWidth, this->windowHeight, this->windowTitle);
+    this->renderer = this->platformFactory->createRenderer(*this->window);
 
     this->camera = std::make_unique<Camera2D>();
-
 }
 
 void Application::initLoaders()
@@ -86,56 +69,53 @@ void Application::initLoaders()
     this->charDefLoader = std::make_unique<CharacterDefinitionLoader>(*this->parser);
     this->animLoader = std::make_unique<AnimationLoader>(*this->parser);
     this->fsmLoader = std::make_unique<StateMachineLoader>(*this->parser);
-    this->textureLoader = std::make_unique<TextureLoader>(*this->renderer);
+
+    auto texFactory = this->platformFactory->createTextureFactory(*this->renderer);
+    this->textureLoader = std::make_unique<TextureLoader>(*texFactory);
 
     this->clipLoader = std::make_unique<CollisionClipLoader>(*this->parser);
     this->characterLoader = std::make_unique<CharacterLoader>(CharacterLoader::Config{
-        .defLoader = *this->charDefLoader,
-        .animLoader = *this->animLoader,
-        .fsmLoader = *this->fsmLoader,
-        .resourceManager = *this->resourceManager,
-        .textureLoader = *this->textureLoader,
-        .clipLoader = *this->clipLoader
+        *this->charDefLoader,
+        *this->animLoader,
+        *this->fsmLoader,
+        *this->resourceManager,
+        *this->textureLoader,
+        *this->clipLoader
     });
 }
 
 void Application::loadGameData()
 {
     InputBindingLoader inputLoader(*this->parser);
-    this->inputContext = std::make_unique<InputContext>(
-        inputLoader.load("assets/inputs/input_bindings.json"));
+    this->inputContext = std::make_unique<InputContext>(inputLoader.load("assets/inputs/input_bindings.json"));
 
     TriggerBindingLoader triggerLoader(*this->parser);
-    this->triggerContext = std::make_unique<TriggerContext>(
-        triggerLoader.load("assets/fsm/trigger_bindings.json"));
+    this->triggerContext = std::make_unique<TriggerContext>(triggerLoader.load("assets/fsm/trigger_bindings.json"));
 
     ComboLoader comboLoader(*this->parser);
     this->globalCombos = comboLoader.load("assets/combos/combos.json");
 
     CharacterRosterLoader rosterLoader(*this->parser);
-    this->characterRoster = std::make_unique<CharacterRoster>(
-        rosterLoader.load("assets/characters/roster.json"));
+    this->characterRoster = std::make_unique<CharacterRoster>(rosterLoader.load("assets/characters/roster.json"));
 
     MapRosterLoader mapRosterLoader(*this->parser);
-    this->mapRoster = std::make_unique<MapRoster>(
-        mapRosterLoader.load("assets/maps/roster.json"));
+    this->mapRoster = std::make_unique<MapRoster>(mapRosterLoader.load("assets/maps/roster.json"));
 }
 
 void Application::setupInput()
 {
     auto& inputManager = this->engine->input();
 
-    auto provider = std::make_unique<SDLPlatformEventProvider>();
+    auto provider = this->platformFactory->createEventProvider();
     inputManager.setProvider(std::move(provider));
 
-    this->platformInputFactory = std::make_unique<SDLPlatformInputFactory>(this->engine->events());
+    inputManager.addAdapter(this->platformFactory->createKeyboardAdapter(this->engine->events(), *this->inputContext));
+    inputManager.addAdapter(this->platformFactory->createMouseAdapter(this->engine->events()));
 
-    inputManager.addAdapter(this->platformInputFactory->createKeyboardAdapter(*this->inputContext));
-
-    auto gamepadAdapters = this->platformInputFactory->createGamepadAdapters(1);
+    auto gamepadAdapters = this->platformFactory->createGamepadAdapters(this->engine->events(), 1);
     for (auto& adapter : gamepadAdapters) inputManager.addAdapter(std::move(adapter));
 
-    inputManager.addAdapter(this->platformInputFactory->createSystemAdapter());
+    inputManager.addAdapter(this->platformFactory->createSystemAdapter(this->engine->events()));
 }
 
 void Application::setupInitialScene()
@@ -175,9 +155,9 @@ void Application::setupInitialScene()
     MapData defaultMap = mapLoader.load(maps.front().definitionPath);
 
     for (const auto& [playerId, _] : this->inputContext->bindings)
-    { slots.push_back({ .playerId = playerId, .characterDefPath = defaultEntry->definitionPath }); }
+    { slots.push_back(GameScene::PlayerSlot{ playerId, defaultEntry->definitionPath }); }
 
-    this->engine->scenes().changeScene(SceneId::Game, std::move(GameScene::Config
+    this->engine->scenes().changeScene(SceneId::Game, GameScene::Config
     {
         .eventBus = this->engine->events(),
         .input = *this->inputContext,
@@ -191,5 +171,5 @@ void Application::setupInitialScene()
         .mapData = std::move(defaultMap),
         .resourceManager = *this->resourceManager,
         .textureLoader = *this->textureLoader
-    }));
+    });
 }

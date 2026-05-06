@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <SDL_mixer.h>
 
 SDLSound::~SDLSound() { if (this->chunk) Mix_FreeChunk(this->chunk); }
 

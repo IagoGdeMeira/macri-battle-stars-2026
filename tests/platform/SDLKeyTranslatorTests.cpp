@@ -1,7 +1,6 @@
 #include "../../src/platform/include/SDLKeyTranslator/SDLKeyTranslator.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <SDL.h>
 
 TEST_CASE("SDLKeyTranslator maps letters, digits and control keys",

@@ -7,10 +7,8 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-
-#include <SDL.h>
-
 #include <memory>
+#include <SDL.h>
 #include <vector>
 
 TEST_CASE("SDLGamepadAdapter emits button and axis events from a virtual joystick",

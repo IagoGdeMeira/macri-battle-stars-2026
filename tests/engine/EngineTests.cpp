@@ -114,11 +114,7 @@ protected:
         void create(int, int, const char*) override {}
         void setResolution(int, int) override {}
         void setFullscreen(bool) override {}
-        void getSize(int& width, int& height) override
-        {
-            width = 0;
-            height = 0;
-        }
+        void getSize(int& width, int& height) override { width = 0; height = 0; }
     };
 
     StubWindow window;
@@ -226,8 +222,6 @@ TEST_CASE_METHOD(EngineFixture, "Engine presents frames when renderer is configu
 
         void clear() override {}
         void present() override { ++this->presentCalls; }
-        std::shared_ptr<Texture> createTexture(const std::string&) override
-        { return std::make_shared<StubTexture>(); }
         
         void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
         void drawRectOutline(const Rectangle&, const Color&) override {}
