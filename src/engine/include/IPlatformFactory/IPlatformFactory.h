@@ -1,6 +1,7 @@
 #ifndef i_platform_factory_h
 #define i_platform_factory_h
 
+#include "../IFontFactory/IFontFactory.h"
 #include "../IMusicFactory/IMusicFactory.h"
 #include "../InputAdapter/InputAdapter.h"
 #include "../InputContext/InputContext.h"
@@ -34,6 +35,7 @@ public:
     virtual std::unique_ptr<ITextureFactory> createTextureFactory(Renderer& renderer) = 0;
     virtual std::unique_ptr<ISoundFactory> createSoundFactory() = 0;
     virtual std::unique_ptr<IMusicFactory> createMusicFactory() = 0;
+    virtual std::unique_ptr<IFontFactory> createFontFactory() = 0;
 };
 
 #endif // i_platform_factory_h

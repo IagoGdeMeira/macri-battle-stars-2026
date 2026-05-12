@@ -19,6 +19,7 @@ public:
     std::unique_ptr<ITextureFactory> createTextureFactory(Renderer& renderer) override;
     std::unique_ptr<ISoundFactory> createSoundFactory() override;
     std::unique_ptr<IMusicFactory> createMusicFactory() override;
+    std::unique_ptr<IFontFactory> createFontFactory() override;
 };
 
 #endif // sdl_platform_factory_h

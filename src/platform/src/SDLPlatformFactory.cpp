@@ -1,5 +1,6 @@
 #include "../include/SDLPlatformFactory/SDLPlatformFactory.h"
 
+#include "../include/SDLFontFactory/SDLFontFactory.h"
 #include "../include/SDLGamepadAdapter/SDLGamepadAdapter.h"
 #include "../include/SDLKeyboardAdapter/SDLKeyboardAdapter.h"
 #include "../include/SDLMouseAdapter/SDLMouseAdapter.h"
@@ -64,3 +65,6 @@ std::unique_ptr<ISoundFactory> SDLPlatformFactory::createSoundFactory()
 
 std::unique_ptr<IMusicFactory> SDLPlatformFactory::createMusicFactory()
 { return std::make_unique<SDLMusicFactory>(); }
+
+std::unique_ptr<IFontFactory> SDLPlatformFactory::createFontFactory()
+{ return std::make_unique<SDLFontFactory>(); }
