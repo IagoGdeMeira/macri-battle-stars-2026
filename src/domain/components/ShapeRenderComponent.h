@@ -3,9 +3,7 @@
 
 #include "../include/CollisionFrame/ColliderDef.h"
 #include "../include/Color/Color.h"
-
-#include "../../engine/include/GeometryUtils/GeometryUtils.h"
-#include "../../engine/include/Renderer/Renderer.h"
+#include "../include/Geometry/Geometry.h"
 
 #include <memory>
 

@@ -35,7 +35,6 @@ if(WIN32)
     target_link_libraries(platform
         PUBLIC
             SDL2
-        PRIVATE
             SDL2_image
             SDL2_ttf
             SDL2_mixer
@@ -51,7 +50,6 @@ elseif(UNIX)
     target_link_libraries(platform
         PUBLIC
             SDL2::SDL2
-        PRIVATE
             SDL2_image::SDL2_image
             SDL2_ttf::SDL2_ttf
             SDL2_mixer::SDL2_mixer

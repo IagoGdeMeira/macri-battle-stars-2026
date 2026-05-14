@@ -1,11 +1,11 @@
 #ifndef renderer_h
 #define renderer_h
 
-#include "../GeometryUtils/GeometryUtils.h"
 #include "../Texture/Texture.h"
 #include "../Viewport/Viewport.h"
 
 #include "../../domain/include/Color/Color.h"
+#include "../../domain/include/Geometry/Geometry.h"
 
 #include <cstdint>
 #include <memory>

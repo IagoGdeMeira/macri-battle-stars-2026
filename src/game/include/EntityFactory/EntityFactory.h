@@ -5,8 +5,7 @@
 
 #include "../../../domain/include/CollisionFrame/CollisionFrame.h"
 #include "../../../domain/include/Entity/Entity.h"
-
-#include "../../../engine/include/GeometryUtils/GeometryUtils.h"
+#include "../../../domain/include/Geometry/Geometry.h"
 
 #include <memory>
 #include <string>

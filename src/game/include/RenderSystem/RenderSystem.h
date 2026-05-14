@@ -3,10 +3,11 @@
 
 #include "../Camera2D/Camera2D.h"
 
+#include "../../domain/include/Geometry/Geometry.h"
+
 #include "../../engine/include/EventBus/EventBus.h"
 #include "../../engine/include/RenderContext/RenderContext.h"
 #include "../../engine/include/Renderer/Renderer.h"
-#include "../../engine/include/GeometryUtils/GeometryUtils.h"
 #include "../../engine/include/System/System.h"
 #include "../../engine/include/Viewport/Viewport.h"
 

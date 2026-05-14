@@ -4,8 +4,8 @@
 #include "../../domain/components/VelocityComponent.h"
 #include "../../domain/components/KnockbackComponent.h"
 #include "../../domain/events/DamageEvent.h"
+#include "../../domain/include/Geometry/Geometry.h"
 
-#include "../../engine/include/GeometryUtils/GeometryUtils.h"
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
 #include <cmath>

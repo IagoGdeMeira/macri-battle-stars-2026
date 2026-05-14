@@ -1,38 +1,6 @@
 #include "../../src/game/include/ComponentRegistry/ComponentRegistry.h"
 
-#include "../../src/domain/components/AirFrictionComponent.h"
-#include "../../src/domain/components/AnalogInputComponent.h"
-#include "../../src/domain/components/AnimationComponent.h"
-#include "../../src/domain/components/AnimationControllerComponent.h"
-#include "../../src/domain/components/CircleColliderComponent.h"
-#include "../../src/domain/components/CollisionClipDefinitionsComponent.h"
-#include "../../src/domain/components/CollisionClipPlayerComponent.h"
-#include "../../src/domain/components/GravityComponent.h"
-#include "../../src/domain/components/GroundedComponent.h"
-#include "../../src/domain/components/HealthComponent.h"
-#include "../../src/domain/components/HitboxComponent.h"
-#include "../../src/domain/components/HitstopComponent.h"
-#include "../../src/domain/components/HurtboxComponent.h"
-#include "../../src/domain/components/InputBufferComponent.h"
-#include "../../src/domain/components/InputComponent.h"
-#include "../../src/domain/components/KnockbackComponent.h"
-#include "../../src/domain/components/LifetimeComponent.h"
-#include "../../src/domain/components/LocalTransform.h"
-#include "../../src/domain/components/OrientationComponent.h"
-#include "../../src/domain/components/ParallaxComponent.h"
-#include "../../src/domain/components/ParentComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/components/PushboxComponent.h"
-#include "../../src/domain/components/RectangleColliderComponent.h"
-#include "../../src/domain/components/RenderComponent.h"
-#include "../../src/domain/components/ShapeRenderComponent.h"
-#include "../../src/domain/components/SpriteComponent.h"
-#include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/components/StateMappingComponent.h"
-#include "../../src/domain/components/StateMachineComponent.h"
-#include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/components/VelocityComponent.h"
-
+#include "../../domain/components/AllComponents.h"
 #include "../../src/domain/include/ComponentManager/ComponentManager.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -48,9 +16,12 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(components.storage<AnalogInputComponent>() != nullptr);
     REQUIRE(components.storage<AnimationComponent>() != nullptr);
     REQUIRE(components.storage<AnimationControllerComponent>() != nullptr);
+    REQUIRE(components.storage<BoxModel>() != nullptr);
     REQUIRE(components.storage<CircleColliderComponent>() != nullptr);
     REQUIRE(components.storage<CollisionClipDefinitionsComponent>() != nullptr);
     REQUIRE(components.storage<CollisionClipPlayerComponent>() != nullptr);
+    REQUIRE(components.storage<FlexContainer>() != nullptr);
+    REQUIRE(components.storage<FlexItem>() != nullptr);
     REQUIRE(components.storage<GravityComponent>() != nullptr);
     REQUIRE(components.storage<GroundedComponent>() != nullptr);
     REQUIRE(components.storage<HealthComponent>() != nullptr);
@@ -75,6 +46,11 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(components.storage<StateMappingComponent>() != nullptr);
     REQUIRE(components.storage<StateMachineComponent>() != nullptr);
     REQUIRE(components.storage<TransformComponent>() != nullptr);
+    REQUIRE(components.storage<UIFocusable>() != nullptr);
+    REQUIRE(components.storage<UISelectable>() != nullptr);
+    REQUIRE(components.storage<UISpriteComponent>() != nullptr);
+    REQUIRE(components.storage<UITextComponent>() != nullptr);
+    REQUIRE(components.storage<UITransform>() != nullptr);
     REQUIRE(components.storage<VelocityComponent>() != nullptr);
 }
 
