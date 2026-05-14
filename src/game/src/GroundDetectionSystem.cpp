@@ -61,8 +61,8 @@ bool GroundDetectionSystem::isStandingOnGround(
     auto staHandler = CollisionHandlerFactory::createForEntity(ctx, {staticEntity, std::nullopt});
     if (!dynHandler || !staHandler) return false;
 
-    ICollisionHandler::AABB dynAabb = dynHandler->getAABB(ctx, {dynamicCollider, owner});
-    ICollisionHandler::AABB staAabb = staHandler->getAABB(ctx, {staticEntity, std::nullopt});
+    AABB dynAabb = dynHandler->getAABB(ctx, {dynamicCollider, owner});
+    AABB staAabb = staHandler->getAABB(ctx, {staticEntity, std::nullopt});
 
     float overlapRight = dynAabb.right - staAabb.left;
     float overlapLeft = staAabb.right - dynAabb.left;

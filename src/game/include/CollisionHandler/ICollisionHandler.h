@@ -2,6 +2,7 @@
 #define i_collision_handler_h
 
 #include "../../../domain/include/Entity/Entity.h"
+#include "../../../domain/include/Geometry/Geometry.h"
 
 #include <optional>
 
@@ -11,7 +12,6 @@ struct UpdateContext;
 class ICollisionHandler
 {
 public:
-    struct AABB { float left, right, top, bottom; };
     struct EntityParams { Entity preferred; std::optional<Entity> fallback; };
 
     virtual ~ICollisionHandler() = default;

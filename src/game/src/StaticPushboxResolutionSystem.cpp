@@ -46,8 +46,8 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
     auto staHandler = CollisionHandlerFactory::createForEntity(ctx, {sta, std::nullopt});
     if (!dynHandler || !staHandler) return;
 
-    ICollisionHandler::AABB dynAabb = dynHandler->getAABB(ctx, {dyn, std::nullopt});
-    ICollisionHandler::AABB staAabb = staHandler->getAABB(ctx, {sta, std::nullopt});
+    AABB dynAabb = dynHandler->getAABB(ctx, {dyn, std::nullopt});
+    AABB staAabb = staHandler->getAABB(ctx, {sta, std::nullopt});
 
     float overlapRight = dynAabb.right - staAabb.left;
     float overlapLeft = staAabb.right - dynAabb.left;

@@ -1,6 +1,7 @@
 #include "../include/SDLFont/SDLFont.h"
 
 #include <stdexcept>
+#include <cmath>
 
 SDLFont::SDLFont(const std::string& path) : path(path)
 {
@@ -31,6 +32,6 @@ int SDLFont::queryMetric(int size, int (TTF_Font::*metricFunc)() const) const
 
 int SDLFont::getAscent(int size) const { return TTF_FontAscent(this->getFontWithSize(size)); }
 
-int SDLFont::getDescent(int size) const { return TTF_FontDescent(this->getFontWithSize(size)); }
+int SDLFont::getDescent(int size) const { return std::abs(TTF_FontDescent(this->getFontWithSize(size))); }
 
 int SDLFont::getHeight(int size) const { return TTF_FontHeight(this->getFontWithSize(size)); }

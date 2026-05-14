@@ -5,9 +5,7 @@
 
 struct BoxModel
 {
-    Rectangle margin;
-    Rectangle padding;
-    Rectangle border;
+    AABB margin, padding, border;
     Corners borderRadius;
 };
 

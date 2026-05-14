@@ -46,6 +46,7 @@ target_sources(game
         src/TriggerBindingLoader.cpp
         src/TriggerGenerationSystem.cpp
         src/TriggerMapper.cpp
+        src/UILayoutSystem.cpp
 )
 
 target_include_directories(game

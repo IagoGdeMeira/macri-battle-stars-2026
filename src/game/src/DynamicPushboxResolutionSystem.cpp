@@ -41,8 +41,8 @@ void DynamicPushboxResolutionSystem::resolveDynamicCollision(UpdateContext& ctx,
     auto handlerB = CollisionHandlerFactory::createForEntity(ctx, {b, std::nullopt});
     if (!handlerA || !handlerB) return;
 
-    ICollisionHandler::AABB aabbA = handlerA->getAABB(ctx, {a, std::nullopt});
-    ICollisionHandler::AABB aabbB = handlerB->getAABB(ctx, {b, std::nullopt});
+    AABB aabbA = handlerA->getAABB(ctx, {a, std::nullopt});
+    AABB aabbB = handlerB->getAABB(ctx, {b, std::nullopt});
 
     float overlapRight = aabbA.right - aabbB.left;
     float overlapLeft = aabbB.right - aabbA.left;

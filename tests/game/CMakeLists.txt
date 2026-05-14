@@ -8,8 +8,7 @@ add_executable(game_tests
     AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
     AnimationSystemTests.cpp
-    Camera2DTests.cpp
-    CameraControllerSystemTests.cpp
+    Camera2DTests.cpp    CameraControllerSystemTests.cpp
     ComponentRegistryTests.cpp
     CharacterDefinitionLoaderTests.cpp
     CharacterLoaderTests.cpp
@@ -35,10 +34,11 @@ add_executable(game_tests
     StateMachineLoaderTests.cpp
     StateMapperTests.cpp
     StateSystemTests.cpp
+    StaticPushboxResolutionSystemTests.cpp
     TriggerBindingLoaderTests.cpp
     TriggerGenerationSystemTests.cpp
     TriggerMapperTests.cpp
-    StaticPushboxResolutionSystemTests.cpp
+    UILayoutSystemTests.cpp
 )
 
 target_link_libraries(game_tests
