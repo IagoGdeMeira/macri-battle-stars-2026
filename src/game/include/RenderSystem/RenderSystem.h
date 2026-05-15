@@ -9,6 +9,7 @@
 #include "../../engine/include/RenderContext/RenderContext.h"
 #include "../../engine/include/Renderer/Renderer.h"
 #include "../../engine/include/System/System.h"
+#include "../../engine/include/Texture/Texture.h"
 #include "../../engine/include/Viewport/Viewport.h"
 
 #include <cstddef>
@@ -52,15 +53,14 @@ private:
 
     void renderWorld(RenderContext& ctx);
     void renderShapes(RenderContext& ctx);
-    void renderUI(RenderContext& ctx);
 
     Position worldToScreen(Position worldPos, const Viewport& viewport, Position parallax = {1.0f, 1.0f}) const;
     Position resolveParallax(World& world, Entity entity) const;
-    SpriteTransform computeSpriteTransform(int baseWidth, int baseHeight, float scaleX, float scaleY) const;
-    DrawCommand buildDrawCommand(Entity entity, World &world, size_t order) const;
+    SpriteTransform computeSpriteTransform(Rectangle& dest) const;
+    DrawCommand buildDrawCommand(Entity entity, World& world, size_t order) const;
 
-    void sortCommands(std::vector<DrawCommand> &commands) const;
-    void submitCommands(const std::vector<DrawCommand> &commands) const;
+    void sortCommands(std::vector<DrawCommand>& commands) const;
+    void submitCommands(const std::vector<DrawCommand>& commands) const;
     void updateViewports();
 };
 

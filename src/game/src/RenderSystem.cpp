@@ -31,7 +31,6 @@ void RenderSystem::draw(RenderContext& ctx)
     this->renderWorld(ctx);
     this->renderShapes(ctx);
     this->renderer.setViewport(this->uiViewport);
-    this->renderUI(ctx);
 }
 
 void RenderSystem::renderWorld(RenderContext& ctx)
@@ -50,8 +49,6 @@ void RenderSystem::renderWorld(RenderContext& ctx)
     this->sortCommands(commands);
     this->submitCommands(commands);
 }
-
-void RenderSystem::renderUI(RenderContext&) { /* TODO */ }
 
 void RenderSystem::renderShapes(RenderContext& ctx)
 {
@@ -93,10 +90,14 @@ RenderSystem::DrawCommand RenderSystem::buildDrawCommand(Entity entity, World& w
     const auto& render = components.get<RenderComponent>(entity);
 
     const Position parallax = this->resolveParallax(world, entity);
-    const Position screenPos = this->worldToScreen(
-        {transform.x, transform.y}, this->worldViewport, parallax);
-    const SpriteTransform st = this->computeSpriteTransform(
-        sprite.width, sprite.height, transform.scaleX, transform.scaleY);
+    const Position screenPos = this->worldToScreen({transform.x, transform.y}, this->worldViewport, parallax);
+    Rectangle spriteConfig = 
+    {
+        {transform.scaleX, transform.scaleY},
+        static_cast<float>(sprite.width),
+        static_cast<float>(sprite.height)
+    };
+    const SpriteTransform st = this->computeSpriteTransform(spriteConfig);
 
     DrawCommand cmd;
     cmd.texture = sprite.texture.get();
@@ -158,16 +159,15 @@ Position RenderSystem::resolveParallax(World& world, Entity entity) const
     return p;
 }
 
-RenderSystem::SpriteTransform RenderSystem::computeSpriteTransform(
-    int baseWidth, int baseHeight, float scaleX, float scaleY
-) const {
+RenderSystem::SpriteTransform RenderSystem::computeSpriteTransform(Rectangle& dest) const
+{
     SpriteTransform st;
-    st.flipX = scaleX < 0.0f;
-    st.flipY = scaleY < 0.0f;
+    st.flipX = dest.position.x < 0.0f;
+    st.flipY = dest.position.y < 0.0f;
 
     const float zoom = this->camera.getZoom();
-    st.width  = static_cast<int>(baseWidth  * std::abs(scaleX) * zoom);
-    st.height = static_cast<int>(baseHeight * std::abs(scaleY) * zoom);
+    st.width = static_cast<int>(dest.width * std::abs(dest.position.x) * zoom);
+    st.height = static_cast<int>(dest.height * std::abs(dest.position.y) * zoom);
     return st;
 }
 
