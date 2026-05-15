@@ -21,6 +21,8 @@ public:
     SDL_Renderer* get() const { return this->renderer; }
 
     void drawTexture(const Texture& texture, const DrawTextureParams& params) override;
+    void drawText(const Font& font, const DrawTextParams& params) override;
+
     void drawRectOutline(const Rectangle& rect, const Color& color) override;
     void drawRectFilled(const Rectangle& rect, const Color& color) override;
     void drawCircleOutline(const Circle& circle, const Color& color) override;

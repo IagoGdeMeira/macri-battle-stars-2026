@@ -1,5 +1,6 @@
 #include "../include/SDLRenderer/SDLRenderer.h"
 
+#include "../include/SDLFont/SDLFont.h"
 #include "../include/SDLTexture/SDLTexture.h"
 
 #include <cmath>
@@ -60,6 +61,33 @@ void SDLRenderer::drawTexture(const Texture& texture, const DrawTextureParams& p
         params.rotation,
         &pivot,
         flip);
+}
+
+void SDLRenderer::drawText(const Font& font, const DrawTextParams& params)
+{
+    const auto& sdlFont = static_cast<const SDLFont&>(font);
+    TTF_Font* ttfFont = sdlFont.getFontWithSize(params.fontSize);
+    if (!ttfFont) return;
+
+    auto& c = params.color;
+    SDL_Color sdlColor = { c.r, c.g, c.b, c.a };
+    SDL_Surface* surface = TTF_RenderUTF8_Blended(ttfFont, params.text.c_str(), sdlColor);
+    if (!surface) return;
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(this->renderer, surface);
+    if (texture)
+    {
+        SDL_Rect dst = 
+        { 
+            (int)params.dest.position.x,
+            (int)params.dest.position.y,
+            (int)params.dest.width,
+            (int)params.dest.height
+        };
+        SDL_RenderCopyEx(this->renderer, texture, nullptr, &dst, 0.0, nullptr, SDL_FLIP_NONE);
+        SDL_DestroyTexture(texture);
+    }
+    SDL_FreeSurface(surface);
 }
 
 void SDLRenderer::drawRectOutline(const Rectangle& rect, const Color& color)

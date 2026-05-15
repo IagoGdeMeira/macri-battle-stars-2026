@@ -1,6 +1,7 @@
 #ifndef renderer_h
 #define renderer_h
 
+#include "../Font/Font.h"
 #include "../Texture/Texture.h"
 #include "../Viewport/Viewport.h"
 
@@ -24,12 +25,22 @@ public:
         bool useSourceRect = false;
     };
 
+    struct DrawTextParams
+    {
+        const std::string& text;
+        const Rectangle& dest;
+        int fontSize = 16;
+        const Color& color = {255, 255, 255, 255};
+    };
+
     virtual ~Renderer() = default;
 
     virtual void clear() = 0;
     virtual void present() = 0;
 
     virtual void drawTexture(const Texture& texture, const DrawTextureParams& params) = 0;
+    virtual void drawText(const Font& font, const DrawTextParams& params) = 0;
+
     virtual void drawRectOutline(const Rectangle& rect, const Color& color) = 0;
     virtual void drawRectFilled(const Rectangle& rect, const Color& color) = 0;
     virtual void drawCircleOutline(const Circle& circle, const Color& color) = 0;

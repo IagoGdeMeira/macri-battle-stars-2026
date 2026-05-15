@@ -17,12 +17,13 @@ public:
     int getDescent(int size) const override;
     int getHeight(int size) const override;
 
+    TTF_Font* getFontWithSize(int size) const;
+
 private:
     std::string path;
     TTF_Font* baseFont;
     mutable std::unordered_map<int, TTF_Font*> sizeCache;
 
-    TTF_Font* getFontWithSize(int size) const;
     int queryMetric(int size, int (TTF_Font::*metricFunc)() const) const;
 };
 
