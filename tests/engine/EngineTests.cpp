@@ -224,6 +224,7 @@ TEST_CASE_METHOD(EngineFixture, "Engine presents frames when renderer is configu
         void present() override { ++this->presentCalls; }
         
         void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
+        void drawText(const Font&, std::string, const Renderer::DrawTextParams&) override {}
         void drawRectOutline(const Rectangle&, const Color&) override {}
         void drawRectFilled(const Rectangle&, const Color&) override {}
         void drawCircleOutline(const Circle&, const Color&) override {}

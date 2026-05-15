@@ -6,9 +6,12 @@
 
 #include "../../src/platform/include/SDLTexture/SDLTexture.h"
 #include "../../src/platform/include/SDLWindow/SDLWindow.h"
+#include "../../src/platform/include/SDLFont/SDLFont.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <SDL.h>
+#include <SDL_ttf.h>
+#include <fstream>
 
 class SDLRendererFixture
 {
@@ -51,5 +54,49 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
     REQUIRE_NOTHROW(renderer.present());
     REQUIRE_NOTHROW(renderer.setViewport(Viewport{ 0, 0, 800, 600 }));
 
+    SDL_Quit();
+}
+
+TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawText method defined",
+    "[unit][sdl_renderer]"
+) {
+    this->configureVideoDriverForCi();
+    REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
+    REQUIRE(TTF_Init() == 0);
+
+    #if defined(_WIN32)
+        const std::string fontPath = "C:\\Windows\\Fonts\\arial.ttf";
+    #else
+        const std::string fontPath = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf";
+    #endif
+
+    std::ifstream fontFile(fontPath);
+    if (!fontFile.good())
+    {
+        TTF_Quit();
+        SDL_Quit();
+        SKIP("Font file not available");
+    }
+
+    SDLWindow window;
+    window.create(800, 600, "Text Rendering Test");
+    REQUIRE(window.get() != nullptr);
+
+    SDLRenderer renderer(window.get());
+    REQUIRE(renderer.get() != nullptr);
+
+    SDLFont font(fontPath);
+
+    std::string textStr = "Hello";
+    Rectangle textRect{ { 50.0f, 50.0f }, 200.0f, 50.0f };
+    Color textColor{ 255, 255, 255, 255 };
+    
+    Renderer::DrawTextParams params{ textRect, 18, textColor };
+
+    REQUIRE_NOTHROW(renderer.clear());
+    REQUIRE_NOTHROW(renderer.drawText(font, textStr, params));
+    REQUIRE_NOTHROW(renderer.present());
+
+    TTF_Quit();
     SDL_Quit();
 }

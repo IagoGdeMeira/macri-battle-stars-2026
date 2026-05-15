@@ -162,6 +162,9 @@ public:
         void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
         { (void)texture; (void)params; }
 
+        void drawText(const Font& font, std::string text, const Renderer::DrawTextParams& params) override
+        { (void)font; (void)text; (void)params; }
+
         void drawRectOutline(const Rectangle& rect, const Color& color) override
         { (void)rect; (void)color; }
 
