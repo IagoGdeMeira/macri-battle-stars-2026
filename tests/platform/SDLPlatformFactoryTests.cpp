@@ -25,7 +25,7 @@ public:
         void clear() override {}
         void present() override {}
         void drawTexture(const Texture&, const DrawTextureParams&) override {}
-        void drawText(const Font&, std::string, const Renderer::DrawTextParams&) override {}
+        void drawText(const Font&, const Renderer::DrawTextParams&) override {}
         void drawRectOutline(const Rectangle&, const Color&) override {}
         void drawRectFilled(const Rectangle&, const Color&) override {}
         void drawCircleOutline(const Circle&, const Color&) override {}

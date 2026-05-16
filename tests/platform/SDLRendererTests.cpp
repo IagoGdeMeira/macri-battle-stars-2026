@@ -78,24 +78,27 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawText method defined",
         SKIP("Font file not available");
     }
 
-    SDLWindow window;
-    window.create(800, 600, "Text Rendering Test");
-    REQUIRE(window.get() != nullptr);
-
-    SDLRenderer renderer(window.get());
-    REQUIRE(renderer.get() != nullptr);
-
-    SDLFont font(fontPath);
-
     std::string textStr = "Hello";
     Rectangle textRect{ { 50.0f, 50.0f }, 200.0f, 50.0f };
     Color textColor{ 255, 255, 255, 255 };
     
-    Renderer::DrawTextParams params{ textRect, 18, textColor };
+    Renderer::DrawTextParams params{ textStr, textRect, 18, textColor };
 
-    REQUIRE_NOTHROW(renderer.clear());
-    REQUIRE_NOTHROW(renderer.drawText(font, textStr, params));
-    REQUIRE_NOTHROW(renderer.present());
+    {
+        SDLWindow window;
+        window.create(800, 600, "Text Rendering Test");
+        REQUIRE(window.get() != nullptr);
+
+        SDLRenderer renderer(window.get());
+        REQUIRE(renderer.get() != nullptr);
+
+        SDLFont font(fontPath);
+        REQUIRE_NOTHROW(font.getFontWithSize(params.fontSize));
+
+        REQUIRE_NOTHROW(renderer.clear());
+        REQUIRE_NOTHROW(renderer.drawText(font, params));
+        REQUIRE_NOTHROW(renderer.present());
+    }
 
     TTF_Quit();
     SDL_Quit();

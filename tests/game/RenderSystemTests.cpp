@@ -97,12 +97,8 @@ protected:
             this->lastUseSourceRect = params.useSourceRect;
         }
 
-        void drawText(const Font& font, std::string text, const Renderer::DrawTextParams& params) override
-        {
-            (void)font;
-            (void)text;
-            (void)params;
-        }
+        void drawText(const Font& font, const Renderer::DrawTextParams& params) override
+        { (void)font; (void)params; }
 
         void drawRectOutline(const Rectangle& rect, const Color& color) override
         {

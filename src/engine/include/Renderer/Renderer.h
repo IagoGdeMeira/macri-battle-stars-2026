@@ -27,6 +27,7 @@ public:
 
     struct DrawTextParams
     {
+        std::string text;
         Rectangle dest;
         int fontSize = 16;
         Color color = {255, 255, 255, 255};
@@ -38,7 +39,7 @@ public:
     virtual void present() = 0;
 
     virtual void drawTexture(const Texture& texture, const DrawTextureParams& params) = 0;
-    virtual void drawText(const Font& font, std::string text, const DrawTextParams& params) = 0;
+    virtual void drawText(const Font& font, const DrawTextParams& params) = 0;
 
     virtual void drawRectOutline(const Rectangle& rect, const Color& color) = 0;
     virtual void drawRectFilled(const Rectangle& rect, const Color& color) = 0;
