@@ -53,14 +53,30 @@ void SDLRenderer::drawTexture(const Texture& texture, const DrawTextureParams& p
     if (params.flipX) flip = (SDL_RendererFlip)(flip | SDL_FLIP_HORIZONTAL);
     if (params.flipY) flip = (SDL_RendererFlip)(flip | SDL_FLIP_VERTICAL);
 
-    SDL_RenderCopyEx(
-        this->renderer,
-        sdlTex.get(),
-        srcPtr,
-        &dst,
-        params.rotation,
-        &pivot,
-        flip);
+    SDL_BlendMode sdlBlend = SDL_BLENDMODE_BLEND;
+    switch (params.blend)
+    {
+        case BlendMode::Normal: sdlBlend = SDL_BLENDMODE_BLEND; break;
+        case BlendMode::Add: sdlBlend = SDL_BLENDMODE_ADD; break;
+        case BlendMode::Multiply: sdlBlend = SDL_BLENDMODE_MOD; break;
+    }
+
+    SDL_BlendMode oldBlend;
+    SDL_GetTextureBlendMode(sdlTex.get(), &oldBlend);
+    SDL_SetTextureBlendMode(sdlTex.get(), sdlBlend);
+
+    if (params.tint != Color::WHITE())
+    {
+        Uint8 oldR, oldG, oldB;
+        SDL_GetTextureColorMod(sdlTex.get(), &oldR, &oldG, &oldB);
+        SDL_SetTextureColorMod(sdlTex.get(), params.tint.r, params.tint.g, params.tint.b);
+
+        SDL_RenderCopyEx(this->renderer, sdlTex.get(), srcPtr, &dst, params.rotation, &pivot, flip);
+        SDL_SetTextureColorMod(sdlTex.get(), oldR, oldG, oldB);
+    }
+    else SDL_RenderCopyEx(this->renderer, sdlTex.get(), srcPtr, &dst, params.rotation, &pivot, flip);
+
+    SDL_SetTextureBlendMode(sdlTex.get(), oldBlend);
 }
 
 void SDLRenderer::drawText(const Font& font, const DrawTextParams& params)

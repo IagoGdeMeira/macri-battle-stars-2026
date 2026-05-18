@@ -37,7 +37,6 @@ target_sources(game
         src/MapRoster.cpp
         src/MapRosterLoader.cpp
         src/PlayerControlSystem.cpp
-        src/RenderSystem.cpp
         src/StateMachineLoader.cpp
         src/StateIdMapper.cpp
         src/StateMapper.cpp
@@ -47,6 +46,7 @@ target_sources(game
         src/TriggerGenerationSystem.cpp
         src/TriggerMapper.cpp
         src/UILayoutSystem.cpp
+        src/WorldDrawer.cpp
 )
 
 target_include_directories(game

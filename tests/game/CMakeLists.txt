@@ -30,7 +30,6 @@ add_executable(game_tests
     KnockbackSystemTests.cpp
     LocalToWorldSystemTests.cpp
     PlayerControlSystemTests.cpp
-    RenderSystemTests.cpp
     StateMachineLoaderTests.cpp
     StateMapperTests.cpp
     StateSystemTests.cpp
@@ -39,6 +38,7 @@ add_executable(game_tests
     TriggerGenerationSystemTests.cpp
     TriggerMapperTests.cpp
     UILayoutSystemTests.cpp
+    WorldDrawerTests.cpp
 )
 
 target_link_libraries(game_tests

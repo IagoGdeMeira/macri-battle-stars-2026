@@ -15,6 +15,8 @@
 class Renderer
 {
 public:
+    enum class BlendMode { Normal, Add, Multiply };
+
     struct DrawTextureParams
     {
         Rectangle dest;
@@ -23,6 +25,8 @@ public:
         bool flipX = false, flipY = false;
         Rectangle source;
         bool useSourceRect = false;
+        Color tint = {255, 255, 255, 255};
+        BlendMode blend = BlendMode::Normal;
     };
 
     struct DrawTextParams

@@ -1,4 +1,4 @@
-#include "../../src/game/include/RenderSystem/RenderSystem.h"
+#include "../../src/game/include/WorldDrawer/WorldDrawer.h"
 
 #include "../../src/domain/components/AnimationControllerComponent.h"
 #include "../../src/domain/components/OrientationComponent.h"
@@ -21,10 +21,10 @@
 #include <memory>
 #include <vector>
 
-class RenderSystemFixture
+class WorldDrawerFixture
 {
 public:
-    RenderSystemFixture() : system(bus, renderer, camera), context{ world, bus }
+    WorldDrawerFixture() : drawer(bus, renderer, camera), context{ world, bus }
     {
         auto& components = this->world.components();
 
@@ -143,24 +143,24 @@ protected:
     EventBus bus;
     StubRenderer renderer;
     Camera2D camera;
-    RenderSystem system;
+    WorldDrawer drawer;
     RenderContext context;
 };
 
-TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem configures viewports on draw",
-    "[unit][render_system]"
+TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem configures viewports on draw",
+    "[unit][world_drawer]"
 ) {
-    this->system.draw(this->context);
+    this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.viewportCalls == 2);
 }
 
-TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem updates viewport on window resize",
-    "[unit][render_system]"
+TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem updates viewport on window resize",
+    "[unit][world_drawer]"
 ) {
     this->bus.emit<WindowResizedEvent>(WindowResizedEvent { 1920, 1080 });
 
-    this->system.draw(this->context);
+    this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.viewportCalls == 2);
     REQUIRE(this->renderer.viewportHistory.size() == 2);
@@ -170,8 +170,8 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem updates viewport on window r
     REQUIRE(this->renderer.viewportHistory[0].height == 1080);
 }
 
-TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transformed world coordinates",
-    "[unit][render_system]"
+TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem draws sprite using transformed world coordinates",
+    "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
@@ -183,7 +183,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
     this->camera.setPosition(0.0f, 0.0f);
     this->camera.setZoom(1.5f);
 
-    this->system.draw(this->context);
+    this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.drawTextureCalls == 1);
     REQUIRE(this->renderer.lastDrawX == 415);
@@ -195,8 +195,8 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws sprite using transform
     REQUIRE(this->renderer.lastDrawFlipY == false);
 }
 
-TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards rotation and flip flags to renderer",
-    "[unit][render_system]"
+TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem forwards rotation and flip flags to renderer",
+    "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
@@ -208,7 +208,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards rotation and flip f
     this->camera.setPosition(0.0f, 0.0f);
     this->camera.setZoom(1.5f);
 
-    this->system.draw(this->context);
+    this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.drawTextureCalls == 1);
     REQUIRE(this->renderer.lastDrawWidth == 48);
@@ -218,8 +218,8 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards rotation and flip f
     REQUIRE(this->renderer.lastDrawFlipY == true);
 }
 
-TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards sprite source rect to renderer",
-    "[unit][render_system]"
+TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem forwards sprite source rect to renderer",
+    "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
@@ -228,7 +228,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards sprite source rect 
     components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8, 4, 6, 8, 10, true });
     components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
-    this->system.draw(this->context);
+    this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.drawTextureCalls == 1);
     REQUIRE(this->renderer.lastUseSourceRect == true);
@@ -238,8 +238,8 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem forwards sprite source rect 
     REQUIRE(this->renderer.lastSrcHeight == 10);
 }
 
-TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem skips sprites without textures",
-    "[unit][render_system]"
+TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem skips sprites without textures",
+    "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
@@ -248,13 +248,13 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem skips sprites without textur
     components.add<SpriteComponent>(entity, SpriteComponent{ nullptr, 16, 8 });
     components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
-    this->system.draw(this->context);
+    this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.drawTextureCalls == 0);
 }
 
-TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws filled rectangle shapes",
-    "[unit][render_system]"
+TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem draws filled rectangle shapes",
+    "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
@@ -266,7 +266,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws filled rectangle shape
     components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
     components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{ 1, 2, 3, 4 }, true });
 
-    this->system.draw(this->context);
+    this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.drawRectFilledCalls == 1);
     REQUIRE(this->renderer.drawRectOutlineCalls == 0);
@@ -280,8 +280,8 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws filled rectangle shape
     REQUIRE(this->renderer.lastColor.a == 4);
 }
 
-TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws outlined circle shapes",
-    "[unit][render_system]"
+TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem draws outlined circle shapes",
+    "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
@@ -293,7 +293,7 @@ TEST_CASE_METHOD(RenderSystemFixture, "RenderSystem draws outlined circle shapes
     components.add<TransformComponent>(entity, TransformComponent{ 10.0f, 20.0f, 2.0f, -3.0f, 0.0f });
     components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{ 9, 8, 7, 6 }, false });
 
-    this->system.draw(this->context);
+    this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.drawCircleOutlineCalls == 1);
     REQUIRE(this->renderer.drawCircleFilledCalls == 0);

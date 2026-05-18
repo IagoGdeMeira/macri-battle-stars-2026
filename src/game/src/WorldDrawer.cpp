@@ -1,4 +1,4 @@
-#include "../include/RenderSystem/RenderSystem.h"
+#include "../include/WorldDrawer/WorldDrawer.h"
 
 #include "../../domain/components/AnimationControllerComponent.h"
 #include "../../domain/components/OrientationComponent.h"
@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cmath>
 
-RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer, Camera2D& camera)
+WorldDrawer::WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera)
     : renderer(renderer), camera(camera)
 {
     this->updateViewports();
@@ -25,17 +25,16 @@ RenderSystem::RenderSystem(EventBus& bus, Renderer& renderer, Camera2D& camera)
     });
 }
 
-void RenderSystem::draw(RenderContext& ctx)
+void WorldDrawer::draw(RenderContext& ctx)
 {
     this->renderer.setViewport(this->worldViewport);
     this->renderWorld(ctx);
     this->renderShapes(ctx);
-    this->renderer.setViewport(this->uiViewport);
 }
 
-void RenderSystem::renderWorld(RenderContext& ctx)
+void WorldDrawer::renderWorld(RenderContext& ctx)
 {
-    std::vector<DrawCommand> commands;
+    std::vector<Drawer::SpriteCommand> commands;
     commands.reserve(128);
 
     auto view = View<TransformComponent, SpriteComponent, RenderComponent>(ctx.world.components());
@@ -43,14 +42,14 @@ void RenderSystem::renderWorld(RenderContext& ctx)
     for (auto [entity, transform, sprite, render] : view)
     {
         if (!sprite.texture) continue;
-        commands.push_back(this->buildDrawCommand(entity, ctx.world, order++));
+        commands.push_back(this->buildSpriteCommand(entity, ctx.world, order++));
     }
 
     this->sortCommands(commands);
     this->submitCommands(commands);
 }
 
-void RenderSystem::renderShapes(RenderContext& ctx)
+void WorldDrawer::renderShapes(RenderContext& ctx)
 {
     auto view = View<TransformComponent, ShapeRenderComponent>(ctx.world.components());
     for (auto [entity, transform, shapeComp] : view)
@@ -64,7 +63,7 @@ void RenderSystem::renderShapes(RenderContext& ctx)
             Rectangle r;
             r.position.x = screenPos.x - (rect->width  * std::abs(transform.scaleX) * zoom) * 0.5f;
             r.position.y = screenPos.y - (rect->height * std::abs(transform.scaleY) * zoom) * 0.5f;
-            r.width  = rect->width  * std::abs(transform.scaleX) * zoom;
+            r.width = rect->width * std::abs(transform.scaleX) * zoom;
             r.height = rect->height * std::abs(transform.scaleY) * zoom;
             
             if (shapeComp.filled) this->renderer.drawRectFilled(r, shapeComp.color);
@@ -82,7 +81,7 @@ void RenderSystem::renderShapes(RenderContext& ctx)
     }
 }
 
-RenderSystem::DrawCommand RenderSystem::buildDrawCommand(Entity entity, World& world, size_t order) const
+Drawer::SpriteCommand WorldDrawer::buildSpriteCommand(Entity& entity, World& world, size_t order) const
 {
     auto& components = world.components();
     const auto& sprite = components.get<SpriteComponent>(entity);
@@ -93,18 +92,16 @@ RenderSystem::DrawCommand RenderSystem::buildDrawCommand(Entity entity, World& w
     const Position screenPos = this->worldToScreen({transform.x, transform.y}, this->worldViewport, parallax);
     Rectangle spriteConfig = 
     {
-        {transform.scaleX, transform.scaleY},
-        static_cast<float>(sprite.width),
-        static_cast<float>(sprite.height)
+        { transform.scaleX, transform.scaleY },
+        static_cast<float>(sprite.width), static_cast<float>(sprite.height)
     };
-    const SpriteTransform st = this->computeSpriteTransform(spriteConfig);
 
-    DrawCommand cmd;
+    Drawer::SpriteCommand cmd;
     cmd.texture = sprite.texture.get();
     cmd.dest.position = screenPos;
-    cmd.dest.width  = static_cast<float>(st.width);
-    cmd.dest.height = static_cast<float>(st.height);
     cmd.rotation = transform.rotation;
+
+    this->computeSpriteTransform(spriteConfig, cmd);
 
     if (components.has<OrientationComponent>(entity))
     {
@@ -119,9 +116,6 @@ RenderSystem::DrawCommand RenderSystem::buildDrawCommand(Entity entity, World& w
         }
         else cmd.flipX = false;
     }
-    else cmd.flipX = st.flipX;
-    
-    cmd.flipY = st.flipY;
 
     cmd.layer = render.layer;
     cmd.zIndex = render.zIndex;
@@ -134,7 +128,7 @@ RenderSystem::DrawCommand RenderSystem::buildDrawCommand(Entity entity, World& w
     return cmd;
 }
 
-Position RenderSystem::worldToScreen(Position worldPos, const Viewport& viewport, Position parallax) const
+Position WorldDrawer::worldToScreen(Position worldPos, const Viewport& viewport, Position parallax) const
 {
     const float camX = camera.getX();
     const float camY = camera.getY();
@@ -147,7 +141,7 @@ Position RenderSystem::worldToScreen(Position worldPos, const Viewport& viewport
     };
 }
 
-Position RenderSystem::resolveParallax(World& world, Entity entity) const
+Position WorldDrawer::resolveParallax(World& world, Entity entity) const
 {
     Position p{1.0f, 1.0f};
     auto& components = world.components();
@@ -159,21 +153,25 @@ Position RenderSystem::resolveParallax(World& world, Entity entity) const
     return p;
 }
 
-RenderSystem::SpriteTransform RenderSystem::computeSpriteTransform(Rectangle& dest) const
+void WorldDrawer::computeSpriteTransform(const Rectangle& spriteConfig, Drawer::SpriteCommand& cmd) const
 {
-    SpriteTransform st;
-    st.flipX = dest.position.x < 0.0f;
-    st.flipY = dest.position.y < 0.0f;
+    const bool flipX = spriteConfig.position.x < 0.0f;
+    const bool flipY = spriteConfig.position.y < 0.0f;
 
     const float zoom = this->camera.getZoom();
-    st.width = static_cast<int>(dest.width * std::abs(dest.position.x) * zoom);
-    st.height = static_cast<int>(dest.height * std::abs(dest.position.y) * zoom);
-    return st;
+    const int width = static_cast<int>(spriteConfig.width * std::abs(spriteConfig.position.x) * zoom);
+    const int height = static_cast<int>(spriteConfig.height * std::abs(spriteConfig.position.y) * zoom);
+
+    cmd.dest.width = static_cast<float>(width);
+    cmd.dest.height = static_cast<float>(height);
+    cmd.flipX = flipX;
+    cmd.flipY = flipY;
 }
 
-void RenderSystem::sortCommands(std::vector<DrawCommand>& commands) const
+void WorldDrawer::sortCommands(std::vector<Drawer::SpriteCommand>& commands) const
 {
-    std::stable_sort(commands.begin(), commands.end(), [](const DrawCommand& a, const DrawCommand& b)
+    using Command = Drawer::SpriteCommand;
+    std::stable_sort(commands.begin(), commands.end(), [] (const Command& a, const Command& b)
     {
         if (a.layer != b.layer) return a.layer < b.layer;
         if (a.zIndex != b.zIndex) return a.zIndex < b.zIndex;
@@ -181,7 +179,7 @@ void RenderSystem::sortCommands(std::vector<DrawCommand>& commands) const
     });
 }
 
-void RenderSystem::submitCommands(const std::vector<DrawCommand>& commands) const
+void WorldDrawer::submitCommands(const std::vector<Drawer::SpriteCommand>& commands) const
 {
     for (const auto& cmd : commands)
     {
@@ -198,18 +196,17 @@ void RenderSystem::submitCommands(const std::vector<DrawCommand>& commands) cons
     }
 }
 
-void RenderSystem::updateViewports()
+void WorldDrawer::updateViewports()
 {
-    const float scaleX = static_cast<float>(this->windowWidth) / RenderSystem::VIRTUAL_WIDTH;
-    const float scaleY = static_cast<float>(this->windowHeight) / RenderSystem::VIRTUAL_HEIGHT;
+    const float scaleX = static_cast<float>(this->windowWidth) / WorldDrawer::VIRTUAL_WIDTH;
+    const float scaleY = static_cast<float>(this->windowHeight) / WorldDrawer::VIRTUAL_HEIGHT;
     const float scale = std::min(scaleX, scaleY);
 
-    const int viewW = static_cast<int>(RenderSystem::VIRTUAL_WIDTH  * scale);
-    const int viewH = static_cast<int>(RenderSystem::VIRTUAL_HEIGHT * scale);
+    const int viewW = static_cast<int>(WorldDrawer::VIRTUAL_WIDTH  * scale);
+    const int viewH = static_cast<int>(WorldDrawer::VIRTUAL_HEIGHT * scale);
 
-    const int offsetX = (this->windowWidth  - viewW) / 2;
+    const int offsetX = (this->windowWidth - viewW) / 2;
     const int offsetY = (this->windowHeight - viewH) / 2;
 
     this->worldViewport = { offsetX, offsetY, viewW, viewH };
-    this->uiViewport    = { 0, 0, this->windowWidth, this->windowHeight };
 }
