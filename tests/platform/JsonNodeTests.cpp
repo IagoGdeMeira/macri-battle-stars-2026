@@ -73,3 +73,14 @@ TEST_CASE("JsonNode returns nested array as DataNode collection",
     REQUIRE(players[1]->getInt("id") == 2);
     REQUIRE(players[1]->getString("name") == "P2");
 }
+
+TEST_CASE("JsonNode returns nested object as DataNode",
+    "[unit][json_node]"
+) {
+    JsonNode node(json{{"player", json{{"id", 1}, {"name", "P1"}}}});
+
+    const auto player = node.getObject("player");
+
+    REQUIRE(player->getInt("id") == 1);
+    REQUIRE(player->getString("name") == "P1");
+}

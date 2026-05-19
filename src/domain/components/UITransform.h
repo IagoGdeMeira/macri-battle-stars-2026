@@ -12,9 +12,9 @@ struct UITransform
         BottomLeft, BottomCenter, BottomRight
     };
 
-    Rectangle rect = { {0.0f, 0.0f}, 100.0f, 100.0f };
+    Rectangle rect = { Position{0.f, 0.f}, Dimension2D{100.f, 100.f} };
     UIAnchor anchor = UIAnchor::TopLeft;
-    Position pivot { 0.5f, 0.5f }, scale { 1.0f, 1.0f };
+    Position pivot {0.5f, 0.5f}, scale {1.f, 1.f};
     float rotation = 0.0f;
 };
 

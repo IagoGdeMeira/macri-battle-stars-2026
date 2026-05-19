@@ -1,6 +1,8 @@
 #ifndef sprite_component_h
 #define sprite_component_h
 
+#include "../../domain/include/Geometry/Geometry.h"
+
 #include "../../engine/include/Texture/Texture.h"
 
 #include <memory>
@@ -9,9 +11,8 @@ struct SpriteComponent
 {
     std::shared_ptr<Texture> texture;
 
-    int width = 0, height = 0;
-    
-    int srcX = 0, srcY = 0, srcWidth = 0, srcHeight = 0;
+    Dimension2D size {0.f, 0.f};
+    Rectangle source {{ 0.f, 0.f }, { 0.f, 0.f }};
     bool useSourceRect = false;
 };
 

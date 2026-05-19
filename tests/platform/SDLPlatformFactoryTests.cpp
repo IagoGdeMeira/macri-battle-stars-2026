@@ -24,12 +24,11 @@ public:
     public:
         void clear() override {}
         void present() override {}
-        void drawTexture(const Texture&, const DrawTextureParams&) override {}
-        void drawText(const Font&, const Renderer::DrawTextParams&) override {}
-        void drawRectOutline(const Rectangle&, const Color&) override {}
-        void drawRectFilled(const Rectangle&, const Color&) override {}
-        void drawCircleOutline(const Circle&, const Color&) override {}
-        void drawCircleFilled(const Circle&, const Color&) override {}
+        void drawTexture(const DrawTextureCommand& cmd) override { (void) cmd; }
+        void drawFont(const DrawFontCommand& cmd) override { (void) cmd; }
+        void drawRectangle(const DrawRectangleCommand& cmd) override { (void) cmd; }
+        void drawCircle(const DrawCircleCommand& cmd) override { (void) cmd; }
+        
         void setViewport(const Viewport&) override {}
     };
     void configureVideoDriverForCi() const

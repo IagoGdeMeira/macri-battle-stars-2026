@@ -1,6 +1,7 @@
 #ifndef renderer_h
 #define renderer_h
 
+#include "../DrawCommands/DrawCommands.h"
 #include "../Font/Font.h"
 #include "../Texture/Texture.h"
 #include "../Viewport/Viewport.h"
@@ -15,40 +16,15 @@
 class Renderer
 {
 public:
-    enum class BlendMode { Normal, Add, Multiply };
-
-    struct DrawTextureParams
-    {
-        Rectangle dest;
-        float rotation = 0.0f;
-        float pivotX = 0.5f, pivotY = 0.5f;
-        bool flipX = false, flipY = false;
-        Rectangle source;
-        bool useSourceRect = false;
-        Color tint = {255, 255, 255, 255};
-        BlendMode blend = BlendMode::Normal;
-    };
-
-    struct DrawTextParams
-    {
-        std::string text;
-        Rectangle dest;
-        int fontSize = 16;
-        Color color = {255, 255, 255, 255};
-    };
-
     virtual ~Renderer() = default;
 
     virtual void clear() = 0;
     virtual void present() = 0;
 
-    virtual void drawTexture(const Texture& texture, const DrawTextureParams& params) = 0;
-    virtual void drawText(const Font& font, const DrawTextParams& params) = 0;
-
-    virtual void drawRectOutline(const Rectangle& rect, const Color& color) = 0;
-    virtual void drawRectFilled(const Rectangle& rect, const Color& color) = 0;
-    virtual void drawCircleOutline(const Circle& circle, const Color& color) = 0;
-    virtual void drawCircleFilled(const Circle& circle, const Color& color) = 0;
+    virtual void drawTexture(const DrawTextureCommand& cmd) = 0;
+    virtual void drawFont(const DrawFontCommand& cmd) = 0;
+    virtual void drawRectangle(const DrawRectangleCommand& cmd) = 0;
+    virtual void drawCircle(const DrawCircleCommand& cmd) = 0;
 
     virtual void setViewport(const Viewport& viewport) = 0;
 };

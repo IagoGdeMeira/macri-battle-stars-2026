@@ -8,53 +8,58 @@
 #include <stdexcept>
 
 SDLRenderer::SDLRenderer(SDL_Window* window)
-{ this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); }
+{
+    this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+}
 
 SDLRenderer::~SDLRenderer()
-{ if (this->renderer) SDL_DestroyRenderer(this->renderer); }
+{
+    if (this->renderer) SDL_DestroyRenderer(this->renderer);
+}
 
 void SDLRenderer::clear() { SDL_RenderClear(this->renderer); }
 
 void SDLRenderer::present() { SDL_RenderPresent(this->renderer); }
 
-void SDLRenderer::drawTexture(const Texture& texture, const DrawTextureParams& params)
+void SDLRenderer::drawTexture(const DrawTextureCommand& cmd)
 {
-    auto& sdlTex = static_cast<const SDLTexture&>(texture);
+    if (!cmd.texture) return;
+    const SDLTexture& sdlTex = static_cast<const SDLTexture&>(*cmd.texture);
 
     SDL_Rect dst =
     {
-        static_cast<int>(std::lround(params.dest.position.x)),
-        static_cast<int>(std::lround(params.dest.position.y)),
-        static_cast<int>(std::lround(params.dest.width)),
-        static_cast<int>(std::lround(params.dest.height))
+        static_cast<int>(std::lround(cmd.dest.position.x)),
+        static_cast<int>(std::lround(cmd.dest.position.y)),
+        static_cast<int>(std::lround(cmd.dest.size.width)),
+        static_cast<int>(std::lround(cmd.dest.size.height))
     };
     
     SDL_Rect* srcPtr = nullptr;
     SDL_Rect src;
-    if (params.useSourceRect)
+    if (cmd.useSourceRect)
     {
         src =
         {
-            static_cast<int>(std::lround(params.source.position.x)),
-            static_cast<int>(std::lround(params.source.position.y)),
-            static_cast<int>(std::lround(params.source.width)),
-            static_cast<int>(std::lround(params.source.height))
+            static_cast<int>(std::lround(cmd.source.position.x)),
+            static_cast<int>(std::lround(cmd.source.position.y)),
+            static_cast<int>(std::lround(cmd.source.size.width)),
+            static_cast<int>(std::lround(cmd.source.size.height))
         };
         srcPtr = &src;
     }
 
     SDL_Point pivot =
     {
-        static_cast<int>(params.pivotX * params.dest.width),
-        static_cast<int>(params.pivotY * params.dest.height)
+        static_cast<int>(cmd.pivot.x * cmd.dest.size.width),
+        static_cast<int>(cmd.pivot.y * cmd.dest.size.height)
     };
 
     SDL_RendererFlip flip = SDL_FLIP_NONE;
-    if (params.flipX) flip = (SDL_RendererFlip)(flip | SDL_FLIP_HORIZONTAL);
-    if (params.flipY) flip = (SDL_RendererFlip)(flip | SDL_FLIP_VERTICAL);
+    if (cmd.flipX) flip = (SDL_RendererFlip)(flip | SDL_FLIP_HORIZONTAL);
+    if (cmd.flipY) flip = (SDL_RendererFlip)(flip | SDL_FLIP_VERTICAL);
 
     SDL_BlendMode sdlBlend = SDL_BLENDMODE_BLEND;
-    switch (params.blend)
+    switch (cmd.blend)
     {
         case BlendMode::Normal: sdlBlend = SDL_BLENDMODE_BLEND; break;
         case BlendMode::Add: sdlBlend = SDL_BLENDMODE_ADD; break;
@@ -65,28 +70,37 @@ void SDLRenderer::drawTexture(const Texture& texture, const DrawTextureParams& p
     SDL_GetTextureBlendMode(sdlTex.get(), &oldBlend);
     SDL_SetTextureBlendMode(sdlTex.get(), sdlBlend);
 
-    if (params.tint != Color::WHITE())
+    if (cmd.tint != Color::WHITE())
     {
         Uint8 oldR, oldG, oldB;
         SDL_GetTextureColorMod(sdlTex.get(), &oldR, &oldG, &oldB);
-        SDL_SetTextureColorMod(sdlTex.get(), params.tint.r, params.tint.g, params.tint.b);
+        SDL_SetTextureColorMod(sdlTex.get(), cmd.tint.r, cmd.tint.g, cmd.tint.b);
 
-        SDL_RenderCopyEx(this->renderer, sdlTex.get(), srcPtr, &dst, params.rotation, &pivot, flip);
+        SDL_RenderCopyEx(this->renderer, sdlTex.get(), srcPtr, &dst, cmd.rotation, &pivot, flip);
         SDL_SetTextureColorMod(sdlTex.get(), oldR, oldG, oldB);
     }
-    else SDL_RenderCopyEx(this->renderer, sdlTex.get(), srcPtr, &dst, params.rotation, &pivot, flip);
+    else SDL_RenderCopyEx(this->renderer, sdlTex.get(), srcPtr, &dst, cmd.rotation, &pivot, flip);
 
     SDL_SetTextureBlendMode(sdlTex.get(), oldBlend);
 }
 
-void SDLRenderer::drawText(const Font& font, const DrawTextParams& params)
+void SDLRenderer::drawFont(const DrawFontCommand& cmd)
 {
-    const auto& sdlFont = static_cast<const SDLFont&>(font);
-    TTF_Font* ttfFont = sdlFont.getFontWithSize(params.fontSize);
+    if (!cmd.font) return;
+    if (!this->renderer) return;
+
+    const SDLFont* sdlFont = dynamic_cast<const SDLFont*>(cmd.font);
+    if (!sdlFont) return;
+
+    TTF_Font* ttfFont = nullptr;
+    try { ttfFont = sdlFont->getFontWithSize(cmd.fontSize); }
+    catch (...) { return; }
     if (!ttfFont) return;
 
-    SDL_Color sdlColor = { params.color.r, params.color.g, params.color.b, params.color.a };
-    SDL_Surface* surface = TTF_RenderUTF8_Blended(ttfFont, params.text.c_str(), sdlColor);
+    if (TTF_WasInit() == 0) return;
+
+    SDL_Color sdlColor = { cmd.color.r, cmd.color.g, cmd.color.b, cmd.color.a };
+    SDL_Surface* surface = TTF_RenderUTF8_Blended(ttfFont, cmd.text.c_str(), sdlColor);
     if (!surface) return;
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(this->renderer, surface);
@@ -94,15 +108,33 @@ void SDLRenderer::drawText(const Font& font, const DrawTextParams& params)
     {
         SDL_Rect dst =
         {
-            static_cast<int>(std::lround(params.dest.position.x)),
-            static_cast<int>(std::lround(params.dest.position.y)),
-            static_cast<int>(std::lround(params.dest.width)),
-            static_cast<int>(std::lround(params.dest.height))
+            static_cast<int>(std::lround(cmd.dest.position.x)),
+            static_cast<int>(std::lround(cmd.dest.position.y)),
+            static_cast<int>(std::lround(cmd.dest.size.width)),
+            static_cast<int>(std::lround(cmd.dest.size.height))
         };
-        SDL_RenderCopyEx(this->renderer, texture, nullptr, &dst, 0.0, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopy(this->renderer, texture, nullptr, &dst);
         SDL_DestroyTexture(texture);
     }
     SDL_FreeSurface(surface);
+}
+
+void SDLRenderer::drawRectangle(const DrawRectangleCommand& cmd)
+{
+    if (cmd.filled) this->drawRectFilled(cmd.rect, cmd.color);
+    else this->drawRectOutline(cmd.rect, cmd.color);
+}
+
+void SDLRenderer::drawCircle(const DrawCircleCommand& cmd)
+{
+    if (cmd.filled) this->drawCircleFilled(cmd.circle, cmd.color);
+    else this->drawCircleOutline(cmd.circle, cmd.color);
+}
+
+void SDLRenderer::setViewport(const Viewport& viewport)
+{
+    SDL_Rect rect = { viewport.x, viewport.y, viewport.width, viewport.height };
+    SDL_RenderSetViewport(this->renderer, &rect);
 }
 
 void SDLRenderer::drawRectOutline(const Rectangle& rect, const Color& color)
@@ -112,8 +144,8 @@ void SDLRenderer::drawRectOutline(const Rectangle& rect, const Color& color)
     {
         static_cast<int>(std::lround(rect.position.x)),
         static_cast<int>(std::lround(rect.position.y)),
-        static_cast<int>(std::lround(rect.width)),
-        static_cast<int>(std::lround(rect.height))
+        static_cast<int>(std::lround(rect.size.width)),
+        static_cast<int>(std::lround(rect.size.height))
     };
     SDL_RenderDrawRect(this->renderer, &sdlRect);
 }
@@ -125,8 +157,8 @@ void SDLRenderer::drawRectFilled(const Rectangle& rect, const Color& color)
     {
         static_cast<int>(std::lround(rect.position.x)),
         static_cast<int>(std::lround(rect.position.y)),
-        static_cast<int>(std::lround(rect.width)),
-        static_cast<int>(std::lround(rect.height))
+        static_cast<int>(std::lround(rect.size.width)),
+        static_cast<int>(std::lround(rect.size.height))
     };
     SDL_RenderFillRect(this->renderer, &sdlRect);
 }
@@ -166,13 +198,7 @@ void SDLRenderer::drawCircleFilled(const Circle& circle, const Color& color)
 
     for (int dy = -r; dy <= r; dy++)
     {
-        int dx = static_cast<int>(std::sqrt(r * r - dy * dy));
+        int dx = static_cast<int>(std::lround(std::sqrt(r * r - dy * dy)));
         SDL_RenderDrawLine(this->renderer, cx - dx, cy + dy, cx + dx, cy + dy);
     }
-}
-
-void SDLRenderer::setViewport(const Viewport& viewport)
-{
-    SDL_Rect rect = { viewport.x, viewport.y, viewport.width, viewport.height };
-    SDL_RenderSetViewport(this->renderer, &rect);
 }

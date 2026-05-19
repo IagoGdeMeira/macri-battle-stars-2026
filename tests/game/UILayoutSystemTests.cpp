@@ -39,8 +39,8 @@ TEST_CASE_METHOD(UILayoutSystemFixture, "UILayoutSystem positions children in a 
     components.add<UITransform>(container, UITransform{});
     components.get<UITransform>(container).rect.position.x = 0.0f;
     components.get<UITransform>(container).rect.position.y = 0.0f;
-    components.get<UITransform>(container).rect.width = 300.0f;
-    components.get<UITransform>(container).rect.height = 100.0f;
+    components.get<UITransform>(container).rect.size.width = 300.0f;
+    components.get<UITransform>(container).rect.size.height = 100.0f;
 
     FlexContainer flex;
     flex.direction = FlexContainer::FlexDirection::Row;
@@ -51,9 +51,9 @@ TEST_CASE_METHOD(UILayoutSystemFixture, "UILayoutSystem positions children in a 
 
     Entity c1(1), c2(2), c3(3);
 
-    UITransform t1; t1.rect.width = 50.0f; t1.rect.height = 50.0f;
-    UITransform t2; t2.rect.width = 60.0f; t2.rect.height = 50.0f;
-    UITransform t3; t3.rect.width = 70.0f; t3.rect.height = 50.0f;
+    UITransform t1; t1.rect.size.width = 50.0f; t1.rect.size.height = 50.0f;
+    UITransform t2; t2.rect.size.width = 60.0f; t2.rect.size.height = 50.0f;
+    UITransform t3; t3.rect.size.width = 70.0f; t3.rect.size.height = 50.0f;
 
     components.add<ParentComponent>(c1, ParentComponent{ container });
     components.add<UITransform>(c1, t1);
@@ -88,8 +88,8 @@ TEST_CASE_METHOD(UILayoutSystemFixture, "UILayoutSystem aligns children cross-ax
     components.add<UITransform>(container, UITransform{});
     components.get<UITransform>(container).rect.position.x = 5.0f;
     components.get<UITransform>(container).rect.position.y = 5.0f;
-    components.get<UITransform>(container).rect.width = 200.0f;
-    components.get<UITransform>(container).rect.height = 300.0f;
+    components.get<UITransform>(container).rect.size.width = 200.0f;
+    components.get<UITransform>(container).rect.size.height = 300.0f;
 
     FlexContainer flex;
     flex.direction = FlexContainer::FlexDirection::Column;
@@ -98,8 +98,8 @@ TEST_CASE_METHOD(UILayoutSystemFixture, "UILayoutSystem aligns children cross-ax
     components.add<FlexContainer>(container, flex);
 
     Entity c1(11), c2(12);
-    UITransform t1; t1.rect.width = 40.0f; t1.rect.height = 20.0f;
-    UITransform t2; t2.rect.width = 60.0f; t2.rect.height = 30.0f;
+    UITransform t1; t1.rect.size.width = 40.0f; t1.rect.size.height = 20.0f;
+    UITransform t2; t2.rect.size.width = 60.0f; t2.rect.size.height = 30.0f;
 
     components.add<ParentComponent>(c1, ParentComponent{ container });
     components.add<UITransform>(c1, t1);
@@ -115,7 +115,7 @@ TEST_CASE_METHOD(UILayoutSystemFixture, "UILayoutSystem aligns children cross-ax
     system.update(ctx);
 
     float innerX = components.get<UITransform>(container).rect.position.x;
-    float crossSize = components.get<UITransform>(container).rect.width;
+    float crossSize = components.get<UITransform>(container).rect.size.width;
 
     auto& tr1 = components.get<UITransform>(c1);
     auto& tr2 = components.get<UITransform>(c2);

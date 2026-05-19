@@ -22,17 +22,9 @@ private:
     struct CollisionPair { Entity a, b; };
     struct Cell { std::vector<Entity> entities; };
 
-    struct RectParams
-    {
-        const TransformComponent& transform;
-        const RectangleColliderComponent& collider;
-    };
-
-    struct CircleParams
-    {
-        const TransformComponent& transform;
-        const CircleColliderComponent& collider;
-    };
+    struct RectParams { const TransformComponent& transform; const RectangleColliderComponent& collider; };
+    struct CircleParams { const TransformComponent& transform; const CircleColliderComponent& collider; };
+    struct DetectionParams { UpdateContext& ctx; std::vector<CollisionPair>& pairs; };
 
     using Grid = std::unordered_map<long long, Cell>;
     using PairSet = std::unordered_set<unsigned long long>;
@@ -41,20 +33,10 @@ private:
     static unsigned long long hashPair(Entity a, Entity b);
 
     void buildGrid(UpdateContext& ctx, Grid& grid, float cellSize);
-
     void detect(UpdateContext& ctx, std::vector<CollisionPair>& pairs);
 
-    void detectInCell(
-        UpdateContext& ctx,
-        const Cell& cell,
-        std::vector<CollisionPair>& pairs,
-        PairSet& checkedPairs);
-
-    void detectPair(UpdateContext& ctx,
-        std::vector<CollisionPair>& pairs,
-        CollisionPair pair,
-        PairSet& checkedPairs
-    );
+    void detectInCell(DetectionParams params, const Cell& cell, PairSet& checkedPairs);
+    void detectInPair(DetectionParams params, CollisionPair pair, PairSet& checkedPairs);
 
     static bool rectToRect(RectParams a, RectParams b);
     static bool circleToCircle(CircleParams a, CircleParams b);

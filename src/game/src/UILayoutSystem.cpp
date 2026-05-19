@@ -37,23 +37,23 @@ std::vector<Entity> UILayoutSystem::collectChildren(Item item)
 
 void UILayoutSystem::applyPadding(Item item, Rectangle& innerRect) const
 {
-    float padLeft = 0, padTop = 0, padRight = 0, padBottom = 0;
+    AABB padding {0.f, 0.f, 0.f, 0.f};
 
     auto& components = item.ctx.world.components();
     if (components.has<BoxModel>(item.entity))
     {
         auto& box = components.get<BoxModel>(item.entity);
-        padLeft = box.border.top + box.padding.top;
-        padTop = box.border.left + box.padding.left;
-        padRight = box.border.right + box.padding.right;
-        padBottom = box.border.bottom + box.padding.bottom;
+        padding.left = box.border.top + box.padding.top;
+        padding.top = box.border.left + box.padding.left;
+        padding.right = box.border.right + box.padding.right;
+        padding.bottom = box.border.bottom + box.padding.bottom;
     }
 
     auto& transform = components.get<UITransform>(item.entity);
-    innerRect.position.x = transform.rect.position.x + padLeft;
-    innerRect.position.y = transform.rect.position.y + padTop;
-    innerRect.width = transform.rect.width - padLeft - padRight;
-    innerRect.height = transform.rect.height - padTop - padBottom;
+    innerRect.position.x = transform.rect.position.x + padding.left;
+    innerRect.position.y = transform.rect.position.y + padding.top;
+    innerRect.size.width = transform.rect.size.width - padding.left - padding.right;
+    innerRect.size.height = transform.rect.size.height - padding.top - padding.bottom;
 }
 
 float UILayoutSystem::calculateFreeSpace(Item item, ItemGap& itemGap, float mainSize)
@@ -64,7 +64,7 @@ float UILayoutSystem::calculateFreeSpace(Item item, ItemGap& itemGap, float main
     for (auto child : children)
     {
         auto& transform = item.ctx.world.components().get<UITransform>(child);
-        total += itemGap.isColumn ? transform.rect.height : transform.rect.width;
+        total += itemGap.isColumn ? transform.rect.size.height : transform.rect.size.width;
     }
 
     if (children.size() > 1) total += itemGap.gap * (children.size() - 1);
@@ -111,12 +111,12 @@ void UILayoutSystem::positionItemMenu(Item item, float& cursor, ItemGap& itemGap
     if (itemGap.isColumn)
     {
         itemTransform.rect.position.y = cursor + (itemBox ? itemBox->margin.top : 0.0f);
-        cursor += itemTransform.rect.height + (itemBox ? itemBox->margin.top + itemBox->margin.bottom : 0.0f) + itemGap.gap;
+        cursor += itemTransform.rect.size.height + (itemBox ? itemBox->margin.top + itemBox->margin.bottom : 0.0f) + itemGap.gap;
     }
     else
     {
         itemTransform.rect.position.x = cursor + (itemBox ? itemBox->margin.left : 0.0f);
-        cursor += itemTransform.rect.width + (itemBox ? itemBox->margin.left + itemBox->margin.right : 0.0f) + itemGap.gap;
+        cursor += itemTransform.rect.size.width + (itemBox ? itemBox->margin.left + itemBox->margin.right : 0.0f) + itemGap.gap;
     }
 }
 
@@ -125,7 +125,7 @@ void UILayoutSystem::alignItemCross(Item item, AlignmentParams& params)
     auto& components = item.ctx.world.components();
     auto& itemTransform = components.get<UITransform>(item.entity);
 
-    float itemCrossSize = params.isColumn ? itemTransform.rect.width : itemTransform.rect.height;
+    float itemCrossSize = params.isColumn ? itemTransform.rect.size.width : itemTransform.rect.size.height;
     
     BoxModel* itemBox = components.has<BoxModel>(item.entity) ? &components.get<BoxModel>(item.entity) : nullptr;
     float marginStart = itemBox ? (params.isColumn ? itemBox->margin.left : itemBox->margin.top) : 0.0f;
@@ -154,8 +154,8 @@ void UILayoutSystem::layoutContainer(Item item)
     bool isColumn = flex.direction == Dir::Column || flex.direction == Dir::ColumnReverse;
     bool isReverse = flex.direction == Dir::RowReverse || flex.direction == Dir::ColumnReverse;
 
-    float mainSize = isColumn ? innerRect.height : innerRect.width;
-    float crossSize = isColumn ? innerRect.width : innerRect.height;
+    float mainSize = isColumn ? innerRect.size.height : innerRect.size.width;
+    float crossSize = isColumn ? innerRect.size.width : innerRect.size.height;
 
     ItemGap itemGap { flex.gap, isColumn };
     float freeSpace = this->calculateFreeSpace(item, itemGap, mainSize);

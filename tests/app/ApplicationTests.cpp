@@ -31,11 +31,8 @@ public:
         void create(int w, int h, const char* t) override
         { this->width = w; this->height = h; this->title = t; }
 
-        void getSize(int& w, int& h) override
-        { w = this->width; h = this->height; }
-
-        void setResolution(int w, int h) override
-        { this->width = w; this->height = h; }
+        void getSize(int& w, int& h) override { w = this->width; h = this->height; }
+        void setResolution(int w, int h) override { this->width = w; this->height = h; }
 
         void setFullscreen(bool) override {}
     };
@@ -46,12 +43,10 @@ public:
         void clear() override {}
         void present() override {}
 
-        void drawTexture(const Texture&, const Renderer::DrawTextureParams&) override {}
-        void drawText(const Font&, const Renderer::DrawTextParams&) override {}
-        void drawRectOutline(const Rectangle&, const Color&) override {}
-        void drawRectFilled(const Rectangle&, const Color&) override {}
-        void drawCircleOutline(const Circle&, const Color&) override {}
-        void drawCircleFilled(const Circle&, const Color&) override {}
+        void drawTexture(const DrawTextureCommand&) override {}
+        void drawFont(const DrawFontCommand&) override {}
+        void drawCircle(const DrawCircleCommand&) override {}
+        void drawRectangle(const DrawRectangleCommand&) override {}
         void setViewport(const Viewport&) override {}
     };
 

@@ -41,37 +41,38 @@ void DynamicPushboxResolutionSystem::resolveDynamicCollision(UpdateContext& ctx,
     auto handlerB = CollisionHandlerFactory::createForEntity(ctx, {b, std::nullopt});
     if (!handlerA || !handlerB) return;
 
-    AABB aabbA = handlerA->getAABB(ctx, {a, std::nullopt});
-    AABB aabbB = handlerB->getAABB(ctx, {b, std::nullopt});
+    AABB boundsA = handlerA->getAABB(ctx, {a, std::nullopt});
+    AABB boundsB = handlerB->getAABB(ctx, {b, std::nullopt});
+    AABB overlap
+    {
+        boundsA.right - boundsB.left, boundsB.right - boundsA.left,
+        boundsA.bottom - boundsB.top, boundsB.bottom - boundsA.top
+    };
 
-    float overlapRight = aabbA.right - aabbB.left;
-    float overlapLeft = aabbB.right - aabbA.left;
-    float overlapBottom = aabbA.bottom - aabbB.top;
-    float overlapTop  = aabbB.bottom - aabbA.top;
-
-    float minOverlapX = std::min(overlapRight, overlapLeft);
-    float minOverlapY = std::min(overlapBottom, overlapTop);
-
+    Position minOverlap{ std::min(overlap.right, overlap.left), std::min(overlap.bottom, overlap.top) };
     TransformComponent& transA = handlerA->getTransform(ctx, {a, std::nullopt});
     TransformComponent& transB = handlerB->getTransform(ctx, {b, std::nullopt});
     auto& comp = ctx.world.components();
 
-    if (minOverlapX < minOverlapY)
+    const Position centerA{ (boundsA.left + boundsA.right) * 0.5f, (boundsA.top + boundsA.bottom) * 0.5f };
+    const Position centerB{ (boundsB.left + boundsB.right) * 0.5f, (boundsB.top + boundsB.bottom) * 0.5f };
+
+    if (minOverlap.x < minOverlap.y)
     {
-        float half = minOverlapX * 0.5f;
-        if (overlapRight < overlapLeft) { transA.x -= half; transB.x += half; }
+        float half = minOverlap.x * 0.5f;
+        if (centerA.x < centerB.x) { transA.x -= half; transB.x += half; }
         else { transA.x += half; transB.x -= half; }
 
-        if (comp.has<VelocityComponent>(a)) comp.get<VelocityComponent>(a).vx = 0.0f;
-        if (comp.has<VelocityComponent>(b)) comp.get<VelocityComponent>(b).vx = 0.0f;
+        if (comp.has<VelocityComponent>(a)) comp.get<VelocityComponent>(a).vx = 0.f;
+        if (comp.has<VelocityComponent>(b)) comp.get<VelocityComponent>(b).vx = 0.f;
     }
     else
     {
-        float half = minOverlapY * 0.5f;
-        if (overlapBottom < overlapTop) { transA.y -= half; transB.y += half; }
+        float half = minOverlap.y * 0.5f;
+        if (centerA.y < centerB.y) { transA.y -= half; transB.y += half; }
         else { transA.y += half; transB.y -= half; }
 
-        if (comp.has<VelocityComponent>(a)) comp.get<VelocityComponent>(a).vy = 0.0f;
-        if (comp.has<VelocityComponent>(b)) comp.get<VelocityComponent>(b).vy = 0.0f;
+        if (comp.has<VelocityComponent>(a)) comp.get<VelocityComponent>(a).vy = 0.f;
+        if (comp.has<VelocityComponent>(b)) comp.get<VelocityComponent>(b).vy = 0.f;
     }
 }

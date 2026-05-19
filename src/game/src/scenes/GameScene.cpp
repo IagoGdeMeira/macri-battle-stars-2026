@@ -16,7 +16,6 @@
 #include "../../include/GroundDetectionSystem/GroundDetectionSystem.h"
 #include "../../include/LocalToWorldSystem/LocalToWorldSystem.h"
 #include "../../include/PlayerControlSystem/PlayerControlSystem.h"
-#include "../../include/RenderSystem/RenderSystem.h"
 #include "../../include/StateSystem/StateSystem.h"
 #include "../../include/StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
 #include "../../include/TriggerGenerationSystem/TriggerGenerationSystem.h"
@@ -99,7 +98,7 @@ GameScene::GameScene(Config&& config) :
     auto& cam = this->camera;
     systems.addSystem<CameraControllerSystem>(cam, this->window);
 
-    this->renderSystem = std::make_unique<RenderSystem>(events, this->renderer, cam);
+    this->worldDrawer = std::make_unique<WorldDrawer>(events, this->renderer, cam);
 }
 
 void GameScene::init() { this->prepareScene(); }
@@ -107,7 +106,7 @@ void GameScene::init() { this->prepareScene(); }
 void GameScene::render()
 {
     RenderContext ctx { this->world(), this->eventBus };
-    this->renderSystem->draw(ctx);
+    this->worldDrawer->draw(ctx);
 }
 
 void GameScene::prepareScene()
@@ -143,11 +142,11 @@ void GameScene::prepareWalls()
 
         auto wallTransform = TransformComponent
         {
-            wall.position.x + wall.width * 0.5f,
-            wall.position.y + wall.height * 0.5f
+            wall.position.x + wall.size.width * 0.5f,
+            wall.position.y + wall.size.height * 0.5f
         };
         components.add<TransformComponent>(w, wallTransform);
-        components.add<RectangleColliderComponent>(w, RectangleColliderComponent{wall.width, wall.height});
+        components.add<RectangleColliderComponent>(w, RectangleColliderComponent{wall.size.width, wall.size.height});
     }
 }
 
@@ -181,7 +180,7 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     if (components.has<SpriteComponent>(entity))
     {
         const auto& sprite = components.get<SpriteComponent>(entity);
-        transform.y = this->mapData.floorY - (sprite.height * 0.5f);
+        transform.y = this->mapData.floorY - (sprite.size.height * 0.5f);
     }
     else transform.y = this->mapData.floorY - 32.0f;
     

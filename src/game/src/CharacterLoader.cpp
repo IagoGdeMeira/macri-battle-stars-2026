@@ -32,8 +32,10 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 
     SpriteComponent sprite;
     sprite.texture = texture;
-    sprite.width = def.spriteWidth;
-    sprite.height = def.spriteHeight;
+    sprite.size.width = static_cast<float>(def.spriteWidth);
+    sprite.size.height = static_cast<float>(def.spriteHeight);
+    sprite.source.position = { 0.f, 0.f };
+    sprite.source.size = sprite.size;
     sprite.useSourceRect = false;
     components.add<SpriteComponent>(entity, std::move(sprite));
 

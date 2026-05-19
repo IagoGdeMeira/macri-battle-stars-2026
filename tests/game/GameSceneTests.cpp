@@ -159,26 +159,12 @@ public:
         void clear() override {}
         void present() override {}
 
-        void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
-        { (void)texture; (void)params; }
+        void drawTexture(const DrawTextureCommand& cmd) override { (void)cmd; }
+        void drawFont(const DrawFontCommand& cmd) override { (void)cmd; }
+        void drawCircle(const DrawCircleCommand& cmd) override { (void)cmd; }
+        void drawRectangle(const DrawRectangleCommand& cmd) override { (void)cmd; }
 
-        void drawText(const Font& font, const Renderer::DrawTextParams& params) override
-        { (void)font; (void)params; }
-
-        void drawRectOutline(const Rectangle& rect, const Color& color) override
-        { (void)rect; (void)color; }
-
-        void drawRectFilled(const Rectangle& rect, const Color& color) override
-        { (void)rect; (void)color; }
-
-        void drawCircleOutline(const Circle& circle, const Color& color) override
-        { (void)circle; (void)color; }
-
-        void drawCircleFilled(const Circle& circle, const Color& color) override
-        { (void)circle; (void)color; }
-
-        void setViewport(const Viewport& viewport) override
-        { (void)viewport; }
+        void setViewport(const Viewport& viewport) override { (void)viewport; }
     };
 
     class StubFactory : public ITextureFactory

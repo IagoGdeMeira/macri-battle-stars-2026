@@ -55,7 +55,7 @@ std::unique_ptr<ColliderDef> CollisionClipLoader::parseCollider(const DataNode& 
     {
         auto circle = std::make_unique<CircleDef>();
         circle->radius = node.getFloat("radius");
-        this->parseOffset(circle->offsetX, circle->offsetY, node);
+        this->parseOffset(circle->offset, node);
         return circle;
     } 
     else if (node.has("width") && node.has("height"))
@@ -63,7 +63,7 @@ std::unique_ptr<ColliderDef> CollisionClipLoader::parseCollider(const DataNode& 
         auto rect = std::make_unique<RectangleDef>();
         rect->width = node.getFloat("width");
         rect->height = node.getFloat("height");
-        this->parseOffset(rect->offsetX, rect->offsetY, node);
+        this->parseOffset(rect->offset, node);
         return rect;
     } 
     else throw std::runtime_error("Collider must have either 'radius' or 'width'/'height'");
@@ -97,8 +97,13 @@ PushboxDef CollisionClipLoader::parsePushbox(const DataNode& node) const
     return def;
 }
 
-void CollisionClipLoader::parseOffset(float& offsetX, float& offsetY, const DataNode& node) const
+void CollisionClipLoader::parseOffset(Position& offset, const DataNode& node) const
 {
-    offsetX = node.getFloat("offsetX", 0.0f);
-    offsetY = node.getFloat("offsetY", 0.0f);
+    if (!node.has("offset")) return;
+
+    auto offsetNode = node.getObject("offset");
+    if (!offsetNode) throw std::runtime_error("'offset' must be an object with keys 'x' and 'y'");
+
+    offset.x = offsetNode->getFloat("x", 0.0f);
+    offset.y = offsetNode->getFloat("y", 0.0f);
 }

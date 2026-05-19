@@ -16,18 +16,15 @@ public:
     AABB getAABB(UpdateContext& ctx, EntityParams params) const override
     {
         auto& comp = ctx.world.components();
-        const TransformComponent* transform = this->getTransformComponent(
-            comp, { params.preferred, params.fallback });
-        const RectangleColliderComponent* rect = this->getRectComponent(
-            comp, { params.preferred, params.fallback });
+        
+        const TransformComponent* transform = this->getTransformComponent(comp, { params.preferred, params.fallback });
+        const RectangleColliderComponent* rect = this->getRectComponent(comp, { params.preferred, params.fallback });
+        
         return this->buildAABB(*transform, *rect);
     }
 
     TransformComponent& getTransform(UpdateContext& ctx, EntityParams params) const override
-    {
-        auto& comp = ctx.world.components();
-        return *this->getTransformComponent(comp, {params.preferred, params.fallback});
-    }
+    { return *this->getTransformComponent(ctx.world.components(), {params.preferred, params.fallback}); }
 
 private:
     TransformComponent* getTransformComponent(ComponentManager& comp, EntityParams params) const
@@ -54,7 +51,7 @@ private:
 
     AABB buildAABB(const TransformComponent& t, const RectangleColliderComponent& r) const
     {
-        float halfW = r.width * 0.5f, halfH = r.height * 0.5f;
+        float halfW = r.size.width * 0.5f, halfH = r.size.height * 0.5f;
         return AABB { t.x - halfW, t.x + halfW,  t.y - halfH, t.y + halfH };
     }
 };

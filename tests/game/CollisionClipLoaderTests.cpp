@@ -38,13 +38,16 @@ public:
             this->arrays[key] = std::move(converted);
         }
 
+        void setObject(const std::string& key, const Node& value) { this->objects[key] = value; }
+
         bool has(const std::string& key) const override
         {
             return this->strings.contains(key)
                 || this->ints.contains(key)
                 || this->floats.contains(key)
                 || this->bools.contains(key)
-                || this->arrays.contains(key);
+                || this->arrays.contains(key)
+                || this->objects.contains(key);
         }
 
         std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
@@ -89,12 +92,20 @@ public:
             return out;
         }
 
+        std::unique_ptr<DataNode> getObject(const std::string& key) const override
+        {
+            const auto it = this->objects.find(key);
+            if (it == this->objects.end()) throw std::runtime_error("Missing object key: " + key);
+            return std::make_unique<Node>(it->second);
+        }
+
     private:
         std::unordered_map<std::string, std::string> strings;
         std::unordered_map<std::string, int> ints;
         std::unordered_map<std::string, float> floats;
         std::unordered_map<std::string, bool> bools;
         std::unordered_map<std::string, std::vector<Node>> arrays;
+        std::unordered_map<std::string, Node> objects;
     };
 
     class Parser : public DataParser
@@ -122,15 +133,23 @@ public:
     {
         auto hitbox = std::make_unique<Node>();
         hitbox->setFloat("radius", 18.0f);
-        hitbox->setFloat("offsetX", 3.0f);
-        hitbox->setFloat("offsetY", -2.0f);
+        {
+            Node off;
+            off.setFloat("x", 3.0f);
+            off.setFloat("y", -2.0f);
+            hitbox->setObject("offset", off);
+        }
         hitbox->setInt("damage", 25);
 
         auto hurtbox = std::make_unique<Node>();
         hurtbox->setFloat("width", 36.0f);
         hurtbox->setFloat("height", 22.0f);
-        hurtbox->setFloat("offsetX", -1.0f);
-        hurtbox->setFloat("offsetY", 4.0f);
+        {
+            Node off;
+            off.setFloat("x", -1.0f);
+            off.setFloat("y", 4.0f);
+            hurtbox->setObject("offset", off);
+        }
         hurtbox->setFloat("damageMultiplier", 1.5f);
 
         auto frameA = std::make_unique<Node>();
@@ -193,8 +212,8 @@ TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader parses clips, 
     auto* circle = dynamic_cast<CircleDef*>(hitbox.collider.get());
     REQUIRE(circle != nullptr);
     REQUIRE(circle->radius == 18.0f);
-    REQUIRE(circle->offsetX == 3.0f);
-    REQUIRE(circle->offsetY == -2.0f);
+    REQUIRE(circle->offset.x == 3.0f);
+    REQUIRE(circle->offset.y == -2.0f);
 
     const auto& hurtbox = idle.frames[0].hurtboxes[0];
     REQUIRE(hurtbox.damageMultiplier == 1.5f);
@@ -205,8 +224,8 @@ TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader parses clips, 
     REQUIRE(rect != nullptr);
     REQUIRE(rect->width == 36.0f);
     REQUIRE(rect->height == 22.0f);
-    REQUIRE(rect->offsetX == -1.0f);
-    REQUIRE(rect->offsetY == 4.0f);
+    REQUIRE(rect->offset.x == -1.0f);
+    REQUIRE(rect->offset.y == 4.0f);
 
     REQUIRE(idle.frames[1].duration == 0.08f);
     REQUIRE(idle.frames[1].hitboxes.empty());
@@ -259,13 +278,13 @@ TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader applies defaul
 
     auto* loadedCircle = dynamic_cast<CircleDef*>(loadedFrame.hitboxes[0].collider.get());
     REQUIRE(loadedCircle != nullptr);
-    REQUIRE(loadedCircle->offsetX == 0.0f);
-    REQUIRE(loadedCircle->offsetY == 0.0f);
+    REQUIRE(loadedCircle->offset.x == 0.0f);
+    REQUIRE(loadedCircle->offset.y == 0.0f);
 
     auto* loadedRect = dynamic_cast<RectangleDef*>(loadedFrame.hurtboxes[0].collider.get());
     REQUIRE(loadedRect != nullptr);
-    REQUIRE(loadedRect->offsetX == 0.0f);
-    REQUIRE(loadedRect->offsetY == 0.0f);
+    REQUIRE(loadedRect->offset.x == 0.0f);
+    REQUIRE(loadedRect->offset.y == 0.0f);
 }
 
 TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader rejects unknown state names",
@@ -384,8 +403,12 @@ TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader parses pushbox
 ) {
     auto pushbox = std::make_unique<Node>();
     pushbox->setFloat("radius", 12.0f);
-    pushbox->setFloat("offsetX", 2.0f);
-    pushbox->setFloat("offsetY", -1.0f);
+    {
+        Node off;
+        off.setFloat("x", 2.0f);
+        off.setFloat("y", -1.0f);
+        pushbox->setObject("offset", off);
+    }
     pushbox->setFloat("mass", 0.5f);
     pushbox->setFloat("pushResistance", 2.0f);
     pushbox->setString("type", "Static");
@@ -431,8 +454,8 @@ TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader parses pushbox
     auto* circle = dynamic_cast<CircleDef*>(pb.collider.get());
     REQUIRE(circle != nullptr);
     REQUIRE(circle->radius == 12.0f);
-    REQUIRE(circle->offsetX == 2.0f);
-    REQUIRE(circle->offsetY == -1.0f);
+    REQUIRE(circle->offset.x == 2.0f);
+    REQUIRE(circle->offset.y == -1.0f);
 }
 
 TEST_CASE_METHOD(CollisionClipLoaderFixture, "CollisionClipLoader parses dynamic pushboxes by default",

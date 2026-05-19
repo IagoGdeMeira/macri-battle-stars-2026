@@ -39,7 +39,7 @@ Entity EntityFactory::addStaticCollider(Entity parent, const Rectangle& rect)
 
     comp.add<ParentComponent>(collider, ParentComponent{parent});
     comp.add<LocalTransform>(collider, LocalTransform{rect.position.x, rect.position.y});
-    comp.add<RectangleColliderComponent>(collider, RectangleColliderComponent{rect.width, rect.height});
+    comp.add<RectangleColliderComponent>(collider, RectangleColliderComponent{rect.size.width, rect.size.height});
     comp.add<PushboxComponent>(collider, PushboxComponent{PushboxComponent::PushboxType::Static});
 
     ColliderDebugDef staticDebug;
@@ -47,8 +47,8 @@ Entity EntityFactory::addStaticCollider(Entity parent, const Rectangle& rect)
     staticDebug.enabled = true;
     
     RectangleDef rectDef;
-    rectDef.width = rect.width;
-    rectDef.height = rect.height;
+    rectDef.width = rect.size.width;
+    rectDef.height = rect.size.height;
     this->addDebugVisual(collider, rectDef, staticDebug);
 
     return collider;
@@ -84,8 +84,8 @@ Entity EntityFactory::createBackgroundLayer(const BackgroundLayer& layer)
 
     SpriteComponent sprite;
     sprite.texture = texture;
-    sprite.width = texture->getWidth();
-    sprite.height = texture->getHeight();
+    sprite.size.width = texture->getWidth();
+    sprite.size.height = texture->getHeight();
     sprite.useSourceRect = false;
     comp.add<SpriteComponent>(e, std::move(sprite));
 
@@ -134,9 +134,9 @@ Entity EntityFactory::createHitbox(Entity parent, const HitboxDef& def, bool fac
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalOffsetX = facingLeft ? -def.collider->offsetX : def.collider->offsetX;
+    float finalOffsetX = facingLeft ? -def.collider->offset.x : def.collider->offset.x;
     comp.add<ParentComponent>(e, ParentComponent{parent});
-    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offsetY});
+    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offset.y});
     this->addColliderComponents(e, *def.collider);
     comp.add<HitboxComponent>(e, HitboxComponent{def.damage});
     this->addDebugVisual(e, *def.collider, def.debug);
@@ -148,9 +148,9 @@ Entity EntityFactory::createHurtbox(Entity parent, const HurtboxDef& def, bool f
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalOffsetX = facingLeft ? -def.collider->offsetX : def.collider->offsetX;
+    float finalOffsetX = facingLeft ? -def.collider->offset.x : def.collider->offset.x;
     comp.add<ParentComponent>(e, ParentComponent{parent});
-    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offsetY});
+    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offset.y});
     this->addColliderComponents(e, *def.collider);
     comp.add<HurtboxComponent>(e, HurtboxComponent{def.damageMultiplier});
     this->addDebugVisual(e, *def.collider, def.debug);
@@ -163,9 +163,9 @@ Entity EntityFactory::createPushbox(Entity parent, const PushboxDef& def, bool f
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalOffsetX = facingLeft ? -def.collider->offsetX : def.collider->offsetX;
+    float finalOffsetX = facingLeft ? -def.collider->offset.x : def.collider->offset.x;
     comp.add<ParentComponent>(e, ParentComponent{parent});
-    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offsetY});
+    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offset.y});
     this->addColliderComponents(e, *def.collider);
     comp.add<PushboxComponent>(e, PushboxComponent{def.type, def.mass, def.pushResistance});
     this->addDebugVisual(e, *def.collider, def.debug);
@@ -183,8 +183,8 @@ Entity EntityFactory::createSpriteEffect(const std::string& texturePath, const P
 
     SpriteComponent sprite;
     sprite.texture = texture;
-    sprite.width = texture->getWidth();
-    sprite.height = texture->getHeight();
+    sprite.size.width = texture->getWidth();
+    sprite.size.height = texture->getHeight();
     comp.add<SpriteComponent>(e, std::move(sprite));
 
     comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});

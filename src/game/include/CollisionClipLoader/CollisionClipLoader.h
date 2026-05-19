@@ -2,6 +2,7 @@
 #define collision_clip_loader_h
 
 #include "../../../domain/include/CollisionFrame/CollisionFrame.h"
+#include "../../../domain/include/Geometry/Geometry.h"
 #include "../../../domain/include/StateId/StateId.h"
 
 #include "../../../engine/include/DataParser/DataParser.h"
@@ -29,7 +30,7 @@ private:
     HurtboxDef parseHurtbox(const DataNode& node) const;
     PushboxDef parsePushbox(const DataNode& node) const;
 
-    void parseOffset(float& offsetX, float& offsetY, const DataNode& node) const;
+    void parseOffset(Position& offset, const DataNode& node) const;
 };
 
 #endif // collision_clip_loader_h

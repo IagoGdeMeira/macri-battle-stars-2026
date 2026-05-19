@@ -27,8 +27,7 @@ void StaticPushboxResolutionSystem::update(UpdateContext& ctx)
         auto& pushA = comp.get<PushboxComponent>(a);
         auto& pushB = comp.get<PushboxComponent>(b);
 
-        if (
-            pushA.type == PushboxComponent::PushboxType::Dynamic &&
+        if (pushA.type == PushboxComponent::PushboxType::Dynamic &&
             pushB.type == PushboxComponent::PushboxType::Static)
         { this->resolveStaticCollision(ctx, a, b); }
         else if (
@@ -46,42 +45,47 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
     auto staHandler = CollisionHandlerFactory::createForEntity(ctx, {sta, std::nullopt});
     if (!dynHandler || !staHandler) return;
 
-    AABB dynAabb = dynHandler->getAABB(ctx, {dyn, std::nullopt});
-    AABB staAabb = staHandler->getAABB(ctx, {sta, std::nullopt});
+    AABB dynAABB = dynHandler->getAABB(ctx, {dyn, std::nullopt});
+    AABB staAABB = staHandler->getAABB(ctx, {sta, std::nullopt});
+    AABB overlap
+    {
+        dynAABB.right - staAABB.left, staAABB.right - dynAABB.left,
+        dynAABB.bottom - staAABB.top, staAABB.bottom - dynAABB.top
+    };
 
-    float overlapRight = dynAabb.right - staAabb.left;
-    float overlapLeft = staAabb.right - dynAabb.left;
-    float overlapBottom = dynAabb.bottom - staAabb.top;
-    float overlapTop = staAabb.bottom - dynAabb.top;
-
-    float minOverlapX = std::min(overlapRight, overlapLeft);
-    float minOverlapY = std::min(overlapBottom, overlapTop);
+    Position minOverlap{ std::min(overlap.right, overlap.left), std::min(overlap.bottom, overlap.top) };
 
     TransformComponent& dynTrans = dynHandler->getTransform(ctx, {dyn, std::nullopt});
+
+    const Position dynCenter{ (dynAABB.left + dynAABB.right) * 0.5f, (dynAABB.top + dynAABB.bottom) * 0.5f };
+    const Position staCenter{ (staAABB.left + staAABB.right) * 0.5f, (staAABB.top + staAABB.bottom) * 0.5f };
+
     auto& comp = ctx.world.components();
 
-    if (minOverlapX < minOverlapY)
+    if (minOverlap.x < minOverlap.y)
     {
-        if (overlapRight < overlapLeft) dynTrans.x -= overlapRight;
-        else dynTrans.x += overlapLeft;
+        float sep = minOverlap.x;
+        if (dynCenter.x < staCenter.x) dynTrans.x -= sep;
+        else dynTrans.x += sep;
 
-        if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).vx = 0.0f;
+        if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).vx = 0.f;
     }
     else
     {
-        if (overlapBottom < overlapTop)
+        float sep = minOverlap.y;
+        if (dynCenter.y < staCenter.y)
         {
-            dynTrans.y -= overlapBottom;
+            dynTrans.y -= sep;
             if (comp.has<VelocityComponent>(dyn))
             {
                 auto& vel = comp.get<VelocityComponent>(dyn);
-                if (vel.vy > 0.0f) vel.vy = 0.0f;
+                if (vel.vy > 0.f) vel.vy = 0.f;
             }
         }
         else
         {
-            dynTrans.y += overlapTop;
-            if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).vy = 0.0f;
+            dynTrans.y += sep;
+            if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).vy = 0.f;
         }
     }
 }

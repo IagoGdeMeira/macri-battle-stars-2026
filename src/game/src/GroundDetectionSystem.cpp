@@ -42,9 +42,8 @@ bool GroundDetectionSystem::isStaticPushbox(UpdateContext& ctx, Entity entity) c
     return components.get<PushboxComponent>(entity).type == PushboxComponent::PushboxType::Static;
 }
 
-void GroundDetectionSystem::processGroundCollision(
-    UpdateContext& ctx, Entity staticEntity, Entity dynamicCollider
-) {
+void GroundDetectionSystem::processGroundCollision(UpdateContext& ctx, Entity staticEntity, Entity dynamicCollider)
+{
     std::optional<Entity> owner = this->getGroundedOwner(ctx, dynamicCollider);
     if (!owner.has_value()) return;
 
@@ -54,9 +53,8 @@ void GroundDetectionSystem::processGroundCollision(
     components.get<GroundedComponent>(*owner).onGround = true;
 }
 
-bool GroundDetectionSystem::isStandingOnGround(
-    UpdateContext& ctx, Entity dynamicCollider, Entity staticEntity, Entity owner
-) const {
+bool GroundDetectionSystem::isStandingOnGround(UpdateContext& ctx, Entity dynamicCollider, Entity staticEntity, Entity owner) const
+{
     auto dynHandler = CollisionHandlerFactory::createForEntity(ctx, {dynamicCollider, std::nullopt});
     auto staHandler = CollisionHandlerFactory::createForEntity(ctx, {staticEntity, std::nullopt});
     if (!dynHandler || !staHandler) return false;
@@ -75,9 +73,8 @@ bool GroundDetectionSystem::isStandingOnGround(
     return minOverlapY < minOverlapX && overlapBottom < overlapTop;
 }
 
-std::optional<Entity> GroundDetectionSystem::getGroundedOwner(
-    UpdateContext& ctx, Entity colliderEntity
-) const {
+std::optional<Entity> GroundDetectionSystem::getGroundedOwner(UpdateContext& ctx, Entity colliderEntity) const
+{
     auto& components = ctx.world.components();
     if (components.has<GroundedComponent>(colliderEntity)) return colliderEntity;
 

@@ -11,7 +11,7 @@ SDLFont::SDLFont(const std::string& path) : path(path)
     this->sizeCache[24] = this->baseFont;
 }
 
-SDLFont::~SDLFont() { for (auto& [_, font] : this->sizeCache) TTF_CloseFont(font); }
+SDLFont::~SDLFont() { if (TTF_WasInit()) for (auto& [_, font] : this->sizeCache) TTF_CloseFont(font); }
 
 TTF_Font* SDLFont::getFontWithSize(int size) const
 {

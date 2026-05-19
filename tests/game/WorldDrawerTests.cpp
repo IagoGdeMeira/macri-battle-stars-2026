@@ -79,53 +79,40 @@ protected:
         void clear() override { this->clearCalls++; }
         void present() override { this->presentCalls++; }
 
-        void drawTexture(const Texture& texture, const Renderer::DrawTextureParams& params) override
+        void drawTexture(const DrawTextureCommand& cmd) override
         {
-            (void)texture;
+            (void)cmd;
             this->drawTextureCalls++;
-            this->lastDrawX = static_cast<int>(params.dest.position.x);
-            this->lastDrawY = static_cast<int>(params.dest.position.y);
-            this->lastDrawWidth = static_cast<int>(params.dest.width);
-            this->lastDrawHeight = static_cast<int>(params.dest.height);
-            this->lastDrawRotation = params.rotation;
-            this->lastDrawFlipX = params.flipX;
-            this->lastDrawFlipY = params.flipY;
-            this->lastSrcX = static_cast<int>(params.source.position.x);
-            this->lastSrcY = static_cast<int>(params.source.position.y);
-            this->lastSrcWidth = static_cast<int>(params.source.width);
-            this->lastSrcHeight = static_cast<int>(params.source.height);
-            this->lastUseSourceRect = params.useSourceRect;
+            this->lastDrawX = static_cast<int>(cmd.dest.position.x);
+            this->lastDrawY = static_cast<int>(cmd.dest.position.y);
+            this->lastDrawWidth = static_cast<int>(cmd.dest.size.width);
+            this->lastDrawHeight = static_cast<int>(cmd.dest.size.height);
+            this->lastDrawRotation = cmd.rotation;
+            this->lastDrawFlipX = cmd.flipX;
+            this->lastDrawFlipY = cmd.flipY;
+            this->lastSrcX = static_cast<int>(cmd.source.position.x);
+            this->lastSrcY = static_cast<int>(cmd.source.position.y);
+            this->lastSrcWidth = static_cast<int>(cmd.source.size.width);
+            this->lastSrcHeight = static_cast<int>(cmd.source.size.height);
+            this->lastUseSourceRect = cmd.useSourceRect;
         }
 
-        void drawText(const Font& font, const Renderer::DrawTextParams& params) override
-        { (void)font; (void)params; }
+        void drawFont(const DrawFontCommand& cmd) override { (void)cmd; }
 
-        void drawRectOutline(const Rectangle& rect, const Color& color) override
+        void drawRectangle(const DrawRectangleCommand& cmd) override
         {
-            this->drawRectOutlineCalls++;
-            this->lastRect = rect;
-            this->lastColor = color;
+            if (cmd.filled) this->drawRectFilledCalls++;
+            else this->drawRectOutlineCalls++;
+            this->lastRect = cmd.rect;
+            this->lastColor = cmd.color;
         }
 
-        void drawRectFilled(const Rectangle& rect, const Color& color) override
+        void drawCircle(const DrawCircleCommand& cmd) override
         {
-            this->drawRectFilledCalls++;
-            this->lastRect = rect;
-            this->lastColor = color;
-        }
-
-        void drawCircleOutline(const Circle& circle, const Color& color) override
-        {
-            this->drawCircleOutlineCalls++;
-            this->lastCircle = circle;
-            this->lastColor = color;
-        }
-
-        void drawCircleFilled(const Circle& circle, const Color& color) override
-        {
-            this->drawCircleFilledCalls++;
-            this->lastCircle = circle;
-            this->lastColor = color;
+            if (cmd.filled) this->drawCircleFilledCalls++;
+            else this->drawCircleOutlineCalls++;
+            this->lastCircle = cmd.circle;
+            this->lastColor = cmd.color;
         }
 
         void setViewport(const Viewport& viewport) override
@@ -147,30 +134,30 @@ protected:
     RenderContext context;
 };
 
-TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem configures viewports on draw",
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer configures viewports on draw",
     "[unit][world_drawer]"
 ) {
     this->drawer.draw(this->context);
 
-    REQUIRE(this->renderer.viewportCalls == 2);
+    REQUIRE(this->renderer.viewportCalls == 1);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem updates viewport on window resize",
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer updates viewport on window resize",
     "[unit][world_drawer]"
 ) {
     this->bus.emit<WindowResizedEvent>(WindowResizedEvent { 1920, 1080 });
 
     this->drawer.draw(this->context);
 
-    REQUIRE(this->renderer.viewportCalls == 2);
-    REQUIRE(this->renderer.viewportHistory.size() == 2);
+    REQUIRE(this->renderer.viewportCalls == 1);
+    REQUIRE(this->renderer.viewportHistory.size() == 1);
     REQUIRE(this->renderer.viewportHistory[0].x == 240);
     REQUIRE(this->renderer.viewportHistory[0].y == 0);
     REQUIRE(this->renderer.viewportHistory[0].width == 1440);
     REQUIRE(this->renderer.viewportHistory[0].height == 1080);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem draws sprite using transformed world coordinates",
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed world coordinates",
     "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
@@ -195,7 +182,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem draws sprite using transforme
     REQUIRE(this->renderer.lastDrawFlipY == false);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem forwards rotation and flip flags to renderer",
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip flags to renderer",
     "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
@@ -218,7 +205,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem forwards rotation and flip fl
     REQUIRE(this->renderer.lastDrawFlipY == true);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem forwards sprite source rect to renderer",
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards sprite source rect to renderer",
     "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
@@ -238,7 +225,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem forwards sprite source rect t
     REQUIRE(this->renderer.lastSrcHeight == 10);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem skips sprites without textures",
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer skips sprites without textures",
     "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
@@ -253,7 +240,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem skips sprites without texture
     REQUIRE(this->renderer.drawTextureCalls == 0);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem draws filled rectangle shapes",
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws filled rectangle shapes",
     "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
@@ -272,15 +259,15 @@ TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem draws filled rectangle shapes
     REQUIRE(this->renderer.drawRectOutlineCalls == 0);
     REQUIRE(this->renderer.lastRect.position.x == 398.0f);
     REQUIRE(this->renderer.lastRect.position.y == 308.0f);
-    REQUIRE(this->renderer.lastRect.width == 24.0f);
-    REQUIRE(this->renderer.lastRect.height == 24.0f);
+    REQUIRE(this->renderer.lastRect.size.width == 24.0f);
+    REQUIRE(this->renderer.lastRect.size.height == 24.0f);
     REQUIRE(this->renderer.lastColor.r == 1);
     REQUIRE(this->renderer.lastColor.g == 2);
     REQUIRE(this->renderer.lastColor.b == 3);
     REQUIRE(this->renderer.lastColor.a == 4);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "RenderSystem draws outlined circle shapes",
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes",
     "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();

@@ -8,8 +8,10 @@
 #include "../../engine/include/Drawer/Drawer.h"
 #include "../../engine/include/EventBus/EventBus.h"
 #include "../../engine/include/Renderer/Renderer.h"
-#include "../../engine/include/Texture/Texture.h"
 #include "../../engine/include/Viewport/Viewport.h"
+#include "../../engine/include/DrawBatch/DrawCircleBatch.h"
+#include "../../engine/include/DrawBatch/DrawRectangleBatch.h"
+#include "../../engine/include/DrawBatch/DrawTextureBatch.h"
 
 #include <cstddef>
 #include <vector>
@@ -20,31 +22,31 @@ class WorldDrawer : public Drawer
 {
 public:
     WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera);
-
-    void draw(RenderContext& ctx);
+    void draw(RenderContext& ctx) override;
 
 private:
     Renderer& renderer;
     Camera2D& camera;
 
-    int windowWidth = 800;
-    int windowHeight = 600;
-    static constexpr int VIRTUAL_WIDTH = 800;
-    static constexpr int VIRTUAL_HEIGHT = 600;
+    DrawCircleBatch circleBatch;
+    DrawRectangleBatch rectangleBatch;
+    DrawTextureBatch spriteBatch;
 
+    Dimension2D windowSize { 800.f, 600.f };
+    static constexpr Dimension2D VIRTUAL_SIZE { 800.f, 600.f };
+    
     Viewport worldViewport;
 
     void renderWorld(RenderContext& ctx);
     void renderShapes(RenderContext& ctx);
 
-    SpriteCommand buildSpriteCommand(Entity& entity, World& world, size_t order) const;
-    Position worldToScreen(Position worldPos, const Viewport& viewport, Position parallax = {1.0f, 1.0f}) const;
-    Position resolveParallax(World& world, Entity entity) const;
+    DrawCircleCommand buildCircleCommand(Entity& entity, World& world, size_t order) const;
+    DrawRectangleCommand buildRectangleCommand(Entity& entity, World& world, size_t order) const;
+    DrawTextureCommand buildTextureCommand(Entity& entity, World& world, size_t order) const;
 
-    void computeSpriteTransform(const Rectangle& spriteConfig, SpriteCommand& cmd) const;
-    void sortCommands(std::vector<SpriteCommand>& cmds) const;
-    void submitCommands(const std::vector<SpriteCommand>& cmds) const;
-    
+    Position worldToScreen(Position worldPos, const Viewport& viewport, Position parallax = {1.f, 1.f}) const;
+    Position resolveParallax(World& world, Entity entity) const;
+    void computeSpriteTransform(const Rectangle& spriteConfig, DrawTextureCommand& cmd) const;
     void updateViewports();
 };
 

@@ -1,6 +1,8 @@
 #ifndef collider_def_h
 #define collider_def_h
 
+#include "../../domain/include/Geometry/Geometry.h"
+
 #include <memory>
 
 class ColliderDef
@@ -10,27 +12,24 @@ public:
 
     virtual ~ColliderDef() = default;
 
-    float offsetX = 0.0f;
-    float offsetY = 0.0f;
+    Position offset { 0.f, 0.f };
 
     virtual ColliderType getType() const = 0;
-
     virtual std::unique_ptr<ColliderDef> clone() const = 0;
 };
 
 class RectangleDef : public ColliderDef
 {
 public:
-    float width = 0.0f;
-    float height = 0.0f;
+    float width = 0.f;
+    float height = 0.f;
 
     ColliderType getType() const override { return ColliderType::Rectangle; }
 
     std::unique_ptr<ColliderDef> clone() const override
     {
         auto copy = std::make_unique<RectangleDef>();
-        copy->offsetX = this->offsetX;
-        copy->offsetY = this->offsetY;
+        copy->offset = this->offset;
         copy->width = this->width;
         copy->height = this->height;
         return copy;
@@ -40,15 +39,14 @@ public:
 class CircleDef : public ColliderDef
 {
 public:
-    float radius = 0.0f;
+    float radius = 0.f;
 
     ColliderType getType() const override { return ColliderType::Circle; }
 
     std::unique_ptr<ColliderDef> clone() const override
     {
         auto copy = std::make_unique<CircleDef>();
-        copy->offsetX = this->offsetX;
-        copy->offsetY = this->offsetY;
+        copy->offset = this->offset;
         copy->radius = this->radius;
         return copy;
     }

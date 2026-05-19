@@ -23,6 +23,7 @@ public:
     virtual bool getBool(const std::string& key, const bool& fallback = defaultBoolFallback) const = 0;
     
     virtual std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const = 0;
+    virtual std::unique_ptr<DataNode> getObject(const std::string& key) const { (void)key; return nullptr; }
 };
 
 #endif // data_node_h

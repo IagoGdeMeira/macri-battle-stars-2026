@@ -7,7 +7,7 @@
 #include "../../include/EntityFactory/EntityFactory.h"
 #include "../../include/MapData/MapData.h"
 #include "../../include/TriggerContext/TriggerContext.h"
-#include "../../include/RenderSystem/RenderSystem.h"
+#include "../../include/WorldDrawer/WorldDrawer.h"
 
 #include "../../../engine/include/EventBus/EventBus.h"
 #include "../../../engine/include/InputContext/InputContext.h"
@@ -22,8 +22,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-class RenderSystem;
 
 class GameScene : public Scene
 {
@@ -72,7 +70,7 @@ private:
     ResourceManager& resourceManager;
     TextureLoader& textureLoader;
 
-    std::unique_ptr<RenderSystem> renderSystem;
+    std::unique_ptr<WorldDrawer> worldDrawer;
     std::unique_ptr<EntityFactory> entityFactory;
 };
 

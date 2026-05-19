@@ -20,6 +20,7 @@ public:
     bool getBool(const std::string& key, const bool& fallback = DataNode::defaultBoolFallback) const override;
 
     std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override;
+    std::unique_ptr<DataNode> getObject(const std::string& key) const override;
 
 private:
     json data;

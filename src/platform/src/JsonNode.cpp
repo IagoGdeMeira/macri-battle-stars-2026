@@ -58,10 +58,23 @@ std::vector<std::unique_ptr<DataNode>> JsonNode::getArray(const std::string& key
 {
     if (!this->data.contains(key)) throw std::runtime_error("Key not found: " + key);
 
+    const auto& node = this->data.at(key);
+    if (!node.is_array()) throw std::runtime_error("Key is not an array: " + key);
+
     std::vector<std::unique_ptr<DataNode>> result;
 
-    for (const auto& item : this->data.at(key))
+    for (const auto& item : node)
     { result.push_back(std::make_unique<JsonNode>(item)); }
 
     return result;
+}
+
+std::unique_ptr<DataNode> JsonNode::getObject(const std::string& key) const
+{
+    if (!this->data.contains(key)) return nullptr;
+
+    const auto& node = this->data.at(key);
+    if (!node.is_object()) return nullptr;
+
+    return std::make_unique<JsonNode>(node);
 }

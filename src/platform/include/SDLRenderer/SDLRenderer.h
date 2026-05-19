@@ -20,15 +20,18 @@ public:
 
     SDL_Renderer* get() const { return this->renderer; }
 
-    void drawTexture(const Texture& texture, const DrawTextureParams& params) override;
-    void drawText(const Font& font, const DrawTextParams& params) override;
-
-    void drawRectOutline(const Rectangle& rect, const Color& color) override;
-    void drawRectFilled(const Rectangle& rect, const Color& color) override;
-    void drawCircleOutline(const Circle& circle, const Color& color) override;
-    void drawCircleFilled(const Circle& circle, const Color& color) override;
+    void drawTexture(const DrawTextureCommand& cmd) override;
+    void drawFont(const DrawFontCommand& cmd) override;
+    void drawRectangle(const DrawRectangleCommand& cmd) override;
+    void drawCircle(const DrawCircleCommand& cmd) override;
 
     void setViewport(const Viewport& viewport) override;
+
+private:
+    void drawRectOutline(const Rectangle& rect, const Color& color);
+    void drawRectFilled(const Rectangle& rect, const Color& color);
+    void drawCircleOutline(const Circle& circle, const Color& color);
+    void drawCircleFilled(const Circle& circle, const Color& color);
 
 private:
     SDL_Renderer* renderer = nullptr;
