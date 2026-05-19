@@ -29,8 +29,8 @@ TEST_CASE("SDLMouseAdapter emits button and motion events",
         std::vector<std::unique_ptr<PlatformEvent>> events;
         events.push_back(std::make_unique<MouseButtonEvent>(static_cast<uint32_t>(MouseButton::Left), true));
         events.push_back(std::make_unique<MouseButtonEvent>(static_cast<uint32_t>(MouseButton::Left), false));
-        events.push_back(std::make_unique<MouseMotionEvent>(150.0f, 0.0f));
-        events.push_back(std::make_unique<MouseMotionEvent>(-250.0f, 0.0f));
+        events.push_back(std::make_unique<MouseMotionEvent>(Position{150.0f, 0.0f}, Position{0.0f, 0.0f}));
+        events.push_back(std::make_unique<MouseMotionEvent>(Position{-250.0f, 0.0f}, Position{0.0f, 0.0f}));
 
         adapter.processEvents(events);
     }

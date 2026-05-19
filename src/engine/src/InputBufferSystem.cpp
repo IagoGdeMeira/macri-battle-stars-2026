@@ -37,6 +37,5 @@ void InputBufferSystem::update(UpdateContext& ctx)
             buffer.buffer.push_back({action, 0.0f});
         }
     }
-
     this->events.clear();
 }

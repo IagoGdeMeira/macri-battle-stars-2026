@@ -1,6 +1,7 @@
 #include "../include/SDLMouseAdapter/SDLMouseAdapter.h"
 
 #include "../../engine/events/InputEvent.h"
+#include "../../engine/events/MousePositionEvent.h"
 #include "../../engine/include/EventBus/EventBus.h"
 #include "../../engine/include/InputSource/InputSource.h"
 
@@ -22,12 +23,13 @@ void SDLMouseAdapter::processEvents(const std::vector<std::unique_ptr<PlatformEv
         }
         else if (const auto* motionEvent = dynamic_cast<const MouseMotionEvent*>(e.get()))
         {
-            float normalizedX = motionEvent->deltaX / 100.0f;
+            float normalizedX = motionEvent->delta.x / 100.0f;
             if (normalizedX > 1.0f) normalizedX = 1.0f;
             if (normalizedX < -1.0f) normalizedX = -1.0f;
 
             auto src = InputSource::mouse(MouseButton::Left);
             this->eventBus.emit<AnalogInputEvent>(src, this->playerId, normalizedX);
+            this->eventBus.emit<MousePositionEvent>(motionEvent->absolute);
         }
         
     }

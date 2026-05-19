@@ -20,6 +20,6 @@ private:
     InputContext& context;
     std::vector<DigitalInputEvent> events;
     float maxBufferTime = 0.5f;
-};;
+};
 
 #endif // input_buffer_system_h

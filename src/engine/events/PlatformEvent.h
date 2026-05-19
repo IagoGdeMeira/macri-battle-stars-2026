@@ -1,6 +1,8 @@
 #ifndef platform_event_h
 #define platform_event_h
 
+#include "../../domain/include/Geometry/Geometry.h"
+
 #include <cstdint>
 
 class PlatformEvent
@@ -34,10 +36,10 @@ public:
 class MouseMotionEvent : public PlatformEvent
 {
 public:
-    float deltaX;
-    float deltaY;
+    Position delta {0.f, 0.f};
+    Position absolute {0.f, 0.f};
 
-    MouseMotionEvent(float dx, float dy) : deltaX(dx), deltaY(dy) {}
+    MouseMotionEvent(Position delta, Position absolute) : delta(delta), absolute(absolute) {}
     Type type() const override { return Type::Mouse; }
 };
 

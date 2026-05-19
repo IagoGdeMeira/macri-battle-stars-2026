@@ -2,6 +2,8 @@
 
 #include "../include/SDLKeyTranslator/SDLKeyTranslator.h"
 
+#include "../../domain/include/Geometry/Geometry.h"
+
 #include "../../engine/include/GamepadButton/GamepadButton.h"
 #include "../../engine/include/KeyCode/KeyCode.h"
 #include "../../engine/include/MouseButton/MouseButton.h"
@@ -38,8 +40,8 @@ std::vector<std::unique_ptr<PlatformEvent>> SDLPlatformEventProvider::pollEvents
             }
             case SDL_MOUSEMOTION:
                 events.push_back(std::make_unique<MouseMotionEvent>(
-                    static_cast<float>(sdlEvent.motion.xrel),
-                    static_cast<float>(sdlEvent.motion.yrel)));
+                    Position{static_cast<float>(sdlEvent.motion.xrel), static_cast<float>(sdlEvent.motion.yrel)},
+                    Position{static_cast<float>(sdlEvent.motion.x), static_cast<float>(sdlEvent.motion.y)}));
                 break;
             case SDL_JOYBUTTONDOWN:
             case SDL_JOYBUTTONUP:

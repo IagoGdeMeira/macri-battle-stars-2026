@@ -61,8 +61,8 @@ TEST_CASE("SDLPlatformEventProvider converts SDL events into platform events",
     REQUIRE(dynamic_cast<MouseButtonEvent*>(events[1].get())->button == static_cast<uint32_t>(MouseButton::Left));
 
     REQUIRE(events[2]->type() == PlatformEvent::Type::Mouse);
-    REQUIRE(dynamic_cast<MouseMotionEvent*>(events[2].get())->deltaX == Catch::Approx(150.0f).margin(0.01f));
-    REQUIRE(dynamic_cast<MouseMotionEvent*>(events[2].get())->deltaY == Catch::Approx(-25.0f).margin(0.01f));
+    REQUIRE(dynamic_cast<MouseMotionEvent*>(events[2].get())->delta.x == Catch::Approx(150.0f).margin(0.01f));
+    REQUIRE(dynamic_cast<MouseMotionEvent*>(events[2].get())->delta.y == Catch::Approx(-25.0f).margin(0.01f));
 
     REQUIRE(events[3]->type() == PlatformEvent::Type::Gamepad);
     REQUIRE(dynamic_cast<GamepadButtonEvent*>(events[3].get())->pressed == true);

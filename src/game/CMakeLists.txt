@@ -45,6 +45,8 @@ target_sources(game
         src/TriggerBindingLoader.cpp
         src/TriggerGenerationSystem.cpp
         src/TriggerMapper.cpp
+        src/UIDrawer.cpp
+        src/UIInputSystem.cpp
         src/UILayoutSystem.cpp
         src/WorldDrawer.cpp
 )

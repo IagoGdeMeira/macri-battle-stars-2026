@@ -8,14 +8,9 @@
 #include <stdexcept>
 
 SDLRenderer::SDLRenderer(SDL_Window* window)
-{
-    this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-}
+{ this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); }
 
-SDLRenderer::~SDLRenderer()
-{
-    if (this->renderer) SDL_DestroyRenderer(this->renderer);
-}
+SDLRenderer::~SDLRenderer() { if (this->renderer) SDL_DestroyRenderer(this->renderer); }
 
 void SDLRenderer::clear() { SDL_RenderClear(this->renderer); }
 
