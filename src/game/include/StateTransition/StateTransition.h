@@ -1,7 +1,7 @@
 #ifndef state_transition_h
 #define state_transition_h
 
-#include "../ICondition/ICondition.h"
+#include "../ITriggerCondition/ITriggerCondition.h"
 
 #include "../../domain/include/StateId/StateId.h"
 #include "../../domain/include/TriggerId/TriggerId.h"
@@ -16,7 +16,7 @@ struct StateTransition
 
     std::vector<TriggerId> triggers;
     
-    std::vector<std::unique_ptr<ICondition>> conditions;
+    std::vector<std::unique_ptr<ITriggerCondition>> conditions;
 
     int priority = 0;
 };

@@ -1,20 +1,20 @@
 #ifndef composite_condition_h
 #define composite_condition_h
 
-#include "../include/ICondition/ICondition.h"
+#include "../include/ITriggerCondition/ITriggerCondition.h"
 
 #include <memory>
 #include <vector>
 
-class CompositeCondition : public ICondition
+class CompositeCondition : public ITriggerCondition
 {
 public:
     enum CompositeType { And, Or };
 
-    CompositeCondition(CompositeType type, std::vector<std::unique_ptr<ICondition>> conditions) :
+    CompositeCondition(CompositeType type, std::vector<std::unique_ptr<ITriggerCondition>> conditions) :
         type(type), conditions(std::move(conditions)) {}
 
-    bool evaluate(const ConditionContext& ctx) const override
+    bool evaluate(const TriggerConditionContext& ctx) const override
     {
         switch (this->type)
         {
@@ -30,7 +30,7 @@ public:
 
 private:
     CompositeType type;
-    std::vector<std::unique_ptr<ICondition>> conditions;
+    std::vector<std::unique_ptr<ITriggerCondition>> conditions;
 };
 
 #endif // composite_condition_h

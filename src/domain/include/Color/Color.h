@@ -25,6 +25,7 @@ struct Color
     static constexpr Color RED() { return Color{255, 0, 0, 255}; }
     static constexpr Color GREEN() { return Color{0, 255, 0, 255}; }
     static constexpr Color BLUE() { return Color{0, 0, 255, 255}; }
+    static constexpr Color TRANSPARENT() { return Color{0, 0, 0, 0}; }
 };
 
 #endif // color_h

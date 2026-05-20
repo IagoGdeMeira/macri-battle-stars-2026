@@ -2,10 +2,9 @@
 
 #include "../include/SDLKeyTranslator/SDLKeyTranslator.h"
 
+#include "../../engine/events/InputEvent.h"
 #include "../../engine/include/EventBus/EventBus.h"
 #include "../../engine/include/InputContext/InputContext.h"
-#include "../../engine/events/InputEvent.h"
-#include "../../engine/events/QuitEvent.h"
 
 #include <SDL.h>
 

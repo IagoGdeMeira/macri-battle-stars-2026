@@ -44,6 +44,7 @@ void UIDrawer::renderTexts(RenderContext& ctx)
 
 void UIDrawer::renderShapes(RenderContext& ctx)
 {
+    (void)ctx; // Unused for now.
     this->rectangleBatch.clear();
     this->circleBatch.clear();
     

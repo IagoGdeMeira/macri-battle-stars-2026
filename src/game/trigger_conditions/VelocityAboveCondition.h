@@ -1,18 +1,18 @@
 #ifndef velocity_above_condition_h
 #define velocity_above_condition_h
 
-#include "../include/ICondition/ICondition.h"
+#include "../include/ITriggerCondition/ITriggerCondition.h"
 
 #include "../../domain/components/VelocityComponent.h"
 
 #include <cmath>
 
-class VelocityAboveCondition : public ICondition
+class VelocityAboveCondition : public ITriggerCondition
 {
 public:
     VelocityAboveCondition(float threshold) : threshold(threshold) {}
 
-    bool evaluate(const ConditionContext& ctx) const override
+    bool evaluate(const TriggerConditionContext& ctx) const override
     {
         auto& components = ctx.world.components();
 

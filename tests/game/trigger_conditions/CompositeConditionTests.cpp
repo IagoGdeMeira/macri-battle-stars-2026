@@ -1,11 +1,13 @@
+#include "../../../src/game/trigger_conditions/CompositeCondition.h"
+
 #include "../../../src/domain/components/HealthComponent.h"
 #include "../../../src/domain/components/StateComponent.h"
 #include "../../../src/domain/components/VelocityComponent.h"
 #include "../../../src/domain/include/World/World.h"
-#include "../../../src/game/conditions/CompositeCondition.h"
-#include "../../../src/game/conditions/HealthBelowCondition.h"
-#include "../../../src/game/conditions/MinTimeCondition.h"
-#include "../../../src/game/conditions/VelocityAboveCondition.h"
+
+#include "../../../src/game/trigger_conditions/HealthBelowCondition.h"
+#include "../../../src/game/trigger_conditions/MinTimeCondition.h"
+#include "../../../src/game/trigger_conditions/VelocityAboveCondition.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -18,8 +20,8 @@ public:
         this->world.components().registerComponent<VelocityComponent>();
     }
 
-    ConditionContext makeContext()
-    { return ConditionContext { this->world, this->entity, this->state }; }
+    TriggerConditionContext makeContext()
+    { return TriggerConditionContext { this->world, this->entity, this->state }; }
 
     void addHealth(int current, int max = 100)
     {
@@ -44,14 +46,14 @@ TEST_CASE_METHOD(CompositeConditionFixture, "CompositeCondition combines conditi
     this->state.timeInState = 0.75f;
     this->addHealth(40, 100);
 
-    std::vector<std::unique_ptr<ICondition>> andConditions;
+    std::vector<std::unique_ptr<ITriggerCondition>> andConditions;
     andConditions.push_back(std::make_unique<MinTimeCondition>(0.5f));
     andConditions.push_back(std::make_unique<HealthBelowCondition>(50));
 
     CompositeCondition andCondition(CompositeCondition::And, std::move(andConditions));
     REQUIRE(andCondition.evaluate(this->makeContext()));
 
-    std::vector<std::unique_ptr<ICondition>> orConditions;
+    std::vector<std::unique_ptr<ITriggerCondition>> orConditions;
     orConditions.push_back(std::make_unique<HealthBelowCondition>(10));
     orConditions.push_back(std::make_unique<VelocityAboveCondition>(0.5f));
 

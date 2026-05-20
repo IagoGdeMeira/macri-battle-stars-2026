@@ -1,8 +1,10 @@
+#include "../../../src/game/trigger_conditions/NotCondition.h"
+
 #include "../../../src/domain/components/HealthComponent.h"
 #include "../../../src/domain/components/StateComponent.h"
 #include "../../../src/domain/include/World/World.h"
-#include "../../../src/game/conditions/HealthBelowCondition.h"
-#include "../../../src/game/conditions/NotCondition.h"
+
+#include "../../../src/game/trigger_conditions/HealthBelowCondition.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -12,8 +14,8 @@ public:
     NotConditionFixture()
     { this->world.components().registerComponent<HealthComponent>(); }
 
-    ConditionContext makeContext()
-    { return ConditionContext { this->world, this->entity, this->state }; }
+    TriggerConditionContext makeContext()
+    { return TriggerConditionContext { this->world, this->entity, this->state }; }
 
     void addHealth(int current, int max = 100)
     {

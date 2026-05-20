@@ -1,7 +1,8 @@
+#include "../../../src/game/trigger_conditions/VelocityAboveCondition.h"
+
 #include "../../../src/domain/components/VelocityComponent.h"
 #include "../../../src/domain/components/StateComponent.h"
 #include "../../../src/domain/include/World/World.h"
-#include "../../../src/game/conditions/VelocityAboveCondition.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -11,8 +12,8 @@ public:
     VelocityAboveConditionFixture()
     { this->world.components().registerComponent<VelocityComponent>(); }
 
-    ConditionContext makeContext()
-    { return ConditionContext { this->world, this->entity, this->state }; }
+    TriggerConditionContext makeContext()
+    { return TriggerConditionContext { this->world, this->entity, this->state }; }
 
     void addVelocity(float vx, float vy)
     {

@@ -17,7 +17,7 @@ UIInputSystem::UIInputSystem(EventBus& bus) : bus(bus)
     { this->digitalEvents.push_back(e); });
     
     bus.subscribe<MousePositionEvent>([this](const MousePositionEvent& e)
-    { this->mousePositionEvents.push_back(e); });
+    { this->mousePosition = e.position; });
 }
 
 void UIInputSystem::update(UpdateContext& ctx)

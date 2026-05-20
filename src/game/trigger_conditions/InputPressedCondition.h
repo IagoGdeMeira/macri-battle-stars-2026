@@ -1,16 +1,16 @@
 #ifndef input_pressed_condition_h
 #define input_pressed_condition_h
 
-#include "../include/ICondition/ICondition.h"
+#include "../include/ITriggerCondition/ITriggerCondition.h"
 
 #include "../../domain/components/InputComponent.h"
 
-class InputPressedCondition : public ICondition
+class InputPressedCondition : public ITriggerCondition
 {
 public:
     InputPressedCondition(InputAction action) : action(action) {}
 
-    bool evaluate(const ConditionContext& ctx) const override
+    bool evaluate(const TriggerConditionContext& ctx) const override
     {
         auto& components = ctx.world.components();
 

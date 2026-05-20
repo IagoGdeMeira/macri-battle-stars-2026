@@ -24,14 +24,14 @@ private:
         const StateMachine& stateMachine;
         StateId currentState;
         const std::vector<TriggerId>& triggers;
-        ConditionContext& ctx;
+        TriggerConditionContext& ctx;
     };
 
     EventBus& bus;
     std::vector<TriggerEvent> events;
 
     bool hasTrigger(const StateTransition& transition, TriggerId trigger);
-    bool conditionsAreValid(const StateTransition& transition, ConditionContext& ctx);
+    bool conditionsAreValid(const StateTransition& transition, TriggerConditionContext& ctx);
     const StateTransition* findTransition(FindTransitionParams& params);
 };
 

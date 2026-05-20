@@ -38,7 +38,7 @@ void StateSystem::update(UpdateContext& ctx)
         auto& state = components.get<StateComponent>(entity);
         auto& machine = components.get<StateMachineComponent>(entity).machine;
 
-        ConditionContext cctx { ctx.world, entity, state };
+        TriggerConditionContext cctx { ctx.world, entity, state };
 
         const StateTransition* best = nullptr;
         int bestPriority = std::numeric_limits<int>::min();
@@ -85,7 +85,7 @@ bool StateSystem::hasTrigger(const StateTransition& transition, TriggerId trigge
     ) != transition.triggers.end();
 }
 
-bool StateSystem::conditionsAreValid(const StateTransition& transition, ConditionContext& ctx)
+bool StateSystem::conditionsAreValid(const StateTransition& transition, TriggerConditionContext& ctx)
 {
     for (const auto& cond : transition.conditions) if (!cond->evaluate(ctx)) return false;
     return true;

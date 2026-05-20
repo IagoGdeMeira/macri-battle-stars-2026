@@ -1,6 +1,5 @@
 #include "../include/SDLWindow/SDLWindow.h"
 
-#include "../../engine/events/QuitEvent.h"
 #include "../../engine/events/WindowResizedEvent.h"
 #include "../../engine/include/EventBus/EventBus.h"
 
@@ -22,7 +21,11 @@ void SDLWindow::create(int width, int height, const char* title
 }
 
 void SDLWindow::setResolution(int width, int height)
-{ if (this->window) SDL_SetWindowSize(this->window, width, height); }
+{
+    if (!this->window) return;
+
+    SDL_SetWindowSize(this->window, width, height);
+}
 
 void SDLWindow::setFullscreen(bool enabled)
 {

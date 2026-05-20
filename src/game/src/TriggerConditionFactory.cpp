@@ -1,17 +1,17 @@
-#include "../include/ConditionFactory/ConditionFactory.h"
+#include "../include/TriggerConditionFactory/TriggerConditionFactory.h"
 
-#include "../conditions/CompositeCondition.h"
-#include "../conditions/HealthBelowCondition.h"
-#include "../conditions/InputPressedCondition.h"
-#include "../conditions/MinTimeCondition.h"
-#include "../conditions/NotCondition.h"
-#include "../conditions/VelocityAboveCondition.h"
+#include "../trigger_conditions/CompositeCondition.h"
+#include "../trigger_conditions/HealthBelowCondition.h"
+#include "../trigger_conditions/InputPressedCondition.h"
+#include "../trigger_conditions/MinTimeCondition.h"
+#include "../trigger_conditions/NotCondition.h"
+#include "../trigger_conditions/VelocityAboveCondition.h"
 
 #include "../../engine/include/InputMapper/InputMapper.h"
 
 #include <stdexcept>
 
-std::unique_ptr<ICondition> ConditionFactory::create(const DataNode& node)
+std::unique_ptr<ITriggerCondition> TriggerConditionFactory::create(const DataNode& node)
 {
     using CType = CompositeCondition::CompositeType;
 
@@ -19,11 +19,11 @@ std::unique_ptr<ICondition> ConditionFactory::create(const DataNode& node)
 
     if (type == "and" || type == "or")
     {
-        std::vector<std::unique_ptr<ICondition>> children;
+        std::vector<std::unique_ptr<ITriggerCondition>> children;
         CType ctype = (type == "and") ? CType::And : CType::Or;
 
         for (auto& child : node.getArray("conditions"))
-        {  children.push_back(ConditionFactory::create(*child)); }
+        {  children.push_back(TriggerConditionFactory::create(*child)); }
 
         return std::make_unique<CompositeCondition>(ctype, std::move(children));
     }
@@ -32,7 +32,7 @@ std::unique_ptr<ICondition> ConditionFactory::create(const DataNode& node)
     {
         auto childNodes = node.getArray("condition");
         auto& childNode = childNodes.front();
-        return std::make_unique<NotCondition>(ConditionFactory::create(*childNode));
+        return std::make_unique<NotCondition>(TriggerConditionFactory::create(*childNode));
     }
 
     if (type == "min_time")         return std::make_unique<MinTimeCondition>(node.getFloat("value"));

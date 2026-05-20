@@ -1,4 +1,4 @@
-#include "../../src/game/include/ConditionFactory/ConditionFactory.h"
+#include "../../src/game/include/TriggerConditionFactory/TriggerConditionFactory.h"
 
 #include "../../src/engine/include/DataNode/DataNode.h"
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-class ConditionFactoryFixture
+class TriggerTriggerConditionFactoryFixture
 {
 public:
     class Node : public DataNode
@@ -61,32 +61,32 @@ public:
     Node node;
 };
 
-TEST_CASE_METHOD(ConditionFactoryFixture, "ConditionFactory creates min_time conditions",
-    "[unit][condition_factory]"
+TEST_CASE_METHOD(TriggerTriggerConditionFactoryFixture, "TriggerTriggerConditionFactory creates min_time conditions",
+    "[unit][trigger_condition_factory]"
 ) {
     this->node.setString("type", "min_time");
     this->node.setFloat("value", 0.5f);
 
-    auto condition = ConditionFactory::create(this->node);
+    auto condition = TriggerConditionFactory::create(this->node);
 
     REQUIRE(condition != nullptr);
 }
 
-TEST_CASE_METHOD(ConditionFactoryFixture, "ConditionFactory creates input_pressed conditions",
-    "[unit][condition_factory]"
+TEST_CASE_METHOD(TriggerTriggerConditionFactoryFixture, "TriggerTriggerConditionFactory creates input_pressed conditions",
+    "[unit][trigger_condition_factory]"
 ) {
     this->node.setString("type", "input_pressed");
     this->node.setString("action", "Punch");
 
-    auto condition = ConditionFactory::create(this->node);
+    auto condition = TriggerConditionFactory::create(this->node);
 
     REQUIRE(condition != nullptr);
 }
 
-TEST_CASE_METHOD(ConditionFactoryFixture, "ConditionFactory rejects unknown condition types",
-    "[unit][condition_factory]"
+TEST_CASE_METHOD(TriggerTriggerConditionFactoryFixture, "TriggerTriggerConditionFactory rejects unknown condition types",
+    "[unit][trigger_condition_factory]"
 ) {
     this->node.setString("type", "unknown");
 
-    REQUIRE_THROWS_AS(ConditionFactory::create(this->node), std::runtime_error);
+    REQUIRE_THROWS_AS(TriggerConditionFactory::create(this->node), std::runtime_error);
 }

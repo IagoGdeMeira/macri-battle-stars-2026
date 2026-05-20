@@ -22,7 +22,6 @@ target_sources(game
         src/ComboLoader.cpp
         src/ComboSystem.cpp
         src/ComponentRegistry.cpp
-        src/ConditionFactory.cpp
         src/DamageSystem.cpp
         src/DynamicPushboxResolutionSystem.cpp
         src/EntityFactory.cpp
@@ -43,9 +42,11 @@ target_sources(game
         src/StateSystem.cpp
         src/StaticPushboxResolutionSystem.cpp
         src/TriggerBindingLoader.cpp
+        src/TriggerConditionFactory.cpp
         src/TriggerGenerationSystem.cpp
         src/TriggerMapper.cpp
         src/UIDrawer.cpp
+        src/UIFactory.cpp
         src/UIInputSystem.cpp
         src/UILayoutSystem.cpp
         src/WorldDrawer.cpp

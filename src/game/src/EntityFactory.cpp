@@ -84,8 +84,8 @@ Entity EntityFactory::createBackgroundLayer(const BackgroundLayer& layer)
 
     SpriteComponent sprite;
     sprite.texture = texture;
-    sprite.size.width = texture->getWidth();
-    sprite.size.height = texture->getHeight();
+    sprite.size.width = static_cast<float>(texture->getWidth());
+    sprite.size.height = static_cast<float>(texture->getHeight());
     sprite.useSourceRect = false;
     comp.add<SpriteComponent>(e, std::move(sprite));
 
@@ -183,8 +183,8 @@ Entity EntityFactory::createSpriteEffect(const std::string& texturePath, const P
 
     SpriteComponent sprite;
     sprite.texture = texture;
-    sprite.size.width = texture->getWidth();
-    sprite.size.height = texture->getHeight();
+    sprite.size.width = static_cast<float>(texture->getWidth());
+    sprite.size.height = static_cast<float>(texture->getHeight());
     comp.add<SpriteComponent>(e, std::move(sprite));
 
     comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});

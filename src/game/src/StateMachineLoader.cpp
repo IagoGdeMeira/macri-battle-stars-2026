@@ -1,6 +1,6 @@
 #include "../include/StateMachineLoader/StateMachineLoader.h"
 
-#include "../include/ConditionFactory/ConditionFactory.h"
+#include "../include/TriggerConditionFactory/TriggerConditionFactory.h"
 #include "../include/StateIdMapper/StateIdMapper.h"
 #include "../include/StateMapper/StateMapper.h"
 #include "../include/TriggerMapper/TriggerMapper.h"
@@ -68,7 +68,7 @@ StateMachine StateMachineLoader::load(const std::string& path) const
             toStr + "' must have at least one trigger");
 
         if (node->has("conditions")) for (auto& cnode : node->getArray("conditions"))
-        { t.conditions.push_back(ConditionFactory::create(*cnode)); }
+        { t.conditions.push_back(TriggerConditionFactory::create(*cnode)); }
 
         machine.transitions.push_back(std::move(t));
     }
@@ -150,7 +150,7 @@ StateMachine StateMachineLoader::load(const std::string& path, const StateIdMapp
             toStr + "' must have at least one trigger");
 
         if (node->has("conditions")) for (auto& cnode : node->getArray("conditions"))
-        { t.conditions.push_back(ConditionFactory::create(*cnode)); }
+        { t.conditions.push_back(TriggerConditionFactory::create(*cnode)); }
 
         machine.transitions.push_back(std::move(t));
     }

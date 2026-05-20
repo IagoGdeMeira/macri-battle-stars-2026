@@ -1,9 +1,10 @@
 add_executable(game_tests
-    conditions/CompositeConditionTests.cpp
-    conditions/HealthBelowConditionTests.cpp
-    conditions/MinTimeConditionTests.cpp
-    conditions/NotConditionTests.cpp
-    conditions/VelocityAboveConditionTests.cpp
+    trigger_conditions/CompositeConditionTests.cpp
+    trigger_conditions/HealthBelowConditionTests.cpp
+    trigger_conditions/InputPressedConditionTests.cpp
+    trigger_conditions/MinTimeConditionTests.cpp
+    trigger_conditions/NotConditionTests.cpp
+    trigger_conditions/VelocityAboveConditionTests.cpp
     AirFrictionSystemTests.cpp
     AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
@@ -19,7 +20,6 @@ add_executable(game_tests
     ComboLoaderTests.cpp
     ComboSystemTests.cpp
     ComboTests.cpp
-    ConditionFactoryTests.cpp
     DynamicPushboxResolutionSystemTests.cpp
     FaceOffSystemTests.cpp
     FrictionSystemTests.cpp
@@ -35,6 +35,7 @@ add_executable(game_tests
     StateSystemTests.cpp
     StaticPushboxResolutionSystemTests.cpp
     TriggerBindingLoaderTests.cpp
+    TriggerConditionFactoryTests.cpp
     TriggerGenerationSystemTests.cpp
     TriggerMapperTests.cpp
     UILayoutSystemTests.cpp

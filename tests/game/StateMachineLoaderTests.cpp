@@ -7,7 +7,7 @@
 #include "../../src/engine/include/DataNode/DataNode.h"
 #include "../../src/engine/include/DataParser/DataParser.h"
 
-#include "../../src/game/include/ConditionContext/ConditionContext.h"
+#include "../../src/game/include/TriggerConditionContext/TriggerConditionContext.h"
 #include "../../src/game/include/StateIdMapper/StateIdMapper.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -198,7 +198,7 @@ TEST_CASE_METHOD(StateMachineLoaderFixture, "StateMachineLoader parses transitio
     StateComponent state;
     state.timeInState = 0.75f;
 
-    ConditionContext ctx { world, entity, state };
+    TriggerConditionContext ctx { world, entity, state };
     REQUIRE(machine.transitions[0].conditions[0]->evaluate(ctx));
 
     REQUIRE(machine.transitions[1].from == StateId::Punching);

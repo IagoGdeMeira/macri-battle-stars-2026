@@ -1,14 +1,15 @@
+#include "../../../src/game/trigger_conditions/MinTimeCondition.h"
+
 #include "../../../src/domain/components/StateComponent.h"
 #include "../../../src/domain/include/World/World.h"
-#include "../../../src/game/conditions/MinTimeCondition.h"
 
 #include <catch2/catch_test_macros.hpp>
 
 class MinTimeConditionFixture
 {
 public:
-    ConditionContext makeContext()
-    { return ConditionContext { this->world, this->entity, this->state }; }
+    TriggerConditionContext makeContext()
+    { return TriggerConditionContext { this->world, this->entity, this->state }; }
 
     World world;
     StateComponent state;
