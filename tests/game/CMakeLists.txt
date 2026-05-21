@@ -5,6 +5,9 @@ add_executable(game_tests
     trigger_conditions/MinTimeConditionTests.cpp
     trigger_conditions/NotConditionTests.cpp
     trigger_conditions/VelocityAboveConditionTests.cpp
+    ui_actions/NavigateToSelectionActionTests.cpp
+    ui_actions/NavigateToTitleActionTests.cpp
+    ui_actions/QuitActionTests.cpp
     AirFrictionSystemTests.cpp
     AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
@@ -38,6 +41,8 @@ add_executable(game_tests
     TriggerConditionFactoryTests.cpp
     TriggerGenerationSystemTests.cpp
     TriggerMapperTests.cpp
+    UIFactoryTests.cpp
+    UIActionFactoryTests.cpp
     UILayoutSystemTests.cpp
     WorldDrawerTests.cpp
 )
