@@ -7,8 +7,7 @@ class IUIAction
 {
 public:
     virtual ~IUIAction() = default;
-
-    virtual void execute(SceneManager& sceneManager) const = 0;
+    virtual void execute() const = 0;
 };
 
 #endif // i_ui_action_h

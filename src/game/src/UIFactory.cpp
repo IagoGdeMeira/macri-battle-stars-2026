@@ -4,15 +4,18 @@
 #include "../../domain/components/FlexContainer.h"
 #include "../../domain/components/FlexItem.h"
 #include "../../domain/components/ParentComponent.h"
+#include "../../domain/components/UIActionComponent.h"
 #include "../../domain/components/UIFocusable.h"
-#include "../../domain/components/UISelectable.h"
 #include "../../domain/components/UISpriteComponent.h"
-#include "../../domain/components/UITransform.h"
 #include "../../domain/components/UITextComponent.h"
+#include "../../domain/components/UITransform.h"
 #include "../../domain/include/World/World.h"
-#include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
+
 #include "../../engine/include/Font/Font.h"
+#include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
 #include "../../engine/include/Texture/Texture.h"
+
+#include "../../game/include/IUIAction/IUIAction.h"
 
 Entity UIFactory::createPanel(const Rectangle& rect)
 {
@@ -25,13 +28,12 @@ Entity UIFactory::createPanel(const Rectangle& rect)
     return e;
 }
 
-Entity UIFactory::createButton(const std::string& text, const std::string& actionId, const Rectangle& rect)
+Entity UIFactory::createButton(const std::string& text, const Rectangle& rect, std::shared_ptr<IUIAction> action)
 {
     Entity button = this->createPanel(rect);
     auto& comp = this->world.components();
 
     comp.add<UIFocusable>(button, UIFocusable{ true });
-    comp.add<UISelectable>(button, UISelectable{ actionId });
 
     auto& flex = comp.get<FlexContainer>(button);
     flex.direction = FlexContainer::FlexDirection::Row;
@@ -41,6 +43,8 @@ Entity UIFactory::createButton(const std::string& text, const std::string& actio
     Entity textEntity = this->createText(text, 24.0f, Color::WHITE(), {0, 0});
     comp.add<ParentComponent>(textEntity, ParentComponent{ button });
     comp.get<FlexItem>(textEntity);
+
+    if (action) comp.add<UIActionComponent>(button, UIActionComponent{[action]() { action->execute(); }});
 
     return button;
 }
@@ -72,7 +76,7 @@ Entity UIFactory::createImage(const std::string& texturePath, const Rectangle& r
     return e;
 }
 
-void UIFactory::applyDefaultBoxModel(Entity entity)
+void UIFactory::applyDefaultBoxModel(Entity& entity)
 {
     auto& comp = this->world.components();
     BoxModel box;

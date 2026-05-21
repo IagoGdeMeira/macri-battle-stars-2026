@@ -45,6 +45,7 @@ target_sources(game
         src/TriggerConditionFactory.cpp
         src/TriggerGenerationSystem.cpp
         src/TriggerMapper.cpp
+        src/UIActionFactory.cpp
         src/UIDrawer.cpp
         src/UIFactory.cpp
         src/UIInputSystem.cpp

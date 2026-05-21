@@ -19,13 +19,11 @@ void SceneManager::update(float deltaTime)
     {
         auto& scene = this->sceneStack[i];
         bool isTop = (i == this->sceneStack.size() - 1);
-        Scene::UpdatePolicy policy = scene->getUpdatePolicy();
 
-        bool shouldUpdate =
-            (policy == Scene::UpdatePolicy::Always) ||
-            (policy == Scene::UpdatePolicy::WhenTop && isTop);
+        using Policy = Scene::UpdatePolicy;
+        Policy policy = scene->getUpdatePolicy();
 
-        if (shouldUpdate) scene->update(deltaTime);
+        if (policy == Policy::Always || (policy == Policy::WhenTop && isTop)) scene->update(deltaTime);
     }
 }
 
@@ -35,4 +33,11 @@ std::unique_ptr<Scene> SceneManager::createScene(SceneId id, std::any data)
     if (!scene) throw std::runtime_error("SceneFactory returned nullptr for SceneId");
     
     return scene;
+}
+
+void SceneManager::startScene(std::unique_ptr<Scene> scene)
+{
+    this->sceneStack.push_back(std::move(scene));
+    this->sceneStack.back()->init();
+    this->sceneStack.back()->onEnter();
 }

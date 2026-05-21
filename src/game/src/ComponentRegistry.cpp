@@ -10,9 +10,9 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<AnimationComponent>();
     components.registerComponent<AnimationControllerComponent>();
     components.registerComponent<BoxModel>();
+    components.registerComponent<CircleColliderComponent>();
     components.registerComponent<CollisionClipDefinitionsComponent>();
     components.registerComponent<CollisionClipPlayerComponent>();
-    components.registerComponent<CircleColliderComponent>();
     components.registerComponent<FlexContainer>();
     components.registerComponent<FlexItem>();
     components.registerComponent<GravityComponent>();
@@ -39,8 +39,8 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<StateMachineComponent>();
     components.registerComponent<StateMappingComponent>();
     components.registerComponent<TransformComponent>();
+    components.registerComponent<UIActionComponent>();
     components.registerComponent<UIFocusable>();
-    components.registerComponent<UISelectable>();
     components.registerComponent<UISpriteComponent>();
     components.registerComponent<UITextComponent>();
     components.registerComponent<UITransform>();

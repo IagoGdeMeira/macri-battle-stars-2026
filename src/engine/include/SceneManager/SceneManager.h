@@ -34,6 +34,7 @@ private:
     std::vector<std::unique_ptr<Scene>> sceneStack;
 
     std::unique_ptr<Scene> createScene(SceneId id, std::any data);
+    void startScene(std::unique_ptr<Scene> scene);
 };
 
 #include "SceneManager.inl"

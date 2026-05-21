@@ -18,16 +18,6 @@ struct UIElement
 
 struct PanelElement : public UIElement { Color bgColor = Color::TRANSPARENT(); };
 
-struct TextElement : public UIElement
-{
-    std::string text;
-    std::string fontPath = "assets/fonts/default.ttf";
-    float fontSize = 24.0f;
-    Color color = Color::WHITE();
-};
-
-struct ButtonElement : public UIElement { std::string actionId; };
-
 struct ImageElement : public UIElement { std::string imagePath; };
 
 #endif // ui_element_h

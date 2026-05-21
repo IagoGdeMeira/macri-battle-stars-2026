@@ -10,9 +10,7 @@ class QuitAction : public IUIAction
 {
 public:
     explicit QuitAction(EventBus& bus) : bus(bus) {}
-
-    void execute(SceneManager& sceneManager) const override
-    { this->bus.emit<QuitEvent>(); }
+    void execute() const override { this->bus.emit<QuitEvent>(); }
 
 private:
     EventBus& bus;

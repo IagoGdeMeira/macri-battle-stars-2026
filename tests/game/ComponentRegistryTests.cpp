@@ -46,8 +46,8 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(components.storage<StateMappingComponent>() != nullptr);
     REQUIRE(components.storage<StateMachineComponent>() != nullptr);
     REQUIRE(components.storage<TransformComponent>() != nullptr);
+    REQUIRE(components.storage<UIActionComponent>() != nullptr);
     REQUIRE(components.storage<UIFocusable>() != nullptr);
-    REQUIRE(components.storage<UISelectable>() != nullptr);
     REQUIRE(components.storage<UISpriteComponent>() != nullptr);
     REQUIRE(components.storage<UITextComponent>() != nullptr);
     REQUIRE(components.storage<UITransform>() != nullptr);
