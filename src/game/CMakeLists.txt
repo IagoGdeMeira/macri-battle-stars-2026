@@ -35,6 +35,7 @@ target_sources(game
         src/MapLoader.cpp
         src/MapRoster.cpp
         src/MapRosterLoader.cpp
+        src/MenuLoader.cpp
         src/PlayerControlSystem.cpp
         src/StateMachineLoader.cpp
         src/StateIdMapper.cpp

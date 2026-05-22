@@ -16,6 +16,8 @@ add_executable(game_tests
     ComponentRegistryTests.cpp
     CharacterDefinitionLoaderTests.cpp
     CharacterLoaderTests.cpp
+    CharacterRosterTests.cpp
+    CharacterRosterLoaderTests.cpp
     CollisionClipLoaderTests.cpp
     CollisionClipPlayerSystemTests.cpp
     CollisionDetectionSystemTests.cpp
@@ -32,6 +34,10 @@ add_executable(game_tests
     HitstopSystemTests.cpp
     KnockbackSystemTests.cpp
     LocalToWorldSystemTests.cpp
+    MenuLoaderTests.cpp
+    MapLoaderTests.cpp
+    MapRosterTests.cpp
+    MapRosterLoaderTests.cpp
     PlayerControlSystemTests.cpp
     StateMachineLoaderTests.cpp
     StateMapperTests.cpp
