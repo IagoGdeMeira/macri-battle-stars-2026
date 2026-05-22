@@ -3,6 +3,7 @@ add_library(engine STATIC)
 target_sources(engine
     PRIVATE
         src/CommandBuffer.cpp
+        src/DataUtils.cpp
         src/Engine.cpp
         src/InputBindingLoader.cpp
         src/InputBufferSystem.cpp
