@@ -17,9 +17,11 @@ public:
     UIInputSystem(EventBus& bus);
 
     void update(UpdateContext& ctx) override;
+    void setAllowedPlayer(std::optional<uint32_t> playerId) { this->allowedPlayerId = playerId; }
 
 private:
     EventBus& bus;
+    std::optional<uint32_t> allowedPlayerId;
     std::optional<Entity> focusedEntity;
     Position mousePosition {0.f, 0.f};
 

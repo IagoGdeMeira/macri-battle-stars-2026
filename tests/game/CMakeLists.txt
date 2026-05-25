@@ -12,7 +12,8 @@ add_executable(game_tests
     AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
     AnimationSystemTests.cpp
-    Camera2DTests.cpp    CameraControllerSystemTests.cpp
+    Camera2DTests.cpp
+    CameraControllerSystemTests.cpp
     ComponentRegistryTests.cpp
     CharacterDefinitionLoaderTests.cpp
     CharacterLoaderTests.cpp
@@ -47,8 +48,10 @@ add_executable(game_tests
     TriggerConditionFactoryTests.cpp
     TriggerGenerationSystemTests.cpp
     TriggerMapperTests.cpp
+    UIDrawerTests.cpp
     UIFactoryTests.cpp
     UIActionFactoryTests.cpp
+    UIInputSystemTests.cpp
     UILayoutSystemTests.cpp
     WorldDrawerTests.cpp
 )

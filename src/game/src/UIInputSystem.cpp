@@ -26,6 +26,9 @@ void UIInputSystem::update(UpdateContext& ctx)
     {
         if (!event.pressed) continue;
 
+        auto& id = this->allowedPlayerId;
+        if (id.has_value() && event.playerId != id.value()) continue;
+
         using Type = InputSource::Type;
         switch (event.source.type())
         {
