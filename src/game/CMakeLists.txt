@@ -2,6 +2,7 @@ add_library(game STATIC)
 
 target_sources(game
     PRIVATE
+        src/render_formats/WorldTextureRenderFormat.cpp
         src/scenes/GameScene.cpp
         src/scenes/SelectionScene.cpp
         src/scenes/TitleScene.cpp
