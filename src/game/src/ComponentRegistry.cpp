@@ -27,12 +27,14 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<LifetimeComponent>();
     components.registerComponent<LocalTransform>();
     components.registerComponent<OrientationComponent>();
+    components.registerComponent<OutlineComponent>();
     components.registerComponent<ParallaxComponent>();
     components.registerComponent<ParentComponent>();
     components.registerComponent<PlayerComponent>();
     components.registerComponent<PushboxComponent>();
     components.registerComponent<RectangleColliderComponent>();
     components.registerComponent<RenderComponent>();
+    components.registerComponent<ShadowComponent>();
     components.registerComponent<ShapeRenderComponent>();
     components.registerComponent<SpriteComponent>();
     components.registerComponent<StateComponent>();
@@ -45,4 +47,5 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<UITextComponent>();
     components.registerComponent<UITransform>();
     components.registerComponent<VelocityComponent>();
+    components.registerComponent<VisualEffectsComponent>();
 }

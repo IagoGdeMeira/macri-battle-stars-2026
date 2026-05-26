@@ -1,7 +1,20 @@
 #ifndef geometry_h
 #define geometry_h
 
-struct Position { float x = 0.f, y = 0.f; };
+struct Position
+{
+    float x = 0.f, y = 0.f;
+
+    Position operator+(const Position& other) const { return { this->x + other.x, this->y + other.y }; }
+    Position operator-(const Position& other) const { return { this->x - other.x, this->y - other.y }; }
+    Position operator*(float scalar) const { return { this->x * scalar, this->y * scalar }; }
+    Position operator/(float scalar) const { return { this->x / scalar, this->y / scalar }; }
+
+    Position& operator+=(const Position& other) { this->x += other.x; this->y += other.y; return *this; }
+    Position& operator-=(const Position& other) { this->x -= other.x; this->y -= other.y; return *this; }
+    Position& operator*=(float scalar) { this->x *= scalar; this->y *= scalar; return *this; }
+    Position& operator/=(float scalar) { this->x /= scalar; this->y /= scalar; return *this; }
+};
 
 struct Dimension2D { float width = 0.f, height = 0.f; };
 

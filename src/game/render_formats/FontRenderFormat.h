@@ -1,0 +1,57 @@
+#ifndef font_render_format_h
+#define font_render_format_h
+
+#include "../include/IRenderFormat/IRenderFormat.h"
+
+#include "../../domain/components/RenderComponent.h"
+#include "../../domain/components/UITextComponent.h"
+#include "../../domain/components/UITransform.h"
+#include "../../domain/components/VisualEffectsComponent.h"
+#include "../../domain/include/View/View.h"
+
+#include "../../engine/include/DrawBatch/DrawFontBatch.h"
+#include "../../engine/include/DrawCommands/DrawCommands.h"
+#include "../../engine/include/RenderContext/RenderContext.h"
+#include "../../engine/include/Renderer/Renderer.h"
+
+class FontRenderFormat : public IRenderFormat
+{
+public:
+    FontRenderFormat(Renderer& renderer) : renderer(renderer) {}
+
+    void render(RenderContext& ctx) override
+    {
+        this->batch.clear();
+        auto view = View<UITransform, UITextComponent, RenderComponent>(ctx.world.components());
+        size_t order = 0;
+        
+        for (auto [entity, transform, text, render] : view)
+        {
+            if (text.text.empty() || !text.font) continue;
+
+            DrawFontCommand cmd;
+            cmd.text = text.text;
+            cmd.font = text.font.get();
+            cmd.dest = transform.rect;
+            cmd.fontSize = static_cast<int>(text.fontSize > 0 ? text.fontSize : 16);
+            cmd.color = text.color;
+            cmd.layer = render.layer;
+            cmd.zIndex = render.zIndex;
+            cmd.order = order++;
+
+            if (ctx.world.components().has<VisualEffectsComponent>(entity))
+            {
+                const auto& fx = ctx.world.components().get<VisualEffectsComponent>(entity);
+                for (auto& effect : fx.fontEffects) effect(this->batch, cmd);
+            }
+            this->batch.add(cmd);
+        }
+        this->batch.submit(this->renderer);
+    }
+
+private:
+    DrawFontBatch batch;
+    Renderer& renderer;
+};
+
+#endif // font_render_format_h

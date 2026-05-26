@@ -34,12 +34,14 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(components.storage<LifetimeComponent>() != nullptr);
     REQUIRE(components.storage<LocalTransform>() != nullptr);
     REQUIRE(components.storage<OrientationComponent>() != nullptr);
+    REQUIRE(components.storage<OutlineComponent>() != nullptr);
     REQUIRE(components.storage<ParallaxComponent>() != nullptr);
     REQUIRE(components.storage<ParentComponent>() != nullptr);
     REQUIRE(components.storage<PlayerComponent>() != nullptr);
     REQUIRE(components.storage<PushboxComponent>() != nullptr);
     REQUIRE(components.storage<RectangleColliderComponent>() != nullptr);
     REQUIRE(components.storage<RenderComponent>() != nullptr);
+    REQUIRE(components.storage<ShadowComponent>() != nullptr);
     REQUIRE(components.storage<ShapeRenderComponent>() != nullptr);
     REQUIRE(components.storage<SpriteComponent>() != nullptr);
     REQUIRE(components.storage<StateComponent>() != nullptr);
@@ -52,6 +54,7 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(components.storage<UITextComponent>() != nullptr);
     REQUIRE(components.storage<UITransform>() != nullptr);
     REQUIRE(components.storage<VelocityComponent>() != nullptr);
+    REQUIRE(components.storage<VisualEffectsComponent>() != nullptr);
 }
 
 TEST_CASE("ComponentRegistry can be invoked more than once safely",

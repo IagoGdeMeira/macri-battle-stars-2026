@@ -1,8 +1,10 @@
 #include "../../src/game/include/UIDrawer/UIDrawer.h"
 
+#include "../../src/domain/components/RenderComponent.h"
 #include "../../src/domain/components/UISpriteComponent.h"
 #include "../../src/domain/components/UITextComponent.h"
 #include "../../src/domain/components/UITransform.h"
+#include "../../src/domain/components/VisualEffectsComponent.h"
 #include "../../src/domain/include/World/World.h"
 
 #include "../../src/engine/include/EventBus/EventBus.h"
@@ -61,9 +63,11 @@ public:
     UIDrawerFixture() : drawer(this->renderer), context{ this->world, this->bus }
     {
         auto& components = this->world.components();
-        components.registerComponent<UITransform>();
+        components.registerComponent<RenderComponent>();
         components.registerComponent<UISpriteComponent>();
         components.registerComponent<UITextComponent>();
+        components.registerComponent<UITransform>();
+        components.registerComponent<VisualEffectsComponent>();
     }
 
     Entity createSpriteEntity(const Rectangle& rect, std::shared_ptr<Texture> texture)
@@ -77,6 +81,7 @@ public:
 
         this->world.components().add<UITransform>(entity, transform);
         this->world.components().add<UISpriteComponent>(entity, UISpriteComponent{ texture, Color{ 10, 20, 30, 40 } });
+        this->world.components().add<RenderComponent>(entity, RenderComponent{});
 
         return entity;
     }
@@ -96,6 +101,7 @@ public:
 
         this->world.components().add<UITransform>(entity, transform);
         this->world.components().add<UITextComponent>(entity, text);
+        this->world.components().add<RenderComponent>(entity, RenderComponent{});
 
         return entity;
     }
@@ -162,12 +168,14 @@ TEST_CASE_METHOD(UIDrawerFixture, "UIDrawer skips sprites without texture and te
     spriteTransform.rect = Rectangle{ Position{ 1.0f, 2.0f }, Dimension2D{ 10.0f, 12.0f } };
     this->world.components().add<UITransform>(sprite, spriteTransform);
     this->world.components().add<UISpriteComponent>(sprite, UISpriteComponent{ nullptr, Color::WHITE() });
+    this->world.components().add<RenderComponent>(sprite, RenderComponent{});
 
     Entity text = this->world.entities().create();
     UITransform textTransform;
     textTransform.rect = Rectangle{ Position{ 3.0f, 4.0f }, Dimension2D{ 20.0f, 22.0f } };
     this->world.components().add<UITransform>(text, textTransform);
     this->world.components().add<UITextComponent>(text, UITextComponent{});
+    this->world.components().add<RenderComponent>(text, RenderComponent{});
 
     this->drawer.draw(this->context);
 

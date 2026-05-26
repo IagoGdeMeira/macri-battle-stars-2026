@@ -12,6 +12,7 @@ struct UIElement
     std::string id;
     Rectangle rect;
     BoxModel boxModel;
+    int layer = 0, zIndex = 0;
 
     virtual ~UIElement() = default;
 };

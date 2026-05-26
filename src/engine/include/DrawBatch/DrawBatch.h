@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <vector>
 
+class Renderer;
+
 template <typename CommandType>
 class DrawBatch
 {

@@ -1,4 +1,8 @@
 add_executable(game_tests
+    render_formats/CircleRenderFormatTests.cpp
+    render_formats/FontRenderFormatTests.cpp
+    render_formats/RectangleRenderFormatTests.cpp
+    render_formats/TextureRenderFormatTests.cpp
     trigger_conditions/CompositeConditionTests.cpp
     trigger_conditions/HealthBelowConditionTests.cpp
     trigger_conditions/InputPressedConditionTests.cpp
@@ -8,6 +12,10 @@ add_executable(game_tests
     ui_actions/NavigateToSelectionActionTests.cpp
     ui_actions/NavigateToTitleActionTests.cpp
     ui_actions/QuitActionTests.cpp
+    visual_effects/OutlineFontEffectTests.cpp
+    visual_effects/OutlineTextureEffectTests.cpp
+    visual_effects/ShadowFontEffectTests.cpp
+    visual_effects/ShadowTextureEffectTests.cpp
     AirFrictionSystemTests.cpp
     AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
@@ -39,6 +47,8 @@ add_executable(game_tests
     MapLoaderTests.cpp
     MapRosterTests.cpp
     MapRosterLoaderTests.cpp
+    MenuLoaderTests.cpp
+    MovementSystemTests.cpp
     PlayerControlSystemTests.cpp
     StateMachineLoaderTests.cpp
     StateMapperTests.cpp

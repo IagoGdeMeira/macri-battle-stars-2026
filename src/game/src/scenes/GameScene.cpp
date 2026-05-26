@@ -15,6 +15,7 @@
 #include "../../include/GravitySystem/GravitySystem.h"
 #include "../../include/GroundDetectionSystem/GroundDetectionSystem.h"
 #include "../../include/LocalToWorldSystem/LocalToWorldSystem.h"
+#include "../../include/MovementSystem/MovementSystem.h"
 #include "../../include/PlayerControlSystem/PlayerControlSystem.h"
 #include "../../include/StateSystem/StateSystem.h"
 #include "../../include/StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
@@ -38,7 +39,6 @@
 
 #include "../../../engine/include/InputBufferSystem/InputBufferSystem.h"
 #include "../../../engine/include/InputSystem/InputSystem.h"
-#include "../../../engine/include/MovementSystem/MovementSystem.h"
 #include "../../../engine/include/RenderContext/RenderContext.h"
 
 #include <utility>
