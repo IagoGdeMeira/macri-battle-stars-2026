@@ -1,5 +1,5 @@
-#ifndef rectangle_render_format_h
-#define rectangle_render_format_h
+#ifndef ui_rectangle_render_format_h
+#define ui_rectangle_render_format_h
 
 #include "../include/IRenderFormat/IRenderFormat.h"
 
@@ -13,10 +13,10 @@
 #include "../../engine/include/RenderContext/RenderContext.h"
 #include "../../engine/include/Renderer/Renderer.h"
 
-class RectangleRenderFormat : public IRenderFormat
+class UIRectangleRenderFormat : public IRenderFormat
 {
 public:
-    RectangleRenderFormat(Renderer& renderer) : renderer(renderer) {}
+    UIRectangleRenderFormat(Renderer& renderer) : renderer(renderer) {}
 
     void render(RenderContext& ctx) override
     {
@@ -49,4 +49,4 @@ private:
     Renderer& renderer;
 };
 
-#endif // rectangle_render_format_h
+#endif // ui_rectangle_render_format_h

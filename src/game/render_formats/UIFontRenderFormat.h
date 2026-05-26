@@ -1,5 +1,5 @@
-#ifndef font_render_format_h
-#define font_render_format_h
+#ifndef ui_font_render_format_h
+#define ui_font_render_format_h
 
 #include "../include/IRenderFormat/IRenderFormat.h"
 
@@ -14,10 +14,10 @@
 #include "../../engine/include/RenderContext/RenderContext.h"
 #include "../../engine/include/Renderer/Renderer.h"
 
-class FontRenderFormat : public IRenderFormat
+class UIFontRenderFormat : public IRenderFormat
 {
 public:
-    FontRenderFormat(Renderer& renderer) : renderer(renderer) {}
+    UIFontRenderFormat(Renderer& renderer) : renderer(renderer) {}
 
     void render(RenderContext& ctx) override
     {
@@ -54,4 +54,4 @@ private:
     Renderer& renderer;
 };
 
-#endif // font_render_format_h
+#endif // ui_font_render_format_h

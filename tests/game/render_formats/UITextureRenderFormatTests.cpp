@@ -1,4 +1,4 @@
-#include "../../../src/game/render_formats/TextureRenderFormat.h"
+#include "../../../src/game/render_formats/UITextureRenderFormat.h"
 
 #include "../../../src/domain/components/RenderComponent.h"
 #include "../../../src/domain/components/UISpriteComponent.h"
@@ -16,7 +16,7 @@
 #include <memory>
 #include <vector>
 
-class TextureRenderFormatFixture
+class UITextureRenderFormatFixture
 {
 public:
     class StubTexture : public Texture
@@ -43,7 +43,7 @@ public:
         std::vector<DrawTextureCommand> textureCalls;
     };
 
-    TextureRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
+    UITextureRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& components = this->world.components();
         components.registerComponent<UITransform>();
@@ -55,11 +55,11 @@ public:
     World world;
     EventBus bus;
     StubRenderer renderer;
-    TextureRenderFormat format;
+    UITextureRenderFormat format;
     RenderContext context;
 };
 
-TEST_CASE_METHOD(TextureRenderFormatFixture, "TextureRenderFormat submits base and visual effect commands",
+TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits base and visual effect commands",
     "[unit][texture_render_format]"
 ) {
     auto texture = std::make_shared<StubTexture>();

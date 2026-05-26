@@ -33,4 +33,4 @@ private:
     OutlineComponent config;
 };
 
-#endif
+#endif // outline_texture_effect_h

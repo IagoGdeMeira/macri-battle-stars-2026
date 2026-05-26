@@ -1,5 +1,5 @@
-#ifndef circle_render_format_h
-#define circle_render_format_h
+#ifndef ui_circle_render_format_h
+#define ui_circle_render_format_h
 
 #include "../include/IRenderFormat/IRenderFormat.h"
 
@@ -13,10 +13,10 @@
 #include "../../engine/include/Renderer/Renderer.h"
 #include "../../engine/include/RenderContext/RenderContext.h"
 
-class CircleRenderFormat : public IRenderFormat
+class UICircleRenderFormat : public IRenderFormat
 {
 public:
-    CircleRenderFormat(Renderer& renderer) : renderer(renderer) {}
+    UICircleRenderFormat(Renderer& renderer) : renderer(renderer) {}
 
     void render(RenderContext& ctx) override
     {
@@ -54,4 +54,4 @@ private:
     Renderer& renderer;
 };
 
-#endif // circle_render_format_h
+#endif // ui_circle_render_format_h

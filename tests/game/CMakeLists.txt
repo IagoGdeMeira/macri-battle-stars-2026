@@ -1,8 +1,8 @@
 add_executable(game_tests
-    render_formats/CircleRenderFormatTests.cpp
-    render_formats/FontRenderFormatTests.cpp
-    render_formats/RectangleRenderFormatTests.cpp
-    render_formats/TextureRenderFormatTests.cpp
+    render_formats/UICircleRenderFormatTests.cpp
+    render_formats/UIFontRenderFormatTests.cpp
+    render_formats/UIRectangleRenderFormatTests.cpp
+    render_formats/UITextureRenderFormatTests.cpp
     trigger_conditions/CompositeConditionTests.cpp
     trigger_conditions/HealthBelowConditionTests.cpp
     trigger_conditions/InputPressedConditionTests.cpp

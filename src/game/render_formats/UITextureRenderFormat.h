@@ -1,5 +1,5 @@
-#ifndef texture_render_format_h
-#define texture_render_format_h
+#ifndef ui_texture_render_format_h
+#define ui_texture_render_format_h
 
 #include "../include/IRenderFormat/IRenderFormat.h"
 
@@ -14,10 +14,10 @@
 #include "../../engine/include/RenderContext/RenderContext.h"
 #include "../../engine/include/Renderer/Renderer.h"
 
-class TextureRenderFormat : public IRenderFormat
+class UITextureRenderFormat : public IRenderFormat
 {
 public:
-    TextureRenderFormat(Renderer& renderer) : renderer(renderer) {}
+    UITextureRenderFormat(Renderer& renderer) : renderer(renderer) {}
 
     void render(RenderContext& ctx) override
     {
@@ -56,4 +56,4 @@ private:
     Renderer& renderer;
 };
 
-#endif // texture_render_format_h
+#endif // ui_texture_render_format_h

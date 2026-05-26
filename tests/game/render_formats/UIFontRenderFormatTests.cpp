@@ -1,4 +1,4 @@
-#include "../../../src/game/render_formats/FontRenderFormat.h"
+#include "../../../src/game/render_formats/UIFontRenderFormat.h"
 
 #include "../../../src/domain/components/RenderComponent.h"
 #include "../../../src/domain/components/UITextComponent.h"
@@ -16,7 +16,7 @@
 #include <memory>
 #include <vector>
 
-class FontRenderFormatFixture
+class UIFontRenderFormatFixture
 {
 public:
     class StubFont : public Font
@@ -45,7 +45,7 @@ public:
         std::vector<DrawFontCommand> fontCalls;
     };
 
-    FontRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
+    UIFontRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& components = this->world.components();
         components.registerComponent<RenderComponent>();
@@ -57,11 +57,11 @@ public:
     World world;
     EventBus bus;
     StubRenderer renderer;
-    FontRenderFormat format;
+    UIFontRenderFormat format;
     RenderContext context;
 };
 
-TEST_CASE_METHOD(FontRenderFormatFixture, "FontRenderFormat submits base and visual effect commands",
+TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and visual effect commands",
     "[unit][font_render_format]"
 ) {
     auto font = std::make_shared<StubFont>();
