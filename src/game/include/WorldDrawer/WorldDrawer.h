@@ -2,6 +2,7 @@
 #define world_drawer_h
 
 #include "../Camera2D/Camera2D.h"
+#include "../GameSettings/GameSettings.h"
 #include "../IRenderFormat/IRenderFormat.h"
 
 #include "../../domain/include/Geometry/Geometry.h"
@@ -17,11 +18,12 @@
 class WorldDrawer : public Drawer
 {
 public:
-    WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera);
+    WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera, GameSettings& settings);
     void draw(RenderContext& ctx) override;
 
 private:
     Renderer& renderer;
+    GameSettings& settings;
     std::vector<std::unique_ptr<IRenderFormat>> formats;
 
     Dimension2D windowSize { 800.f, 600.f };

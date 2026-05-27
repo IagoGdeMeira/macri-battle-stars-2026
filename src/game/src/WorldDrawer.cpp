@@ -6,7 +6,8 @@
 
 #include "../../engine/events/WindowResizedEvent.h"
 
-WorldDrawer::WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera) : renderer(renderer)
+WorldDrawer::WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera, GameSettings& settings) :
+    renderer(renderer), settings(settings)
 {
     bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent& e)
     {

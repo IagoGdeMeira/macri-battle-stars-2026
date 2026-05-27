@@ -2,6 +2,7 @@
 #define engine_h
 
 #include "../EventBus/EventBus.h"
+#include "../GameSettings/GameSettings.h"
 #include "../InputAdapter/InputAdapter.h"
 #include "../InputManager/InputManager.h"
 #include "../ISceneFactory/ISceneFactory.h"
@@ -12,7 +13,7 @@
 class Engine
 {
 public:
-    Engine(Window& window, ISceneFactory& factory);
+    Engine(Window& window, ISceneFactory& factory, GameSettings& settings);
 
     Renderer* getRenderer() { return this->renderer; } 
 
@@ -24,14 +25,20 @@ public:
     SceneManager& scenes() { return this->sceneManager; }
     EventBus& events() { return this->eventBus; }
     InputManager& input() { return this->inputManager; }
+    GameSettings& settings() { return this->gameSettings; }
 
 private:
     bool running = true;
+
     Window& window;
+    GameSettings& gameSettings;
     Renderer* renderer = nullptr;
+
     SceneManager sceneManager;
     EventBus eventBus;
     InputManager inputManager;
+
+    void updateViewport();
 };
 
 #endif // engine_h
