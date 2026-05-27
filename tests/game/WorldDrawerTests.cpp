@@ -7,6 +7,7 @@
 #include "../../src/domain/components/ShapeRenderComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/TransformComponent.h"
+#include "../../src/domain/components/VisualEffectsComponent.h"
 #include "../../src/domain/include/Color/Color.h"
 #include "../../src/domain/include/World/World.h"
 
@@ -18,6 +19,7 @@
 #include "../../src/game/include/Camera2D/Camera2D.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <cmath>
 #include <memory>
 #include <vector>
 
@@ -35,6 +37,7 @@ public:
         components.registerComponent<ShapeRenderComponent>();
         components.registerComponent<AnimationControllerComponent>();
         components.registerComponent<OrientationComponent>();
+        components.registerComponent<VisualEffectsComponent>();
     }
 
 protected:
@@ -75,14 +78,17 @@ protected:
         int viewportWidth = 0;
         int viewportHeight = 0;
         std::vector<Viewport> viewportHistory;
+        std::vector<DrawTextureCommand> textureCalls;
+        std::vector<DrawRectangleCommand> rectangleCalls;
+        std::vector<DrawCircleCommand> circleCalls;
 
         void clear() override { this->clearCalls++; }
         void present() override { this->presentCalls++; }
 
         void drawTexture(const DrawTextureCommand& cmd) override
         {
-            (void)cmd;
             this->drawTextureCalls++;
+            this->textureCalls.push_back(cmd);
             this->lastDrawX = static_cast<int>(cmd.dest.position.x);
             this->lastDrawY = static_cast<int>(cmd.dest.position.y);
             this->lastDrawWidth = static_cast<int>(cmd.dest.size.width);
@@ -103,6 +109,7 @@ protected:
         {
             if (cmd.filled) this->drawRectFilledCalls++;
             else this->drawRectOutlineCalls++;
+            this->rectangleCalls.push_back(cmd);
             this->lastRect = cmd.rect;
             this->lastColor = cmd.color;
         }
@@ -111,6 +118,7 @@ protected:
         {
             if (cmd.filled) this->drawCircleFilledCalls++;
             else this->drawCircleOutlineCalls++;
+            this->circleCalls.push_back(cmd);
             this->lastCircle = cmd.circle;
             this->lastColor = cmd.color;
         }
@@ -155,6 +163,57 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer updates viewport on window res
     REQUIRE(this->renderer.viewportHistory[0].y == 0);
     REQUIRE(this->renderer.viewportHistory[0].width == 1440);
     REQUIRE(this->renderer.viewportHistory[0].height == 1080);
+}
+
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards resized world viewport to the world render formats",
+    "[unit][world_drawer]"
+) {
+    this->bus.emit<WindowResizedEvent>(WindowResizedEvent { 1920, 1080 });
+
+    auto& components = this->world.components();
+
+    const auto spriteEntity = this->world.entities().create();
+    components.add<TransformComponent>(spriteEntity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    components.add<SpriteComponent>(spriteEntity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
+    components.add<RenderComponent>(spriteEntity, RenderComponent{ 0 });
+
+    const auto rectangleEntity = this->world.entities().create();
+    auto rectangleShape = std::make_unique<RectangleDef>();
+    rectangleShape->width = 12.0f;
+    rectangleShape->height = 8.0f;
+    components.add<TransformComponent>(rectangleEntity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    components.add<ShapeRenderComponent>(rectangleEntity, ShapeRenderComponent{ std::move(rectangleShape), Color{ 1, 2, 3, 4 }, true });
+
+    const auto circleEntity = this->world.entities().create();
+    auto circleShape = std::make_unique<CircleDef>();
+    circleShape->radius = 7.0f;
+    components.add<TransformComponent>(circleEntity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
+    components.add<ShapeRenderComponent>(circleEntity, ShapeRenderComponent{ std::move(circleShape), Color{ 9, 8, 7, 6 }, false });
+
+    this->drawer.draw(this->context);
+
+    REQUIRE(this->renderer.viewportHistory.size() == 1);
+    REQUIRE(this->renderer.viewportHistory[0].x == 240);
+    REQUIRE(this->renderer.viewportHistory[0].y == 0);
+    REQUIRE(this->renderer.viewportHistory[0].width == 1440);
+    REQUIRE(this->renderer.viewportHistory[0].height == 1080);
+
+    REQUIRE(this->renderer.textureCalls.size() == 1);
+    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.x - 730.0f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.y - 560.0f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.size.width - 32.0f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.size.height - 24.0f) < 0.001f);
+
+    REQUIRE(this->renderer.rectangleCalls.size() == 1);
+    REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.position.x - 718.0f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.position.y - 548.0f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.size.width - 24.0f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.size.height - 24.0f) < 0.001f);
+
+    REQUIRE(this->renderer.circleCalls.size() == 1);
+    REQUIRE(std::abs(this->renderer.circleCalls[0].circle.position.x - 730.0f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.circleCalls[0].circle.position.y - 560.0f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.circleCalls[0].circle.radius - 21.0f) < 0.001f);
 }
 
 TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed world coordinates",
