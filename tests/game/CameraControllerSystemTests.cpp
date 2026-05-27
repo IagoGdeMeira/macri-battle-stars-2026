@@ -2,6 +2,7 @@
 
 #include "../../src/domain/components/PlayerComponent.h"
 #include "../../src/domain/components/TransformComponent.h"
+#include "../../src/domain/include/Geometry/Geometry.h"
 #include "../../src/domain/include/World/World.h"
 
 #include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
@@ -80,7 +81,7 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem centers 
     this->world.components().add<TransformComponent>(entity, TransformComponent { 100.0f, 200.0f, 1.0f, 1.0f, 0.0f });
     this->world.components().add<PlayerComponent>(entity, PlayerComponent { 1 });
 
-    CameraBounds bounds { -1000.0f, -1000.0f, 1000.0f, 1000.0f };
+    AABB bounds { -1000.0f, 1000.0f, -1000.0f, 1000.0f };
     CameraControllerSystem system(camera, window, bounds);
 
     system.update(ctx);
@@ -101,7 +102,7 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps c
     this->world.components().add<TransformComponent>(entityB, TransformComponent { 250.0f, 200.0f, 1.0f, 1.0f, 0.0f });
     this->world.components().add<PlayerComponent>(entityB, PlayerComponent { 2 });
 
-    CameraBounds bounds { 0.0f, 0.0f, 300.0f, 220.0f };
+    AABB bounds { 0.0f, 300.0f, 0.0f, 220.0f };
     CameraControllerSystem system(camera, window, bounds);
 
     system.update(ctx);

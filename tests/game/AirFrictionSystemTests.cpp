@@ -47,9 +47,9 @@ TEST_CASE_METHOD(AirFrictionSystemFixture,
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == Catch::Approx(9.0f));
-    REQUIRE(velocity.vy == Catch::Approx(-18.0f));
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == Catch::Approx(9.0f));
+    REQUIRE(v.velocity.y == Catch::Approx(-18.0f));
 }
 
 TEST_CASE_METHOD(AirFrictionSystemFixture,
@@ -66,9 +66,9 @@ TEST_CASE_METHOD(AirFrictionSystemFixture,
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == 12.0f);
-    REQUIRE(velocity.vy == -8.0f);
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == 12.0f);
+    REQUIRE(v.velocity.y == -8.0f);
 }
 
 TEST_CASE_METHOD(AirFrictionSystemFixture,
@@ -85,9 +85,9 @@ TEST_CASE_METHOD(AirFrictionSystemFixture,
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == Catch::Approx(9.5f));
-    REQUIRE(velocity.vy == Catch::Approx(8.0f));
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == Catch::Approx(9.5f));
+    REQUIRE(v.velocity.y == Catch::Approx(8.0f));
 }
 
 TEST_CASE_METHOD(AirFrictionSystemFixture,
@@ -104,9 +104,9 @@ TEST_CASE_METHOD(AirFrictionSystemFixture,
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == 0.0f);
-    REQUIRE(velocity.vy == 0.0f);
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == 0.0f);
+    REQUIRE(v.velocity.y == 0.0f);
 }
 
 TEST_CASE_METHOD(AirFrictionSystemFixture,
@@ -123,7 +123,7 @@ TEST_CASE_METHOD(AirFrictionSystemFixture,
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == 0.0f);
-    REQUIRE(velocity.vy == 0.0f);
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == 0.0f);
+    REQUIRE(v.velocity.y == 0.0f);
 }

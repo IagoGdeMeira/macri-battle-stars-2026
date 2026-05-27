@@ -33,10 +33,10 @@ void AirFrictionSystem::update(UpdateContext& ctx)
         if (decayX < 0.0f) decayX = 0.0f;
         if (decayY < 0.0f) decayY = 0.0f;
 
-        v.vx *= decayX;
-        v.vy *= decayY;
+        v.velocity.x *= decayX;
+        v.velocity.y *= decayY;
 
-        if (std::abs(v.vx) < 1.0f) v.vx = 0.0f;
-        if (std::abs(v.vy) < 1.0f) v.vy = 0.0f;
+        if (std::abs(v.velocity.x) < 1.0f) v.velocity.x = 0.0f;
+        if (std::abs(v.velocity.y) < 1.0f) v.velocity.y = 0.0f;
     }
 }

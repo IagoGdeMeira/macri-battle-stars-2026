@@ -43,9 +43,9 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem reduces horizontal veloc
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == Catch::Approx(9.0f));
-    REQUIRE(velocity.vy == 0.0f);
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == Catch::Approx(9.0f));
+    REQUIRE(v.velocity.y == 0.0f);
 }
 
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem does not affect entities that are not grounded",
@@ -60,9 +60,9 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem does not affect entities
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == 12.0f);
-    REQUIRE(velocity.vy == -3.0f);
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == 12.0f);
+    REQUIRE(v.velocity.y == -3.0f);
 }
 
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem applies friction reduction from GroundedComponent",
@@ -77,8 +77,8 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem applies friction reducti
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == Catch::Approx(9.5f));
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == Catch::Approx(9.5f));
 }
 
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem clamps friction reduction and snaps small velocity to zero",
@@ -93,8 +93,8 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem clamps friction reductio
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == 0.0f);
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == 0.0f);
 }
 
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem handles frictionReduction above one by clamping effective friction to zero",
@@ -109,8 +109,8 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem handles frictionReductio
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == 10.0f);
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == 10.0f);
 }
 
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem allows stronger friction when frictionReduction is negative",
@@ -125,8 +125,8 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem allows stronger friction
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == Catch::Approx(8.5f));
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == Catch::Approx(8.5f));
 }
 
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem ignores entities frozen by hitstop",
@@ -142,6 +142,6 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem ignores entities frozen 
     this->context.deltaTime = 1.0f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == Catch::Approx(10.0f));
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == Catch::Approx(10.0f));
 }

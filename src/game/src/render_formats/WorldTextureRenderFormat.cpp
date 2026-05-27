@@ -1,17 +1,26 @@
-#include "../../render_formats/WorldTextureRenderFormat.h"
+#include "../render_formats/WorldTextureRenderFormat.h"
 
-#include <cmath>
+#include "../include/WorldRenderUtils/WorldRenderUtils.h"
+
+#include "../../domain/components/AnimationControllerComponent.h"
+#include "../../domain/components/OrientationComponent.h"
+#include "../../domain/components/RenderComponent.h"
+#include "../../domain/components/SpriteComponent.h"
+#include "../../domain/components/TransformComponent.h"
+#include "../../domain/components/VisualEffectsComponent.h"
+
+#include "../../engine/include/RenderContext/RenderContext.h"
 
 void WorldTextureRenderFormat::render(RenderContext& ctx)
 {
     this->batch.clear();
     auto view = View<SpriteComponent, TransformComponent, RenderComponent>(ctx.world.components());
     size_t order = 0;
-
+    
     for (auto [entity, sprite, transform, render] : view)
     {
         if (!sprite.texture) continue;
-        DrawTextureCommand cmd = buildTextureCommand(entity, ctx.world, order++);
+        DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++);
 
         if (ctx.world.components().has<VisualEffectsComponent>(entity))
         {
@@ -25,38 +34,36 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
 
 DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(Entity& entity, World& world, size_t order) const
 {
-    auto& components = world.components();
-    const auto& sprite = components.get<SpriteComponent>(entity);
-    const auto& transform = components.get<TransformComponent>(entity);
-    const auto& render = components.get<RenderComponent>(entity);
+    auto& comp = world.components();
+    const auto& sprite = comp.get<SpriteComponent>(entity);
+    const auto& transform = comp.get<TransformComponent>(entity);
+    const auto& render = comp.get<RenderComponent>(entity);
 
-    const Position parallax = this->resolveParallax(world, entity);
-    const Viewport vp = this->getViewport(/*ctx*/);
-    const Position screenPos = this->worldToScreen({transform.x, transform.y}, vp, parallax);
+    const Position parallax = WorldRenderUtils::resolveParallax(world, entity);
+    Position worldPos{transform.position.x, transform.position.y};
+    Viewport vp = this->viewport;
 
-    Rectangle spriteConfig = {{ transform.scaleX, transform.scaleY }, sprite.size };
+    const Position screenPos = WorldRenderUtils::worldToScreen(this->camera, worldPos, vp, parallax);
+    Rectangle spriteConfig = {{transform.scale.x, transform.scale.y}, sprite.size};
 
     DrawTextureCommand cmd;
     cmd.texture = sprite.texture.get();
     cmd.dest.position = screenPos;
-    cmd.rotation= transform.rotation;
-    this->computeSpriteTransform(spriteConfig, cmd);
+    cmd.rotation = transform.rotation;
+    WorldRenderUtils::computeSpriteTransform(this->camera, spriteConfig, cmd);
 
-    if (components.has<OrientationComponent>(entity))
+    if (comp.has<OrientationComponent>(entity))
     {
-        bool symmetric = components.has<AnimationControllerComponent>(entity)
-            ? components.get<AnimationControllerComponent>(entity).animations.symmetric : true;
-        cmd.flipX = symmetric ? components.get<OrientationComponent>(entity).direction == Orientation::Left : false;
+        bool symmetric = comp.has<AnimationControllerComponent>(entity)
+            ? comp.get<AnimationControllerComponent>(entity).animations.symmetric : true;
+        cmd.flipX = symmetric ? (comp.get<OrientationComponent>(entity).direction == Orientation::Left) : false;
     }
 
     cmd.layer = render.layer;
     cmd.zIndex = render.zIndex;
     cmd.order = order;
-    cmd.source =
-    {
-        {static_cast<float>(sprite.source.position.x), static_cast<float>(sprite.source.position.y)},      
-        {static_cast<float>(sprite.source.size.width), static_cast<float>(sprite.source.size.height)}
-    };
+    cmd.source.position = sprite.source.position;
+    cmd.source.size = sprite.source.size;
     cmd.useSourceRect = sprite.useSourceRect;
     return cmd;
 }

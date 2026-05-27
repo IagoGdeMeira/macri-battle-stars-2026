@@ -43,11 +43,11 @@ TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates world tr
     this->system.update(this->context);
 
     const auto& childTransform = this->world.components().get<TransformComponent>(child);
-    REQUIRE(childTransform.x == 17.0f);
-    REQUIRE(childTransform.y == 19.0f);
+    REQUIRE(childTransform.position.x == 17.0f);
+    REQUIRE(childTransform.position.y == 19.0f);
     REQUIRE(childTransform.rotation == 0.25f);
-    REQUIRE(childTransform.scaleX == 3.0f);
-    REQUIRE(childTransform.scaleY == 1.0f);
+    REQUIRE(childTransform.scale.x == 3.0f);
+    REQUIRE(childTransform.scale.y == 1.0f);
 }
 
 TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem keeps child unchanged when parent has no TransformComponent",
@@ -63,11 +63,11 @@ TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem keeps child unch
     this->system.update(this->context);
 
     const auto& childTransform = this->world.components().get<TransformComponent>(child);
-    REQUIRE(childTransform.x == 7.0f);
-    REQUIRE(childTransform.y == 9.0f);
+    REQUIRE(childTransform.position.x == 7.0f);
+    REQUIRE(childTransform.position.y == 9.0f);
     REQUIRE(childTransform.rotation == 0.5f);
-    REQUIRE(childTransform.scaleX == 1.2f);
-    REQUIRE(childTransform.scaleY == 0.8f);
+    REQUIRE(childTransform.scale.x == 1.2f);
+    REQUIRE(childTransform.scale.y == 0.8f);
 }
 
 TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates each child with its respective parent",
@@ -92,10 +92,10 @@ TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates each chi
     this->system.update(this->context);
 
     const auto& childATransform = this->world.components().get<TransformComponent>(childA);
-    REQUIRE(childATransform.x == 110.0f);
-    REQUIRE(childATransform.y == 65.0f);
+    REQUIRE(childATransform.position.x == 110.0f);
+    REQUIRE(childATransform.position.y == 65.0f);
 
     const auto& childBTransform = this->world.components().get<TransformComponent>(childB);
-    REQUIRE(childBTransform.x == -25.0f);
-    REQUIRE(childBTransform.y == 22.0f);
+    REQUIRE(childBTransform.position.x == -25.0f);
+    REQUIRE(childBTransform.position.y == 22.0f);
 }

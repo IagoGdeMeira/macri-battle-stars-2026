@@ -40,10 +40,11 @@ void CollisionDetectionSystem::buildGrid(UpdateContext& ctx, Grid& grid, float c
     auto rects = View<TransformComponent, RectangleColliderComponent>(components);
     for (auto [e, t, r] : rects)
     {
+        auto& pos = t.position;
         const AABB rectBounds
         {
-            t.x - r.size.width * 0.5f, t.x + r.size.width * 0.5f,
-            t.y - r.size.height * 0.5f, t.y + r.size.height * 0.5f
+            pos.x - r.size.width * 0.5f, pos.x + r.size.width * 0.5f,
+            pos.y - r.size.height * 0.5f, pos.y + r.size.height * 0.5f
         };
 
         const AABB cellBounds
@@ -64,7 +65,8 @@ void CollisionDetectionSystem::buildGrid(UpdateContext& ctx, Grid& grid, float c
     auto circles = View<TransformComponent, CircleColliderComponent>(components);
     for (auto [e, t, c] : circles)
     {
-        const AABB circleBounds { t.x - c.radius, t.x + c.radius, t.y - c.radius, t.y + c.radius };
+        auto& pos = t.position;
+        const AABB circleBounds { pos.x - c.radius, pos.x + c.radius, pos.y - c.radius, pos.y + c.radius };
         const AABB cellBounds
         {
             std::floor(circleBounds.left / cellSize) * cellSize,
@@ -166,16 +168,18 @@ void CollisionDetectionSystem::detectInPair(DetectionParams params, CollisionPai
 
 bool CollisionDetectionSystem::rectToRect(RectParams a, RectParams b)
 {
+    auto& posA = a.transform.position;
     const AABB rectABounds =
     {
-        a.transform.x - a.collider.size.width * 0.5f, a.transform.x + a.collider.size.width * 0.5f,
-        a.transform.y - a.collider.size.height * 0.5f, a.transform.y + a.collider.size.height * 0.5f
+        posA.x - a.collider.size.width * 0.5f, posA.x + a.collider.size.width * 0.5f,
+        posA.y - a.collider.size.height * 0.5f, posA.y + a.collider.size.height * 0.5f
     };
 
+    auto& posB = b.transform.position;
     const AABB rectBBounds =
     {
-        b.transform.x - b.collider.size.width * 0.5f, b.transform.x + b.collider.size.width * 0.5f,
-        b.transform.y - b.collider.size.height * 0.5f, b.transform.y + b.collider.size.height * 0.5f
+        posB.x - b.collider.size.width * 0.5f, posB.x + b.collider.size.width * 0.5f,
+        posB.y - b.collider.size.height * 0.5f, posB.y + b.collider.size.height * 0.5f
     };
 
     if (rectABounds.left >= rectBBounds.right || rectBBounds.left >= rectABounds.right) return false;
@@ -185,7 +189,9 @@ bool CollisionDetectionSystem::rectToRect(RectParams a, RectParams b)
 
 bool CollisionDetectionSystem::circleToCircle(CircleParams a, CircleParams b)
 {
-    Position delta { b.transform.x - a.transform.x, b.transform.y - a.transform.y };
+    auto& posA = a.transform.position;
+    auto& posB = b.transform.position;
+    Position delta { posB.x - posA.x, posB.y - posA.y };
     float distanceSq = delta.x * delta.x + delta.y * delta.y;
 
     float radiusSum = a.collider.radius + b.collider.radius;
@@ -196,16 +202,22 @@ bool CollisionDetectionSystem::circleToCircle(CircleParams a, CircleParams b)
 bool CollisionDetectionSystem::rectToCircle(RectParams rect, CircleParams circle)
 {
     auto& size = rect.collider.size;
+
+    auto& posA = rect.transform.position;
     AABB rectBounds =
     {
-        rect.transform.x - size.width * 0.5f, rect.transform.x + size.width * 0.5f,
-        rect.transform.y - size.height * 0.5f, rect.transform.y + size.height * 0.5f
+        posA.x - size.width * 0.5f, posA.x + size.width * 0.5f,
+        posA.y - size.height * 0.5f, posA.y + size.height * 0.5f
     };
     
-    float closestX = std::max(rectBounds.left, std::min(circle.transform.x, rectBounds.right));
-    float closestY = std::max(rectBounds.top, std::min(circle.transform.y, rectBounds.bottom));
-
-    Position delta { circle.transform.x - closestX, circle.transform.y - closestY };
+    Position closest =
+    {
+        std::max(rectBounds.left, std::min(circle.transform.position.x, rectBounds.right)),
+        std::max(rectBounds.top, std::min(circle.transform.position.y, rectBounds.bottom))
+    };
+    
+    auto& posB = circle.transform.position;
+    Position delta { posB.x - closest.x, posB.y - closest.y };
     float distanceSq = delta.x * delta.x + delta.y * delta.y;
 
     return distanceSq <= circle.collider.radius * circle.collider.radius;

@@ -22,8 +22,9 @@ public:
             if (ctx.world.components().has<HitstopComponent>(entity))
             { if (ctx.world.components().get<HitstopComponent>(entity).frozen) continue; }
 
-            t.x += v.vx * ctx.deltaTime;
-            t.y += v.vy * ctx.deltaTime;
+            auto& pos = t.position;
+            pos.x += v.velocity.x * ctx.deltaTime;
+            pos.y += v.velocity.y * ctx.deltaTime;
         }
     }
 };

@@ -74,8 +74,8 @@ TEST_CASE_METHOD(PlayerControlSystemFixture, "PlayerControlSystem moves, jumps a
     this->scene.update(0.016f);
 
     const auto& updatedVelocity = this->scene.world().components().get<VelocityComponent>(entity);
-    REQUIRE(updatedVelocity.vx == Catch::Approx(240.0f));
-    REQUIRE(updatedVelocity.vy == Catch::Approx(-420.0f));
+    REQUIRE(updatedVelocity.velocity.x == Catch::Approx(240.0f));
+    REQUIRE(updatedVelocity.velocity.y == Catch::Approx(-420.0f));
 
     REQUIRE(events.size() == 3);
     REQUIRE(events[0].trigger == TriggerId::Punched);
@@ -101,7 +101,7 @@ TEST_CASE_METHOD(PlayerControlSystemFixture,
     state.current = StateId::BeingHit;
 
     VelocityComponent velocity;
-    velocity.vx = 123.0f;
+    velocity.velocity.x = 123.0f;
 
     this->scene.world().components().add<InputComponent>(entity, input);
     this->scene.world().components().add<AnalogInputComponent>(entity, analog);
@@ -117,7 +117,7 @@ TEST_CASE_METHOD(PlayerControlSystemFixture,
     this->scene.update(0.016f);
 
     const auto& updatedVelocity = this->scene.world().components().get<VelocityComponent>(entity);
-    REQUIRE(updatedVelocity.vx == Catch::Approx(0.0f));
+    REQUIRE(updatedVelocity.velocity.x == Catch::Approx(0.0f));
     REQUIRE(triggerCount == 0);
 }
 
@@ -154,6 +154,6 @@ TEST_CASE_METHOD(PlayerControlSystemFixture,
     this->scene.update(0.016f);
 
     const auto& updatedVelocity = this->scene.world().components().get<VelocityComponent>(entity);
-    REQUIRE(updatedVelocity.vx == Catch::Approx(50.0f));
+    REQUIRE(updatedVelocity.velocity.x == Catch::Approx(50.0f));
     REQUIRE(triggerCount == 0);
 }

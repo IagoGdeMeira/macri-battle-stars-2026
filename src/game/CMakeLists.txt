@@ -2,6 +2,8 @@ add_library(game STATIC)
 
 target_sources(game
     PRIVATE
+        src/render_formats/WorldCircleRenderFormat.cpp
+        src/render_formats/WorldRectangleRenderFormat.cpp
         src/render_formats/WorldTextureRenderFormat.cpp
         src/scenes/GameScene.cpp
         src/scenes/SelectionScene.cpp
@@ -53,6 +55,7 @@ target_sources(game
         src/UIInputSystem.cpp
         src/UILayoutSystem.cpp
         src/WorldDrawer.cpp
+        src/WorldRenderUtils.cpp
 )
 
 target_include_directories(game

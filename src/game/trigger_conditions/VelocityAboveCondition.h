@@ -19,7 +19,7 @@ public:
         if (!components.has<VelocityComponent>(ctx.entity)) return false;
 
         const auto& vel = components.get<VelocityComponent>(ctx.entity);
-        float speed = std::sqrt(vel.vx * vel.vx + vel.vy * vel.vy);
+        float speed = std::sqrt(vel.velocity.x * vel.velocity.x + vel.velocity.y * vel.velocity.y);
 
         return speed >= this->threshold;
     }

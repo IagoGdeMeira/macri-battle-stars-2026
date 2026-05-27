@@ -78,12 +78,12 @@ DrawCircleCommand WorldDrawer::buildCircleCommand(Entity& entity, World& world, 
 
     auto* circ = static_cast<const CircleDef*>(shapeComp.shape.get());
 
-    Position screenPos = this->worldToScreen({transform.x, transform.y}, this->worldViewport);
+    Position screenPos = this->worldToScreen({transform.position.x, transform.position.y}, this->worldViewport);
     float zoom = this->camera.getZoom();
 
     DrawCircleCommand cmd;
     cmd.circle.position = screenPos;
-    cmd.circle.radius = circ->radius * std::max(std::abs(transform.scaleX), std::abs(transform.scaleY)) * zoom;
+    cmd.circle.radius = circ->radius * std::max(std::abs(transform.scale.x), std::abs(transform.scale.y)) * zoom;
     cmd.color = shapeComp.color;
     cmd.filled = shapeComp.filled;
     cmd.order = order;
@@ -98,14 +98,14 @@ DrawRectangleCommand WorldDrawer::buildRectangleCommand(Entity& entity, World& w
 
     auto* rect = static_cast<const RectangleDef*>(shapeComp.shape.get());
 
-    Position screenPos = this->worldToScreen({transform.x, transform.y}, this->worldViewport);
+    Position screenPos = this->worldToScreen({transform.position.x, transform.position.y}, this->worldViewport);
     float zoom = this->camera.getZoom();
 
     DrawRectangleCommand cmd;
-    cmd.rect.position.x = screenPos.x - (rect->width * std::abs(transform.scaleX) * zoom) * 0.5f;
-    cmd.rect.position.y = screenPos.y - (rect->height * std::abs(transform.scaleY) * zoom) * 0.5f;
-    cmd.rect.size.width = rect->width * std::abs(transform.scaleX) * zoom;
-    cmd.rect.size.height = rect->height * std::abs(transform.scaleY) * zoom;
+    cmd.rect.position.x = screenPos.x - (rect->width * std::abs(transform.scale.x) * zoom) * 0.5f;
+    cmd.rect.position.y = screenPos.y - (rect->height * std::abs(transform.scale.y) * zoom) * 0.5f;
+    cmd.rect.size.width = rect->width * std::abs(transform.scale.x) * zoom;
+    cmd.rect.size.height = rect->height * std::abs(transform.scale.y) * zoom;
     cmd.color = shapeComp.color;
     cmd.filled = shapeComp.filled;
     cmd.order = order;
@@ -120,10 +120,10 @@ DrawTextureCommand WorldDrawer::buildTextureCommand(Entity& entity, World& world
     const auto& render = components.get<RenderComponent>(entity);
 
     const Position parallax = this->resolveParallax(world, entity);
-    const Position screenPos = this->worldToScreen({transform.x, transform.y}, this->worldViewport, parallax);
+    const Position screenPos = this->worldToScreen({transform.position.x, transform.position.y}, this->worldViewport, parallax);
     Rectangle spriteConfig = 
     {
-        { transform.scaleX, transform.scaleY },
+        { transform.scale.x, transform.scale.y },
         static_cast<float>(sprite.size.width), static_cast<float>(sprite.size.height)
     };
 
@@ -178,7 +178,7 @@ Position WorldDrawer::resolveParallax(World& world, Entity entity) const
     if (components.has<ParallaxComponent>(entity))
     {
         auto& par = components.get<ParallaxComponent>(entity);
-        p = { par.factorX, par.factorY };
+        p = { par.factor.x, par.factor.y };
     }
     return p;
 }

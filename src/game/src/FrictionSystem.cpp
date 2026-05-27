@@ -26,8 +26,8 @@ void FrictionSystem::update(UpdateContext& ctx)
         float decay = 1.0f - (effectiveFriction * 0.01f * ctx.deltaTime);
         if (decay < 0.0f) decay = 0.0f;
 
-        v.vx *= decay;
+        v.velocity.x *= decay;
 
-        if (std::abs(v.vx) < 1.0f) v.vx = 0.0f;
+        if (std::abs(v.velocity.x) < 1.0f) v.velocity.x = 0.0f;
     }
 }

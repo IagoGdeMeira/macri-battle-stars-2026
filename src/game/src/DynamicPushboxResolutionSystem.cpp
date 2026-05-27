@@ -57,22 +57,25 @@ void DynamicPushboxResolutionSystem::resolveDynamicCollision(UpdateContext& ctx,
     const Position centerA{ (boundsA.left + boundsA.right) * 0.5f, (boundsA.top + boundsA.bottom) * 0.5f };
     const Position centerB{ (boundsB.left + boundsB.right) * 0.5f, (boundsB.top + boundsB.bottom) * 0.5f };
 
+    auto& posA = transA.position;
+    auto& posB = transB.position;
     if (minOverlap.x < minOverlap.y)
     {
         float half = minOverlap.x * 0.5f;
-        if (centerA.x < centerB.x) { transA.x -= half; transB.x += half; }
-        else { transA.x += half; transB.x -= half; }
 
-        if (comp.has<VelocityComponent>(a)) comp.get<VelocityComponent>(a).vx = 0.f;
-        if (comp.has<VelocityComponent>(b)) comp.get<VelocityComponent>(b).vx = 0.f;
+        if (centerA.x < centerB.x) { posA.x -= half; posB.x += half; }
+        else { posA.x += half; posB.x -= half; }
+
+        if (comp.has<VelocityComponent>(a)) comp.get<VelocityComponent>(a).velocity.x = 0.f;
+        if (comp.has<VelocityComponent>(b)) comp.get<VelocityComponent>(b).velocity.x = 0.f;
     }
     else
     {
         float half = minOverlap.y * 0.5f;
-        if (centerA.y < centerB.y) { transA.y -= half; transB.y += half; }
-        else { transA.y += half; transB.y -= half; }
+        if (centerA.y < centerB.y) { posA.y -= half; posB.y += half; }
+        else { posA.y += half; posB.y -= half; }
 
-        if (comp.has<VelocityComponent>(a)) comp.get<VelocityComponent>(a).vy = 0.f;
-        if (comp.has<VelocityComponent>(b)) comp.get<VelocityComponent>(b).vy = 0.f;
+        if (comp.has<VelocityComponent>(a)) comp.get<VelocityComponent>(a).velocity.y = 0.f;
+        if (comp.has<VelocityComponent>(b)) comp.get<VelocityComponent>(b).velocity.y = 0.f;
     }
 }

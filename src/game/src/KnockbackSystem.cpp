@@ -30,8 +30,8 @@ void KnockbackSystem::update(UpdateContext& ctx)
         {
             const auto& atkTrans = components.get<TransformComponent>(e.attacker);
             const auto& tgtTrans = components.get<TransformComponent>(e.target);
-            dir.x = tgtTrans.x - atkTrans.x;
-            dir.y = tgtTrans.y - atkTrans.y;
+            dir.x = tgtTrans.position.x - atkTrans.position.x;
+            dir.y = tgtTrans.position.y - atkTrans.position.y;
         }
 
         float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
@@ -47,8 +47,8 @@ void KnockbackSystem::update(UpdateContext& ctx)
         }
 
         auto& vel = components.get<VelocityComponent>(e.target);
-        vel.vx += dir.x * baseForce * multiplier;
-        vel.vy += dir.y * baseForce * multiplier;
+        vel.velocity.x += dir.x * baseForce * multiplier;
+        vel.velocity.y += dir.y * baseForce * multiplier;
     }
     this->damageEvents.clear();
 }

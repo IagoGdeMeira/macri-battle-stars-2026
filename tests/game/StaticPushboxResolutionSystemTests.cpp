@@ -61,9 +61,9 @@ TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
     const auto& staticTransform = components.get<TransformComponent>(staticEntity);
     const auto& velocity = components.get<VelocityComponent>(dynamicEntity);
 
-    REQUIRE(dynamicTransform.x == Catch::Approx(-3.0f));
-    REQUIRE(staticTransform.x == Catch::Approx(1.0f));
-    REQUIRE(velocity.vx == 0.0f);
+    REQUIRE(dynamicTransform.position.x == Catch::Approx(-3.0f));
+    REQUIRE(staticTransform.position.x == Catch::Approx(1.0f));
+    REQUIRE(velocity.velocity.x == 0.0f);
 }
 
 TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
@@ -80,6 +80,6 @@ TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
     const auto& dynamicTransform = components.get<TransformComponent>(dynamicEntity);
     const auto& velocity = components.get<VelocityComponent>(dynamicEntity);
 
-    REQUIRE(dynamicTransform.y == Catch::Approx(-3.0f));
-    REQUIRE(velocity.vy == 0.0f);
+    REQUIRE(dynamicTransform.position.y == Catch::Approx(-3.0f));
+    REQUIRE(velocity.velocity.y == 0.0f);
 }

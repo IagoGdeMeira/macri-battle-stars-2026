@@ -1,6 +1,8 @@
 #ifndef velocity_component_h
 #define velocity_component_h
 
-struct VelocityComponent { float vx = 0.0f, vy = 0.0f; };
+#include "../include/Geometry/Geometry.h"
+
+struct VelocityComponent { Position velocity{0.f, 0.f}; };
 
 #endif // velocity_component_h

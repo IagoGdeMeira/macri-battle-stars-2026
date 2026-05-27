@@ -51,9 +51,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback in c
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(target);
-    REQUIRE(velocity.vx == Catch::Approx(300.0f));
-    REQUIRE(velocity.vy == Catch::Approx(0.0f));
+    const auto& v = components.get<VelocityComponent>(target);
+    REQUIRE(v.velocity.x == Catch::Approx(300.0f));
+    REQUIRE(v.velocity.y == Catch::Approx(0.0f));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem normalizes direction vector",
@@ -74,9 +74,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem normalizes direction v
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(target);
-    REQUIRE(velocity.vx == Catch::Approx(180.0f));
-    REQUIRE(velocity.vy == Catch::Approx(240.0f));
+    const auto& v = components.get<VelocityComponent>(target);
+    REQUIRE(v.velocity.x == Catch::Approx(180.0f));
+    REQUIRE(v.velocity.y == Catch::Approx(240.0f));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback multiplier from component",
@@ -98,10 +98,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback mult
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(target);
-
-    REQUIRE(velocity.vx == Catch::Approx(300.0f));
-    REQUIRE(velocity.vy == Catch::Approx(0.0f));
+    const auto& v = components.get<VelocityComponent>(target);
+    REQUIRE(v.velocity.x == Catch::Approx(300.0f));
+    REQUIRE(v.velocity.y == Catch::Approx(0.0f));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles zero distance (attacker same position as target)",
@@ -122,10 +121,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles zero distance 
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(target);
-
-    REQUIRE(velocity.vx == 10.0f);
-    REQUIRE(velocity.vy == 10.0f);
+    const auto& v = components.get<VelocityComponent>(target);
+    REQUIRE(v.velocity.x == 10.0f);
+    REQUIRE(v.velocity.y == 10.0f);
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem ignores damage to entities without required components",
@@ -164,9 +162,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem accumulates velocity f
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(target);
-    REQUIRE(velocity.vx == Catch::Approx(400.0f));
-    REQUIRE(velocity.vy == Catch::Approx(50.0f));
+    const auto& v = components.get<VelocityComponent>(target);
+    REQUIRE(v.velocity.x == Catch::Approx(400.0f));
+    REQUIRE(v.velocity.y == Catch::Approx(50.0f));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles diagonal knockback",
@@ -187,11 +185,11 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles diagonal knock
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(target);
+    const auto& v = components.get<VelocityComponent>(target);
 
     float normalized = 1.0f / std::sqrt(2.0f);
-    REQUIRE(velocity.vx == Catch::Approx(300.0f * normalized));
-    REQUIRE(velocity.vy == Catch::Approx(300.0f * normalized));
+    REQUIRE(v.velocity.x == Catch::Approx(300.0f * normalized));
+    REQUIRE(v.velocity.y == Catch::Approx(300.0f * normalized));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem default multiplier is 1.0 when no KnockbackComponent",
@@ -212,7 +210,7 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem default multiplier is 
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(target);
-    REQUIRE(velocity.vx == Catch::Approx(300.0f));
-    REQUIRE(velocity.vy == Catch::Approx(0.0f));
+    const auto& v = components.get<VelocityComponent>(target);
+    REQUIRE(v.velocity.x == Catch::Approx(300.0f));
+    REQUIRE(v.velocity.y == Catch::Approx(0.0f));
 }

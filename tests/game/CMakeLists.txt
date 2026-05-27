@@ -3,6 +3,9 @@ add_executable(game_tests
     render_formats/UIFontRenderFormatTests.cpp
     render_formats/UIRectangleRenderFormatTests.cpp
     render_formats/UITextureRenderFormatTests.cpp
+    render_formats/WorldCircleRenderFormatTests.cpp
+    render_formats/WorldRectangleRenderFormatTests.cpp
+    render_formats/WorldTextureRenderFormatTests.cpp
     trigger_conditions/CompositeConditionTests.cpp
     trigger_conditions/HealthBelowConditionTests.cpp
     trigger_conditions/InputPressedConditionTests.cpp
@@ -64,6 +67,7 @@ add_executable(game_tests
     UIInputSystemTests.cpp
     UILayoutSystemTests.cpp
     WorldDrawerTests.cpp
+    WorldRenderUtilsTests.cpp
 )
 
 target_link_libraries(game_tests

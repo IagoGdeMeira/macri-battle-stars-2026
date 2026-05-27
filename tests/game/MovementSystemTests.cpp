@@ -66,8 +66,8 @@ TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem updates position",
 
     auto& pos = this->scene.world().components().get<TransformComponent>(e);
 
-    REQUIRE(pos.x == 1.f);
-    REQUIRE(pos.y == 2.f);
+    REQUIRE(pos.position.x == 1.f);
+    REQUIRE(pos.position.y == 2.f);
 }
 
 TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem does not update position without velocity",
@@ -79,8 +79,8 @@ TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem does not update position
 
     auto& pos = this->scene.world().components().get<TransformComponent>(e);
 
-    REQUIRE(pos.x == 0.f);
-    REQUIRE(pos.y == 0.f);
+    REQUIRE(pos.position.x == 0.f);
+    REQUIRE(pos.position.y == 0.f);
 }
 
 TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem does not update position when entity is frozen by hitstop",
@@ -92,6 +92,6 @@ TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem does not update position
 
     auto& pos = this->scene.world().components().get<TransformComponent>(e);
 
-    REQUIRE(pos.x == 0.f);
-    REQUIRE(pos.y == 0.f);
+    REQUIRE(pos.position.x == 0.f);
+    REQUIRE(pos.position.y == 0.f);
 }

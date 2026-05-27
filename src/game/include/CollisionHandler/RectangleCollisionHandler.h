@@ -52,7 +52,8 @@ private:
     AABB buildAABB(const TransformComponent& t, const RectangleColliderComponent& r) const
     {
         float halfW = r.size.width * 0.5f, halfH = r.size.height * 0.5f;
-        return AABB { t.x - halfW, t.x + halfW,  t.y - halfH, t.y + halfH };
+        auto& pos = t.position;
+        return AABB { pos.x - halfW, pos.x + halfW,  pos.y - halfH, pos.y + halfH };
     }
 };
 

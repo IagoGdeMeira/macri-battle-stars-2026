@@ -2,11 +2,13 @@
 
 #include "../../domain/components/PlayerComponent.h"
 #include "../../domain/components/TransformComponent.h"
+#include "../../domain/include/Geometry/Geometry.h"
 #include "../../domain/include/View/View.h"
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 
 void CameraControllerSystem::update(UpdateContext& ctx)
@@ -16,61 +18,48 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     auto it = view.begin();
     if (it == view.end()) return;
 
-    float minX = std::numeric_limits<float>::max();
-    float minY = std::numeric_limits<float>::max();
-    float maxX = std::numeric_limits<float>::lowest();
-    float maxY = std::numeric_limits<float>::lowest();
+    AABB playerBounds =
+    {
+        std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest(),
+        std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest()
+    };
 
     for (; it != view.end(); ++it)
     {
         auto [entity, transform, player] = *it;
 
-        minX = std::min(minX, transform.x);
-        minY = std::min(minY, transform.y);
-        maxX = std::max(maxX, transform.x);
-        maxY = std::max(maxY, transform.y);
+        auto& pos = transform.position;
+        playerBounds.left = std::min(playerBounds.left, pos.x);
+        playerBounds.top = std::min(playerBounds.top, pos.y);
+        playerBounds.right = std::max(playerBounds.right, pos.x);
+        playerBounds.bottom = std::max(playerBounds.bottom, pos.y);
     }
 
-    float centerX = (minX + maxX) * 0.5f;
-    float centerY = (minY + maxY) * 0.5f;
-
-    float width = (maxX - minX) + padding;
-    float height = (maxY - minY) + padding;
-
-    width = std::max(width, 1.0f);
-    height = std::max(height, 1.0f);
+    Position center = {(playerBounds.left + playerBounds.right) * 0.5f, (playerBounds.top + playerBounds.bottom) * 0.5f};
+    Dimension2D size {playerBounds.right - playerBounds.left, playerBounds.bottom - playerBounds.top};
+    size = {std::max(size.width, 1.f), std::max(size.height, 1.f)};
 
     int screenW, screenH;
     this->window.getSize(screenW, screenH);
 
-    float zoomX = static_cast<float>(screenW) / width;
-    float zoomY = static_cast<float>(screenH) / height;
+    Position zoom = { screenW / size.width, screenH / size.height };
 
-    float targetZoom = std::min(zoomX, zoomY);
+    float targetZoom = std::min(zoom.x, zoom.y);
     targetZoom = std::clamp(targetZoom, minZoom, maxZoom);
 
-    float mapMinX = this->bounds.minX;
-    float mapMaxX = this->bounds.maxX;
-    float mapMinY = this->bounds.minY;
-    float mapMaxY = this->bounds.maxY;
+    AABB map = this->bounds;
+    Dimension2D halfScreen = {(screenW / targetZoom) * 0.5f, (screenH / targetZoom) * 0.5f};
+    
+    float clampedX = (map.left + map.right) * 0.5f;
+    float minClampX = map.left + halfScreen.width;
+    float maxClampX = map.right - halfScreen.width;
+    if (minClampX <= maxClampX) clampedX = std::clamp(center.x, minClampX, maxClampX);
 
-    float halfWidth = (screenW / targetZoom) * 0.5f;
-    float halfHeight = (screenH / targetZoom) * 0.5f;
+    float clampedY = (map.top + map.bottom) * 0.5f;
+    float minClampY = map.top + halfScreen.height;
+    float maxClampY = map.bottom - halfScreen.height;
+    if (minClampY <= maxClampY) clampedY = std::clamp(center.y, minClampY, maxClampY);
 
-    float minClampX = mapMinX + halfWidth;
-    float maxClampX = mapMaxX - halfWidth;
-
-    float clampedX;
-    if (minClampX > maxClampX) clampedX = (mapMinX + mapMaxX) * 0.5f;
-    else clampedX = std::clamp(centerX, minClampX, maxClampX);
-
-    float minClampY = mapMinY + halfHeight;
-    float maxClampY = mapMaxY - halfHeight;
-
-    float clampedY;
-    if (minClampY > maxClampY) clampedY = (mapMinY + mapMaxY) * 0.5f;
-    else clampedY = std::clamp(centerY, minClampY, maxClampY);
-
-    camera.setPosition(clampedX, clampedY);
-    camera.setZoom(targetZoom);
+    this->camera.setPosition(clampedX, clampedY);
+    this->camera.setZoom(targetZoom);
 }

@@ -20,7 +20,7 @@ void FaceOffSystem::update(UpdateContext& ctx)
     std::vector<PlayerInfo> players;
 
     for (auto [entity, transform, orientation, player] : view)
-    { players.push_back({entity, transform.x}); }
+    { players.push_back({entity, transform.position.x}); }
 
     if (players.size() < 2) return;
 

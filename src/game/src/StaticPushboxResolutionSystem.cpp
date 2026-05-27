@@ -65,27 +65,27 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
     if (minOverlap.x < minOverlap.y)
     {
         float sep = minOverlap.x;
-        if (dynCenter.x < staCenter.x) dynTrans.x -= sep;
-        else dynTrans.x += sep;
+        if (dynCenter.x < staCenter.x) dynTrans.position.x -= sep;
+        else dynTrans.position.x += sep;
 
-        if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).vx = 0.f;
+        if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).velocity.x = 0.f;
     }
     else
     {
         float sep = minOverlap.y;
         if (dynCenter.y < staCenter.y)
         {
-            dynTrans.y -= sep;
+            dynTrans.position.y -= sep;
             if (comp.has<VelocityComponent>(dyn))
             {
                 auto& vel = comp.get<VelocityComponent>(dyn);
-                if (vel.vy > 0.f) vel.vy = 0.f;
+                if (vel.velocity.y > 0.f) vel.velocity.y = 0.f;
             }
         }
         else
         {
-            dynTrans.y += sep;
-            if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).vy = 0.f;
+            dynTrans.position.y += sep;
+            if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).velocity.y = 0.f;
         }
     }
 }

@@ -1,10 +1,8 @@
 #ifndef parallax_component_h
 #define parallax_component_h
 
-struct ParallaxComponent
-{
-    float factorX = 1.0f;
-    float factorY = 1.0f;
-};
+#include "../include/Geometry/Geometry.h"
+
+struct ParallaxComponent { Position factor{1.f, 1.f}; };
 
 #endif // parallax_component_h

@@ -175,14 +175,14 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     { if (sp.playerId == slot.playerId) { spawnX = sp.x; break; } }
 
     auto& transform = components.get<TransformComponent>(entity);
-    transform.x = spawnX;
+    transform.position.x = spawnX;
 
     if (components.has<SpriteComponent>(entity))
     {
         const auto& sprite = components.get<SpriteComponent>(entity);
-        transform.y = this->mapData.floorY - (sprite.size.height * 0.5f);
+        transform.position.y = this->mapData.floorY - (sprite.size.height * 0.5f);
     }
-    else transform.y = this->mapData.floorY - 32.0f;
+    else transform.position.y = this->mapData.floorY - 32.0f;
     
     if (components.has<StateComponent>(entity))
     { components.get<StateComponent>(entity).current = StateId::Idle; }

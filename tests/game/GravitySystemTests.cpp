@@ -42,9 +42,9 @@ TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem updates vertical velocity 
     this->context.deltaTime = 0.2f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vx == 1.0f);
-    REQUIRE(velocity.vy == Catch::Approx(5.0f));
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.x == 1.0f);
+    REQUIRE(v.velocity.y == Catch::Approx(5.0f));
 }
 
 TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem updates only entities that have VelocityComponent and GravityComponent",
@@ -69,9 +69,9 @@ TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem updates only entities that
     const auto& velocityWithBoth = components.get<VelocityComponent>(withBoth);
     const auto& velocityOnly = components.get<VelocityComponent>(withVelocityOnly);
 
-    REQUIRE(velocityWithBoth.vy == Catch::Approx(13.0f));
-    REQUIRE(velocityOnly.vx == 4.0f);
-    REQUIRE(velocityOnly.vy == 6.0f);
+    REQUIRE(velocityWithBoth.velocity.y == Catch::Approx(13.0f));
+    REQUIRE(velocityOnly.velocity.x == 4.0f);
+    REQUIRE(velocityOnly.velocity.y == 6.0f);
     REQUIRE(components.has<GravityComponent>(withGravityOnly));
 }
 
@@ -87,6 +87,6 @@ TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem supports negative gravity 
     this->context.deltaTime = 0.4f;
     this->system.update(this->context);
 
-    const auto& velocity = components.get<VelocityComponent>(entity);
-    REQUIRE(velocity.vy == Catch::Approx(8.0f));
+    const auto& v = components.get<VelocityComponent>(entity);
+    REQUIRE(v.velocity.y == Catch::Approx(8.0f));
 }

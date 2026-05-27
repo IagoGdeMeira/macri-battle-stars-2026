@@ -25,10 +25,10 @@ void LocalToWorldSystem::update(UpdateContext& ctx)
 }
 
 float LocalToWorldSystem::rotateLocalX(const LocalTransform& local, float cosR, float sinR)
-{ return local.x * cosR - local.y * sinR; }
+{ return local.position.x * cosR - local.position.y * sinR; }
 
 float LocalToWorldSystem::rotateLocalY(const LocalTransform& local, float cosR, float sinR)
-{ return local.x * sinR + local.y * cosR; }
+{ return local.position.x * sinR + local.position.y * cosR; }
 
 void LocalToWorldSystem::applyParentTransform(
     TransformComponent& transform,
@@ -41,11 +41,11 @@ void LocalToWorldSystem::applyParentTransform(
     float rotatedX = LocalToWorldSystem::rotateLocalX(local, cosR, sinR);
     float rotatedY = LocalToWorldSystem::rotateLocalY(local, cosR, sinR);
 
-    transform.x = parentTransform.x + rotatedX * parentTransform.scaleX;
-    transform.y = parentTransform.y + rotatedY * parentTransform.scaleY;
+    transform.position.x = parentTransform.position.x + rotatedX * parentTransform.scale.x;
+    transform.position.y = parentTransform.position.y + rotatedY * parentTransform.scale.y;
 
     transform.rotation = parentTransform.rotation + local.rotation;
 
-    transform.scaleX = parentTransform.scaleX * local.scaleX;
-    transform.scaleY = parentTransform.scaleY * local.scaleY;
+    transform.scale.x = parentTransform.scale.x * local.scale.x;
+    transform.scale.y = parentTransform.scale.y * local.scale.y;
 }

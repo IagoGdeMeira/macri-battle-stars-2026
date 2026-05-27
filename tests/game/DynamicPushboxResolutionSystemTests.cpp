@@ -62,10 +62,10 @@ TEST_CASE_METHOD(DynamicPushboxResolutionSystemFixture,
     const auto& leftVelocity = components.get<VelocityComponent>(left);
     const auto& rightVelocity = components.get<VelocityComponent>(right);
 
-    REQUIRE(leftTransform.x == Catch::Approx(-1.5f));
-    REQUIRE(rightTransform.x == Catch::Approx(2.5f));
-    REQUIRE(leftVelocity.vx == 0.0f);
-    REQUIRE(rightVelocity.vx == 0.0f);
+    REQUIRE(leftTransform.position.x == Catch::Approx(-1.5f));
+    REQUIRE(rightTransform.position.x == Catch::Approx(2.5f));
+    REQUIRE(leftVelocity.velocity.x == 0.0f);
+    REQUIRE(rightVelocity.velocity.x == 0.0f);
 }
 
 TEST_CASE_METHOD(DynamicPushboxResolutionSystemFixture,
@@ -84,8 +84,8 @@ TEST_CASE_METHOD(DynamicPushboxResolutionSystemFixture,
     const auto& topVelocity = components.get<VelocityComponent>(top);
     const auto& bottomVelocity = components.get<VelocityComponent>(bottom);
 
-    REQUIRE(topTransform.y == Catch::Approx(-1.5f));
-    REQUIRE(bottomTransform.y == Catch::Approx(2.5f));
-    REQUIRE(topVelocity.vy == 0.0f);
-    REQUIRE(bottomVelocity.vy == 0.0f);
+    REQUIRE(topTransform.position.y == Catch::Approx(-1.5f));
+    REQUIRE(bottomTransform.position.y == Catch::Approx(2.5f));
+    REQUIRE(topVelocity.velocity.y == 0.0f);
+    REQUIRE(bottomVelocity.velocity.y == 0.0f);
 }

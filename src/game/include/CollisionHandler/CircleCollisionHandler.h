@@ -55,7 +55,8 @@ private:
     AABB buildCircleAABB(const TransformComponent& t, const CircleColliderComponent& c) const
     {
         float r = c.radius;
-        return AABB { t.x - r, t.x + r, t.y - r, t.y + r };
+        auto& pos = t.position;
+        return AABB { pos.x - r, pos.x + r, pos.y - r, pos.y + r };
     }
 };
 

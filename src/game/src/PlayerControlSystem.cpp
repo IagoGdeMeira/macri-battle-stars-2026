@@ -46,15 +46,15 @@ void PlayerControlSystem::update(UpdateContext& ctx)
                 if (this->hasInputAction(input, InputAction::MoveLeft)) targetVx = -this->moveSpeed;
                 else if (this->hasInputAction(input, InputAction::MoveRight)) targetVx = this->moveSpeed;
             }
-            velocity.vx = targetVx;
+            velocity.velocity.x = targetVx;
         }
-        else velocity.vx = 0.0f;
+        else velocity.velocity.x = 0.0f;
         
         bool grounded = false;
         if (comp.has<GroundedComponent>(entity)) grounded = comp.get<GroundedComponent>(entity).onGround;
 
         if (grounded && this->hasInputAction(input, InputAction::Jump))
-        { velocity.vy = this->jumpImpulse; }
+        { velocity.velocity.y = this->jumpImpulse; }
 
         if (!canMove) continue; 
 
@@ -94,7 +94,7 @@ void PlayerControlSystem::applyMovement(UpdateContext& ctx, Entity entity, bool 
     auto& comp = ctx.world.components();
     auto& velocity = comp.get<VelocityComponent>(entity);
     
-    if (!canMove) { velocity.vx = 0.0f; return; }
+    if (!canMove) { velocity.velocity.x = 0.0f; return; }
 
     auto& input  = comp.get<InputComponent>(entity);
     auto& analog = comp.get<AnalogInputComponent>(entity);
@@ -107,7 +107,7 @@ void PlayerControlSystem::applyMovement(UpdateContext& ctx, Entity entity, bool 
         else if (this->hasInputAction(input, InputAction::MoveRight)) targetVx = this->moveSpeed;
     }
 
-    velocity.vx = targetVx;
+    velocity.velocity.x = targetVx;
 }
 
 void PlayerControlSystem::applyJump(UpdateContext& ctx, Entity entity) const
@@ -118,7 +118,7 @@ void PlayerControlSystem::applyJump(UpdateContext& ctx, Entity entity) const
 
     bool grounded = false;
     if (comp.has<GroundedComponent>(entity)) grounded = comp.get<GroundedComponent>(entity).onGround;
-    if (grounded && this->hasInputAction(input, InputAction::Jump)) velocity.vy = this->jumpImpulse;
+    if (grounded && this->hasInputAction(input, InputAction::Jump)) velocity.velocity.y = this->jumpImpulse;
 }
 
 void PlayerControlSystem::emitTriggers(UpdateContext& ctx, Entity entity, bool canMove)
