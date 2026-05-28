@@ -10,6 +10,7 @@
 #include "../../include/WorldDrawer/WorldDrawer.h"
 
 #include "../../../engine/include/EventBus/EventBus.h"
+#include "../../../engine/include/GameSettings/GameSettings.h"
 #include "../../../engine/include/InputContext/InputContext.h"
 #include "../../../engine/include/Renderer/Renderer.h"
 #include "../../../engine/include/ResourceManager/ResourceManager.h"
@@ -42,6 +43,7 @@ public:
         MapData mapData;
         ResourceManager& resourceManager;
         TextureLoader& textureLoader;
+        GameSettings& settings;
     };
 
     explicit GameScene(Config&& config);
@@ -69,6 +71,7 @@ private:
     MapData mapData;
     ResourceManager& resourceManager;
     TextureLoader& textureLoader;
+    GameSettings& settings;
 
     std::unique_ptr<WorldDrawer> worldDrawer;
     std::unique_ptr<EntityFactory> entityFactory;

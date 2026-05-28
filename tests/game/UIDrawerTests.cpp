@@ -8,6 +8,7 @@
 #include "../../src/domain/include/World/World.h"
 
 #include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/GameSettings/GameSettings.h"
 #include "../../src/engine/include/RenderContext/RenderContext.h"
 #include "../../src/engine/include/Renderer/Renderer.h"
 
@@ -60,7 +61,7 @@ public:
         { this->viewportCalls++; this->lastViewport = viewport; }
     };
 
-    UIDrawerFixture() : drawer(this->renderer), context{ this->world, this->bus }
+    UIDrawerFixture() : drawer(this->bus, this->renderer, this->settings), context{ this->world, this->bus }
     {
         auto& components = this->world.components();
         components.registerComponent<RenderComponent>();
@@ -109,6 +110,7 @@ public:
     World world;
     EventBus bus;
     StubRenderer renderer;
+    GameSettings settings;
     UIDrawer drawer;
     RenderContext context;
 };

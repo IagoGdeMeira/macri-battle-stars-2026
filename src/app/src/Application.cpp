@@ -135,7 +135,7 @@ void Application::setupInitialScene()
         .textureLoader = *this->textureLoader
     });
 
-    this->engine = std::make_unique<Engine>(*this->window, *this->sceneFactory);
+    this->engine = std::make_unique<Engine>(*this->window, *this->sceneFactory, this->gameSettings);
     this->sceneFactory->engine = this->engine.get();
     this->engine->setRenderer(*this->renderer);
 
@@ -170,6 +170,7 @@ void Application::setupInitialScene()
         .renderer = *this->renderer,
         .mapData = std::move(defaultMap),
         .resourceManager = *this->resourceManager,
-        .textureLoader = *this->textureLoader
+        .textureLoader = *this->textureLoader,
+        .settings = this->engine->settings()
     });
 }

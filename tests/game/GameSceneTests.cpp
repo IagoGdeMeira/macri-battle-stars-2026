@@ -260,6 +260,7 @@ public:
     ResourceManager resourceManager { this->threadPool };
     StubRenderer renderer;
     StubFactory factory;
+    GameSettings settings;
 };
 
 TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay components",
@@ -317,7 +318,8 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene init registers core gameplay compo
         .renderer = this->renderer,
         .mapData = std::move(mapData),
         .resourceManager = this->resourceManager,
-        .textureLoader = textureLoader
+        .textureLoader = textureLoader,
+        .settings = this->settings
     });
 
     auto& components = scene.world().components();

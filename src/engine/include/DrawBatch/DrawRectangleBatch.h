@@ -12,7 +12,7 @@ public:
     void submit(Renderer& renderer) override
     {
         this->sort();
-        for (const auto& cmd : commands) renderer.drawRectangle(cmd);
+        for (const auto& cmd : this->commands) renderer.drawRectangle(cmd);
     }
 };
 

@@ -18,7 +18,7 @@ public:
     WorldTextureRenderFormat(Renderer& renderer, Camera2D& camera) : renderer(renderer), camera(camera) {}
 
     void render(RenderContext& ctx) override;
-    void setViewport(const Viewport& vp) { this->viewport = vp; }
+    void setViewport(const Viewport& vp) override { this->viewport = vp; }
 
 private:
     Renderer& renderer;

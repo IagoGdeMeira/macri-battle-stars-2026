@@ -51,6 +51,8 @@ public:
         this->batch.submit(this->renderer);
     }
 
+    void setViewport(const Viewport& vp) override { (void)vp; }
+
 private:
     DrawTextureBatch batch;
     Renderer& renderer;

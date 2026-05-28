@@ -11,6 +11,7 @@
 
 #include "../../../engine/include/Drawer/Drawer.h"
 #include "../../../engine/include/EventBus/EventBus.h"
+#include "../../../engine/include/GameSettings/GameSettings.h"
 #include "../../../engine/include/Renderer/Renderer.h"
 #include "../../../engine/include/Viewport/Viewport.h"
 
@@ -21,17 +22,22 @@
 class UIDrawer : public Drawer
 {
 public:
-    UIDrawer(Renderer& renderer);
+    UIDrawer(EventBus& bus, Renderer& renderer, GameSettings& settings);
     void draw(RenderContext& ctx) override;
 
 private:
     Renderer& renderer;
-    Viewport uiViewport { 0, 0, 800, 600 };
+    GameSettings& settings;
 
     std::vector<std::unique_ptr<IRenderFormat>> formats;
+    Viewport uiViewport {0, 0,
+        static_cast<int>(GameSettings::VIRTUAL_SIZE.width),
+        static_cast<int>(GameSettings::VIRTUAL_SIZE.height)};
 
     void addFormat(std::unique_ptr<IRenderFormat> format)
     { this->formats.push_back(std::move(format)); }
+
+    void recalculateViewport();
 };
 
 #endif // ui_drawer_h

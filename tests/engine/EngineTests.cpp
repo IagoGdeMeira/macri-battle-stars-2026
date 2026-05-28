@@ -4,6 +4,7 @@
 
 #include "../../src/engine/events/PlatformEvent.h"
 #include "../../src/engine/events/QuitEvent.h"
+#include "../../src/engine/include/GameSettings/GameSettings.h"
 #include "../../src/engine/include/InputAdapter/InputAdapter.h"
 #include "../../src/engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
 #include "../../src/engine/include/Scene/Scene.h"
@@ -105,7 +106,7 @@ public:
         EventBus* eventBus = nullptr;
     };
 
-    EngineFixture() : engine(window, factory) { this->factory.setEventBus(this->engine.events()); }
+    EngineFixture() : engine(window, factory, settings) { this->factory.setEventBus(this->engine.events()); }
 
 protected:
     class StubWindow : public Window
@@ -119,6 +120,7 @@ protected:
 
     StubWindow window;
     TestSceneFactory factory;
+    GameSettings settings;
     Engine engine;
 };
 

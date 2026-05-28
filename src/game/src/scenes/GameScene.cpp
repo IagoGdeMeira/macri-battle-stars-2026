@@ -55,7 +55,8 @@ GameScene::GameScene(Config&& config) :
     renderer(config.renderer),
     mapData(std::move(config.mapData)),
     resourceManager(config.resourceManager),
-    textureLoader(config.textureLoader)
+    textureLoader(config.textureLoader),
+    settings(config.settings)
 {
     auto& world = this->world();
     auto& resources = this->resourceManager;
@@ -98,7 +99,7 @@ GameScene::GameScene(Config&& config) :
     auto& cam = this->camera;
     systems.addSystem<CameraControllerSystem>(cam, this->window);
 
-    this->worldDrawer = std::make_unique<WorldDrawer>(events, this->renderer, cam);
+    this->worldDrawer = std::make_unique<WorldDrawer>(events, this->renderer, cam, this->settings);
 }
 
 void GameScene::init() { this->prepareScene(); }

@@ -13,6 +13,7 @@
 
 #include "../../src/engine/events/WindowResizedEvent.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/GameSettings/GameSettings.h"
 #include "../../src/engine/include/RenderContext/RenderContext.h"
 #include "../../src/engine/include/Renderer/Renderer.h"
 
@@ -26,7 +27,15 @@
 class WorldDrawerFixture
 {
 public:
-    WorldDrawerFixture() : drawer(bus, renderer, camera), context{ world, bus }
+    static GameSettings makeSettings()
+    {
+        GameSettings settings;
+        settings.screen.size = { 1920.0f, 1080.0f };
+        return settings;
+    }
+
+    WorldDrawerFixture() : settings(WorldDrawerFixture::makeSettings()), drawer(bus, renderer, camera, settings), context
+        {world, bus}
     {
         auto& components = this->world.components();
 
@@ -138,6 +147,7 @@ protected:
     EventBus bus;
     StubRenderer renderer;
     Camera2D camera;
+    GameSettings settings;
     WorldDrawer drawer;
     RenderContext context;
 };
@@ -182,13 +192,15 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards resized world viewpor
     rectangleShape->width = 12.0f;
     rectangleShape->height = 8.0f;
     components.add<TransformComponent>(rectangleEntity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
-    components.add<ShapeRenderComponent>(rectangleEntity, ShapeRenderComponent{ std::move(rectangleShape), Color{ 1, 2, 3, 4 }, true });
+    components.add<ShapeRenderComponent>(rectangleEntity, ShapeRenderComponent{
+        std::move(rectangleShape), Color{ 1, 2, 3, 4 }, true });
 
     const auto circleEntity = this->world.entities().create();
     auto circleShape = std::make_unique<CircleDef>();
     circleShape->radius = 7.0f;
     components.add<TransformComponent>(circleEntity, TransformComponent{ 10.0f, 20.0f, 2.0f, 3.0f, 0.0f });
-    components.add<ShapeRenderComponent>(circleEntity, ShapeRenderComponent{ std::move(circleShape), Color{ 9, 8, 7, 6 }, false });
+    components.add<ShapeRenderComponent>(circleEntity, ShapeRenderComponent{
+        std::move(circleShape), Color{ 9, 8, 7, 6 }, false });
 
     this->drawer.draw(this->context);
 
@@ -232,8 +244,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.drawTextureCalls == 1);
-    REQUIRE(this->renderer.lastDrawX == 415);
-    REQUIRE(this->renderer.lastDrawY == 330);
+    REQUIRE(this->renderer.lastDrawX == 735);
+    REQUIRE(this->renderer.lastDrawY == 570);
     REQUIRE(this->renderer.lastDrawWidth == 48);
     REQUIRE(this->renderer.lastDrawHeight == 36);
     REQUIRE(this->renderer.lastDrawRotation == 0.0f);
@@ -316,8 +328,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws filled rectangle shapes"
 
     REQUIRE(this->renderer.drawRectFilledCalls == 1);
     REQUIRE(this->renderer.drawRectOutlineCalls == 0);
-    REQUIRE(this->renderer.lastRect.position.x == 398.0f);
-    REQUIRE(this->renderer.lastRect.position.y == 308.0f);
+    REQUIRE(this->renderer.lastRect.position.x == 718.0f);
+    REQUIRE(this->renderer.lastRect.position.y == 548.0f);
     REQUIRE(this->renderer.lastRect.size.width == 24.0f);
     REQUIRE(this->renderer.lastRect.size.height == 24.0f);
     REQUIRE(this->renderer.lastColor.r == 1);
@@ -343,8 +355,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes",
 
     REQUIRE(this->renderer.drawCircleOutlineCalls == 1);
     REQUIRE(this->renderer.drawCircleFilledCalls == 0);
-    REQUIRE(this->renderer.lastCircle.position.x == 420.0f);
-    REQUIRE(this->renderer.lastCircle.position.y == 340.0f);
+    REQUIRE(this->renderer.lastCircle.position.x == 740.0f);
+    REQUIRE(this->renderer.lastCircle.position.y == 580.0f);
     REQUIRE(this->renderer.lastCircle.radius == 42.0f);
     REQUIRE(this->renderer.lastColor.r == 9);
     REQUIRE(this->renderer.lastColor.g == 8);

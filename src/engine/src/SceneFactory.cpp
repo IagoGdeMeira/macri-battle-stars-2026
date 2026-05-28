@@ -66,7 +66,8 @@ std::unique_ptr<Scene> SceneFactory::createScene(SceneId id, std::any data)
                 .renderer = renderer,
                 .mapData = std::move(mapData),
                 .resourceManager = this->resourceManager,
-                .textureLoader = this->textureLoader
+                .textureLoader = this->textureLoader,
+                .settings = this->engine->settings()
             };
             return std::make_unique<GameScene>(std::move(cfg));
         }

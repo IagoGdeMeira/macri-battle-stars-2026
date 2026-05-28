@@ -1,5 +1,7 @@
 #include "../../src/engine/include/SceneFactory/SceneFactory.h"
 
+#include "../../src/engine/include/GameSettings/GameSettings.h"
+
 #include "../../src/domain/include/Color/Color.h"
 
 #include "../../src/engine/include/DataNode/DataNode.h"
@@ -122,7 +124,7 @@ public:
             this->resourceManager,
             this->textureLoader
         }),
-        engine(this->window, this->sceneFactory)
+        engine(this->window, this->sceneFactory, this->settings)
     {
         this->sceneFactory.engine = &this->engine;
         this->roster.addEntry(CharacterEntry{ "fighter_01", "Fighter 01", "assets/characters/fighter_01.json" });
@@ -143,6 +145,7 @@ public:
     ResourceManager resourceManager;
     StubRenderer renderer;
     StubFactory factory;
+    GameSettings settings;
 
     DummyParser definitionParser;
     DummyParser animationParser;

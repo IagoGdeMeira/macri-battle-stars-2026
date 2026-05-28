@@ -7,19 +7,21 @@
 #include "../../engine/events/WindowResizedEvent.h"
 
 WorldDrawer::WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera, GameSettings& settings) :
-    renderer(renderer), settings(settings)
+    renderer(renderer), camera(camera), settings(settings)
 {
-    bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent& e)
+    this->recalculateViewport();
+
+    bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent&)
     {
-        this->windowSize = {static_cast<float>(e.width), static_cast<float>(e.height)};
-        this->updateViewports();
+        this->recalculateViewport();
+        this->propagateViewport();
     });
 
     this->addFormat(std::make_unique<WorldTextureRenderFormat>(renderer, camera));
     this->addFormat(std::make_unique<WorldRectangleRenderFormat>(renderer, camera));
     this->addFormat(std::make_unique<WorldCircleRenderFormat>(renderer, camera));
 
-    this->updateViewports();
+    this->propagateViewport();
 }
 
 void WorldDrawer::draw(RenderContext& ctx)
@@ -28,33 +30,22 @@ void WorldDrawer::draw(RenderContext& ctx)
     for (auto& format : this->formats) format->render(ctx);
 }
 
-void WorldDrawer::updateViewports()
+void WorldDrawer::recalculateViewport()
 {
+    const Dimension2D& winSize = this->settings.screen.size;
     const float scale = std::min(
-        this->windowSize.width / WorldDrawer::VIRTUAL_SIZE.width,
-        this->windowSize.height / WorldDrawer::VIRTUAL_SIZE.height);
+        winSize.width / GameSettings::VIRTUAL_SIZE.width,
+        winSize.height / GameSettings::VIRTUAL_SIZE.height);
 
-    const Dimension2D scaledSize { WorldDrawer::VIRTUAL_SIZE.width * scale, WorldDrawer::VIRTUAL_SIZE.height * scale };
-
-    Position offset
-    {
-        (this->windowSize.width - scaledSize.width) * 0.5f,
-        (this->windowSize.height - scaledSize.height) * 0.5f
-    };
+    const Dimension2D& viewSize = { GameSettings::VIRTUAL_SIZE.width * scale, GameSettings::VIRTUAL_SIZE.height * scale };
+    const Position offset = {(winSize.width - viewSize.width) * 0.5f, (winSize.height - viewSize.height) * 0.5f};
 
     this->worldViewport =
     {
         static_cast<int>(offset.x), static_cast<int>(offset.y),
-        static_cast<int>(scaledSize.width), static_cast<int>(scaledSize.height)
+        static_cast<int>(viewSize.width), static_cast<int>(viewSize.height)
     };
-
-    for (auto& format : this->formats)
-    {
-        if (auto* textFmt = dynamic_cast<WorldTextureRenderFormat*>(format.get()))
-        { textFmt->setViewport(this->worldViewport); }
-        else if (auto* rectFmt = dynamic_cast<WorldRectangleRenderFormat*>(format.get()))
-        { rectFmt->setViewport(this->worldViewport); }
-        else if (auto* circleFmt = dynamic_cast<WorldCircleRenderFormat*>(format.get()))
-        { circleFmt->setViewport(this->worldViewport); }
-    }
 }
+
+void WorldDrawer::propagateViewport()
+{ for (auto& format : this->formats) format->setViewport(this->worldViewport); }

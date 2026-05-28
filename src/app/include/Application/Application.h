@@ -4,6 +4,7 @@
 #include "../../app/include/ISystemInitializer/ISystemInitializer.h"
 
 #include "../../engine/include/Engine/Engine.h"
+#include "../../engine/include/GameSettings/GameSettings.h"
 #include "../../engine/include/InputContext/InputContext.h"
 #include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
 #include "../../engine/include/SceneFactory/SceneFactory.h"
@@ -52,6 +53,7 @@ private:
     std::string windowTitle = "Macri Battle Stars";
     int windowWidth = 800;
     int windowHeight = 600;
+    GameSettings gameSettings;
 
     std::unique_ptr<ISystemInitializer> initializer;
     std::unique_ptr<IPlatformFactory> platformFactory;
