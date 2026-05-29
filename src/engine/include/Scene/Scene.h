@@ -6,12 +6,37 @@
 
 #include "../../domain/include/World/World.h"
 
+class DataParser;
+class Engine;
 class EventBus;
+class GameSettings;
+class IFontFactory;
+class ITextureFactory;
+class Renderer;
+class ResourceManager;
+class SceneManager;
+class TextureLoader;
+class Window;
 
 class Scene
 {
 public:
     enum class UpdatePolicy { Always, WhenTop, Never };
+
+    struct Config
+    {
+        EventBus* eventBus = nullptr;
+        SceneManager* sceneManager = nullptr;
+        Renderer* renderer = nullptr;
+        Window* window = nullptr;
+        DataParser* parser = nullptr;
+        ResourceManager* resourceManager = nullptr;
+        TextureLoader* textureLoader = nullptr;
+        GameSettings* settings = nullptr;
+        Engine* engine = nullptr;
+        IFontFactory* fontFactory = nullptr;
+        ITextureFactory* textureFactory = nullptr;
+    };
 
     Scene(EventBus& eventBus) : eventBus(eventBus) {}
     virtual ~Scene() = default;

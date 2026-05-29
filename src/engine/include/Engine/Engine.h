@@ -5,15 +5,15 @@
 #include "../GameSettings/GameSettings.h"
 #include "../InputAdapter/InputAdapter.h"
 #include "../InputManager/InputManager.h"
-#include "../ISceneFactory/ISceneFactory.h"
 #include "../Renderer/Renderer.h"
+#include "../SceneFactory/SceneFactory.h"
 #include "../SceneManager/SceneManager.h"
 #include "../Window/Window.h"
 
 class Engine
 {
 public:
-    Engine(Window& window, ISceneFactory& factory, GameSettings& settings);
+    Engine(Window& window, SceneFactory& factory, GameSettings& settings);
 
     Renderer* getRenderer() { return this->renderer; } 
 
@@ -34,6 +34,7 @@ private:
     GameSettings& gameSettings;
     Renderer* renderer = nullptr;
 
+    SceneFactory& sceneFactory;
     SceneManager sceneManager;
     EventBus eventBus;
     InputManager inputManager;

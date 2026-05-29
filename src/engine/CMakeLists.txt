@@ -11,7 +11,6 @@ target_sources(engine
         src/InputMapper.cpp
         src/InputSystem.cpp
         src/Scene.cpp
-        src/SceneFactory.cpp
         src/SceneManager.cpp
         src/SystemManager.cpp
 )

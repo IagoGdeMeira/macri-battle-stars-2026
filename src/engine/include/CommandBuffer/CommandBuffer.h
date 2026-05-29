@@ -9,11 +9,11 @@ class World;
 class CommandBuffer
 {
 public:
-    void create(std::function<void(World &)> cmd);
-    void flush(World &world);
+    void create(std::function<void(World&)> cmd);
+    void flush(World& world);
 
 private:
-    std::vector<std::function<void(World &)>> commands;
+    std::vector<std::function<void(World&)>> commands;
 };
 
 #endif // command_buffer_h

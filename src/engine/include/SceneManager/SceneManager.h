@@ -1,40 +1,31 @@
 #ifndef scene_manager_h
 #define scene_manager_h
 
-#include "../ISceneFactory/ISceneFactory.h"
 #include "../Scene/Scene.h"
-#include "../SceneId/SceneId.h"
+#include "../SceneFactory/SceneFactory.h"
 
-#include <any>
-#include <memory>
 #include <vector>
+#include <memory>
 
 class SceneManager
 {
 public:
-    explicit SceneManager(ISceneFactory& factory) : factory(factory) {}
-    ~SceneManager() = default;
+    explicit SceneManager(SceneFactory& factory) : factory(factory) {}
 
-    template <typename Data>
-    void changeScene(SceneId id, Data&& data);
+    template <typename SceneType>
+    void changeScene(typename SceneType::Config config);
 
-    template <typename Data>
-    void pushScene(SceneId id, Data&& data);
-    
+    void pushScene(std::unique_ptr<Scene> scene);
     void popScene();
 
-    Scene* currentScene() { return this->sceneStack.empty() ? nullptr : this->sceneStack.back().get(); }
-    bool empty() const { return this->sceneStack.empty(); }
+    Scene* currentScene() const { return this->sceneStack.empty() ? nullptr : this->sceneStack.back().get(); }
 
     void update(float deltaTime);
     void render() { for (auto& scene : this->sceneStack) scene->render(); }
 
 private:
-    ISceneFactory& factory;
+    SceneFactory& factory;
     std::vector<std::unique_ptr<Scene>> sceneStack;
-
-    std::unique_ptr<Scene> createScene(SceneId id, std::any data);
-    void startScene(std::unique_ptr<Scene> scene);
 };
 
 #include "SceneManager.inl"

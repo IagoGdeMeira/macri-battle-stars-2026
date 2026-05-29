@@ -1,73 +1,64 @@
 #ifndef scene_factory_h
 #define scene_factory_h
 
-#include "../include/ISceneFactory/ISceneFactory.h"
-
-#include "../../game/include/Camera2D/Camera2D.h"
-#include "../../game/include/CharacterLoader/CharacterLoader.h"
-#include "../../game/include/CharacterRoster/CharacterRoster.h"
-#include "../../game/include/MapRoster/MapRoster.h"
-
-#include <any>
 #include <memory>
-#include <vector>
 
 class DataParser;
 class Engine;
+class IFontFactory;
+class ITextureFactory;
 class ResourceManager;
+class TextureLoader;
 class Window;
 
-struct Combo;
-struct InputContext;
-struct TriggerContext;
-
-class SceneFactory : public ISceneFactory
+class SceneFactory
 {
 public:
     struct Config
     {
         Window& window;
-        InputContext& inputContext;
-        TriggerContext& triggerContext;
-        CharacterRoster& characterRoster;
-        CharacterLoader& characterLoader;
-        Camera2D& camera;
-        std::vector<Combo>& globalCombos;
-        MapRoster& mapRoster;
         DataParser& parser;
         ResourceManager& resourceManager;
         TextureLoader& textureLoader;
+        Renderer& renderer;
+        EventBus& eventBus;
+        SceneManager& sceneManager;
+        GameSettings& settings;
+        Engine& engine;
+        IFontFactory& fontFactory;
+        ITextureFactory& textureFactory;
     };
 
-    explicit SceneFactory(Config&& config) :
+    explicit SceneFactory(Config&& config) : 
         window(config.window),
-        inputContext(config.inputContext),
-        triggerContext(config.triggerContext),
-        characterRoster(config.characterRoster),
-        characterLoader(config.characterLoader),
-        camera(config.camera),
-        globalCombos(config.globalCombos),
-        mapRoster(config.mapRoster),
         parser(config.parser),
         resourceManager(config.resourceManager),
-        textureLoader(config.textureLoader) {}
+        textureLoader(config.textureLoader),
+        renderer(config.renderer),
+        eventBus(config.eventBus),
+        sceneManager(config.sceneManager),
+        settings(config.settings),
+        engine(config.engine),
+        fontFactory(config.fontFactory),
+        textureFactory(config.textureFactory) {}
 
-    std::unique_ptr<Scene> createScene(SceneId id, std::any data) override;
-
-    Engine* engine = nullptr;
+    template <typename SceneType>
+    std::unique_ptr<Scene> createScene(typename SceneType::Config cfg);
 
 private:
     Window& window;
-    InputContext& inputContext;
-    TriggerContext& triggerContext;
-    CharacterRoster& characterRoster;
-    CharacterLoader& characterLoader;
-    Camera2D& camera;
-    std::vector<Combo>& globalCombos;
-    MapRoster& mapRoster;
     DataParser& parser;
     ResourceManager& resourceManager;
     TextureLoader& textureLoader;
+    Renderer& renderer;
+    EventBus& eventBus;
+    SceneManager& sceneManager;
+    GameSettings& settings;
+    Engine& engine;
+    IFontFactory& fontFactory;
+    ITextureFactory& textureFactory;
 };
+
+#include "SceneFactory.inl"
 
 #endif // scene_factory_h

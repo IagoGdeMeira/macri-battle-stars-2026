@@ -2,7 +2,7 @@
 
 #include "../../domain/include/World/World.h"
 
-void CommandBuffer::create(std::function<void(World &)> cmd)
+void CommandBuffer::create(std::function<void(World&)> cmd)
 { this->commands.push_back(std::move(cmd)); }
 
 void CommandBuffer::flush(World& world)

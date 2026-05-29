@@ -3,24 +3,19 @@
 
 #include <stdexcept>
 
-template <typename Data>
-void SceneManager::changeScene(SceneId id, Data &&data)
+template <typename SceneType>
+void SceneManager::changeScene(typename SceneType::Config config)
 {
-    if (!this->sceneStack.empty()) this->sceneStack.back()->onExit();
+    auto& stack = this->sceneStack;
+    if (!stack.empty()) stack.back()->onExit();
+    
+    auto newScene = this->factory.createScene<SceneType>(std::move(config));
 
-    this->sceneStack.clear();
+    stack.clear();
+    stack.push_back(std::move(newScene));
 
-    auto newScene = this->createScene(id, std::forward<Data>(data));
-    this->startScene(std::move(newScene));
-}
-
-template <typename Data>
-void SceneManager::pushScene(SceneId id, Data&& data)
-{
-    if (!this->sceneStack.empty()) this->sceneStack.back()->onPause();
-
-    auto newScene = this->createScene(id, std::forward<Data>(data));
-    this->startScene(std::move(newScene));
+    stack.back()->init();
+    stack.back()->onEnter();
 }
 
 #endif // scene_manager_inl

@@ -15,7 +15,6 @@ public:
     Screen screen;
     
     Viewport viewport {0, 0, 800, 600};
-    static constexpr Dimension2D VIRTUAL_SIZE {800.f, 600.f};
 };
 
 #endif // game_settings_h
