@@ -34,10 +34,10 @@ void WorldDrawer::recalculateViewport()
 {
     const Dimension2D& winSize = this->settings.screen.size;
     const float scale = std::min(
-        winSize.width / GameSettings::VIRTUAL_SIZE.width,
-        winSize.height / GameSettings::VIRTUAL_SIZE.height);
+        winSize.width / GameConstants::VIRTUAL_SIZE.width,
+        winSize.height / GameConstants::VIRTUAL_SIZE.height);
 
-    const Dimension2D& viewSize = { GameSettings::VIRTUAL_SIZE.width * scale, GameSettings::VIRTUAL_SIZE.height * scale };
+    const Dimension2D& viewSize = { GameConstants::VIRTUAL_SIZE.width * scale, GameConstants::VIRTUAL_SIZE.height * scale };
     const Position offset = {(winSize.width - viewSize.width) * 0.5f, (winSize.height - viewSize.height) * 0.5f};
 
     this->worldViewport =

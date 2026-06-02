@@ -8,7 +8,7 @@
 class PlatformEvent
 {
 public:
-    enum class Type { Keyboard, Mouse, Gamepad, Quit };
+    enum class Type { Keyboard, Mouse, Gamepad, Quit, WindowResized };
     virtual ~PlatformEvent() = default;
     virtual Type type() const = 0;
 };
@@ -68,6 +68,15 @@ class QuitPlatformEvent : public PlatformEvent
 public:
     QuitPlatformEvent() {}
     Type type() const override { return Type::Quit; }
+};
+
+class WindowResizedPlatformEvent : public PlatformEvent
+{
+public:
+    Dimension2D size;
+
+    WindowResizedPlatformEvent(Dimension2D sz) : size(sz) {}
+    Type type() const override { return Type::WindowResized; }
 };
 
 #endif // platform_event_h

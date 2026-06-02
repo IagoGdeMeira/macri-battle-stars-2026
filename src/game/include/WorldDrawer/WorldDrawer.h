@@ -8,6 +8,7 @@
 
 #include "../../engine/include/Drawer/Drawer.h"
 #include "../../engine/include/EventBus/EventBus.h"
+#include "../../engine/include/GameConstants/GameConstants.h"
 #include "../../engine/include/GameSettings/GameSettings.h"
 #include "../../engine/include/Renderer/Renderer.h"
 #include "../../engine/include/Viewport/Viewport.h"
@@ -28,8 +29,8 @@ private:
 
     std::vector<std::unique_ptr<IRenderFormat>> formats;
     Viewport worldViewport {0, 0,
-        static_cast<int>(GameSettings::VIRTUAL_SIZE.width),
-        static_cast<int>(GameSettings::VIRTUAL_SIZE.height)};
+        static_cast<int>(GameConstants::VIRTUAL_SIZE.width),
+        static_cast<int>(GameConstants::VIRTUAL_SIZE.height)};
 
     void addFormat(std::unique_ptr<IRenderFormat> format) { this->formats.push_back(std::move(format)); }
 

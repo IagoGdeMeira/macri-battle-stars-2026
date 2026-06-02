@@ -39,9 +39,10 @@ std::vector<std::unique_ptr<PlatformEvent>> SDLPlatformEventProvider::pollEvents
                 break;
             }
             case SDL_MOUSEMOTION:
+                auto& motion = sdlEvent.motion;
                 events.push_back(std::make_unique<MouseMotionEvent>(
-                    Position{static_cast<float>(sdlEvent.motion.xrel), static_cast<float>(sdlEvent.motion.yrel)},
-                    Position{static_cast<float>(sdlEvent.motion.x), static_cast<float>(sdlEvent.motion.y)}));
+                    Position{static_cast<float>(motion.xrel), static_cast<float>(motion.yrel)},
+                    Position{static_cast<float>(motion.x), static_cast<float>(motion.y)}));
                 break;
             case SDL_JOYBUTTONDOWN:
             case SDL_JOYBUTTONUP:
@@ -52,10 +53,17 @@ std::vector<std::unique_ptr<PlatformEvent>> SDLPlatformEventProvider::pollEvents
                 break;
             }
             case SDL_JOYAXISMOTION:
+                auto& axis = sdlEvent.jaxis;
                 events.push_back(std::make_unique<GamepadAxisEvent>(
-                    static_cast<uint32_t>(sdlEvent.jaxis.axis),
-                    static_cast<float>(sdlEvent.jaxis.value) / 32767.0f));
+                    static_cast<uint32_t>(axis.axis), static_cast<float>(axis.value) / 32767.0f));
                 break;
+            case SDL_WINDOWEVENT:
+            {
+                auto& win = sdlEvent.window;
+                if (win.event != SDL_WINDOWEVENT_RESIZED && win.event != SDL_WINDOWEVENT_SIZE_CHANGED) break;
+                events.push_back(std::make_unique<WindowResizedPlatformEvent>({win.data1, win.data2}));
+                break;
+            }
             default: continue;
         }
     }

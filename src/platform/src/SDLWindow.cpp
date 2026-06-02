@@ -23,7 +23,6 @@ void SDLWindow::create(int width, int height, const char* title
 void SDLWindow::setResolution(int width, int height)
 {
     if (!this->window) return;
-
     SDL_SetWindowSize(this->window, width, height);
 }
 
