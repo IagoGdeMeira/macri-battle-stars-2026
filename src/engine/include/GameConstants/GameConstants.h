@@ -1,7 +1,7 @@
 #ifndef game_constants_h
 #define game_constants_h
 
-#include "../../../domain/include/Geometry/Geometry.h"
+#include "../../domain/include/Geometry/Geometry.h"
 
 struct GameConstants
 {

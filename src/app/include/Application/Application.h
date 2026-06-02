@@ -3,13 +3,13 @@
 
 #include "../ISystemInitializer/ISystemInitializer.h"
 
-#include "../../../domain/include/Geometry/Geometry.h"
+#include "../../domain/include/Geometry/Geometry.h"
 
-#include "../../../engine/include/DataParser/DataParser.h"
-#include "../../../engine/include/Engine/Engine.h"
-#include "../../../engine/include/GameSettings/GameSettings.h"
-#include "../../../engine/include/IPlatformFactory/IPlatformFactory.h"
-#include "../../../engine/include/SceneFactory/SceneFactory.h"
+#include "../../engine/include/DataParser/DataParser.h"
+#include "../../engine/include/Engine/Engine.h"
+#include "../../engine/include/GameSettings/GameSettings.h"
+#include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
+#include "../../engine/include/SceneFactory/SceneFactory.h"
 
 #include <memory>
 #include <string>
@@ -31,14 +31,12 @@ public:
 
     Application& setWindowTitle(const std::string& title);
     Application& setWindowSize(int width, int height);
-    Application& setInitialScene(Scene::Type type);
 
     int run();
 
 private:
     std::string windowTitle = "Macri Battle Stars";
     Dimension2D windowSize {800.f, 600.f};
-    Scene::Type initialScene = Scene::Type::Title;
     GameSettings gameSettings;
 
     std::unique_ptr<ISystemInitializer> initializer;
@@ -54,7 +52,6 @@ private:
 
     void initSystems();
     void initLoaders();
-    void setupInput();
     void setupInitialScene();
 };
 

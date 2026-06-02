@@ -1,12 +1,12 @@
-#include "../../src/game/include/AnimationSystem/AnimationSystem.h"
+#include "../src/game/include/AnimationSystem/AnimationSystem.h"
 
-#include "../../src/domain/components/AnimationComponent.h"
-#include "../../src/domain/components/SpriteComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "../src/domain/components/AnimationComponent.h"
+#include "../src/domain/components/SpriteComponent.h"
+#include "../src/domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/UpdateContext/UpdateContext.h"
+#include "../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../src/engine/include/EventBus/EventBus.h"
+#include "../src/engine/include/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_test_macros.hpp>
 

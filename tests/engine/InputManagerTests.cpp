@@ -1,8 +1,8 @@
-#include "../../src/engine/include/InputManager/InputManager.h"
+#include "../src/engine/include/InputManager/InputManager.h"
 
-#include "../../src/engine/events/PlatformEvent.h"
-#include "../../src/engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
-#include "../../src/engine/include/InputAdapter/InputAdapter.h"
+#include "../src/engine/events/PlatformEvent.h"
+#include "../src/engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
+#include "../src/engine/include/InputAdapter/InputAdapter.h"
 
 #include <catch2/catch_test_macros.hpp>
 

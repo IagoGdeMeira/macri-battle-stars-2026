@@ -1,10 +1,7 @@
 #ifndef scene_factory_inl
 #define scene_factory_inl
 
-#include "../DataParser/DataParser.h"
-#include "../Engine/Engine.h"
-#include "../IFontFactory/IFontFactory.h"
-#include "../ITextureFactory/ITextureFactory.h"
+#include "SceneFactory.h"
 
 template <typename SceneType>
 std::unique_ptr<Scene> SceneFactory::createScene(typename SceneType::Config cfg)

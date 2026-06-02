@@ -14,7 +14,7 @@ void ComboSystem::update(UpdateContext& ctx)
     {
         const Combo* best = nullptr;
 
-        for (const auto& combo : combos)
+        for (const auto& combo : this->combos)
         {
             if (!this->matches(buffer, combo)) continue;
             if (!best || combo.priority > best->priority) best = &combo;
@@ -22,8 +22,8 @@ void ComboSystem::update(UpdateContext& ctx)
 
         if (best)
         {
-            eventBus.emit<ComboExecutedEvent>(ComboExecutedEvent{entity, best->trigger});
-            eventBus.emit<TriggerEvent>(TriggerEvent{entity, best->trigger});
+            this->eventBus.emit<ComboExecutedEvent>(ComboExecutedEvent{entity, best->trigger});
+            this->eventBus.emit<TriggerEvent>(TriggerEvent{entity, best->trigger});
             if (best->consumeInput) buffer.buffer.clear();
         }
     }
@@ -52,6 +52,5 @@ bool ComboSystem::matches(const InputBufferComponent& buffer, const Combo& combo
 
         if (time > step.maxDelay) return false;
     }
-
     return true;
 }

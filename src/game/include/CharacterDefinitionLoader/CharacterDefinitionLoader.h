@@ -3,7 +3,7 @@
 
 #include "../CharacterDefinition/CharacterDefinition.h"
 
-#include "../../../engine/include/DataParser/DataParser.h"
+#include "../../engine/include/DataParser/DataParser.h"
 
 class CharacterDefinitionLoader
 {

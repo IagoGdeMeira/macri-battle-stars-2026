@@ -1,6 +1,6 @@
-#include "../../src/engine/include/DataUtils/DataUtils.h"
+#include "../src/engine/include/DataUtils/DataUtils.h"
 
-#include "../../src/engine/include/DataNode/DataNode.h"
+#include "../src/engine/include/DataNode/DataNode.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

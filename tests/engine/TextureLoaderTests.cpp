@@ -1,6 +1,6 @@
-#include "../../src/engine/include/TextureLoader/TextureLoader.h"
+#include "../src/engine/include/TextureLoader/TextureLoader.h"
 
-#include "../../src/engine/include/ITextureFactory/ITextureFactory.h"
+#include "../src/engine/include/ITextureFactory/ITextureFactory.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

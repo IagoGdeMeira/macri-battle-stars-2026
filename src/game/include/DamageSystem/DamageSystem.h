@@ -1,8 +1,9 @@
 #ifndef damage_system_h
 #define damage_system_h
 
+#include "../events/CollisionEvent.h"
+
 #include "../../engine/include/System/System.h"
-#include "../../events/CollisionEvent.h"
 
 #include <vector>
 

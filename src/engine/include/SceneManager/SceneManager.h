@@ -2,10 +2,11 @@
 #define scene_manager_h
 
 #include "../Scene/Scene.h"
-#include "../SceneFactory/SceneFactory.h"
 
-#include <vector>
 #include <memory>
+#include <vector>
+
+class SceneFactory;
 
 class SceneManager
 {

@@ -2,6 +2,7 @@
 #define i_render_format_h
 
 struct RenderContext;
+struct Viewport;
 
 class IRenderFormat
 {

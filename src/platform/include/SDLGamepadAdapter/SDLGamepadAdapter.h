@@ -1,7 +1,7 @@
 #ifndef sdl_gamepad_adapter_h
 #define sdl_gamepad_adapter_h
 
-#include "../../../engine/include/InputAdapter/InputAdapter.h"
+#include "../../engine/include/InputAdapter/InputAdapter.h"
 
 #include <cstdint>
 #include <memory>

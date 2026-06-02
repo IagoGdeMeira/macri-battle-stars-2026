@@ -1,22 +1,22 @@
 #ifndef game_scene_h
 #define game_scene_h
 
-#include "../../include/Camera2D/Camera2D.h"
-#include "../../include/CharacterLoader/CharacterLoader.h"
-#include "../../include/Combo/Combo.h"
-#include "../../include/EntityFactory/EntityFactory.h"
-#include "../../include/MapData/MapData.h"
-#include "../../include/TriggerContext/TriggerContext.h"
-#include "../../include/WorldDrawer/WorldDrawer.h"
+#include "../include/Camera2D/Camera2D.h"
+#include "../include/CharacterLoader/CharacterLoader.h"
+#include "../include/Combo/Combo.h"
+#include "../include/EntityFactory/EntityFactory.h"
+#include "../include/MapData/MapData.h"
+#include "../include/TriggerContext/TriggerContext.h"
+#include "../include/WorldDrawer/WorldDrawer.h"
 
-#include "../../../engine/include/EventBus/EventBus.h"
-#include "../../../engine/include/GameSettings/GameSettings.h"
-#include "../../../engine/include/InputContext/InputContext.h"
-#include "../../../engine/include/Renderer/Renderer.h"
-#include "../../../engine/include/ResourceManager/ResourceManager.h"
-#include "../../../engine/include/TextureLoader/TextureLoader.h"
-#include "../../../engine/include/Scene/Scene.h"
-#include "../../../engine/include/Window/Window.h"
+#include "../../engine/include/EventBus/EventBus.h"
+#include "../../engine/include/GameSettings/GameSettings.h"
+#include "../../engine/include/InputContext/InputContext.h"
+#include "../../engine/include/Renderer/Renderer.h"
+#include "../../engine/include/ResourceManager/ResourceManager.h"
+#include "../../engine/include/TextureLoader/TextureLoader.h"
+#include "../../engine/include/Scene/Scene.h"
+#include "../../engine/include/Window/Window.h"
 
 #include <cstdint>
 #include <memory>

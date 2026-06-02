@@ -1,7 +1,7 @@
 #ifndef map_data_h
 #define map_data_h
 
-#include "../../../domain/include/Geometry/Geometry.h"
+#include "../../domain/include/Geometry/Geometry.h"
 
 #include <cstdint>
 #include <string>

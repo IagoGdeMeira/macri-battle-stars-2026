@@ -3,9 +3,9 @@
 
 #include "../include/IVisualEffect/IVisualEffect.h"
 
-#include "../../domain/components/ShadowComponent.h"
+#include "../domain/components/ShadowComponent.h"
 
-#include "../../engine/include/DrawBatch/DrawFontBatch.h"
+#include "../engine/include/DrawBatch/DrawFontBatch.h"
 
 class ShadowFontEffect : public IVisualEffect<DrawFontBatch, DrawFontCommand>
 {

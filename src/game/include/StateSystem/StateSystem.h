@@ -3,10 +3,10 @@
 
 #include "../StateMachine/StateMachine.h"
 
-#include "../../events/TriggerEvent.h"
+#include "../events/TriggerEvent.h"
 
-#include "../../../engine/include/EventBus/EventBus.h"
-#include "../../../engine/include/System/System.h"
+#include "../../engine/include/EventBus/EventBus.h"
+#include "../../engine/include/System/System.h"
 
 #include <unordered_map>
 #include <vector>

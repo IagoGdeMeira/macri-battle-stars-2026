@@ -4,24 +4,23 @@
 #include "../EventBus/EventBus.h"
 #include "../InputAdapter/InputAdapter.h"
 #include "../InputManager/InputManager.h"
-#include "../GameSettings/GameSettings.h"
 #include "../Renderer/Renderer.h"
-#include "../SceneFactory/SceneFactory.h"
 #include "../SceneManager/SceneManager.h"
 #include "../Window/Window.h"
+#include "../GameSettings/GameSettings.h"
 
 #include <optional>
+
+class SceneFactory;
 
 class Engine
 {
 public:
     Engine(Window& window, GameSettings& settings);
+    ~Engine() = default;
 
-    Renderer* getRenderer() { return this->renderer; } 
+    Renderer* getRenderer() { return this->renderer; }
     void setRenderer(Renderer& r) { this->renderer = &r; }
-
-    SceneFactory* getSceneFactory() { return this->sceneFactory; }
-    void setSceneFactory(SceneFactory& f) { this->sceneFactory = &f; this->sceneManager.emplace(f); }
 
     void run();
     void stop() { this->running = false; }
@@ -31,17 +30,20 @@ public:
     InputManager& input() { return this->inputManager; }
     GameSettings& settings() { return this->gameSettings; }
 
+    void setSceneFactory(SceneFactory& factory);
+
 private:
     bool running = true;
+    Window& window;
+    GameSettings& gameSettings;
 
     Renderer* renderer = nullptr;
     SceneFactory* sceneFactory = nullptr;
 
-    Window& window;
-    GameSettings& gameSettings;
-    std::optional<SceneManager> sceneManager;
     EventBus eventBus;
     InputManager inputManager;
+
+    std::optional<SceneManager> sceneManager;
 };
 
 #endif // engine_h

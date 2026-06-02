@@ -2,6 +2,7 @@
 #define navigato_to_title_action_h
 
 #include "../include/IUIAction/IUIAction.h"
+#include "../scenes/TitleScene.h"
 
 #include "../../engine/include/SceneManager/SceneManager.h"
 

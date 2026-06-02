@@ -2,6 +2,7 @@
 #define navigate_to_selection_action_h
 
 #include "../include/IUIAction/IUIAction.h"
+#include "../scenes/SelectionScene.h"
 
 #include "../../engine/include/SceneManager/SceneManager.h"
 

@@ -1,14 +1,14 @@
-#include "../../src/game/include/StateSystem/StateSystem.h"
+#include "../src/game/include/StateSystem/StateSystem.h"
 
-#include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/components/StateMachineComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "../src/domain/components/StateComponent.h"
+#include "../src/domain/components/StateMachineComponent.h"
+#include "../src/domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/UpdateContext/UpdateContext.h"
+#include "../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../src/engine/include/EventBus/EventBus.h"
+#include "../src/engine/include/UpdateContext/UpdateContext.h"
 
-#include "../../src/game/trigger_conditions/MinTimeCondition.h"
+#include "../src/game/trigger_conditions/MinTimeCondition.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

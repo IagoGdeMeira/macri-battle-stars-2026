@@ -3,9 +3,9 @@
 
 #include "../MapData/MapData.h"
 
-#include "../../../domain/include/CollisionFrame/CollisionFrame.h"
-#include "../../../domain/include/Entity/Entity.h"
-#include "../../../domain/include/Geometry/Geometry.h"
+#include "../../domain/include/CollisionFrame/CollisionFrame.h"
+#include "../../domain/include/Entity/Entity.h"
+#include "../../domain/include/Geometry/Geometry.h"
 
 #include <memory>
 #include <string>

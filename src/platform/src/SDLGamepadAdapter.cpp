@@ -1,9 +1,10 @@
 #include "../include/SDLGamepadAdapter/SDLGamepadAdapter.h"
 
+#include "../include/SDLKeyTranslator/SDLKeyTranslator.h"
+
 #include "../../engine/include/EventBus/EventBus.h"
 #include "../../engine/events/InputEvent.h"
 #include "../../engine/include/InputSource/InputSource.h"
-#include "../include/SDLKeyTranslator/SDLKeyTranslator.h"
 
 #include <stdexcept>
 

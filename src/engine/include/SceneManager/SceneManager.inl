@@ -1,7 +1,12 @@
 #ifndef scene_manager_inl
 #define scene_manager_inl
 
+#include "SceneManager.h"
+
+#include "../SceneFactory/SceneFactory.h"
+
 #include <stdexcept>
+#include <utility>
 
 template <typename SceneType>
 void SceneManager::changeScene(typename SceneType::Config config)

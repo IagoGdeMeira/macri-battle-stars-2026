@@ -1,8 +1,8 @@
 #ifndef face_off_system_h
 #define face_off_system_h
 
-#include "../../../engine/include/EventBus/EventBus.h"
-#include "../../../engine/include/System/System.h"
+#include "../../engine/include/EventBus/EventBus.h"
+#include "../../engine/include/System/System.h"
 
 class FaceOffSystem : public System
 {

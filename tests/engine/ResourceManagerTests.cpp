@@ -1,7 +1,7 @@
-#include "../../src/engine/include/ResourceManager/ResourceManager.h"
+#include "../src/engine/include/ResourceManager/ResourceManager.h"
 
-#include "../../src/engine/include/ResourceLoader/ResourceLoader.h"
-#include "../../src/engine/include/ThreadPool/ThreadPool.h"
+#include "../src/engine/include/ResourceLoader/ResourceLoader.h"
+#include "../src/engine/include/ThreadPool/ThreadPool.h"
 
 #include <catch2/catch_test_macros.hpp>
 

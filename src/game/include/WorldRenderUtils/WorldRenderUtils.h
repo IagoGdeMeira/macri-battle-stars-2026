@@ -3,12 +3,12 @@
 
 #include "../Camera2D/Camera2D.h"
 
-#include "../../../domain/include/Entity/Entity.h"
-#include "../../../domain/include/Geometry/Geometry.h"
-#include "../../../domain/include/World/World.h"
+#include "../../domain/include/Entity/Entity.h"
+#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/include/World/World.h"
 
-#include "../../../engine/include/DrawCommands/DrawCommands.h"
-#include "../../../engine/include/Viewport/Viewport.h"
+#include "../../engine/include/DrawCommands/DrawCommands.h"
+#include "../../engine/include/Viewport/Viewport.h"
 
 class WorldRenderUtils
 {

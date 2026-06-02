@@ -4,10 +4,9 @@
 #include "../../domain/include/Animation/AnimationSet.h"
 #include "../../domain/include/StateId/StateId.h"
 
-#include "../../../engine/include/DataParser/DataParser.h"
+#include "../../engine/include/DataParser/DataParser.h"
 
 #include <memory>
-
 #include <unordered_map>
 
 class StateIdMapper;

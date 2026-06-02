@@ -1,10 +1,10 @@
 #ifndef dynamic_pushbox_resolution_system_h
 #define dynamic_pushbox_resolution_system_h
 
-#include "../../../domain/include/Entity/Entity.h"
+#include "../../domain/include/Entity/Entity.h"
 
-#include "../../../engine/include/EventBus/EventBus.h"
-#include "../../../engine/include/System/System.h"
+#include "../../engine/include/EventBus/EventBus.h"
+#include "../../engine/include/System/System.h"
 
 #include <vector>
 

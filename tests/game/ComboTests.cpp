@@ -1,4 +1,4 @@
-#include "../../src/game/include/Combo/Combo.h"
+#include "../src/game/include/Combo/Combo.h"
 
 #include <catch2/catch_test_macros.hpp>
 

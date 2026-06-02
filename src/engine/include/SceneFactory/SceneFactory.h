@@ -1,15 +1,21 @@
 #ifndef scene_factory_h
 #define scene_factory_h
 
+#include "../DataParser/DataParser.h"
+#include "../EventBus/EventBus.h"
+#include "../GameSettings/GameSettings.h"
+#include "../IFontFactory/IFontFactory.h"
+#include "../ITextureFactory/ITextureFactory.h"
+#include "../Renderer/Renderer.h"
+#include "../ResourceManager/ResourceManager.h"
+#include "../Scene/Scene.h"
+#include "../TextureLoader/TextureLoader.h"
+#include "../Window/Window.h"
+
 #include <memory>
 
-class DataParser;
 class Engine;
-class IFontFactory;
-class ITextureFactory;
-class ResourceManager;
-class TextureLoader;
-class Window;
+class SceneManager;
 
 class SceneFactory
 {

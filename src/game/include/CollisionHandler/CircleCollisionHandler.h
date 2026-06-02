@@ -3,10 +3,10 @@
 
 #include "ICollisionHandler.h"
 
-#include "../../../domain/components/TransformComponent.h"
-#include "../../../domain/components/CircleColliderComponent.h"
+#include "../../domain/components/TransformComponent.h"
+#include "../../domain/components/CircleColliderComponent.h"
 
-#include "../../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/include/UpdateContext/UpdateContext.h"
 
 #include <stdexcept>
 

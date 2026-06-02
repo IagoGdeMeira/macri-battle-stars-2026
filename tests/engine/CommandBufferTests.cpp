@@ -1,6 +1,6 @@
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../src/engine/include/CommandBuffer/CommandBuffer.h"
 
-#include "../../src/domain/include/World/World.h"
+#include "../src/domain/include/World/World.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <stdexcept>

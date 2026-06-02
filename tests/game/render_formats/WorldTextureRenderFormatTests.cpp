@@ -1,17 +1,17 @@
-#include "../../../src/game/render_formats/WorldTextureRenderFormat.h"
+#include "../../src/game/render_formats/WorldTextureRenderFormat.h"
 
-#include "../../../src/domain/components/AnimationControllerComponent.h"
-#include "../../../src/domain/components/OrientationComponent.h"
-#include "../../../src/domain/components/ParallaxComponent.h"
-#include "../../../src/domain/components/RenderComponent.h"
-#include "../../../src/domain/components/SpriteComponent.h"
-#include "../../../src/domain/components/TransformComponent.h"
-#include "../../../src/domain/components/VisualEffectsComponent.h"
-#include "../../../src/domain/include/World/World.h"
+#include "../../src/domain/components/AnimationControllerComponent.h"
+#include "../../src/domain/components/OrientationComponent.h"
+#include "../../src/domain/components/ParallaxComponent.h"
+#include "../../src/domain/components/RenderComponent.h"
+#include "../../src/domain/components/SpriteComponent.h"
+#include "../../src/domain/components/TransformComponent.h"
+#include "../../src/domain/components/VisualEffectsComponent.h"
+#include "../../src/domain/include/World/World.h"
 
-#include "../../../src/engine/include/EventBus/EventBus.h"
-#include "../../../src/engine/include/RenderContext/RenderContext.h"
-#include "../../../src/engine/include/Renderer/Renderer.h"
+#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/RenderContext/RenderContext.h"
+#include "../../src/engine/include/Renderer/Renderer.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

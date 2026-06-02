@@ -1,14 +1,14 @@
-#include "../../../src/game/render_formats/UIFontRenderFormat.h"
+#include "../../src/game/render_formats/UIFontRenderFormat.h"
 
-#include "../../../src/domain/components/RenderComponent.h"
-#include "../../../src/domain/components/UITextComponent.h"
-#include "../../../src/domain/components/UITransform.h"
-#include "../../../src/domain/components/VisualEffectsComponent.h"
-#include "../../../src/domain/include/World/World.h"
+#include "../../src/domain/components/RenderComponent.h"
+#include "../../src/domain/components/UITextComponent.h"
+#include "../../src/domain/components/UITransform.h"
+#include "../../src/domain/components/VisualEffectsComponent.h"
+#include "../../src/domain/include/World/World.h"
 
-#include "../../../src/engine/include/EventBus/EventBus.h"
-#include "../../../src/engine/include/RenderContext/RenderContext.h"
-#include "../../../src/engine/include/Renderer/Renderer.h"
+#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/RenderContext/RenderContext.h"
+#include "../../src/engine/include/Renderer/Renderer.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

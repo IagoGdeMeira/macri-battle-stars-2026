@@ -1,7 +1,7 @@
 #ifndef sdl_sound_h
 #define sdl_sound_h
 
-#include "../../../engine/include/Sound/Sound.h"
+#include "../../engine/include/Sound/Sound.h"
 
 #include <SDL_mixer.h>
 

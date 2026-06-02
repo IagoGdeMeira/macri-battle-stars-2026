@@ -16,6 +16,10 @@
 #include "../../engine/include/Texture/Texture.h"
 
 #include "../../game/include/IUIAction/IUIAction.h"
+#include "../../game/include/UIElement/TextElement.h"
+#include "../../game/include/UIElement/UIElement.h"
+
+#include <stdexcept>
 
 Entity UIFactory::createPanel(const Rectangle& rect)
 {
@@ -74,6 +78,20 @@ Entity UIFactory::createImage(const std::string& texturePath, const Rectangle& r
     comp.add<UISpriteComponent>(e, UISpriteComponent{ texture, Color::WHITE() });
 
     return e;
+}
+
+Entity UIFactory::createFromElement(const UIElement& element)
+{
+    if (auto* panel = dynamic_cast<const PanelElement*>(&element))
+    { return this->createPanel(panel->rect); }
+    if (auto* text = dynamic_cast<const TextElement*>(&element))
+    { return this->createText(text->text, text->fontSize, text->color, text->rect.position); }
+    if (auto* button = dynamic_cast<const ButtonElement*>(&element))
+    { return this->createButton(button->text, button->rect, button->action); }
+    if (auto* img = dynamic_cast<const ImageElement*>(&element))
+    { return this->createImage(img->imagePath, img->rect); }
+    
+    throw std::runtime_error("Unsupported UIElement type: " + element.id);
 }
 
 void UIFactory::applyDefaultBoxModel(Entity& entity)

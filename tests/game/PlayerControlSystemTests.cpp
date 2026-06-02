@@ -1,17 +1,17 @@
-#include "../../src/game/include/PlayerControlSystem/PlayerControlSystem.h"
+#include "../src/game/include/PlayerControlSystem/PlayerControlSystem.h"
 
-#include "../../src/domain/components/AnalogInputComponent.h"
-#include "../../src/domain/components/GroundedComponent.h"
-#include "../../src/domain/components/HitstopComponent.h"
-#include "../../src/domain/components/InputComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/components/VelocityComponent.h"
+#include "../src/domain/components/AnalogInputComponent.h"
+#include "../src/domain/components/GroundedComponent.h"
+#include "../src/domain/components/HitstopComponent.h"
+#include "../src/domain/components/InputComponent.h"
+#include "../src/domain/components/PlayerComponent.h"
+#include "../src/domain/components/StateComponent.h"
+#include "../src/domain/components/VelocityComponent.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "../src/engine/include/EventBus/EventBus.h"
+#include "../src/engine/include/Scene/Scene.h"
 
-#include "../../src/game/events/TriggerEvent.h"
+#include "../src/game/events/TriggerEvent.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

@@ -11,7 +11,6 @@ class ComponentStorage : public IComponentStorage
 {
 public:
     void add(Entity entity, const T& component);
-
     void add(Entity entity, T&& component);
 
     void remove(Entity entity) override;
@@ -19,7 +18,6 @@ public:
     bool has(Entity entity) const override;
 
     T& get(Entity entity);
-
     const T& get(Entity entity) const;
 
     size_t size() const override;
@@ -28,9 +26,7 @@ public:
 
 private:
     std::vector<Entity> denseEntities;
-
     std::vector<T> denseComponents;
-
     std::vector<uint32_t> sparse;
 };
 

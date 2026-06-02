@@ -1,4 +1,4 @@
-#include "../../src/game/include/TriggerMapper/TriggerMapper.h"
+#include "../src/game/include/TriggerMapper/TriggerMapper.h"
 
 #include <catch2/catch_test_macros.hpp>
 

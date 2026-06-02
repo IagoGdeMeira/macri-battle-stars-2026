@@ -1,8 +1,8 @@
-#include "../../src/engine/include/ResourceLoader/ResourceLoader.h"
+#include "../src/engine/include/ResourceLoader/ResourceLoader.h"
 
-#include "../../src/engine/include/ResourceLoader/AsyncLoader.h"
-#include "../../src/engine/include/ResourceLoader/SyncLoader.h"
-#include "../../src/engine/include/ThreadPool/ThreadPool.h"
+#include "../src/engine/include/ResourceLoader/AsyncLoader.h"
+#include "../src/engine/include/ResourceLoader/SyncLoader.h"
+#include "../src/engine/include/ThreadPool/ThreadPool.h"
 
 #include <catch2/catch_test_macros.hpp>
 

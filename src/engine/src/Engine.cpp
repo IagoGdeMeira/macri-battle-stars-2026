@@ -1,11 +1,20 @@
 #include "../include/Engine/Engine.h"
 
+#include "../include/SceneFactory/SceneFactory.h"
+#include "../include/SceneManager/SceneManager.h"
+
 #include "../events/QuitEvent.h"
 
 #include <chrono>
 
 Engine::Engine(Window& window, GameSettings& settings) : window(window), gameSettings(settings)
 { this->eventBus.subscribe<QuitEvent>([this](const QuitEvent&) { this->stop(); }); }
+
+void Engine::setSceneFactory(SceneFactory& factory)
+{
+    this->sceneFactory = &factory;
+    this->sceneManager.emplace(factory);
+}
 
 void Engine::run()
 {

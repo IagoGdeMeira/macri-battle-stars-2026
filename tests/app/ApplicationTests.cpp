@@ -1,10 +1,10 @@
-#include "../../src/app/include/Application/Application.h"
+#include "../src/app/include/Application/Application.h"
 
-#include "../../src/domain/include/Color/Color.h"
+#include "../src/domain/include/Color/Color.h"
 
-#include "../../src/engine/include/InputAdapter/InputAdapter.h"
-#include "../../src/engine/include/Renderer/Renderer.h"
-#include "../../src/engine/include/Window/Window.h"
+#include "../src/engine/include/InputAdapter/InputAdapter.h"
+#include "../src/engine/include/Renderer/Renderer.h"
+#include "../src/engine/include/Window/Window.h"
 
 #include <catch2/catch_test_macros.hpp>
 

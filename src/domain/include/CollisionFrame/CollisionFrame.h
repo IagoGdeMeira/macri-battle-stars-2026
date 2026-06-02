@@ -5,7 +5,7 @@
 
 #include "../Color/Color.h"
 
-#include "../../components/PushboxComponent.h"
+#include "../components/PushboxComponent.h"
 
 #include <memory>
 #include <vector>

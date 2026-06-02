@@ -3,8 +3,8 @@
 
 #include "../include/IUIAction/IUIAction.h"
 
-#include "../../../engine/include/EventBus/EventBus.h"
-#include "../../../engine/include/SceneManager/SceneManager.h"
+#include "../../engine/include/EventBus/EventBus.h"
+#include "../../engine/include/SceneManager/SceneManager.h"
 
 class UIActionFactory
 {

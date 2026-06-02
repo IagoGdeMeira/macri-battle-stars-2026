@@ -1,15 +1,15 @@
-#include "../../src/engine/include/Engine/Engine.h"
+#include "../src/engine/include/Engine/Engine.h"
 
-#include "../../src/domain/include/Color/Color.h"
+#include "../src/domain/include/Color/Color.h"
 
-#include "../../src/engine/events/PlatformEvent.h"
-#include "../../src/engine/events/QuitEvent.h"
-#include "../../src/engine/include/GameSettings/GameSettings.h"
-#include "../../src/engine/include/InputAdapter/InputAdapter.h"
-#include "../../src/engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
-#include "../../src/engine/include/Scene/Scene.h"
-#include "../../src/engine/include/SceneId/SceneId.h"
-#include "../../src/engine/include/Window/Window.h"
+#include "../src/engine/events/PlatformEvent.h"
+#include "../src/engine/events/QuitEvent.h"
+#include "../src/engine/include/GameSettings/GameSettings.h"
+#include "../src/engine/include/InputAdapter/InputAdapter.h"
+#include "../src/engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
+#include "../src/engine/include/Scene/Scene.h"
+#include "../src/engine/include/SceneId/SceneId.h"
+#include "../src/engine/include/Window/Window.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>

@@ -1,13 +1,13 @@
-#include "../../src/engine/include/InputBufferSystem/InputBufferSystem.h"
+#include "../src/engine/include/InputBufferSystem/InputBufferSystem.h"
 
-#include "../../src/domain/components/InputBufferComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/include/InputAction/InputAction.h"
+#include "../src/domain/components/InputBufferComponent.h"
+#include "../src/domain/components/PlayerComponent.h"
+#include "../src/domain/include/InputAction/InputAction.h"
 
-#include "../../src/engine/events/InputEvent.h"
-#include "../../src/engine/include/InputSource/InputSource.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "../src/engine/events/InputEvent.h"
+#include "../src/engine/include/InputSource/InputSource.h"
+#include "../src/engine/include/EventBus/EventBus.h"
+#include "../src/engine/include/Scene/Scene.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

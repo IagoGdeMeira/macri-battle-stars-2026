@@ -1,7 +1,7 @@
-#include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
+#include "../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 
-#include "../../src/engine/include/DataNode/DataNode.h"
-#include "../../src/engine/include/DataParser/DataParser.h"
+#include "../src/engine/include/DataNode/DataNode.h"
+#include "../src/engine/include/DataParser/DataParser.h"
 
 #include <catch2/catch_test_macros.hpp>
 

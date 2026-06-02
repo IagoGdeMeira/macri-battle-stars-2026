@@ -1,19 +1,19 @@
-#include "../../src/game/include/CollisionClipPlayerSystem/CollisionClipPlayerSystem.h"
+#include "../src/game/include/CollisionClipPlayerSystem/CollisionClipPlayerSystem.h"
 
-#include "../../src/domain/components/CollisionClipPlayerComponent.h"
-#include "../../src/domain/components/CollisionClipDefinitionsComponent.h"
-#include "../../src/domain/components/OrientationComponent.h"
-#include "../../src/domain/include/CollisionFrame/CollisionFrame.h"
-#include "../../src/domain/include/World/World.h"
-#include "../../src/domain/include/View/View.h"
-#include "../../src/domain/events/OrientationChangedEvent.h"
+#include "../src/domain/components/CollisionClipPlayerComponent.h"
+#include "../src/domain/components/CollisionClipDefinitionsComponent.h"
+#include "../src/domain/components/OrientationComponent.h"
+#include "../src/domain/include/CollisionFrame/CollisionFrame.h"
+#include "../src/domain/include/World/World.h"
+#include "../src/domain/include/View/View.h"
+#include "../src/domain/events/OrientationChangedEvent.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/UpdateContext/UpdateContext.h"
-#include "../../src/engine/include/System/System.h"
+#include "../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../src/engine/include/EventBus/EventBus.h"
+#include "../src/engine/include/UpdateContext/UpdateContext.h"
+#include "../src/engine/include/System/System.h"
 
-#include "../../src/game/events/StateChangedEvent.h"
+#include "../src/game/events/StateChangedEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 

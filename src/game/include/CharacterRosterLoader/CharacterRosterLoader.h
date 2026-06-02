@@ -3,7 +3,7 @@
 
 #include "../CharacterRoster/CharacterRoster.h"
 
-#include "../../../engine/include/DataParser/DataParser.h"
+#include "../../engine/include/DataParser/DataParser.h"
 
 class CharacterRosterLoader
 {

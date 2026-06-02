@@ -1,5 +1,5 @@
-#include "../../src/game/include/StateMapper/StateMapper.h"
-#include "../../src/game/include/StateIdMapper/StateIdMapper.h"
+#include "../src/game/include/StateMapper/StateMapper.h"
+#include "../src/game/include/StateIdMapper/StateIdMapper.h"
 
 #include <catch2/catch_test_macros.hpp>
 

@@ -1,7 +1,7 @@
 #ifndef sdl_texture_h
 #define sdl_texture_h
 
-#include "../../../engine/include/Texture/Texture.h"
+#include "../../engine/include/Texture/Texture.h"
 
 #include <SDL.h>
 

@@ -1,15 +1,15 @@
-#include "../../src/game/include/UILayoutSystem/UILayoutSystem.h"
+#include "../src/game/include/UILayoutSystem/UILayoutSystem.h"
 
-#include "../../src/domain/components/BoxModel.h"
-#include "../../src/domain/components/FlexContainer.h"
-#include "../../src/domain/components/FlexItem.h"
-#include "../../src/domain/components/ParentComponent.h"
-#include "../../src/domain/components/UITransform.h"
-#include "../../src/domain/include/World/World.h"
+#include "../src/domain/components/BoxModel.h"
+#include "../src/domain/components/FlexContainer.h"
+#include "../src/domain/components/FlexItem.h"
+#include "../src/domain/components/ParentComponent.h"
+#include "../src/domain/components/UITransform.h"
+#include "../src/domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/UpdateContext/UpdateContext.h"
+#include "../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../src/engine/include/EventBus/EventBus.h"
+#include "../src/engine/include/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

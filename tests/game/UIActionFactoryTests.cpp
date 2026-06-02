@@ -1,15 +1,15 @@
-#include "../../src/game/include/UIActionFactory/UIActionFactory.h"
+#include "../src/game/include/UIActionFactory/UIActionFactory.h"
 
-#include "../../src/engine/events/QuitEvent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/ISceneFactory/ISceneFactory.h"
-#include "../../src/engine/include/Scene/Scene.h"
-#include "../../src/engine/include/SceneId/SceneId.h"
-#include "../../src/engine/include/SceneManager/SceneManager.h"
+#include "../src/engine/events/QuitEvent.h"
+#include "../src/engine/include/EventBus/EventBus.h"
+#include "../src/engine/include/ISceneFactory/ISceneFactory.h"
+#include "../src/engine/include/Scene/Scene.h"
+#include "../src/engine/include/SceneId/SceneId.h"
+#include "../src/engine/include/SceneManager/SceneManager.h"
 
-#include "../../src/game/ui_actions/NavigateToSelectionAction.h"
-#include "../../src/game/ui_actions/NavigateToTitleAction.h"
-#include "../../src/game/ui_actions/QuitAction.h"
+#include "../src/game/ui_actions/NavigateToSelectionAction.h"
+#include "../src/game/ui_actions/NavigateToTitleAction.h"
+#include "../src/game/ui_actions/QuitAction.h"
 
 #include <any>
 #include <catch2/catch_test_macros.hpp>

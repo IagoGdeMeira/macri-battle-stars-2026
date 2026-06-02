@@ -1,13 +1,13 @@
 #ifndef player_control_system_h
 #define player_control_system_h
 
-#include "../../../domain/components/InputComponent.h"
-#include "../../../domain/include/Entity/Entity.h"
-#include "../../../domain/include/InputAction/InputAction.h"
-#include "../../../domain/include/StateId/StateId.h"
+#include "../../domain/components/InputComponent.h"
+#include "../../domain/include/Entity/Entity.h"
+#include "../../domain/include/InputAction/InputAction.h"
+#include "../../domain/include/StateId/StateId.h"
 
-#include "../../../engine/include/EventBus/EventBus.h"
-#include "../../../engine/include/System/System.h"
+#include "../../engine/include/EventBus/EventBus.h"
+#include "../../engine/include/System/System.h"
 
 class PlayerControlSystem : public System
 {

@@ -1,7 +1,7 @@
-#include "../../../src/game/visual_effects/OutlineTextureEffect.h"
+#include "../../src/game/visual_effects/OutlineTextureEffect.h"
 
-#include "../../../src/engine/include/DrawBatch/DrawTextureBatch.h"
-#include "../../../src/engine/include/Renderer/Renderer.h"
+#include "../../src/engine/include/DrawBatch/DrawTextureBatch.h"
+#include "../../src/engine/include/Renderer/Renderer.h"
 
 #include <catch2/catch_test_macros.hpp>
 

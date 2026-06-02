@@ -1,10 +1,10 @@
-#include "../../src/game/include/TriggerGenerationSystem/TriggerGenerationSystem.h"
+#include "../src/game/include/TriggerGenerationSystem/TriggerGenerationSystem.h"
 
-#include "../../src/domain/components/InputComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/game/events/TriggerEvent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "../src/domain/components/InputComponent.h"
+#include "../src/domain/components/PlayerComponent.h"
+#include "../src/game/events/TriggerEvent.h"
+#include "../src/engine/include/EventBus/EventBus.h"
+#include "../src/engine/include/Scene/Scene.h"
 
 #include <catch2/catch_test_macros.hpp>
 

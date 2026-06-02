@@ -3,7 +3,7 @@
 
 #include "../Viewport/Viewport.h"
 
-#include "../../../domain/include/Geometry/Geometry.h"
+#include "../../domain/include/Geometry/Geometry.h"
 
 class GameSettings
 {

@@ -1,7 +1,7 @@
 #ifndef gravity_system_h
 #define gravity_system_h
 
-#include "../../../engine/include/System/System.h"
+#include "../../engine/include/System/System.h"
 
 class GravitySystem : public System
 {

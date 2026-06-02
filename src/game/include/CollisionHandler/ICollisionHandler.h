@@ -1,8 +1,8 @@
 #ifndef i_collision_handler_h
 #define i_collision_handler_h
 
-#include "../../../domain/include/Entity/Entity.h"
-#include "../../../domain/include/Geometry/Geometry.h"
+#include "../../domain/include/Entity/Entity.h"
+#include "../../domain/include/Geometry/Geometry.h"
 
 #include <optional>
 

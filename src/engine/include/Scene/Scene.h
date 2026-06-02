@@ -6,6 +6,8 @@
 
 #include "../../domain/include/World/World.h"
 
+#include <utility>
+
 class DataParser;
 class Engine;
 class EventBus;
@@ -59,14 +61,12 @@ public:
     const SystemManager& systems() const { return this->systemManager; }
 
     template <typename T, typename... Args>
-    T& addSystem(Args&&... args);
+    T& addSystem(Args&&... args) { return this->systemManager.addSystem<T>(std::forward<Args>(args)...); }
 
 protected:
     World localWorld; 
     SystemManager systemManager;
     EventBus& eventBus;
 };
-
-#include "Scene.inl"
 
 #endif // scene_h

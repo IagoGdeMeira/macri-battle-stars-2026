@@ -1,7 +1,7 @@
-#include "../../src/game/include/ComponentRegistry/ComponentRegistry.h"
+#include "../src/game/include/ComponentRegistry/ComponentRegistry.h"
 
-#include "../../domain/components/AllComponents.h"
-#include "../../src/domain/include/ComponentManager/ComponentManager.h"
+#include "../domain/components/AllComponents.h"
+#include "../src/domain/include/ComponentManager/ComponentManager.h"
 
 #include <catch2/catch_test_macros.hpp>
 

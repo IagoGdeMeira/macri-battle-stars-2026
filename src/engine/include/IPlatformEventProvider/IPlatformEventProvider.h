@@ -1,7 +1,7 @@
 #ifndef i_platform_event_provider_h
 #define i_platform_event_provider_h
 
-#include "../../events/PlatformEvent.h"
+#include "../events/PlatformEvent.h"
 
 #include <memory>
 #include <vector>

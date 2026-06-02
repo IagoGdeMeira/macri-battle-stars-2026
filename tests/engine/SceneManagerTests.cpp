@@ -1,8 +1,8 @@
-#include "../../src/engine/include/SceneManager/SceneManager.h"
+#include "../src/engine/include/SceneManager/SceneManager.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
-#include "../../src/engine/include/SceneId/SceneId.h"
+#include "../src/engine/include/EventBus/EventBus.h"
+#include "../src/engine/include/Scene/Scene.h"
+#include "../src/engine/include/SceneId/SceneId.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <stdexcept>

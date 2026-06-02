@@ -1,12 +1,12 @@
 #ifndef ui_input_system_h
 #define ui_input_system_h
 
-#include "../../../domain/include/Entity/Entity.h"
+#include "../../domain/include/Entity/Entity.h"
 
-#include "../../../engine/events/InputEvent.h"
-#include "../../../engine/events/MousePositionEvent.h"
-#include "../../../engine/include/System/System.h"
-#include "../../../engine/include/EventBus/EventBus.h"
+#include "../../engine/events/InputEvent.h"
+#include "../../engine/events/MousePositionEvent.h"
+#include "../../engine/include/System/System.h"
+#include "../../engine/include/EventBus/EventBus.h"
 
 #include <optional>
 #include <vector>

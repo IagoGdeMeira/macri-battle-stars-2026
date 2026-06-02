@@ -1,9 +1,9 @@
 #ifndef ui_element_h
 #define ui_element_h
 
-#include "../../../domain/components/BoxModel.h"
-#include "../../../domain/include/Color/Color.h"
-#include "../../../domain/include/Geometry/Geometry.h"
+#include "../../domain/components/BoxModel.h"
+#include "../../domain/include/Color/Color.h"
+#include "../../domain/include/Geometry/Geometry.h"
 
 #include <string>
 

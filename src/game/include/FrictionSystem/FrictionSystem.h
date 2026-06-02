@@ -1,7 +1,7 @@
 #ifndef friction_system_h
 #define friction_system_h
 
-#include "../../../engine/include/System/System.h"
+#include "../../engine/include/System/System.h"
 
 class FrictionSystem : public System
 {

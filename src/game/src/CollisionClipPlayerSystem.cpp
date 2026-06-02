@@ -10,8 +10,8 @@
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
-CollisionClipPlayerSystem::CollisionClipPlayerSystem(EventBus& bus, EntityFactory& factory)
-    : bus(bus), factory(factory)
+CollisionClipPlayerSystem::CollisionClipPlayerSystem(EventBus& bus, EntityFactory& factory) :
+    bus(bus), factory(factory)
 {
     bus.subscribe<StateChangedEvent>([this](const StateChangedEvent& e)
     { this->stateChanges.push_back(e); });

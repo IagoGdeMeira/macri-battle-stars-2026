@@ -1,8 +1,8 @@
 #ifndef knockback_system_h
 #define knockback_system_h
 
-#include "../../../engine/include/EventBus/EventBus.h"
-#include "../../../engine/include/System/System.h"
+#include "../../engine/include/EventBus/EventBus.h"
+#include "../../engine/include/System/System.h"
 
 #include <vector>
 
