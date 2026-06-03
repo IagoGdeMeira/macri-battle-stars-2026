@@ -10,7 +10,12 @@ class NavigateToSelectionAction : public IUIAction
 {
 public:
     explicit NavigateToSelectionAction(SceneManager& sm) : sceneManager(sm) {}
-    void execute() const override { this->sceneManager.changeScene(SceneId::Selection, nullptr); }
+
+    void execute() const override
+    {
+        SelectionScene::Config cfg;
+        this->sceneManager.changeScene<SelectionScene>(std::move(cfg));
+    }
 
 private:
     SceneManager& sceneManager;

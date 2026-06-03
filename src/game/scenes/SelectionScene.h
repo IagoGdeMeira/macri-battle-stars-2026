@@ -20,34 +20,13 @@
 class SelectionScene : public Scene 
 {
 public:
-    struct Config
-    {
-        EventBus& eventBus;
-        SceneManager& sceneManager;
-        CharacterRoster& roster;
-        InputContext& input;
-        TriggerContext triggerContext;
-        std::vector<Combo> combos;
-        Camera2D& camera;
-        Window& window;
-        CharacterLoader& characterLoader;
-        Renderer& renderer;
-    };
+    struct Config : public Scene::Config {};
 
-    explicit SelectionScene(Config config);
-    void update(float deltaTime) override;
+    explicit SelectionScene(Config&& cfg);
+
+    void update(float deltaTime) override { (void)deltaTime; }
 
 private:
-    SceneManager& sceneManager;
-    CharacterRoster& roster;
-    InputContext& input;
-    TriggerContext triggerContext;
-    std::vector<Combo> combos;
-    Camera2D& camera;
-    Window& window;
-    CharacterLoader& characterLoader;
-    Renderer& renderer;
-
     std::unordered_map<uint32_t, std::string> selections;
     bool confirmed = false;
 };

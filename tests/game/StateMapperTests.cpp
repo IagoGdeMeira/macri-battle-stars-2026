@@ -1,5 +1,6 @@
-#include "../src/game/include/StateMapper/StateMapper.h"
-#include "../src/game/include/StateIdMapper/StateIdMapper.h"
+#include "../../src/game/include/StateMapper/StateMapper.h"
+
+#include "../../src/game/include/StateIdMapper/StateIdMapper.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -15,9 +16,7 @@ TEST_CASE("StateMapper maps known state names",
 
 TEST_CASE("StateMapper rejects unknown state names",
     "[unit][state_mapper]"
-) {
-    REQUIRE_THROWS_AS(StateMapper::fromString("Flying"), std::invalid_argument);
-}
+) { REQUIRE_THROWS_AS(StateMapper::fromString("Flying"), std::invalid_argument); }
 
 TEST_CASE("StateIdMapper resolves base and custom states per instance",
     "[unit][state_mapper]"
@@ -36,6 +35,5 @@ TEST_CASE("StateIdMapper resolves base and custom states per instance",
     REQUIRE(mapperA.fromString("PowerCharge") == customA);
     REQUIRE(mapperA.toString(customA) == "PowerCharge");
 
-    // Mappers are per-character; custom states do not leak across instances.
     REQUIRE(mapperB.fromString("PowerCharge") == StateId::Unknown);
 }

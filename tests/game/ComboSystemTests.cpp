@@ -1,11 +1,11 @@
-#include "../src/game/include/ComboSystem/ComboSystem.h"
+#include "../../src/game/include/ComboSystem/ComboSystem.h"
 
-#include "../src/domain/components/InputBufferComponent.h"
+#include "../../src/domain/components/InputBufferComponent.h"
 
-#include "../src/engine/include/EventBus/EventBus.h"
-#include "../src/engine/include/Scene/Scene.h"
+#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/Scene/Scene.h"
 
-#include "../src/game/events/ComboExecutedEvent.h"
+#include "../../src/game/events/ComboExecutedEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 

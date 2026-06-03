@@ -1,6 +1,10 @@
 #ifndef title_scene_h
 #define title_scene_h
 
+#include "../include/MenuLoader/MenuLoader.h"
+#include "../include/UIDrawer/UIDrawer.h"
+#include "../include/UIFactory/UIFactory.h"
+
 #include "../../engine/include/DataParser/DataParser.h"
 #include "../../engine/include/Engine/Engine.h"
 #include "../../engine/include/EventBus/EventBus.h"
@@ -13,10 +17,6 @@
 #include "../../engine/include/Scene/Scene.h"
 
 #include <memory>
-
-class MenuLoader;
-class UIDrawer;
-class UIFactory;
 
 struct InputContext;
 

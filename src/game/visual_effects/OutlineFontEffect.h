@@ -3,9 +3,9 @@
 
 #include "../include/IVisualEffect/IVisualEffect.h"
 
-#include "../domain/components/OutlineComponent.h"
+#include "../../domain/components/OutlineComponent.h"
 
-#include "../engine/include/DrawBatch/DrawFontBatch.h"
+#include "../../engine/include/DrawBatch/DrawFontBatch.h"
 
 class OutlineFontEffect : public IVisualEffect<DrawFontBatch, DrawFontCommand>
 {

@@ -1,16 +1,16 @@
-#include "../src/game/include/StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
+#include "../../src/game/include/StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
 
-#include "../src/domain/components/PushboxComponent.h"
-#include "../src/domain/components/RectangleColliderComponent.h"
-#include "../src/domain/components/TransformComponent.h"
-#include "../src/domain/components/VelocityComponent.h"
-#include "../src/domain/include/World/World.h"
+#include "../../src/domain/components/PushboxComponent.h"
+#include "../../src/domain/components/RectangleColliderComponent.h"
+#include "../../src/domain/components/TransformComponent.h"
+#include "../../src/domain/components/VelocityComponent.h"
+#include "../../src/domain/include/World/World.h"
 
-#include "../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../src/engine/include/EventBus/EventBus.h"
-#include "../src/engine/include/UpdateContext/UpdateContext.h"
+#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/UpdateContext/UpdateContext.h"
 
-#include "../src/game/events/CollisionEvent.h"
+#include "../../src/game/events/CollisionEvent.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

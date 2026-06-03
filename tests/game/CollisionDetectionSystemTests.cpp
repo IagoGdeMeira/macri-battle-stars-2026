@@ -1,13 +1,13 @@
-#include "../src/game/include/CollisionDetectionSystem/CollisionDetectionSystem.h"
+#include "../../src/game/include/CollisionDetectionSystem/CollisionDetectionSystem.h"
 
-#include "../src/domain/components/CircleColliderComponent.h"
-#include "../src/domain/components/RectangleColliderComponent.h"
-#include "../src/domain/components/TransformComponent.h"
+#include "../../src/domain/components/CircleColliderComponent.h"
+#include "../../src/domain/components/RectangleColliderComponent.h"
+#include "../../src/domain/components/TransformComponent.h"
 
-#include "../src/engine/include/EventBus/EventBus.h"
-#include "../src/engine/include/Scene/Scene.h"
+#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/Scene/Scene.h"
 
-#include "../src/game/events/CollisionEvent.h"
+#include "../../src/game/events/CollisionEvent.h"
 
 #include <algorithm>
 #include <vector>

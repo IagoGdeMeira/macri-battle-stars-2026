@@ -1,13 +1,13 @@
-#include "../src/game/include/FrictionSystem/FrictionSystem.h"
+#include "../../src/game/include/FrictionSystem/FrictionSystem.h"
 
-#include "../src/domain/components/GroundedComponent.h"
-#include "../src/domain/components/HitstopComponent.h"
-#include "../src/domain/components/VelocityComponent.h"
-#include "../src/domain/include/World/World.h"
+#include "../../src/domain/components/GroundedComponent.h"
+#include "../../src/domain/components/HitstopComponent.h"
+#include "../../src/domain/components/VelocityComponent.h"
+#include "../../src/domain/include/World/World.h"
 
-#include "../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../src/engine/include/EventBus/EventBus.h"
-#include "../src/engine/include/UpdateContext/UpdateContext.h"
+#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

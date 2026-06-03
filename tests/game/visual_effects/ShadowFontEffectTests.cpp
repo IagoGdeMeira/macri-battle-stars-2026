@@ -1,7 +1,7 @@
-#include "../../src/game/visual_effects/ShadowFontEffect.h"
+#include "../../../src/game/visual_effects/ShadowFontEffect.h"
 
-#include "../../src/engine/include/DrawBatch/DrawFontBatch.h"
-#include "../../src/engine/include/Renderer/Renderer.h"
+#include "../../../src/engine/include/DrawBatch/DrawFontBatch.h"
+#include "../../../src/engine/include/Renderer/Renderer.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

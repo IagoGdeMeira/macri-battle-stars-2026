@@ -3,9 +3,9 @@
 
 #include "../include/IVisualEffect/IVisualEffect.h"
 
-#include "../domain/components/ShadowComponent.h"
+#include "../../domain/components/ShadowComponent.h"
 
-#include "../engine/include/DrawBatch/DrawTextureBatch.h"
+#include "../../engine/include/DrawBatch/DrawTextureBatch.h"
 
 class ShadowTextureEffect : public IVisualEffect<DrawTextureBatch, DrawTextureCommand>
 {

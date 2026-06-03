@@ -1,4 +1,4 @@
-#include "../src/game/include/CharacterRoster/CharacterRoster.h"
+#include "../../src/game/include/CharacterRoster/CharacterRoster.h"
 
 #include <catch2/catch_test_macros.hpp>
 

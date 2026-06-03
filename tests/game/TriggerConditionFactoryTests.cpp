@@ -1,6 +1,6 @@
-#include "../src/game/include/TriggerConditionFactory/TriggerConditionFactory.h"
+#include "../../src/game/include/TriggerConditionFactory/TriggerConditionFactory.h"
 
-#include "../src/engine/include/DataNode/DataNode.h"
+#include "../../src/engine/include/DataNode/DataNode.h"
 
 #include <catch2/catch_test_macros.hpp>
 

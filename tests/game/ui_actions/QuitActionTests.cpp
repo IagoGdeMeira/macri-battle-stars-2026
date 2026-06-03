@@ -1,7 +1,7 @@
-#include "../../src/game/ui_actions/QuitAction.h"
+#include "../../../src/game/ui_actions/QuitAction.h"
 
-#include "../../src/engine/events/QuitEvent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../../src/engine/events/QuitEvent.h"
+#include "../../../src/engine/include/EventBus/EventBus.h"
 
 #include <catch2/catch_test_macros.hpp>
 

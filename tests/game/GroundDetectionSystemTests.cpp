@@ -1,17 +1,17 @@
-#include "../src/game/include/GroundDetectionSystem/GroundDetectionSystem.h"
+#include "../../src/game/include/GroundDetectionSystem/GroundDetectionSystem.h"
 
-#include "../src/domain/components/GroundedComponent.h"
-#include "../src/domain/components/ParentComponent.h"
-#include "../src/domain/components/PushboxComponent.h"
-#include "../src/domain/components/RectangleColliderComponent.h"
-#include "../src/domain/components/TransformComponent.h"
-#include "../src/domain/include/World/World.h"
+#include "../../src/domain/components/GroundedComponent.h"
+#include "../../src/domain/components/ParentComponent.h"
+#include "../../src/domain/components/PushboxComponent.h"
+#include "../../src/domain/components/RectangleColliderComponent.h"
+#include "../../src/domain/components/TransformComponent.h"
+#include "../../src/domain/include/World/World.h"
 
-#include "../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../src/engine/include/EventBus/EventBus.h"
-#include "../src/engine/include/UpdateContext/UpdateContext.h"
+#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/UpdateContext/UpdateContext.h"
 
-#include "../src/game/events/CollisionEvent.h"
+#include "../../src/game/events/CollisionEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 

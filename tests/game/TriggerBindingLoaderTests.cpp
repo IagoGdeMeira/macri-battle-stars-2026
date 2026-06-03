@@ -1,10 +1,10 @@
-#include "../src/game/include/TriggerBindingLoader/TriggerBindingLoader.h"
+#include "../../src/game/include/TriggerBindingLoader/TriggerBindingLoader.h"
 
-#include "../src/domain/include/InputAction/InputAction.h"
-#include "../src/domain/include/TriggerId/TriggerId.h"
+#include "../../src/domain/include/InputAction/InputAction.h"
+#include "../../src/domain/include/TriggerId/TriggerId.h"
 
-#include "../src/engine/include/DataNode/DataNode.h"
-#include "../src/engine/include/DataParser/DataParser.h"
+#include "../../src/engine/include/DataNode/DataNode.h"
+#include "../../src/engine/include/DataParser/DataParser.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

@@ -10,7 +10,12 @@ class NavigateToTitleAction : public IUIAction
 {
 public:
     explicit NavigateToTitleAction(SceneManager& sceneManager) : sceneManager(sceneManager) {}
-    void execute() const override { this->sceneManager.changeScene(SceneId::Title, nullptr); }
+
+    void execute() const override
+    {
+        TitleScene::Config cfg;
+        this->sceneManager.changeScene<TitleScene>(std::move(cfg));
+    }
 
 private:
     SceneManager& sceneManager;

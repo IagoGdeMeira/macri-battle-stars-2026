@@ -1,9 +1,9 @@
-#include "../src/engine/include/Scene/Scene.h"
+#include "../../src/engine/include/Scene/Scene.h"
 
-#include "../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../src/engine/include/EventBus/EventBus.h"
-#include "../src/engine/include/SystemManager/SystemManager.h"
-#include "../src/engine/include/UpdateContext/UpdateContext.h"
+#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
+#include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/SystemManager/SystemManager.h"
+#include "../../src/engine/include/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_test_macros.hpp>
 

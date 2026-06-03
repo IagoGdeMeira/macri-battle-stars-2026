@@ -1,8 +1,8 @@
-#include "../../src/game/trigger_conditions/HealthBelowCondition.h"
+#include "../../../src/game/trigger_conditions/HealthBelowCondition.h"
 
-#include "../../src/domain/components/HealthComponent.h"
-#include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "../../../src/domain/components/HealthComponent.h"
+#include "../../../src/domain/components/StateComponent.h"
+#include "../../../src/domain/include/World/World.h"
 
 #include <catch2/catch_test_macros.hpp>
 

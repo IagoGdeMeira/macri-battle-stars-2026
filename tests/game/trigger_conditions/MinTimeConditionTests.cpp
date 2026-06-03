@@ -1,7 +1,7 @@
-#include "../../src/game/trigger_conditions/MinTimeCondition.h"
+#include "../../../src/game/trigger_conditions/MinTimeCondition.h"
 
-#include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "../../../src/domain/components/StateComponent.h"
+#include "../../../src/domain/include/World/World.h"
 
 #include <catch2/catch_test_macros.hpp>
 
