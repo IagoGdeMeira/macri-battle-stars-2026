@@ -4,7 +4,7 @@
 
 Position WorldRenderUtils::worldToScreen(Camera2D& camera, Position worldPos, Viewport& vp, const Position& parallax)
 {
-    Position camPos = {camera.getX(), camera.getY()};
+    Position camPos = camera.getPosition();
     float zoom = camera.getZoom();
 
     float screenX = (worldPos.x - camPos.x * parallax.x) * zoom + vp.width / 2.f;

@@ -9,14 +9,14 @@ TEST_CASE("Camera2D updates position and movement",
 
     camera.setPosition(10.0f, 20.0f);
 
-    REQUIRE(camera.getX() == 10.0f);
-    REQUIRE(camera.getY() == 20.0f);
+    REQUIRE(camera.getPosition().x == 10.0f);
+    REQUIRE(camera.getPosition().y == 20.0f);
     REQUIRE(camera.getZoom() == 1.0f);
 
     camera.move(-3.0f, 5.0f);
 
-    REQUIRE(camera.getX() == 7.0f);
-    REQUIRE(camera.getY() == 25.0f);
+    REQUIRE(camera.getPosition().x == 7.0f);
+    REQUIRE(camera.getPosition().y == 25.0f);
 }
 
 TEST_CASE("Camera2D updates zoom",

@@ -69,8 +69,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem keeps ca
 
     system.update(ctx);
 
-    REQUIRE(camera.getX() == 12.0f);
-    REQUIRE(camera.getY() == -8.0f);
+    REQUIRE(camera.getPosition().x == 12.0f);
+    REQUIRE(camera.getPosition().y == -8.0f);
     REQUIRE(camera.getZoom() == 1.25f);
 }
 
@@ -86,8 +86,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem centers 
 
     system.update(ctx);
 
-    REQUIRE(camera.getX() == 100.0f);
-    REQUIRE(camera.getY() == 200.0f);
+    REQUIRE(camera.getPosition().x == 100.0f);
+    REQUIRE(camera.getPosition().y == 200.0f);
     REQUIRE(camera.getZoom() == 2.0f);
 }
 
@@ -107,7 +107,7 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps c
 
     system.update(ctx);
 
-    REQUIRE(camera.getX() == 150.0f);
-    REQUIRE(camera.getY() == 110.0f);
+    REQUIRE(camera.getPosition().x == 150.0f);
+    REQUIRE(camera.getPosition().y == 110.0f);
     REQUIRE(camera.getZoom() == 2.0f);
 }
