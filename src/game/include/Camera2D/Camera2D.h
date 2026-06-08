@@ -6,13 +6,13 @@
 class Camera2D
 {
 public:
-    void setPosition(float x, float y) { this->pos = { x, y }; }
-    void move(float dx, float dy) { this->pos += { dx, dy }; }
-
-    void setZoom(float z) { this->zoom = z; }
-
     Position getPosition() const { return this->pos; }
     float getZoom() const { return this->zoom; }
+    
+    void setPosition(float x, float y) { this->pos = { x, y }; }
+    void setZoom(float z) { this->zoom = z; }
+
+    void move(float dx, float dy) { this->pos += { dx, dy }; }
 
 private:
     Position pos = { 0.f, 0.f };

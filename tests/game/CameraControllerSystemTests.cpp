@@ -19,33 +19,22 @@ public:
     {
     public:
         void create(int width, int height, const char* /*title*/) override
-        {
-            this->w = width;
-            this->h = height;
-        }
+        { this->w = width; this->h = height; }
 
         void setResolution(int width, int height) override
-        {
-            this->w = width;
-            this->h = height;
-        }
+        { this->w = width; this->h = height; }
 
-        void setFullscreen(bool enabled) override
-        { this->fullscreen = enabled; }
+        void setFullscreen(bool enabled) override { this->fullscreen = enabled; }
 
         void getSize(int& width, int& height) override
-        {
-            width = this->w;
-            height = this->h;
-        }
+        { width = this->w; height = this->h; }
 
     private:
-        int w = 800;
-        int h = 600;
+        int w = 800, h = 600;
         bool fullscreen = false;
     };
 
-    CameraControllerSystemFixture() : ctx { world, bus, commandBuffer, 0.016f }
+    CameraControllerSystemFixture() : ctx { this->world, this->bus, this->commandBuffer, 0.016f }
     {
         this->world.components().registerComponent<TransformComponent>();
         this->world.components().registerComponent<PlayerComponent>();
@@ -62,52 +51,52 @@ public:
 TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem keeps camera unchanged when no players exist",
     "[unit][camera_controller_system]"
 ) {
-    CameraControllerSystem system(camera, window);
+    CameraControllerSystem system(this->camera, this->window);
 
-    camera.setPosition(12.0f, -8.0f);
-    camera.setZoom(1.25f);
+    this->camera.setPosition(12.f, -8.f);
+    this->camera.setZoom(1.25f);
 
-    system.update(ctx);
+    system.update(this->ctx);
 
-    REQUIRE(camera.getPosition().x == 12.0f);
-    REQUIRE(camera.getPosition().y == -8.0f);
-    REQUIRE(camera.getZoom() == 1.25f);
+    REQUIRE(this->camera.getPosition().x == 12.f);
+    REQUIRE(this->camera.getPosition().y == -8.f);
+    REQUIRE(this->camera.getZoom() == 1.25f);
 }
 
 TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem centers on player and clamps zoom",
     "[unit][camera_controller_system]"
 ) {
     const auto entity = this->world.entities().create();
-    this->world.components().add<TransformComponent>(entity, TransformComponent { 100.0f, 200.0f, 1.0f, 1.0f, 0.0f });
+    this->world.components().add<TransformComponent>(entity, TransformComponent { 100.f, 200.f, 1.f, 1.f, 0.f });
     this->world.components().add<PlayerComponent>(entity, PlayerComponent { 1 });
 
     AABB bounds { -1000.0f, 1000.0f, -1000.0f, 1000.0f };
-    CameraControllerSystem system(camera, window, bounds);
+    CameraControllerSystem system(this->camera, this->window, bounds);
 
-    system.update(ctx);
+    system.update(this->ctx);
 
-    REQUIRE(camera.getPosition().x == 100.0f);
-    REQUIRE(camera.getPosition().y == 200.0f);
-    REQUIRE(camera.getZoom() == 2.0f);
+    REQUIRE(this->camera.getPosition().x == 100.0f);
+    REQUIRE(this->camera.getPosition().y == 200.0f);
+    REQUIRE(this->camera.getZoom() == 2.0f);
 }
 
 TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps camera position to map bounds",
     "[unit][camera_controller_system]"
 ) {
     const auto entityA = this->world.entities().create();
-    this->world.components().add<TransformComponent>(entityA, TransformComponent { 100.0f, 100.0f, 1.0f, 1.0f, 0.0f });
+    this->world.components().add<TransformComponent>(entityA, TransformComponent { 100.f, 100.f, 1.f, 1.f, 0.f });
     this->world.components().add<PlayerComponent>(entityA, PlayerComponent { 1 });
 
     const auto entityB = this->world.entities().create();
-    this->world.components().add<TransformComponent>(entityB, TransformComponent { 250.0f, 200.0f, 1.0f, 1.0f, 0.0f });
+    this->world.components().add<TransformComponent>(entityB, TransformComponent { 250.f, 200.f, 1.f, 1.f, 0.f });
     this->world.components().add<PlayerComponent>(entityB, PlayerComponent { 2 });
 
-    AABB bounds { 0.0f, 300.0f, 0.0f, 220.0f };
-    CameraControllerSystem system(camera, window, bounds);
+    AABB bounds { 0.f, 300.f, 0.f, 220.f };
+    CameraControllerSystem system(this->camera, this->window, bounds);
 
-    system.update(ctx);
+    system.update(this->ctx);
 
-    REQUIRE(camera.getPosition().x == 150.0f);
-    REQUIRE(camera.getPosition().y == 110.0f);
-    REQUIRE(camera.getZoom() == 2.0f);
+    REQUIRE(this->camera.getPosition().x == 150.0f);
+    REQUIRE(this->camera.getPosition().y == 110.0f);
+    REQUIRE(this->camera.getZoom() == 2.0f);
 }
