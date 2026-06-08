@@ -5,16 +5,13 @@
 
 #include "../SceneFactory/SceneFactory.h"
 
-#include <stdexcept>
-#include <utility>
-
 template <typename SceneType>
 void SceneManager::changeScene(typename SceneType::Config config)
 {
     auto& stack = this->sceneStack;
     if (!stack.empty()) stack.back()->onExit();
-    
-    auto newScene = this->factory.createScene<SceneType>(std::move(config));
+
+    auto newScene = this->factory.createScene<SceneType>(std::move(config), this);
 
     stack.clear();
     stack.push_back(std::move(newScene));

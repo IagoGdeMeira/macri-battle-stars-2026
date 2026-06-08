@@ -7,9 +7,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("Scene updates systems",
-    "[unit][scene]"
-) {
+TEST_CASE("Scene updates systems", "[unit][scene]")
+{
     struct TestSystem : System
     {
         bool called = false;
@@ -27,9 +26,8 @@ TEST_CASE("Scene updates systems",
     REQUIRE(sys.called);
 }
 
-TEST_CASE("Scene passes deltaTime to systems",
-    "[unit][scene]"
-) {
+TEST_CASE("Scene passes deltaTime to systems", "[unit][scene]")
+{
     struct TestSystem : System
     {
         float received = 0.f;
@@ -47,9 +45,8 @@ TEST_CASE("Scene passes deltaTime to systems",
     REQUIRE(sys.received == 0.5f);
 }
 
-TEST_CASE("Scene flushes CommandBuffer after systems",
-    "[unit][scene]"
-) {
+TEST_CASE("Scene flushes CommandBuffer after systems", "[unit][scene]")
+{
     struct TestSystem : System
     {
         bool& executed;
@@ -72,9 +69,8 @@ TEST_CASE("Scene flushes CommandBuffer after systems",
     REQUIRE(executed);
 }
 
-TEST_CASE("CommandBuffer executes after system update",
-    "[unit][scene]"
-) {
+TEST_CASE("CommandBuffer executes after system update", "[unit][scene]")
+{
     std::vector<int> order;
 
     struct TestSystem : System
@@ -102,9 +98,8 @@ TEST_CASE("CommandBuffer executes after system update",
     REQUIRE(order[1] == 2);
 }
 
-TEST_CASE("Scene shares World between systems and commands",
-    "[unit][scene]"
-) {
+TEST_CASE("Scene shares World between systems and commands", "[unit][scene]")
+{
     struct TestSystem : System
     {
         void update(UpdateContext& ctx) override
@@ -122,9 +117,8 @@ TEST_CASE("Scene shares World between systems and commands",
     REQUIRE_NOTHROW(scene.update(0.016f));
 }
 
-TEST_CASE("Scene updates multiple systems",
-    "[unit][scene]"
-) {
+TEST_CASE("Scene updates multiple systems", "[unit][scene]")
+{
     struct TestSystem : System
     {
         int& counter;

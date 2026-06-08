@@ -1,7 +1,7 @@
 #ifndef sdl_system_initializer_h
 #define sdl_system_initializer_h
 
-#include "../../app/include/ISystemInitializer/ISystemInitializer.h"
+#include "../../engine/include/ISystemInitializer/ISystemInitializer.h"
 
 #include <SDL.h>
 

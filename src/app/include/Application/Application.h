@@ -1,15 +1,17 @@
 #ifndef application_h
 #define application_h
 
-#include "../ISystemInitializer/ISystemInitializer.h"
-
 #include "../../domain/include/Geometry/Geometry.h"
 
 #include "../../engine/include/DataParser/DataParser.h"
 #include "../../engine/include/Engine/Engine.h"
 #include "../../engine/include/GameSettings/GameSettings.h"
+#include "../../engine/include/IFontFactory/IFontFactory.h"
 #include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
+#include "../../engine/include/ISystemInitializer/ISystemInitializer.h"
+#include "../../engine/include/ITextureFactory/ITextureFactory.h"
 #include "../../engine/include/SceneFactory/SceneFactory.h"
+#include "../../engine/include/SceneManager/SceneManager.h"
 
 #include <memory>
 #include <string>
@@ -41,9 +43,12 @@ private:
 
     std::unique_ptr<ISystemInitializer> initializer;
     std::unique_ptr<IPlatformFactory> platformFactory;
+    std::unique_ptr<IFontFactory> fontFactory;
+    std::unique_ptr<ITextureFactory> textureFactory;
     std::unique_ptr<Window> window;
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<SceneFactory> sceneFactory;
+    std::unique_ptr<SceneManager> sceneManager;
     std::unique_ptr<Engine> engine;
     std::unique_ptr<DataParser> parser;
     std::unique_ptr<ThreadPool> threadPool;

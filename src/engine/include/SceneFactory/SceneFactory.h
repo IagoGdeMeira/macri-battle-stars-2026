@@ -28,7 +28,6 @@ public:
         TextureLoader& textureLoader;
         Renderer& renderer;
         EventBus& eventBus;
-        SceneManager& sceneManager;
         GameSettings& settings;
         Engine& engine;
         IFontFactory& fontFactory;
@@ -42,14 +41,13 @@ public:
         textureLoader(config.textureLoader),
         renderer(config.renderer),
         eventBus(config.eventBus),
-        sceneManager(config.sceneManager),
         settings(config.settings),
         engine(config.engine),
         fontFactory(config.fontFactory),
         textureFactory(config.textureFactory) {}
 
     template <typename SceneType>
-    std::unique_ptr<Scene> createScene(typename SceneType::Config cfg);
+    std::unique_ptr<Scene> createScene(typename SceneType::Config cfg, SceneManager* sceneManager);
 
 private:
     Window& window;
@@ -58,7 +56,6 @@ private:
     TextureLoader& textureLoader;
     Renderer& renderer;
     EventBus& eventBus;
-    SceneManager& sceneManager;
     GameSettings& settings;
     Engine& engine;
     IFontFactory& fontFactory;

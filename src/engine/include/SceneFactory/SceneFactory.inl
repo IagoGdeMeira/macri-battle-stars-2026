@@ -4,19 +4,19 @@
 #include "SceneFactory.h"
 
 template <typename SceneType>
-std::unique_ptr<Scene> SceneFactory::createScene(typename SceneType::Config cfg)
+std::unique_ptr<Scene> SceneFactory::createScene(typename SceneType::Config cfg, SceneManager* sceneManager)
 {
-    cfg.eventBus =          &this->eventBus;
-    cfg.sceneManager =      &this->sceneManager;
-    cfg.renderer =          &this->renderer;
-    cfg.window =            &this->window;
-    cfg.parser =            &this->parser;
-    cfg.resourceManager =   &this->resourceManager;
-    cfg.textureLoader =     &this->textureLoader;
-    cfg.settings =          &this->settings;
-    cfg.engine =            &this->engine;
-    cfg.fontFactory =       &this->fontFactory;
-    cfg.textureFactory =    &this->textureFactory;
+    cfg.eventBus        = &this->eventBus;
+    cfg.sceneManager    = sceneManager;
+    cfg.renderer        = &this->renderer;
+    cfg.window          = &this->window;
+    cfg.parser          = &this->parser;
+    cfg.resourceManager = &this->resourceManager;
+    cfg.textureLoader   = &this->textureLoader;
+    cfg.settings        = &this->settings;
+    cfg.engine          = &this->engine;
+    cfg.fontFactory     = &this->fontFactory;
+    cfg.textureFactory  = &this->textureFactory;
 
     return std::make_unique<SceneType>(std::move(cfg));
 }

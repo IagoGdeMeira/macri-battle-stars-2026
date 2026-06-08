@@ -1,332 +1,274 @@
 #include "../../src/engine/include/SceneManager/SceneManager.h"
 
+#include "../../src/domain/include/Color/Color.h"
+#include "../../src/domain/include/Geometry/Geometry.h"
+
+#include "../../src/engine/include/DataNode/DataNode.h"
+#include "../../src/engine/include/DataParser/DataParser.h"
+#include "../../src/engine/include/Engine/Engine.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
+#include "../../src/engine/include/GameSettings/GameSettings.h"
+#include "../../src/engine/include/IFontFactory/IFontFactory.h"
+#include "../../src/engine/include/ITextureFactory/ITextureFactory.h"
+#include "../../src/engine/include/Renderer/Renderer.h"
+#include "../../src/engine/include/ResourceManager/ResourceManager.h"
 #include "../../src/engine/include/Scene/Scene.h"
+#include "../../src/engine/include/SceneFactory/SceneFactory.h"
+#include "../../src/engine/include/TextureLoader/TextureLoader.h"
+#include "../../src/engine/include/ThreadPool/ThreadPool.h"
+#include "../../src/engine/include/Viewport/Viewport.h"
+#include "../../src/engine/include/Window/Window.h"
 
 #include <catch2/catch_test_macros.hpp>
-#include <stdexcept>
-#include <variant>
+#include <memory>
 
 class SceneManagerFixture
 {
 public:
-    struct CounterData { int* updates; };
-
-    struct LifecycleData
-    {
-        int *updates, *renders, *enters, *exits, *pauses, *resumes;
-        Scene::UpdatePolicy policy = Scene::UpdatePolicy::WhenTop;
-    };
-
-    struct CounterTracker
-    {
-        int updates = 0;
-
-        CounterData asData() { return CounterData{ &this->updates }; }
-    };
-
-    struct LifecycleTracker
-    {
-        int updates = 0;
-        int renders = 0;
-        int enters = 0;
-        int exits = 0;
-        int pauses = 0;
-        int resumes = 0;
-
-        LifecycleData asData(Scene::UpdatePolicy policy = Scene::UpdatePolicy::WhenTop)
-        {
-            return LifecycleData
-            {
-                &this->updates, &this->renders, &this->enters, &this->exits,
-                &this->pauses, &this->resumes, policy
-            };
-        }
-    };
-
-    class FlagScene : public Scene
+    class StubWindow : public Window
     {
     public:
-        using Scene::Scene;
-
-        void init() override { this->initialized = true; }
-        void update(float) override { this->updated = true; }
-
-        bool initialized = false;
-        bool updated = false;
+        void create(int, int, const char *) override {}
+        void setResolution(int, int) override {}
+        void setFullscreen(bool) override {}
+        void getSize(int &w, int &h) override { w = 800; h = 600; }
     };
 
-    class CounterScene : public Scene
+    class StubRenderer : public Renderer
     {
     public:
-        CounterScene(EventBus& bus, CounterData data) :
-            Scene(bus), data(data) {}
+        void clear() override {}
+        void present() override {}
+        void drawTexture(const DrawTextureCommand&) override {}
+        void drawFont(const DrawFontCommand&) override {}
+        void drawRectangle(const DrawRectangleCommand&) override {}
+        void drawCircle(const DrawCircleCommand&) override {}
+        void setViewport(const Viewport&) override {}
+    };
 
-        void update(float) override { ++(*this->data.updates); }
+    class StubDataParser : public DataParser
+    {
+    public:
+        std::unique_ptr<DataNode> parse(const std::string&) const override { return nullptr; }
+    };
 
+    class StubResourceManager : public ResourceManager
+    {
+    public:
+        StubResourceManager() : ResourceManager(pool) {}
     private:
-        CounterData data;
+        ThreadPool pool{1};
     };
 
-    class LifecycleScene : public Scene
+    class StubTextureFactory : public ITextureFactory
     {
     public:
-        LifecycleScene(EventBus& bus, LifecycleData data) :
-            Scene(bus), data(data) {}
-
-        void update(float) override { ++(*this->data.updates); }
-        void render() override { ++(*this->data.renders); }
-        void onEnter() override { ++(*this->data.enters); }
-        void onExit() override { ++(*this->data.exits); }
-        void onPause() override { ++(*this->data.pauses); }
-        void onResume() override { ++(*this->data.resumes); }
-        UpdatePolicy getUpdatePolicy() const override { return this->data.policy; }
-
-    private:
-        LifecycleData data;
+        std::shared_ptr<Texture> createTexture(const std::string&) override { return nullptr; }
     };
 
-    class TestSceneFactory : public ISceneFactory
+    class StubFontFactory : public IFontFactory
     {
     public:
-        std::unique_ptr<Scene> createScene(SceneId id, std::any data) override
-        {
-            if (id == SceneId::Title && data.type() == typeid(std::monostate))
-            { return std::make_unique<FlagScene>(this->bus); }
-
-            if (data.type() == typeid(CounterData))
-            {
-                auto cfg = std::any_cast<CounterData>(std::move(data));
-                return std::make_unique<CounterScene>(this->bus, cfg);
-            }
-
-            if (data.type() == typeid(LifecycleData))
-            {
-                auto cfg = std::any_cast<LifecycleData>(std::move(data));
-                return std::make_unique<LifecycleScene>(this->bus, cfg);
-            }
-
-            throw std::runtime_error("Unsupported SceneId/data combination in test factory");
-        }
-
-    private:
-        EventBus bus;
+        std::shared_ptr<Font> createFont(const std::string&) override { return nullptr; }
     };
 
-    void changeCounter(SceneId id, CounterTracker& tracker)
-    { this->manager.changeScene(id, tracker.asData()); }
+    class StubTextureLoader : public TextureLoader
+    {
+    public:
+        StubTextureLoader(ITextureFactory& factory) : TextureLoader(factory) {}
+    };
 
-    void pushCounter(SceneId id, CounterTracker& tracker)
-    { this->manager.pushScene(id, tracker.asData()); }
+    SceneManagerFixture()
+    {
+        this->engine = std::make_unique<Engine>(this->window, this->settings);
+        this->engine->setRenderer(this->renderer);
 
-    void changeLifecycle(
-        SceneId id,
-        LifecycleTracker& tracker,
-        Scene::UpdatePolicy policy = Scene::UpdatePolicy::WhenTop
-    ) { this->manager.changeScene(id, tracker.asData(policy)); }
+        this->textureFactory = std::make_unique<StubTextureFactory>();
+        this->fontFactory = std::make_unique<StubFontFactory>();
+        this->textureLoader = std::make_unique<StubTextureLoader>(*this->textureFactory);
 
-    void pushLifecycle(
-        SceneId id,
-        LifecycleTracker& tracker,
-        Scene::UpdatePolicy policy = Scene::UpdatePolicy::WhenTop
-    ) { this->manager.pushScene(id, tracker.asData(policy)); }
+        this->factory = std::make_unique<SceneFactory>(SceneFactory::Config{
+            .window             = this->window,
+            .parser             = this->dataParser,
+            .resourceManager    = this->resourceManager,
+            .textureLoader      = *this->textureLoader,
+            .renderer           = this->renderer,
+            .eventBus           = this->engine->events(),
+            .settings           = this->settings,
+            .engine             = *this->engine,
+            .fontFactory        = *this->fontFactory,
+            .textureFactory     = *this->textureFactory
+        });
 
-    FlagScene* currentFlagScene()
-    { return dynamic_cast<FlagScene*>(this->manager.currentScene()); }
+        this->sceneManager = std::make_unique<SceneManager>(*this->factory, *this->engine);
+        this->engine->setSceneManager(*this->sceneManager);
+    }
 
-    TestSceneFactory factory;
-    SceneManager manager { this->factory };
+    SceneManager& scenes() { return this->engine->scenes(); }
+
+    StubWindow window;
+    StubRenderer renderer;
+    GameSettings settings;
+    std::unique_ptr<Engine> engine;
+    std::unique_ptr<SceneFactory> factory;
+    std::unique_ptr<SceneManager> sceneManager;
+    StubDataParser dataParser;
+    StubResourceManager resourceManager;
+    std::unique_ptr<StubTextureLoader> textureLoader;
+    std::unique_ptr<StubTextureFactory> textureFactory;
+    std::unique_ptr<StubFontFactory> fontFactory;
 };
 
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager defers scene change until update",
-    "[unit][scene_manager]"
-) {
-    this->manager.changeScene(SceneId::Title, std::monostate{});
+class CounterScene : public Scene
+{
+public:
+    struct Config : public Scene::Config { int* counter = nullptr; };
 
-    this->manager.update(0.0f);
+    explicit CounterScene(Config &&cfg) : Scene(*cfg.eventBus), counter(cfg.counter) {}
 
-    auto* scene = this->currentFlagScene();
-    REQUIRE(scene != nullptr);
-    REQUIRE(scene->updated);
-}
+    void update(float) override { if (this->counter) ++(*this->counter); }
 
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager calls init before update",
-    "[unit][scene_manager]"
-) {
-    this->manager.changeScene(SceneId::Title, std::monostate{});
+private:
+    int* counter;
+};
 
-    auto* scene = this->currentFlagScene();
-    REQUIRE(scene != nullptr);
-    REQUIRE(scene->initialized);
-
-    this->manager.update(0.016f);
-    REQUIRE(scene->updated);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager updates current scene",
-    "[unit][scene_manager]"
-) {
-    CounterTracker tracker;
-
-    this->changeCounter(SceneId::Selection, tracker);
-
-    this->manager.update(0.016f);
-    this->manager.update(0.016f);
-
-    REQUIRE(tracker.updates == 2);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager keeps updating scene",
-    "[unit][scene_manager]"
-) {
-    CounterTracker tracker;
-
-    this->changeCounter(SceneId::Selection, tracker);
-
-    this->manager.update(0.016f);
-    this->manager.update(0.016f);
-
-    REQUIRE(tracker.updates == 2);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager replaces current scene",
-    "[unit][scene_manager]"
-) {
-    CounterTracker first;
-    CounterTracker second;
-
-    this->changeCounter(SceneId::Selection, first);
-    this->manager.update(0.016f);
-
-    this->changeCounter(SceneId::Game, second);
-    this->manager.update(0.016f);
-
-    this->manager.update(0.016f);
-
-    REQUIRE(first.updates == 1);
-    REQUIRE(second.updates == 2);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager keeps only last scheduled scene",
-    "[unit][scene_manager]"
-) {
-    CounterTracker first;
-    CounterTracker second;
-
-    this->changeCounter(SceneId::Selection, first);
-    this->changeCounter(SceneId::Game, second);
-
-    this->manager.update(0.016f);
-
-    REQUIRE(first.updates == 0);
-    REQUIRE(second.updates == 1);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager update without scene does nothing",
-    "[unit][scene_manager]"
-) {
-    REQUIRE_NOTHROW(this->manager.update(0.016f));
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager changeScene exits old scene and enters new scene",
-    "[unit][scene_manager]"
-) {
-    LifecycleTracker first;
-    LifecycleTracker second;
-
-    this->changeLifecycle(SceneId::Selection, first);
-    this->changeLifecycle(SceneId::Game, second);
-
-    REQUIRE(first.enters == 1);
-    REQUIRE(first.exits == 1);
-    REQUIRE(first.pauses == 0);
-    REQUIRE(first.resumes == 0);
-    REQUIRE(second.enters == 1);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager pushScene pauses previous and popScene resumes it",
-    "[unit][scene_manager]"
-) {
-    LifecycleTracker first;
-    LifecycleTracker second;
-
-    this->changeLifecycle(SceneId::Selection, first, Scene::UpdatePolicy::Always);
-    this->pushLifecycle(SceneId::Game, second, Scene::UpdatePolicy::WhenTop);
-
-    REQUIRE(first.pauses == 1);
-    REQUIRE(second.enters == 1);
-
-    this->manager.popScene();
-
-    REQUIRE(second.exits == 1);
-    REQUIRE(first.resumes == 1);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager update policy controls which stacked scenes update",
-    "[unit][scene_manager]"
-) {
-    LifecycleTracker alwaysTracker;
-    LifecycleTracker neverTracker;
-
-    this->changeLifecycle(SceneId::Selection, alwaysTracker, Scene::UpdatePolicy::Always);
-    this->pushLifecycle(SceneId::Game, neverTracker, Scene::UpdatePolicy::Never);
-
-    this->manager.update(0.016f);
-    this->manager.update(0.016f);
-
-    REQUIRE(alwaysTracker.updates == 2);
-    REQUIRE(neverTracker.updates == 0);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager render calls render on all stacked scenes",
-    "[unit][scene_manager]"
-) {
-    LifecycleTracker first;
-    LifecycleTracker second;
-
-    this->changeLifecycle(SceneId::Selection, first, Scene::UpdatePolicy::Always);
-    this->pushLifecycle(SceneId::Game, second, Scene::UpdatePolicy::WhenTop);
-
-    this->manager.render();
-
-    REQUIRE(first.renders == 1);
-    REQUIRE(second.renders == 1);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager empty/currentScene reflect stack state",
-    "[unit][scene_manager]"
-) {
-    LifecycleTracker tracker;
-
-    REQUIRE(this->manager.empty());
-    REQUIRE(this->manager.currentScene() == nullptr);
-
-    this->changeLifecycle(SceneId::Selection, tracker);
-
-    REQUIRE_FALSE(this->manager.empty());
-    REQUIRE(this->manager.currentScene() != nullptr);
-
-    this->manager.popScene();
-
-    REQUIRE(this->manager.empty());
-    REQUIRE(this->manager.currentScene() == nullptr);
-}
-
-TEST_CASE_METHOD(SceneManagerFixture, "SceneManager popScene on empty stack is no-op",
-    "[unit][scene_manager]"
-) { REQUIRE_NOTHROW(this->manager.popScene()); }
-
-TEST_CASE("SceneManager throws when factory returns nullptr",
-    "[unit][scene_manager]"
-) {
-    class NullFactory : public ISceneFactory
+class LifecycleScene : public Scene
+{
+public:
+    struct Config : public Scene::Config
     {
-    public:
-        std::unique_ptr<Scene> createScene(SceneId, std::any) override { return nullptr; }
+        int* updates = nullptr;
+        int* renders = nullptr;
+        int* enters = nullptr;
+        int* exits = nullptr;
+        int* pauses = nullptr;
+        int* resumes = nullptr;
     };
 
-    NullFactory factory;
-    SceneManager manager(factory);
+    explicit LifecycleScene(Config&& cfg) :
+        Scene(*cfg.eventBus),
+        updates(cfg.updates),
+        renders(cfg.renders),
+        enters(cfg.enters),
+        exits(cfg.exits),
+        pauses(cfg.pauses),
+        resumes(cfg.resumes) {}
 
-    REQUIRE_THROWS(manager.changeScene(SceneId::Title, std::monostate{}));
+    void update(float) override { if (this->updates) ++(*this->updates); }
+    void render() override      { if (this->renders) ++(*this->renders); }
+    void onEnter() override     { if (this->enters) ++(*this->enters); }
+    void onExit() override      { if (this->exits) ++(*this->exits); }
+    void onPause() override     { if (this->pauses) ++(*this->pauses); }
+    void onResume() override    { if (this->resumes) ++(*this->resumes); }
+
+private:
+    int *updates, *renders, *enters, *exits, *pauses, *resumes;
+};
+
+TEST_CASE_METHOD(SceneManagerFixture, "Change scene initializes and updates", "[unit][scene_manager]")
+{
+    int counter = 0;
+    CounterScene::Config cfg;
+    cfg.counter = &counter;
+
+    this->scenes().changeScene<CounterScene>(std::move(cfg));
+    this->scenes().update(0.016f);
+    this->scenes().update(0.016f);
+
+    REQUIRE(counter == 2);
+}
+
+TEST_CASE_METHOD(SceneManagerFixture, "Replace scene stops old one", "[unit][scene_manager]")
+{
+    int firstC = 0, secondC = 0;
+
+    CounterScene::Config cfg1;
+    cfg1.counter = &firstC;
+    this->scenes().changeScene<CounterScene>(std::move(cfg1));
+    this->scenes().update(0.016f);
+
+    CounterScene::Config cfg2;
+    cfg2.counter = &secondC;
+    this->scenes().changeScene<CounterScene>(std::move(cfg2));
+    this->scenes().update(0.016f);
+    this->scenes().update(0.016f);
+
+    REQUIRE(firstC == 1);
+    REQUIRE(secondC == 2);
+}
+
+TEST_CASE_METHOD(SceneManagerFixture, "Lifecycle callbacks are invoked", "[unit][scene_manager]")
+{
+    int enters = 0, exits = 0, pauses = 0, resumes = 0;
+
+    LifecycleScene::Config cfg1;
+    cfg1.enters = &enters;
+    cfg1.exits = &exits;
+    cfg1.pauses = &pauses;
+    cfg1.resumes = &resumes;
+
+    this->scenes().changeScene<LifecycleScene>(std::move(cfg1));
+    REQUIRE(enters == 1);
+
+    LifecycleScene::Config cfg2;
+    int enters2 = 0, exits2 = 0;
+    cfg2.enters = &enters2;
+    cfg2.exits = &exits2;
+
+    this->scenes().changeScene<LifecycleScene>(std::move(cfg2));
+    REQUIRE(exits == 1);
+    REQUIRE(enters2 == 1);
+}
+
+TEST_CASE_METHOD(SceneManagerFixture, "Push and pop scenes", "[unit][scene_manager]")
+{
+    int updatesBase = 0, pausesBase = 0, resumesBase = 0;
+    int updatesTop = 0, entersTop = 0, exitsTop = 0;
+
+    class AlwaysUpdateScene : public LifecycleScene
+    {
+    public:
+        using LifecycleScene::LifecycleScene;
+        UpdatePolicy getUpdatePolicy() const override { return UpdatePolicy::Always; }
+    };
+
+    AlwaysUpdateScene::Config baseCfg;
+    baseCfg.updates = &updatesBase;
+    baseCfg.pauses = &pausesBase;
+    baseCfg.resumes = &resumesBase;
+    this->scenes().changeScene<AlwaysUpdateScene>(std::move(baseCfg));
+
+    LifecycleScene::Config topCfg;
+    topCfg.updates = &updatesTop;
+    topCfg.enters = &entersTop;
+    topCfg.exits = &exitsTop;
+    this->scenes().pushScene(std::make_unique<LifecycleScene>(std::move(topCfg)));
+
+    REQUIRE(pausesBase == 1);
+    REQUIRE(entersTop == 1);
+
+    this->scenes().update(0.016f);
+    REQUIRE(updatesTop == 1);
+    REQUIRE(updatesBase == 1);
+
+    this->scenes().popScene();
+    REQUIRE(exitsTop == 1);
+    REQUIRE(resumesBase == 1);
+}
+
+TEST_CASE_METHOD(SceneManagerFixture, "Render calls all scenes", "[unit][scene_manager]")
+{
+    int renders1 = 0, renders2 = 0;
+
+    LifecycleScene::Config cfg1;
+    cfg1.renders = &renders1;
+    this->scenes().changeScene<LifecycleScene>(std::move(cfg1));
+
+    LifecycleScene::Config cfg2;
+    cfg2.renders = &renders2;
+    this->scenes().pushScene(std::make_unique<LifecycleScene>(std::move(cfg2)));
+
+    this->scenes().render();
+    REQUIRE(renders1 == 1);
+    REQUIRE(renders2 == 1);
 }

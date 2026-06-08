@@ -1,7 +1,7 @@
 #include "../../src/engine/include/SceneFactory/SceneFactory.h"
 
-#include "../../src/domain/include/Geometry/Geometry.h"
 #include "../../src/domain/include/Color/Color.h"
+#include "../../src/domain/include/Geometry/Geometry.h"
 
 #include "../../src/engine/events/QuitEvent.h"
 #include "../../src/engine/include/DataNode/DataNode.h"
@@ -78,9 +78,7 @@ public:
     class StubTextureLoader : public TextureLoader
     {
     public:
-        StubTextureLoader() : TextureLoader(texFactory) {}
-    private:
-        StubTextureFactory texFactory;
+        StubTextureLoader(ITextureFactory& factory) : TextureLoader(factory) {}
     };
 
     void createEngineAndFactory()
@@ -88,21 +86,25 @@ public:
         this->engine = std::make_unique<Engine>(this->window, this->settings);
         this->engine->setRenderer(this->renderer);
 
+        this->textureFactory = std::make_unique<StubTextureFactory>();
+        this->fontFactory = std::make_unique<StubFontFactory>();
+        this->textureLoader = std::make_unique<StubTextureLoader>(*this->textureFactory);
+
         this->factory = std::make_unique<SceneFactory>(SceneFactory::Config{
             .window             = this->window,
             .parser             = this->parser,
             .resourceManager    = this->resourceManager,
-            .textureLoader      = this->textureLoader,
+            .textureLoader      = *this->textureLoader,
             .renderer           = this->renderer,
             .eventBus           = this->engine->events(),
-            .sceneManager       = this->engine->scenes(),
             .settings           = this->settings,
             .engine             = *this->engine,
-            .fontFactory        = this->fontFactory,
-            .textureFactory     = this->textureFactory
+            .fontFactory        = *this->fontFactory,
+            .textureFactory     = *this->textureFactory
         });
 
-        this->engine->setSceneFactory(*this->factory);
+        this->sceneManager = std::make_unique<SceneManager>(*this->factory, *this->engine);
+        this->engine->setSceneManager(*this->sceneManager);
     }
 
     StubWindow window;
@@ -110,11 +112,12 @@ public:
     GameSettings settings;
     std::unique_ptr<Engine> engine;
     std::unique_ptr<SceneFactory> factory;
+    std::unique_ptr<SceneManager> sceneManager;
     StubDataParser parser;
     StubResourceManager resourceManager;
-    StubTextureLoader textureLoader;
-    StubTextureFactory textureFactory;
-    StubFontFactory fontFactory;
+    std::unique_ptr<StubTextureLoader> textureLoader;
+    std::unique_ptr<StubTextureFactory> textureFactory;
+    std::unique_ptr<StubFontFactory> fontFactory;
 };
 
 class VerifiableScene : public Scene
@@ -156,7 +159,7 @@ TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory creates a scene via template
     this->createEngineAndFactory();
 
     VerifiableScene::Config cfg;
-    auto scene = this->factory->createScene<VerifiableScene>(std::move(cfg));
+    auto scene = this->factory->createScene<VerifiableScene>(std::move(cfg), this->sceneManager.get());
 
     REQUIRE(scene != nullptr);
     REQUIRE(dynamic_cast<VerifiableScene*>(scene.get()) != nullptr);
@@ -168,43 +171,20 @@ TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory injects all common dependenc
     this->createEngineAndFactory();
 
     VerifiableScene::Config cfg;
-    auto scenePtr = this->factory->createScene<VerifiableScene>(std::move(cfg));
+    auto scenePtr = this->factory->createScene<VerifiableScene>(std::move(cfg), this->sceneManager.get());
     auto& scene = static_cast<VerifiableScene&>(*scenePtr);
 
     REQUIRE(scene.injectedEventBus          == &this->engine->events());
-    REQUIRE(scene.injectedSceneManager      == &this->engine->scenes());
+    REQUIRE(scene.injectedSceneManager      == this->sceneManager.get());
     REQUIRE(scene.injectedRenderer          == &this->renderer);
     REQUIRE(scene.injectedWindow            == &this->window);
     REQUIRE(scene.injectedParser            == &this->parser);
     REQUIRE(scene.injectedResourceManager   == &this->resourceManager);
-    REQUIRE(scene.injectedTextureLoader     == &this->textureLoader);
+    REQUIRE(scene.injectedTextureLoader     == this->textureLoader.get());
     REQUIRE(scene.injectedSettings          == &this->settings);
     REQUIRE(scene.injectedEngine            == this->engine.get());
-    REQUIRE(scene.injectedFontFactory       == &this->fontFactory);
-    REQUIRE(scene.injectedTextureFactory    == &this->textureFactory);
-}
-
-TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory throws when renderer is not set in Engine",
-    "[unit][scene_factory]"
-) {
-    this->engine = std::make_unique<Engine>(this->window, this->settings);
-    this->factory = std::make_unique<SceneFactory>(SceneFactory::Config{
-        .window             = this->window,
-        .parser             = this->parser,
-        .resourceManager    = this->resourceManager,
-        .textureLoader      = this->textureLoader,
-        .renderer           = this->renderer,
-        .eventBus           = this->engine->events(),
-        .sceneManager       = this->engine->scenes(),
-        .settings           = this->settings,
-        .engine             = *this->engine,
-        .fontFactory        = this->fontFactory,
-        .textureFactory     = this->textureFactory
-    });
-    this->engine->setSceneFactory(*this->factory);
-
-    VerifiableScene::Config cfg;
-    REQUIRE_THROWS(this->factory->createScene<VerifiableScene>(std::move(cfg)));
+    REQUIRE(scene.injectedFontFactory       == this->fontFactory.get());
+    REQUIRE(scene.injectedTextureFactory    == this->textureFactory.get());
 }
 
 TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory does not require pre-filled config fields",
@@ -213,7 +193,7 @@ TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory does not require pre-filled 
     this->createEngineAndFactory();
 
     VerifiableScene::Config cfg;
-    auto scenePtr = this->factory->createScene<VerifiableScene>(std::move(cfg));
+    auto scenePtr = this->factory->createScene<VerifiableScene>(std::move(cfg), this->sceneManager.get());
     auto& scene = static_cast<VerifiableScene&>(*scenePtr);
 
     REQUIRE(scene.injectedEventBus != nullptr);

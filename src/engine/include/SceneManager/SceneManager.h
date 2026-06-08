@@ -7,11 +7,12 @@
 #include <vector>
 
 class SceneFactory;
+class Engine;
 
 class SceneManager
 {
 public:
-    explicit SceneManager(SceneFactory& factory) : factory(factory) {}
+    SceneManager(SceneFactory& factory, Engine& engine) : factory(factory), engine(engine) {}
 
     template <typename SceneType>
     void changeScene(typename SceneType::Config config);
@@ -24,8 +25,11 @@ public:
     void update(float deltaTime);
     void render() { for (auto& scene : this->sceneStack) scene->render(); }
 
+    Engine& getEngine() { return this->engine; }
+
 private:
     SceneFactory& factory;
+    Engine& engine;
     std::vector<std::unique_ptr<Scene>> sceneStack;
 };
 

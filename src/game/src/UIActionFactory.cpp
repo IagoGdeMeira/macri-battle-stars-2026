@@ -4,6 +4,8 @@
 #include "../ui_actions/NavigateToTitleAction.h"
 #include "../ui_actions/QuitAction.h"
 
+#include <stdexcept>
+
 std::unique_ptr<IUIAction> UIActionFactory::create(const std::string& type) const
 {
     if (type == "NavigateToSelection")  return std::make_unique<NavigateToSelectionAction>(this->sceneManager);

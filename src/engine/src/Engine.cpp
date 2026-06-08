@@ -1,23 +1,23 @@
 #include "../include/Engine/Engine.h"
 
-#include "../include/SceneFactory/SceneFactory.h"
+#include "../events/QuitEvent.h"
 #include "../include/SceneManager/SceneManager.h"
 
-#include "../events/QuitEvent.h"
-
 #include <chrono>
+#include <stdexcept>
 
 Engine::Engine(Window& window, GameSettings& settings) : window(window), gameSettings(settings)
 { this->eventBus.subscribe<QuitEvent>([this](const QuitEvent&) { this->stop(); }); }
 
-void Engine::setSceneFactory(SceneFactory& factory)
+SceneManager& Engine::scenes()
 {
-    this->sceneFactory = &factory;
-    this->sceneManager.emplace(factory);
+    if (!this->sceneManager) throw std::runtime_error("SceneManager not set. Call setSceneManager() first.");
+    return *this->sceneManager;
 }
 
 void Engine::run()
 {
+    if (!this->sceneManager) throw std::runtime_error("Cannot run without SceneManager");
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
 
@@ -29,11 +29,8 @@ void Engine::run()
         float deltaTime = std::chrono::duration<float>(now - lastTime).count();
         lastTime = now;
 
-        if (this->sceneManager.has_value())
-        {
-            this->sceneManager->update(deltaTime);
-            this->sceneManager->render();
-        }
+        this->sceneManager->update(deltaTime);
+        this->sceneManager->render();
 
         if (this->renderer) this->renderer->present();
     }

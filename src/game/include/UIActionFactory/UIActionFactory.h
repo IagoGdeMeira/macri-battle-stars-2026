@@ -15,7 +15,7 @@ public:
         SceneManager& sceneManager;
     };
 
-    explicit UIActionFactory(Config&& config) :
+    explicit UIActionFactory(const Config& config) :
         eventBus(config.eventBus),
         sceneManager(config.sceneManager) {}
 
