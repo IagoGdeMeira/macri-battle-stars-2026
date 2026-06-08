@@ -24,7 +24,13 @@ public:
         CollisionClipLoader& clipLoader;
     };
 
-    explicit CharacterLoader(Config&& config);
+    explicit CharacterLoader(Config&& config) :
+        defLoader(config.defLoader),
+        animLoader(config.animLoader),
+        fsmLoader(config.fsmLoader),
+        resourceManager(config.resourceManager),
+        textureLoader(config.textureLoader),
+        clipLoader(config.clipLoader) {}
 
     Entity create(World& world, const std::string& path) const;
 

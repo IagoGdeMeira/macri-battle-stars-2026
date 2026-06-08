@@ -12,7 +12,6 @@ target_sources(game
         src/AnimationLoader.cpp
         src/AnimationStateSystem.cpp
         src/AnimationSystem.cpp
-        src/Camera2D.cpp
         src/CameraControllerSystem.cpp
         src/CharacterDefinitionLoader.cpp
         src/CharacterLoader.cpp

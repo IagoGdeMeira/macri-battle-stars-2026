@@ -13,14 +13,6 @@
 
 #include <memory>
 
-CharacterLoader::CharacterLoader(Config&& config) :
-    defLoader(config.defLoader),
-    animLoader(config.animLoader),
-    fsmLoader(config.fsmLoader),
-    resourceManager(config.resourceManager),
-    textureLoader(config.textureLoader),
-    clipLoader(config.clipLoader) {}
-
 Entity CharacterLoader::create(World& world, const std::string& path) const
 {
     auto def = this->defLoader.load(path);
