@@ -21,9 +21,17 @@ public:
     virtual int getInt(const std::string& key, const int& fallback = defaultIntFallback) const = 0;
     virtual float getFloat(const std::string& key, const float& fallback = defaultFloatFallback) const = 0;
     virtual bool getBool(const std::string& key, const bool& fallback = defaultBoolFallback) const = 0;
-    
     virtual std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const = 0;
     virtual std::unique_ptr<DataNode> getObject(const std::string& key) const { (void)key; return nullptr; }
+
+    virtual void setString(const std::string& key, const std::string& value) { (void)key; (void)value; }
+    virtual void setInt(const std::string& key, int value) { (void)key; (void)value; }
+    virtual void setFloat(const std::string& key, float value) { (void)key; (void)value; }
+    virtual void setBool(const std::string& key, bool value) { (void)key; (void)value; }
+    virtual void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value) { (void)key; (void)value; }
+    virtual void setObject(const std::string& key, std::unique_ptr<DataNode> value) { (void)key; (void)value; }
+
+    virtual std::unique_ptr<DataNode> clone() const = 0;
 };
 
 #endif // data_node_h

@@ -1,138 +1,38 @@
 #include "../../src/game/include/AnimationLoader/AnimationLoader.h"
+
+#include "../stubs/StubDataNode.h"
+#include "../stubs/StubDataParser.h"
+
 #include "../../src/game/include/StateIdMapper/StateIdMapper.h"
 
-#include "../../src/engine/include/DataNode/DataNode.h"
-#include "../../src/engine/include/DataParser/DataParser.h"
-
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 class AnimationLoaderFixture
 {
 public:
-    class Node : public DataNode
+    StubDataParser parser;
+
+    AnimationLoaderFixture() { this->parser.registerNode("assets/animations/fighter.json", this->makeAnimationsRoot()); }
+
+    std::unique_ptr<StubDataNode> makeAnimationsRoot() const
     {
-    public:
-        void setString(const std::string& key, const std::string& value) { this->strings[key] = value; }
-        void setInt(const std::string& key, int value) { this->ints[key] = value; }
-        void setFloat(const std::string& key, float value) { this->floats[key] = value; }
-        void setBool(const std::string& key, bool value) { this->bools[key] = value; }
-
-        void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value)
-        {
-            std::vector<Node> converted;
-            converted.reserve(value.size());
-
-            for (auto& node : value)
-            {
-                auto* typed = dynamic_cast<Node*>(node.get());
-                if (!typed) throw std::runtime_error("Unexpected node type in fake tree");
-                converted.push_back(*typed);
-            }
-
-            this->arrays[key] = std::move(converted);
-        }
-
-        bool has(const std::string& key) const override
-        {
-            return this->strings.contains(key)
-                || this->ints.contains(key)
-                || this->floats.contains(key)
-                || this->bools.contains(key)
-                || this->arrays.contains(key);
-        }
-
-        std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
-        {
-            const auto it = this->strings.find(key);
-            if (it == this->strings.end()) return fallback;
-            return it->second;
-        }
-
-        int getInt(const std::string& key, const int& fallback = DataNode::defaultIntFallback) const override
-        {
-            const auto it = this->ints.find(key);
-            if (it == this->ints.end()) return fallback;
-            return it->second;
-        }
-
-        float getFloat(const std::string& key, const float& fallback = DataNode::defaultFloatFallback) const override
-        {
-            const auto it = this->floats.find(key);
-            if (it == this->floats.end()) return fallback;
-            return it->second;
-        }
-
-        bool getBool(const std::string& key, const bool& fallback = DataNode::defaultBoolFallback) const override
-        {
-            const auto it = this->bools.find(key);
-            if (it == this->bools.end()) return fallback;
-            return it->second;
-        }
-
-        std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override
-        {
-            const auto it = this->arrays.find(key);
-            if (it == this->arrays.end()) throw std::runtime_error("Missing array key: " + key);
-
-            std::vector<std::unique_ptr<DataNode>> out;
-            out.reserve(it->second.size());
-
-            for (const auto& node : it->second)
-            { out.push_back(std::make_unique<Node>(node)); }
-
-            return out;
-        }
-
-    private:
-        std::unordered_map<std::string, std::string> strings;
-        std::unordered_map<std::string, int> ints;
-        std::unordered_map<std::string, float> floats;
-        std::unordered_map<std::string, bool> bools;
-        std::unordered_map<std::string, std::vector<Node>> arrays;
-    };
-
-    class Parser : public DataParser
-    {
-    public:
-        explicit Parser(std::unique_ptr<DataNode> rootNode) : root(std::move(rootNode)) {}
-
-        mutable std::string lastPath;
-
-        std::unique_ptr<DataNode> parse(const std::string& filePath) const override
-        {
-            lastPath = filePath;
-
-            auto* typed = dynamic_cast<Node*>(root.get());
-            if (!typed) throw std::runtime_error("Unexpected root node type in fake parser");
-
-            return std::make_unique<Node>(*typed);
-        }
-
-    private:
-        std::unique_ptr<DataNode> root;
-    };
-
-    std::unique_ptr<DataNode> makeAnimationsRoot() const
-    {
-        auto frameA = std::make_unique<Node>();
+        auto frameA = std::make_unique<StubDataNode>();
         frameA->setInt("x", 0);
         frameA->setInt("y", 0);
         frameA->setInt("width", 16);
         frameA->setInt("height", 24);
 
-        auto frameB = std::make_unique<Node>();
+        auto frameB = std::make_unique<StubDataNode>();
         frameB->setInt("x", 16);
         frameB->setInt("y", 0);
         frameB->setInt("width", 16);
         frameB->setInt("height", 24);
 
-        auto idleAnimation = std::make_unique<Node>();
+        auto idleAnimation = std::make_unique<StubDataNode>();
         idleAnimation->setString("state", "Idle");
         idleAnimation->setFloat("frameDuration", 0.08f);
         idleAnimation->setBool("loop", true);
@@ -142,9 +42,34 @@ public:
         idleFrames.push_back(std::move(frameB));
         idleAnimation->setArray("frames", std::move(idleFrames));
 
-        auto rootNode = std::make_unique<Node>();
+        auto rootNode = std::make_unique<StubDataNode>();
         std::vector<std::unique_ptr<DataNode>> animations;
         animations.push_back(std::move(idleAnimation));
+        rootNode->setArray("animations", std::move(animations));
+
+        return rootNode;
+    }
+
+    std::unique_ptr<StubDataNode> makeBadAnimationsRoot() const
+    {
+        auto animation = std::make_unique<StubDataNode>();
+        animation->setString("state", "NonExistentState");
+        animation->setFloat("frameDuration", 0.1f);
+        animation->setBool("loop", true);
+
+        auto frame = std::make_unique<StubDataNode>();
+        frame->setInt("x", 0);
+        frame->setInt("y", 0);
+        frame->setInt("width", 16);
+        frame->setInt("height", 16);
+
+        std::vector<std::unique_ptr<DataNode>> frames;
+        frames.push_back(std::move(frame));
+        animation->setArray("frames", std::move(frames));
+
+        auto rootNode = std::make_unique<StubDataNode>();
+        std::vector<std::unique_ptr<DataNode>> animations;
+        animations.push_back(std::move(animation));
         rootNode->setArray("animations", std::move(animations));
 
         return rootNode;
@@ -154,12 +79,9 @@ public:
 TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader parses mapped states and frames",
     "[unit][animation_loader]"
 ) {
-    Parser parser(this->makeAnimationsRoot());
-    AnimationLoader loader(parser);
-
+    AnimationLoader loader(this->parser);
     const auto animations = loader.load("assets/animations/fighter.json");
 
-    REQUIRE(parser.lastPath == "assets/animations/fighter.json");
     REQUIRE(animations.right.size() == 1);
     REQUIRE(animations.right.contains(StateId::Idle));
 
@@ -172,47 +94,30 @@ TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader parses mapped states a
     REQUIRE(idle.frames[0].width == 16);
     REQUIRE(idle.frames[0].height == 24);
     REQUIRE(idle.frames[1].x == 16);
+    REQUIRE(idle.frames[1].y == 0);
+    REQUIRE(idle.frames[1].width == 16);
+    REQUIRE(idle.frames[1].height == 24);
 }
 
 TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader rejects unknown state names",
     "[unit][animation_loader]"
 ) {
-    auto frame = std::make_unique<Node>();
-    frame->setInt("x", 0);
-    frame->setInt("y", 0);
-    frame->setInt("width", 16);
-    frame->setInt("height", 16);
-
-    auto animation = std::make_unique<Node>();
-    animation->setString("state", "NotAState");
-    animation->setFloat("frameDuration", 0.1f);
-    animation->setBool("loop", true);
-
-    std::vector<std::unique_ptr<DataNode>> frames;
-    frames.push_back(std::move(frame));
-    animation->setArray("frames", std::move(frames));
-
-    auto rootNode = std::make_unique<Node>();
-    std::vector<std::unique_ptr<DataNode>> animations;
-    animations.push_back(std::move(animation));
-    rootNode->setArray("animations", std::move(animations));
-
-    Parser parser(std::move(rootNode));
-    AnimationLoader loader(parser);
-
+    StubDataParser localParser;
+    localParser.registerNode("assets/animations/bad.json", this->makeBadAnimationsRoot());
+    AnimationLoader loader(localParser);
     REQUIRE_THROWS(loader.load("assets/animations/bad.json"));
 }
 
 TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader resolves custom state names with mapper",
     "[unit][animation_loader]"
 ) {
-    auto frame = std::make_unique<Node>();
+    auto frame = std::make_unique<StubDataNode>();
     frame->setInt("x", 0);
     frame->setInt("y", 0);
     frame->setInt("width", 32);
     frame->setInt("height", 32);
 
-    auto animation = std::make_unique<Node>();
+    auto animation = std::make_unique<StubDataNode>();
     animation->setString("state", "PowerCharge");
     animation->setFloat("frameDuration", 0.2f);
     animation->setBool("loop", false);
@@ -221,13 +126,14 @@ TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader resolves custom state 
     frames.push_back(std::move(frame));
     animation->setArray("frames", std::move(frames));
 
-    auto rootNode = std::make_unique<Node>();
+    auto rootNode = std::make_unique<StubDataNode>();
     std::vector<std::unique_ptr<DataNode>> animations;
     animations.push_back(std::move(animation));
     rootNode->setArray("animations", std::move(animations));
 
-    Parser parser(std::move(rootNode));
-    AnimationLoader loader(parser);
+    StubDataParser localParser;
+    localParser.registerNode("assets/animations/custom.json", std::move(rootNode));
+    AnimationLoader loader(localParser);
 
     StateIdMapper mapper;
     const auto customState = mapper.addCustomMapping("PowerCharge");
@@ -243,13 +149,13 @@ TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader resolves custom state 
 TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader with mapper rejects unmapped custom state",
     "[unit][animation_loader]"
 ) {
-    auto frame = std::make_unique<Node>();
+    auto frame = std::make_unique<StubDataNode>();
     frame->setInt("x", 0);
     frame->setInt("y", 0);
     frame->setInt("width", 16);
     frame->setInt("height", 16);
 
-    auto animation = std::make_unique<Node>();
+    auto animation = std::make_unique<StubDataNode>();
     animation->setString("state", "PowerCharge");
     animation->setFloat("frameDuration", 0.1f);
     animation->setBool("loop", true);
@@ -258,15 +164,15 @@ TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader with mapper rejects un
     frames.push_back(std::move(frame));
     animation->setArray("frames", std::move(frames));
 
-    auto rootNode = std::make_unique<Node>();
+    auto rootNode = std::make_unique<StubDataNode>();
     std::vector<std::unique_ptr<DataNode>> animations;
     animations.push_back(std::move(animation));
     rootNode->setArray("animations", std::move(animations));
 
-    Parser parser(std::move(rootNode));
-    AnimationLoader loader(parser);
+    StubDataParser localParser;
+    localParser.registerNode("assets/animations/custom_bad.json", std::move(rootNode));
+    AnimationLoader loader(localParser);
 
     StateIdMapper mapper;
-
     REQUIRE_THROWS_AS(loader.load("assets/animations/custom_bad.json", mapper), std::runtime_error);
 }

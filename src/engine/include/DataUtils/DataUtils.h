@@ -15,6 +15,13 @@ public:
     static Color parseColor(const DataNode& node, Color defaultValue = {255, 255, 255, 255});
     static AABB parseAABB(const DataNode& node, AABB defaultValue = {0.f, 0.f, 0.f, 0.f});
     static Corners parseCorners(const DataNode& node, Corners defaultValue = {0.f, 0.f, 0.f, 0.f});
+
+    static void setPosition(DataNode& node, const Position& pos);
+    static void setSize(DataNode& node, const Dimension2D& size);
+    static void setRect(DataNode& node, const Rectangle& rect);
+    static void setColor(DataNode& node, const Color& color);
+    static void setAABB(DataNode& node, const AABB& aabb);
+    static void setCorners(DataNode& node, const Corners& corners);
 };
 
 #endif // data_utils_h

@@ -4,17 +4,15 @@
 #include <string>
 #include <vector>
 
+#include "../../domain/include/Geometry/Geometry.h"
+
 struct CharacterDefinition
 {
     std::string id;
 
-    std::string texturePath;
-    int spriteWidth = 0, spriteHeight = 0;
-
-    std::string animationsPath;
-    std::string stateMachinePath;
-    std::string combosPath;
-    std::string collisionsPath;
+    Dimension2D spriteSize {0, 0};
+    std::string texturePath, animationsPath, stateMachinePath, combosPath, collisionsPath;
+    
     std::vector<std::string> customStates;
 };
 

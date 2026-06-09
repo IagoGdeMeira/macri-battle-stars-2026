@@ -16,7 +16,7 @@
 class AirFrictionSystemFixture
 {
 public:
-    AirFrictionSystemFixture() : system(10.0f), context { world, bus, commandBuffer, 0.0f }
+    AirFrictionSystemFixture() : system(10.0f), context { this->world, this->bus, this->commandBuffer, 0.0f }
     {
         auto& components = this->world.components();
         components.registerComponent<AirFrictionComponent>();

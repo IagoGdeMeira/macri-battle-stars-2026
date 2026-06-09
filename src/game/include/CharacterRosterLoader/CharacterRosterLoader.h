@@ -16,4 +16,4 @@ private:
     DataParser& parser;
 };
 
-#endif
+#endif // character_roster_loader_h

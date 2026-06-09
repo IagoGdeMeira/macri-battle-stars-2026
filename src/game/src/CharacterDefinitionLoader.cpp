@@ -1,5 +1,6 @@
 #include "../include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 
+#include "../../engine/include/DataUtils/DataUtils.h"
 #include "../../domain/include/StateId/StateId.h"
 
 #include <stdexcept>
@@ -12,25 +13,27 @@ CharacterDefinition CharacterDefinitionLoader::load(const std::string& path) con
 
     def.id = root->getString("id");
 
-    def.texturePath = root->getString("texture");
-    def.spriteWidth = root->getInt("spriteWidth");
-    def.spriteHeight = root->getInt("spriteHeight");
+    auto sizeNode = root->has("spriteSize") ? root->getObject("spriteSize") : nullptr;
+    def.spriteSize = (sizeNode) ? DataUtils::parseSize(*sizeNode) : Dimension2D{0, 0};
 
-    def.animationsPath = root->getString("animations");
-    def.stateMachinePath = root->getString("stateMachine");
+    def.texturePath = root->getString("texture", "");
+    def.animationsPath = root->getString("animations", "");
+    def.stateMachinePath = root->getString("stateMachine", "");
+    def.combosPath = root->getString("combos", "");
+    def.collisionsPath = root->getString("collisions", "");
 
-    if (root->has("combos")) def.combosPath = root->getString("combos");
-
-    if (root->has("customStates")) for (auto& node : root->getArray("customStates"))
+    if (root->has("customStates"))
     {
-        const auto customState = node->getString("");
-        if (StateId::isBaseName(customState))
-        { throw std::runtime_error("CharacterDefinition custom state collides with base state: " + customState); }
+        for (auto& node : root->getArray("customStates"))
+        {
+            const std::string customState = node->getString("");
+            if (StateId::isBaseName(customState))
+            { throw std::runtime_error("CharacterDefinition custom state collides with base state: " + customState); }
 
-        def.customStates.push_back(customState);
+            def.customStates.push_back(customState);
+        }
     }
 
     if (def.id.empty()) throw std::runtime_error("CharacterDefinition missing id");
-
     return def;
 }

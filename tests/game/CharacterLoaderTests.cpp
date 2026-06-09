@@ -1,23 +1,26 @@
 #include "../../src/game/include/CharacterLoader/CharacterLoader.h"
 
+#include "../stubs/StubDataNode.h"
+#include "../stubs/StubDataParser.h"
+#include "../stubs/StubRenderer.h"
+#include "../stubs/StubResourceManager.h"
+#include "../stubs/StubTextureFactory.h"
+
 #include "../../src/domain/components/AnimationComponent.h"
 #include "../../src/domain/components/AnimationControllerComponent.h"
 #include "../../src/domain/components/CollisionClipDefinitionsComponent.h"
 #include "../../src/domain/components/CollisionClipPlayerComponent.h"
 #include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/components/StateMappingComponent.h"
 #include "../../src/domain/components/StateMachineComponent.h"
+#include "../../src/domain/components/StateMappingComponent.h"
 #include "../../src/domain/include/StateId/StateId.h"
 #include "../../src/domain/include/TriggerId/TriggerId.h"
 #include "../../src/domain/include/World/World.h"
 
-#include "../../src/engine/include/DataNode/DataNode.h"
 #include "../../src/engine/include/DataParser/DataParser.h"
-#include "../../src/engine/include/Renderer/Renderer.h"
 #include "../../src/engine/include/ResourceManager/ResourceManager.h"
 #include "../../src/engine/include/TextureLoader/TextureLoader.h"
-#include "../../src/engine/include/ThreadPool/ThreadPool.h"
 
 #include "../../src/game/include/AnimationLoader/AnimationLoader.h"
 #include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
@@ -27,268 +30,109 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
-#include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 class CharacterLoaderFixture
 {
 public:
-    class Node : public DataNode
+    std::unique_ptr<StubDataNode> makeEmptyClipsRoot()
     {
-    public:
-        void setString(const std::string& key, const std::string& value) { this->strings[key] = value; }
-        void setInt(const std::string& key, int value) { this->ints[key] = value; }
-        void setFloat(const std::string& key, float value) { this->floats[key] = value; }
-        void setBool(const std::string& key, bool value) { this->bools[key] = value; }
-
-        void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value)
-        {
-            std::vector<Node> converted;
-            converted.reserve(value.size());
-
-            for (auto& node : value)
-            {
-                auto* typed = dynamic_cast<Node*>(node.get());
-                if (!typed) throw std::runtime_error("Unexpected node type in fake tree");
-                converted.push_back(*typed);
-            }
-
-            this->arrays[key] = std::move(converted);
-        }
-
-        bool has(const std::string& key) const override
-        {
-            return this->strings.contains(key)
-                || this->ints.contains(key)
-                || this->floats.contains(key)
-                || this->bools.contains(key)
-                || this->arrays.contains(key);
-        }
-
-        std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
-        {
-            const auto it = this->strings.find(key);
-            if (it == this->strings.end()) return fallback;
-            return it->second;
-        }
-
-        int getInt(const std::string& key, const int& fallback = DataNode::defaultIntFallback) const override
-        {
-            const auto it = this->ints.find(key);
-            if (it == this->ints.end()) return fallback;
-            return it->second;
-        }
-
-        float getFloat(const std::string& key, const float& fallback = DataNode::defaultFloatFallback) const override
-        {
-            const auto it = this->floats.find(key);
-            if (it == this->floats.end()) return fallback;
-            return it->second;
-        }
-
-        bool getBool(const std::string& key, const bool& fallback = DataNode::defaultBoolFallback) const override
-        {
-            const auto it = this->bools.find(key);
-            if (it == this->bools.end()) return fallback;
-            return it->second;
-        }
-
-        std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override
-        {
-            const auto it = this->arrays.find(key);
-            if (it == this->arrays.end()) throw std::runtime_error("Missing array key: " + key);
-
-            std::vector<std::unique_ptr<DataNode>> out;
-            out.reserve(it->second.size());
-
-            for (const auto& node : it->second)
-            { out.push_back(std::make_unique<Node>(node)); }
-
-            return out;
-        }
-
-    private:
-        std::unordered_map<std::string, std::string> strings;
-        std::unordered_map<std::string, int> ints;
-        std::unordered_map<std::string, float> floats;
-        std::unordered_map<std::string, bool> bools;
-        std::unordered_map<std::string, std::vector<Node>> arrays;
-    };
-
-    class Parser : public DataParser
-    {
-    public:
-        explicit Parser(std::unique_ptr<DataNode> rootNode) : root(std::move(rootNode)) {}
-
-        mutable std::string lastPath;
-
-        std::unique_ptr<DataNode> parse(const std::string& filePath) const override
-        {
-            this->lastPath = filePath;
-
-            auto* typed = dynamic_cast<Node*>(this->root.get());
-            if (!typed) throw std::runtime_error("Unexpected root node type in fake parser");
-
-            return std::make_unique<Node>(*typed);
-        }
-
-    private:
-        std::unique_ptr<DataNode> root;
-    };
-
-    class StubTexture : public Texture
-    {
-    public:
-        int getWidth() const override { return 64; }
-        int getHeight() const override { return 96; }
-    };
-
-    class StubRenderer : public Renderer
-    {
-    public:
-        int createTextureCalls = 0;
-        std::string lastTexturePath;
-        std::shared_ptr<Texture> textureToReturn = std::make_shared<StubTexture>();
-
-        void clear() override {}
-        void present() override {}
-
-        void drawTexture(const DrawTextureCommand& cmd) override { (void)cmd; }
-        void drawFont(const DrawFontCommand& cmd) override { (void)cmd; }
-        void drawCircle(const DrawCircleCommand& cmd) override { (void)cmd; }
-        void drawRectangle(const DrawRectangleCommand& cmd) override { (void)cmd; }
-
-        void setViewport(const Viewport& viewport) override { (void)viewport; }
-    };
-
-    class StubFactory : public ITextureFactory
-    {
-    public:
-        int createTextureCalls = 0;
-        std::string lastTexturePath;
-        std::shared_ptr<Texture> textureToReturn = std::make_shared<StubTexture>();
-
-        std::shared_ptr<Texture> createTexture(const std::string& filePath) override
-        {
-            this->createTextureCalls++;
-            this->lastTexturePath = filePath;
-            return this->textureToReturn;
-        }
-    };
-
-    CharacterLoaderFixture() : resourceManager(threadPool)
-    {
-        auto& components = this->world.components();
-        components.registerComponent<SpriteComponent>();
-        components.registerComponent<StateComponent>();
-        components.registerComponent<StateMappingComponent>();
-        components.registerComponent<StateMachineComponent>();
-        components.registerComponent<AnimationControllerComponent>();
-        components.registerComponent<AnimationComponent>();
-        components.registerComponent<CollisionClipDefinitionsComponent>();
-        components.registerComponent<CollisionClipPlayerComponent>();
+        auto root = std::make_unique<StubDataNode>();
+        root->setArray("clips", std::vector<std::unique_ptr<DataNode>>());
+        return root;
     }
 
-    std::unique_ptr<DataNode> makeEmptyClipsRoot() const
+    std::unique_ptr<StubDataNode> makeDefinitionRoot()
     {
-        auto rootNode = std::make_unique<Node>();
-        rootNode->setArray("clips", std::vector<std::unique_ptr<DataNode>>());
-        return rootNode;
+        auto root = std::make_unique<StubDataNode>();
+        root->setString("id", "fighter_01");
+        root->setString("texture", "assets/sprites/fighter.png");
+        root->setInt("spriteWidth", 64);
+        root->setInt("spriteHeight", 96);
+        root->setString("animations", "assets/animations/fighter_01.json");
+        root->setString("stateMachine", "assets/fsm/fighter_01.json");
+        return root;
     }
 
-    std::unique_ptr<DataNode> makeDefinitionRoot() const
+    std::unique_ptr<StubDataNode> makeAnimationRoot()
     {
-        auto rootNode = std::make_unique<Node>();
-        rootNode->setString("id", "fighter_01");
-        rootNode->setString("texture", "assets/sprites/fighter.png");
-        rootNode->setInt("spriteWidth", 64);
-        rootNode->setInt("spriteHeight", 96);
-        rootNode->setString("animations", "assets/animations/fighter_01.json");
-        rootNode->setString("stateMachine", "assets/fsm/fighter_01.json");
-        return rootNode;
-    }
+        auto frame = std::make_unique<StubDataNode>();
+        frame->setInt("x", 0);
+        frame->setInt("y", 0);
+        frame->setInt("width", 64);
+        frame->setInt("height", 96);
 
-    std::unique_ptr<DataNode> makeAnimationRoot() const
-    {
-        auto frameA = std::make_unique<Node>();
-        frameA->setInt("x", 0);
-        frameA->setInt("y", 0);
-        frameA->setInt("width", 64);
-        frameA->setInt("height", 96);
-
-        auto animation = std::make_unique<Node>();
-        animation->setString("state", "Idle");
-        animation->setFloat("frameDuration", 0.12f);
-        animation->setBool("loop", true);
-
+        auto anim = std::make_unique<StubDataNode>();
+        anim->setString("state", "Idle");
+        anim->setFloat("frameDuration", 0.12f);
+        anim->setBool("loop", true);
         std::vector<std::unique_ptr<DataNode>> frames;
-        frames.push_back(std::move(frameA));
-        animation->setArray("frames", std::move(frames));
+        frames.push_back(std::move(frame));
+        anim->setArray("frames", std::move(frames));
 
-        auto rootNode = std::make_unique<Node>();
+        auto root = std::make_unique<StubDataNode>();
         std::vector<std::unique_ptr<DataNode>> animations;
-        animations.push_back(std::move(animation));
-        rootNode->setArray("animations", std::move(animations));
-
-        return rootNode;
+        animations.push_back(std::move(anim));
+        root->setArray("animations", std::move(animations));
+        return root;
     }
 
-    std::unique_ptr<DataNode> makeStateMachineRoot() const
+    std::unique_ptr<StubDataNode> makeStateMachineRoot()
     {
-        auto transition = std::make_unique<Node>();
-        transition->setString("from", "Idle");
-        transition->setString("to", "Punching");
-        transition->setString("trigger", "Punched");
+        auto trans = std::make_unique<StubDataNode>();
+        trans->setString("from", "Idle");
+        trans->setString("to", "Punching");
+        trans->setString("trigger", "Punched");
 
-        auto rootNode = std::make_unique<Node>();
+        auto root = std::make_unique<StubDataNode>();
         std::vector<std::unique_ptr<DataNode>> transitions;
-        transitions.push_back(std::move(transition));
-        rootNode->setArray("transitions", std::move(transitions));
-
-        return rootNode;
+        transitions.push_back(std::move(trans));
+        root->setArray("transitions", std::move(transitions));
+        return root;
     }
-
-    World world;
-    ThreadPool threadPool { 1 };
-    ResourceManager resourceManager;
-    StubRenderer renderer;
-    StubFactory factory;
 };
 
 TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and required gameplay components",
     "[integration][character_loader]"
 ) {
-    Parser definitionParser(this->makeDefinitionRoot());
-    Parser animationParser(this->makeAnimationRoot());
-    Parser stateMachineParser(this->makeStateMachineRoot());
-    Parser clipParser(this->makeEmptyClipsRoot());
+    StubDataParser defParser, animParser, fsmParser, clipParser;
+    defParser.registerNode("assets/characters/fighter_01.json", this->makeDefinitionRoot());
+    animParser.registerNode("assets/animations/fighter_01.json", this->makeAnimationRoot());
+    fsmParser.registerNode("assets/fsm/fighter_01.json", this->makeStateMachineRoot());
+    clipParser.registerNode("assets/collisions/fighter_01.json", this->makeEmptyClipsRoot());
 
-    CharacterDefinitionLoader definitionLoader(definitionParser);
-    AnimationLoader animationLoader(animationParser);
-    StateMachineLoader machineLoader(stateMachineParser);
+    CharacterDefinitionLoader defLoader(defParser);
+    AnimationLoader animLoader(animParser);
+    StateMachineLoader fsmLoader(fsmParser);
     CollisionClipLoader clipLoader(clipParser);
-    TextureLoader textureLoader(this->factory);
 
-    CharacterLoader loader({
-        .defLoader = definitionLoader,
-        .animLoader = animationLoader,
-        .fsmLoader = machineLoader,
-        .resourceManager = this->resourceManager,
-        .textureLoader = textureLoader,
-        .clipLoader = clipLoader
+    StubResourceManager resourceManager;
+    StubTextureFactory textureFactory;
+    TextureLoader textureLoader(textureFactory);
+
+    CharacterLoader loader(CharacterLoader::Config{
+        .defLoader          = defLoader,
+        .animLoader         = animLoader,
+        .fsmLoader          = fsmLoader,
+        .resourceManager    = resourceManager,
+        .textureLoader      = textureLoader,
+        .clipLoader         = clipLoader
     });
 
-    const auto entity = loader.create(this->world, "assets/characters/fighter_01.json");
+    World world;
+    auto& components = world.components();
+    components.registerComponent<SpriteComponent>();
+    components.registerComponent<StateComponent>();
+    components.registerComponent<StateMappingComponent>();
+    components.registerComponent<StateMachineComponent>();
+    components.registerComponent<AnimationControllerComponent>();
+    components.registerComponent<AnimationComponent>();
+    components.registerComponent<CollisionClipDefinitionsComponent>();
+    components.registerComponent<CollisionClipPlayerComponent>();
 
-    REQUIRE(definitionParser.lastPath == "assets/characters/fighter_01.json");
-    REQUIRE(animationParser.lastPath == "assets/animations/fighter_01.json");
-    REQUIRE(stateMachineParser.lastPath == "assets/fsm/fighter_01.json");
-    REQUIRE(this->factory.createTextureCalls == 1);
-    REQUIRE(this->factory.lastTexturePath == "assets/sprites/fighter.png");
+    const auto entity = loader.create(world, "assets/characters/fighter_01.json");
 
-    auto& components = this->world.components();
     REQUIRE(components.has<SpriteComponent>(entity));
     REQUIRE(components.has<StateComponent>(entity));
     REQUIRE(components.has<StateMappingComponent>(entity));
@@ -297,27 +141,26 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(components.has<AnimationComponent>(entity));
 
     const auto& sprite = components.get<SpriteComponent>(entity);
-    const auto& state = components.get<StateComponent>(entity);
-    const auto& stateMachine = components.get<StateMachineComponent>(entity);
-    const auto& controller = components.get<AnimationControllerComponent>(entity);
-    const auto& animation = components.get<AnimationComponent>(entity);
-
-    REQUIRE(sprite.texture == this->factory.textureToReturn);
+    REQUIRE(sprite.texture == textureFactory.textureToReturn);
     REQUIRE(sprite.source.size.width == 64);
     REQUIRE(sprite.source.size.height == 96);
     REQUIRE(sprite.useSourceRect == false);
 
+    const auto& state = components.get<StateComponent>(entity);
     REQUIRE(state.current == StateId::Idle);
     REQUIRE(state.timeInState == 0.0f);
 
+    const auto& stateMachine = components.get<StateMachineComponent>(entity);
     REQUIRE(stateMachine.machine.transitions.size() == 1);
     REQUIRE(stateMachine.machine.transitions[0].from == StateId::Idle);
     REQUIRE(stateMachine.machine.transitions[0].to == StateId::Punching);
 
+    const auto& controller = components.get<AnimationControllerComponent>(entity);
     REQUIRE(controller.animations.right.size() == 1);
     REQUIRE(controller.animations.right.contains(StateId::Idle));
     REQUIRE(controller.currentState == StateId::Unknown);
 
+    const auto& animation = components.get<AnimationComponent>(entity);
     REQUIRE(animation.currentFrame == 0);
     REQUIRE(animation.elapsedTime == 0.0f);
     REQUIRE(animation.currentState == StateId::Unknown);
@@ -326,77 +169,87 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states per character definition",
     "[integration][character_loader]"
 ) {
-    auto definitionRoot = std::make_unique<Node>();
-    definitionRoot->setString("id", "fighter_custom");
-    definitionRoot->setString("texture", "assets/sprites/fighter.png");
-    definitionRoot->setInt("spriteWidth", 64);
-    definitionRoot->setInt("spriteHeight", 96);
-    definitionRoot->setString("animations", "assets/animations/fighter_custom.json");
-    definitionRoot->setString("stateMachine", "assets/fsm/fighter_custom.json");
+    auto defRoot = std::make_unique<StubDataNode>();
+    defRoot->setString("id", "fighter_custom");
+    defRoot->setString("texture", "assets/sprites/fighter.png");
+    defRoot->setInt("spriteWidth", 64);
+    defRoot->setInt("spriteHeight", 96);
+    defRoot->setString("animations", "assets/animations/fighter_custom.json");
+    defRoot->setString("stateMachine", "assets/fsm/fighter_custom.json");
 
-    auto customState = std::make_unique<Node>();
-    customState->setString("", "PowerCharge");
+    auto customStateNode = std::make_unique<StubDataNode>();
+    customStateNode->setString("", "PowerCharge");
     std::vector<std::unique_ptr<DataNode>> customStates;
-    customStates.push_back(std::move(customState));
-    definitionRoot->setArray("customStates", std::move(customStates));
+    customStates.push_back(std::move(customStateNode));
+    defRoot->setArray("customStates", std::move(customStates));
 
-    auto frame = std::make_unique<Node>();
+    auto frame = std::make_unique<StubDataNode>();
     frame->setInt("x", 0);
     frame->setInt("y", 0);
     frame->setInt("width", 64);
     frame->setInt("height", 96);
-
-    auto customAnimation = std::make_unique<Node>();
-    customAnimation->setString("state", "PowerCharge");
-    customAnimation->setFloat("frameDuration", 0.2f);
-    customAnimation->setBool("loop", false);
-
+    auto animCustom = std::make_unique<StubDataNode>();
+    animCustom->setString("state", "PowerCharge");
+    animCustom->setFloat("frameDuration", 0.2f);
+    animCustom->setBool("loop", false);
     std::vector<std::unique_ptr<DataNode>> frames;
     frames.push_back(std::move(frame));
-    customAnimation->setArray("frames", std::move(frames));
-
-    auto animationRoot = std::make_unique<Node>();
+    animCustom->setArray("frames", std::move(frames));
+    auto animRoot = std::make_unique<StubDataNode>();
     std::vector<std::unique_ptr<DataNode>> animations;
-    animations.push_back(std::move(customAnimation));
-    animationRoot->setArray("animations", std::move(animations));
+    animations.push_back(std::move(animCustom));
+    animRoot->setArray("animations", std::move(animations));
 
-    auto transition = std::make_unique<Node>();
-    transition->setString("from", "Idle");
-    transition->setString("to", "PowerCharge");
-    transition->setString("trigger", "Punched");
-
-    auto machineRoot = std::make_unique<Node>();
+    auto trans = std::make_unique<StubDataNode>();
+    trans->setString("from", "Idle");
+    trans->setString("to", "PowerCharge");
+    trans->setString("trigger", "Punched");
+    auto fsmRoot = std::make_unique<StubDataNode>();
     std::vector<std::unique_ptr<DataNode>> transitions;
-    transitions.push_back(std::move(transition));
-    machineRoot->setArray("transitions", std::move(transitions));
+    transitions.push_back(std::move(trans));
+    fsmRoot->setArray("transitions", std::move(transitions));
 
-    Parser definitionParser(std::move(definitionRoot));
-    Parser animationParser(std::move(animationRoot));
-    Parser stateMachineParser(std::move(machineRoot));
-    Parser clipParser(this->makeEmptyClipsRoot());
+    auto clipRoot = this->makeEmptyClipsRoot();
 
-    CharacterDefinitionLoader definitionLoader(definitionParser);
-    AnimationLoader animationLoader(animationParser);
-    StateMachineLoader machineLoader(stateMachineParser);
+    StubDataParser defParser, animParser, fsmParser, clipParser;
+    defParser.registerNode("def.json", std::move(defRoot));
+    animParser.registerNode("anim.json", std::move(animRoot));
+    fsmParser.registerNode("fsm.json", std::move(fsmRoot));
+    clipParser.registerNode("clip.json", std::move(clipRoot));
+
+    CharacterDefinitionLoader defLoader(defParser);
+    AnimationLoader animLoader(animParser);
+    StateMachineLoader fsmLoader(fsmParser);
     CollisionClipLoader clipLoader(clipParser);
-    TextureLoader textureLoader(this->factory);
 
-    CharacterLoader loader(CharacterLoader::Config
-    {
-        .defLoader = definitionLoader,
-        .animLoader = animationLoader,
-        .fsmLoader = machineLoader,
-        .resourceManager = this->resourceManager,
-        .textureLoader = textureLoader,
-        .clipLoader = clipLoader
+    StubResourceManager resourceManager;
+    StubTextureFactory textureFactory;
+    TextureLoader textureLoader(textureFactory);
+
+    CharacterLoader loader(CharacterLoader::Config{
+        .defLoader          = defLoader,
+        .animLoader         = animLoader,
+        .fsmLoader          = fsmLoader,
+        .resourceManager    = resourceManager,
+        .textureLoader      = textureLoader,
+        .clipLoader         = clipLoader
     });
 
-    const auto entity = loader.create(this->world, "assets/characters/fighter_custom.json");
+    World world;
+    auto& components = world.components();
+    components.registerComponent<SpriteComponent>();
+    components.registerComponent<StateComponent>();
+    components.registerComponent<StateMappingComponent>();
+    components.registerComponent<StateMachineComponent>();
+    components.registerComponent<AnimationControllerComponent>();
+    components.registerComponent<AnimationComponent>();
+    components.registerComponent<CollisionClipDefinitionsComponent>();
+    components.registerComponent<CollisionClipPlayerComponent>();
 
-    auto& components = this->world.components();
+    const auto entity = loader.create(world, "def.json");
+
     const auto& mapping = components.get<StateMappingComponent>(entity);
     REQUIRE(mapping.mapper != nullptr);
-
     const auto customStateId = mapping.mapper->fromString("PowerCharge");
     REQUIRE(customStateId.isCustom());
 

@@ -18,7 +18,7 @@
 class AnimationStateSystemFixture
 {
 public:
-    AnimationStateSystemFixture() : system(bus), context{ world, bus, commandBuffer, 0.016f }
+    AnimationStateSystemFixture() : system(this->bus), context{ this->world, this->bus, this->commandBuffer, 0.016f }
     {
         auto& components = this->world.components();
         components.registerComponent<AnimationComponent>();
@@ -26,8 +26,7 @@ public:
         components.registerComponent<OrientationComponent>();
     }
 
-    static Animation makeAnimation(int x)
-    { return Animation{ { { x, 0, 16, 16 } }, 0.1f, true }; }
+    static Animation makeAnimation(int x) { return Animation{{{x, 0, 16, 16}}, 0.1f, true}; }
 
 protected:
     World world;
@@ -37,14 +36,13 @@ protected:
     UpdateContext context;
 };
 
-TEST_CASE_METHOD(AnimationStateSystemFixture,
-    "AnimationStateSystem applies pending state change and resets animation progress",
+TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem applies pending state change and resets animation progress",
     "[integration][animation_state_system]"
 ) {
     const auto entity = this->world.entities().create();
 
-    const Animation idleAnimation = makeAnimation(0);
-    const Animation runningAnimation = makeAnimation(16);
+    const Animation idleAnimation = this->makeAnimation(0);
+    const Animation runningAnimation = this->makeAnimation(16);
 
     AnimationComponent animation;
     animation.animation = idleAnimation;
@@ -82,7 +80,7 @@ TEST_CASE_METHOD(AnimationStateSystemFixture,
     const auto entity = this->world.entities().create();
 
     AnimationComponent animation;
-    animation.animation = makeAnimation(0);
+    animation.animation = this->makeAnimation(0);
     animation.elapsedTime = 0.4f;
     animation.currentFrame = 2;
     animation.currentState = StateId::Idle;
@@ -105,7 +103,7 @@ TEST_CASE_METHOD(AnimationStateSystemFixture,
 ) {
     const auto entity = this->world.entities().create();
 
-    const Animation idleAnimation = makeAnimation(0);
+    const Animation idleAnimation = this->makeAnimation(0);
 
     AnimationComponent animation;
     animation.animation = idleAnimation;
@@ -140,7 +138,7 @@ TEST_CASE_METHOD(AnimationStateSystemFixture,
 ) {
     const auto entity = this->world.entities().create();
 
-    const Animation runningAnimation = makeAnimation(16);
+    const Animation runningAnimation = this->makeAnimation(16);
 
     AnimationComponent animation;
     animation.animation = runningAnimation;
@@ -165,15 +163,14 @@ TEST_CASE_METHOD(AnimationStateSystemFixture,
     REQUIRE(unchanged.animation.frames[0].x == 16);
 }
 
-TEST_CASE_METHOD(AnimationStateSystemFixture,
-    "AnimationStateSystem applies pending changes in order and uses last emitted state",
+TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem applies pending changes in order and uses last emitted state",
     "[integration][animation_state_system]"
 ) {
     const auto entity = this->world.entities().create();
 
-    const Animation idleAnimation = makeAnimation(0);
-    const Animation runningAnimation = makeAnimation(16);
-    const Animation jumpingAnimation = makeAnimation(32);
+    const Animation idleAnimation = this->makeAnimation(0);
+    const Animation runningAnimation = this->makeAnimation(16);
+    const Animation jumpingAnimation = this->makeAnimation(32);
 
     AnimationComponent animation;
     animation.animation = idleAnimation;
@@ -211,10 +208,10 @@ TEST_CASE_METHOD(AnimationStateSystemFixture,
 ) {
     const auto entity = this->world.entities().create();
 
-    const Animation rightIdleAnimation = makeAnimation(0);
-    const Animation leftIdleAnimation = makeAnimation(50);
-    const Animation rightRunningAnimation = makeAnimation(16);
-    const Animation leftRunningAnimation = makeAnimation(66);
+    const Animation rightIdleAnimation = this->makeAnimation(0);
+    const Animation leftIdleAnimation = this->makeAnimation(50);
+    const Animation rightRunningAnimation = this->makeAnimation(16);
+    const Animation leftRunningAnimation = this->makeAnimation(66);
 
     AnimationComponent animation;
     animation.animation = rightIdleAnimation;
@@ -244,14 +241,13 @@ TEST_CASE_METHOD(AnimationStateSystemFixture,
     REQUIRE(updatedAnimation.animation.frames[0].x == 66);
 }
 
-TEST_CASE_METHOD(AnimationStateSystemFixture,
-    "AnimationStateSystem resets animation when orientation changes",
+TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem resets animation when orientation changes",
     "[integration][animation_state_system]"
 ) {
     const auto entity = this->world.entities().create();
 
-    const Animation rightIdleAnimation = makeAnimation(0);
-    const Animation leftIdleAnimation = makeAnimation(50);
+    const Animation rightIdleAnimation = this->makeAnimation(0);
+    const Animation leftIdleAnimation = this->makeAnimation(50);
 
     AnimationComponent animation;
     animation.animation = rightIdleAnimation;
@@ -284,14 +280,13 @@ TEST_CASE_METHOD(AnimationStateSystemFixture,
     REQUIRE(updatedAnimation.animation.frames[0].x == 50);
 }
 
-TEST_CASE_METHOD(AnimationStateSystemFixture,
-    "AnimationStateSystem uses right animation when no left animation exists",
+TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem uses right animation when no left animation exists",
     "[integration][animation_state_system]"
 ) {
     const auto entity = this->world.entities().create();
 
-    const Animation idleAnimation = makeAnimation(0);
-    const Animation runningAnimation = makeAnimation(16);
+    const Animation idleAnimation = this->makeAnimation(0);
+    const Animation runningAnimation = this->makeAnimation(16);
 
     AnimationComponent animation;
     animation.animation = idleAnimation;
@@ -316,14 +311,13 @@ TEST_CASE_METHOD(AnimationStateSystemFixture,
     REQUIRE(updatedAnimation.animation.frames[0].x == 16);
 }
 
-TEST_CASE_METHOD(AnimationStateSystemFixture,
-    "AnimationStateSystem uses right animation when entity has no OrientationComponent",
+TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem uses right animation when entity has no OrientationComponent",
     "[integration][animation_state_system]"
 ) {
     const auto entity = this->world.entities().create();
 
-    const Animation idleAnimation = makeAnimation(0);
-    const Animation runningAnimation = makeAnimation(16);
+    const Animation idleAnimation = this->makeAnimation(0);
+    const Animation runningAnimation = this->makeAnimation(16);
 
     AnimationComponent animation;
     animation.animation = idleAnimation;

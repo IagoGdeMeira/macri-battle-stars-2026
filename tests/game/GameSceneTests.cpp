@@ -16,6 +16,7 @@
 
 #include "../../src/engine/include/DataNode/DataNode.h"
 #include "../../src/engine/include/DataParser/DataParser.h"
+#include "../../src/engine/include/DataUtils/DataUtils.h"
 #include "../../src/engine/include/Engine/Engine.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
 #include "../../src/engine/include/GameSettings/GameSettings.h"
@@ -36,8 +37,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-
-using Catch::Approx;
 
 class TestNode : public DataNode
 {
@@ -297,8 +296,7 @@ public:
         auto root = std::make_unique<TestNode>();
         root->setString("id", "test_fighter");
         root->setString("texture", "assets/sprites/fighter.png");
-        root->setInt("spriteWidth", 64);
-        root->setInt("spriteHeight", 96);
+        root->DataUtils::parseSize(*root, {64.f, 96.f});
         root->setString("animations", "fake_animations.json");
         root->setString("stateMachine", "fake_fsm.json");
         root->setString("collisions", "");
@@ -415,7 +413,7 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player ent
         ++count;
         REQUIRE(player.id == 0);
         REQUIRE(transform.position.x == 300.f);
-        REQUIRE(transform.position.y == Approx(400.f - 48.f));
+        REQUIRE(transform.position.y == Catch::Approx(400.f - 48.f));
         (void)entity; (void)i_; (void)ib_; (void)v_; (void)g_;
     }
     REQUIRE(count == 1);

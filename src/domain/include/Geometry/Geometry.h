@@ -16,7 +16,20 @@ struct Position
     Position& operator/=(float scalar) { this->x /= scalar; this->y /= scalar; return *this; }
 };
 
-struct Dimension2D { float width = 0.f, height = 0.f; };
+struct Dimension2D
+{
+    float width = 0.f, height = 0.f;
+
+    Dimension2D operator+(const Dimension2D& other) const { return { this->width + other.width, this->height + other.height }; }
+    Dimension2D operator-(const Dimension2D& other) const { return { this->width - other.width, this->height - other.height }; }
+    Dimension2D operator*(float scalar) const { return { this->width * scalar, this->height * scalar }; }
+    Dimension2D operator/(float scalar) const { return { this->width / scalar, this->height / scalar }; }
+
+    Dimension2D& operator+=(const Dimension2D& other) { this->width += other.width; this->height += other.height; return *this; }
+    Dimension2D& operator-=(const Dimension2D& other) { this->width -= other.width; this->height -= other.height; return *this; }
+    Dimension2D& operator*=(float scalar) { this->width *= scalar; this->height *= scalar; return *this; }
+    Dimension2D& operator/=(float scalar) { this->width /= scalar; this->height /= scalar; return *this; }  
+};
 
 struct Circle { Position position; float radius = 0.f; };
 

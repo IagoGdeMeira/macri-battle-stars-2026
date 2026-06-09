@@ -72,3 +72,9 @@ Corners DataUtils::parseCorners(const DataNode& node, Corners defaultValue)
         node.getFloat("bottomLeft", defaultValue.bottomLeft)
     };
 }
+
+void DataUtils::setPosition(DataNode& node, const Position& pos)
+{
+    node.setFloat("x", pos.x);
+    node.setFloat("y", pos.y);
+}

@@ -21,4 +21,4 @@ private:
     std::unordered_map<std::string, size_t> idMap;
 };
 
-#endif
+#endif // character_roster_h

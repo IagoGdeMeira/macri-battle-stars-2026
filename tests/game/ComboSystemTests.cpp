@@ -29,25 +29,16 @@ TEST_CASE("ComboSystem emits best matching combo by priority",
     low.name = "low";
     low.trigger = TriggerId::Punched;
     low.priority = 1;
-    low.steps =
-    {
-        { InputAction::Punch, 200 },
-        { InputAction::Jump, 200 }
-    };
+    low.steps = {{InputAction::Punch, 200}, {InputAction::Jump, 200}};
 
     Combo high;
     high.name = "high";
     high.trigger = TriggerId::Kicked;
     high.priority = 10;
-    high.steps =
-    {
-        { InputAction::Punch, 200 },
-        { InputAction::Jump, 200 }
-    };
+    high.steps = {{InputAction::Punch, 200}, {InputAction::Jump, 200}};
 
     std::vector<ComboExecutedEvent> emitted;
-    bus.subscribe<ComboExecutedEvent>([&](const ComboExecutedEvent& event)
-    { emitted.push_back(event); });
+    bus.subscribe<ComboExecutedEvent>([&](const ComboExecutedEvent& event) { emitted.push_back(event); });
 
     scene.systems().addSystem<ComboSystem>(bus, std::vector<Combo> { low, high });
 
