@@ -19,8 +19,7 @@ public:
     class StubNode : public DataNode
     {
     public:
-        void setString(const std::string& key, const std::string& value)
-        { this->strings[key] = value; }
+        void setString(const std::string& key, const std::string& value) { this->strings[key] = value; }
 
         void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value)
         {
@@ -39,11 +38,12 @@ public:
 
         bool has(const std::string& key) const override
         {
-            return this->strings.contains(key)
-                || this->ints.contains(key)
-                || this->floats.contains(key)
-                || this->bools.contains(key)
-                || this->arrays.contains(key);
+            if (this->strings.contains(key)) return true;
+            if (this->ints.contains(key)) return true;
+            if (this->floats.contains(key)) return true;
+            if (this->bools.contains(key)) return true;
+            if (this->arrays.contains(key)) return true;
+            return false;
         }
 
         std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
@@ -118,7 +118,7 @@ public:
             auto makeTrigger = [](const std::string& triggerName)
             {
                 auto trigger = std::make_unique<StubNode>();
-                trigger->setString("", triggerName);
+                trigger->setString("trigger", triggerName);
                 return trigger;
             };
 

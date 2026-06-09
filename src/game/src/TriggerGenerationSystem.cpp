@@ -8,8 +8,7 @@
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
-void TriggerGenerationSystem::update(UpdateContext& ctx)
-{ this->processInputTriggers(ctx); }
+void TriggerGenerationSystem::update(UpdateContext& ctx) { this->processInputTriggers(ctx); }
 
 void TriggerGenerationSystem::processInputTriggers(UpdateContext& ctx)
 {

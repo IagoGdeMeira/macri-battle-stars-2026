@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-class TriggerTriggerConditionFactoryFixture
+class TriggerConditionFactoryFixture
 {
 public:
     class Node : public DataNode
@@ -61,7 +61,7 @@ public:
     Node node;
 };
 
-TEST_CASE_METHOD(TriggerTriggerConditionFactoryFixture, "TriggerTriggerConditionFactory creates min_time conditions",
+TEST_CASE_METHOD(TriggerConditionFactoryFixture, "TriggerConditionFactory creates min_time conditions",
     "[unit][trigger_condition_factory]"
 ) {
     this->node.setString("type", "min_time");
@@ -72,7 +72,7 @@ TEST_CASE_METHOD(TriggerTriggerConditionFactoryFixture, "TriggerTriggerCondition
     REQUIRE(condition != nullptr);
 }
 
-TEST_CASE_METHOD(TriggerTriggerConditionFactoryFixture, "TriggerTriggerConditionFactory creates input_pressed conditions",
+TEST_CASE_METHOD(TriggerConditionFactoryFixture, "TriggerConditionFactory creates input_pressed conditions",
     "[unit][trigger_condition_factory]"
 ) {
     this->node.setString("type", "input_pressed");
@@ -83,7 +83,7 @@ TEST_CASE_METHOD(TriggerTriggerConditionFactoryFixture, "TriggerTriggerCondition
     REQUIRE(condition != nullptr);
 }
 
-TEST_CASE_METHOD(TriggerTriggerConditionFactoryFixture, "TriggerTriggerConditionFactory rejects unknown condition types",
+TEST_CASE_METHOD(TriggerConditionFactoryFixture, "TriggerConditionFactory rejects unknown condition types",
     "[unit][trigger_condition_factory]"
 ) {
     this->node.setString("type", "unknown");

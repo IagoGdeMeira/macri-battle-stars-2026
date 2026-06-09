@@ -26,4 +26,4 @@ private:
     bool matches(const InputBufferComponent& buffer, const Combo& combo);
 };
 
-#endif
+#endif // combo_system_h

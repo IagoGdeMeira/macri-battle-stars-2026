@@ -7,11 +7,7 @@
 #include <string>
 #include <vector>
 
-struct ComboStep
-{
-    InputAction action;
-    float maxDelay;
-};
+struct ComboStep { InputAction action; float maxDelay; };
 
 struct Combo
 {

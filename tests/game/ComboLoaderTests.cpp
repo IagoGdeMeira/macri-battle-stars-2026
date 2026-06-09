@@ -39,11 +39,12 @@ public:
 
         bool has(const std::string& key) const override
         {
-            return this->strings.contains(key)
-                || this->ints.contains(key)
-                || this->floats.contains(key)
-                || this->bools.contains(key)
-                || this->arrays.contains(key);
+            if (this->strings.contains(key)) return true;
+            if (this->ints.contains(key)) return true;
+            if (this->floats.contains(key)) return true;
+            if (this->bools.contains(key)) return true;
+            if (this->arrays.contains(key)) return true;
+            return false;
         }
 
         std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
@@ -82,8 +83,7 @@ public:
             std::vector<std::unique_ptr<DataNode>> out;
             out.reserve(it->second.size());
 
-            for (const auto& node : it->second)
-            { out.push_back(std::make_unique<StubNode>(node)); }
+            for (const auto& node : it->second) out.push_back(std::make_unique<StubNode>(node));
 
             return out;
         }

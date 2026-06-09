@@ -18,7 +18,7 @@ TriggerContext TriggerBindingLoader::load(const std::string& path)
 
         for (auto& tnode : node->getArray("triggers"))
         {
-            auto trigger = TriggerMapper::fromString(tnode->getString(""));
+            auto trigger = TriggerMapper::fromString(tnode->getString("trigger"));
             triggers.push_back(trigger);
         }
 
