@@ -9,19 +9,23 @@
 #include "../include/TriggerContext/TriggerContext.h"
 #include "../include/WorldDrawer/WorldDrawer.h"
 
+#include "../../engine/include/DataParser/DataParser.h"
+#include "../../engine/include/Engine/Engine.h"
 #include "../../engine/include/EventBus/EventBus.h"
 #include "../../engine/include/GameSettings/GameSettings.h"
+#include "../../engine/include/IFontFactory/IFontFactory.h"
 #include "../../engine/include/InputContext/InputContext.h"
+#include "../../engine/include/ITextureFactory/ITextureFactory.h"
 #include "../../engine/include/Renderer/Renderer.h"
 #include "../../engine/include/ResourceManager/ResourceManager.h"
-#include "../../engine/include/TextureLoader/TextureLoader.h"
 #include "../../engine/include/Scene/Scene.h"
+#include "../../engine/include/SceneManager/SceneManager.h"
+#include "../../engine/include/TextureLoader/TextureLoader.h"
 #include "../../engine/include/Window/Window.h"
 
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 class GameScene : public Scene
@@ -29,29 +33,53 @@ class GameScene : public Scene
 public:
     struct PlayerSlot { std::uint32_t playerId; std::string characterDefPath; };
 
-    struct Config
+    struct Config : public Scene::Config
     {
-        EventBus& eventBus;
-        InputContext& input;
-        TriggerContext triggerContext;
-        std::vector<Combo> combos;
-        Camera2D& camera;
-        Window& window;
-        CharacterLoader& characterLoader;
         std::vector<PlayerSlot> playerSlots;
-        Renderer& renderer;
-        MapData mapData;
-        ResourceManager& resourceManager;
-        TextureLoader& textureLoader;
-        GameSettings& settings;
+        std::string mapPath, inputBindingsPath, combosPath, triggersPath;
     };
 
     explicit GameScene(Config&& config);
-
+    
     void init() override;
     void render() override;
 
+    Scene::UpdatePolicy getUpdatePolicy() const override { return Scene::UpdatePolicy::WhenTop; }
+
 private:
+    EventBus& eventBus;
+    SceneManager& sceneManager;
+    Renderer& renderer;
+    Window& window;
+    DataParser& parser;
+    ResourceManager& resourceManager;
+    TextureLoader& textureLoader;
+    GameSettings& settings;
+    Engine& engine;
+    IFontFactory& fontFactory;
+    ITextureFactory& textureFactory;
+
+    std::vector<PlayerSlot> playerSlots;
+    std::vector<Combo> combos;
+
+    MapData mapData;
+    TriggerContext triggerContext;
+
+    std::unique_ptr<InputContext> inputContext;
+    std::unique_ptr<Camera2D> camera;
+    std::unique_ptr<CharacterLoader> characterLoader;
+    std::unique_ptr<WorldDrawer> worldDrawer;
+    std::unique_ptr<EntityFactory> entityFactory;
+    std::unique_ptr<CharacterDefinitionLoader> charDefLoader;
+    std::unique_ptr<AnimationLoader> animLoader;
+    std::unique_ptr<StateMachineLoader> fsmLoader;
+    std::unique_ptr<CollisionClipLoader> clipLoader;
+
+    void loadInputContext(const std::string& path);
+    void loadMap(const std::string& path);
+    void loadCombos(const std::string& path);
+    void loadTriggerBindings(const std::string& path);
+    void createCharacterLoader();
     void prepareScene();
     void prepareComponents();
     void prepareBackgroundLayers();
@@ -59,22 +87,6 @@ private:
     void prepareWalls();
     void preparePlayers();
     void preparePlayer(const PlayerSlot& slot);
-
-    InputContext& input;
-    TriggerContext triggerContext;
-    Camera2D& camera;
-    Window& window;
-    std::vector<Combo> combos;
-    CharacterLoader& characterLoader;
-    std::vector<PlayerSlot> playerSlots;
-    Renderer& renderer;
-    MapData mapData;
-    ResourceManager& resourceManager;
-    TextureLoader& textureLoader;
-    GameSettings& settings;
-
-    std::unique_ptr<WorldDrawer> worldDrawer;
-    std::unique_ptr<EntityFactory> entityFactory;
 };
 
 #endif // game_scene_h
