@@ -1,5 +1,8 @@
 #include "../../../src/game/render_formats/UITextureRenderFormat.h"
 
+#include "../../stubs/StubRenderer.h"
+#include "../../stubs/StubTexture.h"
+
 #include "../../../src/domain/components/RenderComponent.h"
 #include "../../../src/domain/components/UISpriteComponent.h"
 #include "../../../src/domain/components/UITransform.h"
@@ -12,37 +15,12 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <vector>
 
 class UITextureRenderFormatFixture
 {
 public:
-    class StubTexture : public Texture
-    {
-    public:
-        int getWidth() const override { return 32; }
-        int getHeight() const override { return 16; }
-    };
-
-    class StubRenderer : public Renderer
-    {
-    public:
-        void clear() override {}
-        void present() override {}
-
-        void drawTexture(const DrawTextureCommand& cmd) override
-        { this->textureCalls.push_back(cmd); }
-
-        void drawFont(const DrawFontCommand&) override {}
-        void drawRectangle(const DrawRectangleCommand&) override {}
-        void drawCircle(const DrawCircleCommand&) override {}
-        void setViewport(const Viewport&) override {}
-
-        std::vector<DrawTextureCommand> textureCalls;
-    };
-
     UITextureRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -67,9 +45,9 @@ TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits ba
     Entity entity = this->world.entities().create();
 
     UITransform transform;
-    transform.rect = Rectangle { Position { 10.0f, 20.0f }, Dimension2D { 100.0f, 30.0f } };
-    transform.rotation = 45.0f;
-    transform.scale = Position { -1.0f, 2.0f };
+    transform.rect = Rectangle{Position{10.f, 20.f}, Dimension2D{100.f, 30.f}};
+    transform.rotation = 45.f;
+    transform.scale = Position {-1.f, 2.f};
 
     this->world.components().add<UITransform>(entity, transform);
     this->world.components().add<UISpriteComponent>(entity,
@@ -80,7 +58,7 @@ TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits ba
     fx.textureEffects.push_back([](DrawTextureBatch& batch, DrawTextureCommand& cmd) {
         DrawTextureCommand shadow = cmd;
         shadow.tint = Color { 200, 10, 10, 255 };
-        shadow.dest.position.x += 1.0f;
+        shadow.dest.position.x += 1.f;
         batch.add(shadow);
     });
     this->world.components().add<VisualEffectsComponent>(entity, fx);
@@ -91,13 +69,13 @@ TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits ba
 
     const auto& effectCmd = this->renderer.textureCalls[0];
     REQUIRE(effectCmd.tint == Color { 200, 10, 10, 255 });
-    REQUIRE(effectCmd.dest.position.x == Catch::Approx(11.0f));
+    REQUIRE(effectCmd.dest.position.x == Catch::Approx(11.f));
 
     const auto& baseCmd = this->renderer.textureCalls[1];
     REQUIRE(baseCmd.texture == texture.get());
-    REQUIRE(baseCmd.dest.position.x == Catch::Approx(10.0f));
-    REQUIRE(baseCmd.dest.position.y == Catch::Approx(20.0f));
-    REQUIRE(baseCmd.rotation == Catch::Approx(45.0f));
+    REQUIRE(baseCmd.dest.position.x == Catch::Approx(10.f));
+    REQUIRE(baseCmd.dest.position.y == Catch::Approx(20.f));
+    REQUIRE(baseCmd.rotation == Catch::Approx(45.f));
     REQUIRE(baseCmd.flipX == true);
     REQUIRE(baseCmd.flipY == false);
     REQUIRE(baseCmd.layer == 2);

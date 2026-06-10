@@ -1,5 +1,8 @@
 #include "../../../src/game/render_formats/UIFontRenderFormat.h"
 
+#include "../../stubs/StubFont.h"
+#include "../../stubs/StubRenderer.h"
+
 #include "../../../src/domain/components/RenderComponent.h"
 #include "../../../src/domain/components/UITextComponent.h"
 #include "../../../src/domain/components/UITransform.h"
@@ -12,39 +15,12 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <vector>
 
 class UIFontRenderFormatFixture
 {
 public:
-    class StubFont : public Font
-    {
-    public:
-        int getAscent(int) const override { return 8; }
-        int getDescent(int) const override { return 2; }
-        int getHeight(int) const override { return 10; }
-    };
-
-    class StubRenderer : public Renderer
-    {
-    public:
-        void clear() override {}
-        void present() override {}
-
-        void drawTexture(const DrawTextureCommand&) override {}
-
-        void drawFont(const DrawFontCommand& cmd) override
-        { this->fontCalls.push_back(cmd); }
-
-        void drawRectangle(const DrawRectangleCommand&) override {}
-        void drawCircle(const DrawCircleCommand&) override {}
-        void setViewport(const Viewport&) override {}
-
-        std::vector<DrawFontCommand> fontCalls;
-    };
-
     UIFontRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -69,13 +45,13 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
     Entity entity = this->world.entities().create();
 
     UITransform transform;
-    transform.rect = Rectangle { Position { 30.0f, 50.0f }, Dimension2D { 80.0f, 24.0f } };
+    transform.rect = Rectangle{Position{30.f, 50.f}, Dimension2D{80.f, 24.f}};
 
     UITextComponent text;
     text.font = font;
     text.text = "Play";
     text.color = Color { 5, 6, 7, 8 };
-    text.fontSize = 0.0f;
+    text.fontSize = 0.f;
 
     this->world.components().add<UITransform>(entity, transform);
     this->world.components().add<UITextComponent>(entity, text);
@@ -85,7 +61,7 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
     fx.fontEffects.push_back([](DrawFontBatch& batch, DrawFontCommand& cmd) {
         DrawFontCommand outline = cmd;
         outline.color = Color { 1, 2, 3, 4 };
-        outline.dest.position.y += 2.0f;
+        outline.dest.position.y += 2.f;
         batch.add(outline);
     });
     this->world.components().add<VisualEffectsComponent>(entity, fx);
@@ -96,13 +72,13 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
 
     const auto& effectCmd = this->renderer.fontCalls[0];
     REQUIRE(effectCmd.color == Color { 1, 2, 3, 4 });
-    REQUIRE(effectCmd.dest.position.y == Catch::Approx(52.0f));
+    REQUIRE(effectCmd.dest.position.y == Catch::Approx(52.f));
 
     const auto& baseCmd = this->renderer.fontCalls[1];
     REQUIRE(baseCmd.font == font.get());
     REQUIRE(baseCmd.text == "Play");
-    REQUIRE(baseCmd.dest.position.x == Catch::Approx(30.0f));
-    REQUIRE(baseCmd.dest.position.y == Catch::Approx(50.0f));
+    REQUIRE(baseCmd.dest.position.x == Catch::Approx(30.f));
+    REQUIRE(baseCmd.dest.position.y == Catch::Approx(50.f));
     REQUIRE(baseCmd.fontSize == 16);
     REQUIRE(baseCmd.color == Color { 5, 6, 7, 8 });
     REQUIRE(baseCmd.layer == 4);

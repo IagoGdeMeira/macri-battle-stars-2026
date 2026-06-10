@@ -1,5 +1,7 @@
 #include "../../../src/game/render_formats/UIRectangleRenderFormat.h"
 
+#include "../../stubs/StubRenderer.h"
+
 #include "../../../src/domain/components/RenderComponent.h"
 #include "../../../src/domain/components/UITransform.h"
 #include "../../../src/domain/components/VisualEffectsComponent.h"
@@ -11,30 +13,11 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-
 #include <vector>
 
 class UIRectangleRenderFormatFixture
 {
 public:
-    class StubRenderer : public Renderer
-    {
-    public:
-        void clear() override {}
-        void present() override {}
-
-        void drawTexture(const DrawTextureCommand&) override {}
-        void drawFont(const DrawFontCommand&) override {}
-
-        void drawRectangle(const DrawRectangleCommand& cmd) override
-        { this->rectangleCalls.push_back(cmd); }
-
-        void drawCircle(const DrawCircleCommand&) override {}
-        void setViewport(const Viewport&) override {}
-
-        std::vector<DrawRectangleCommand> rectangleCalls;
-    };
-
     UIRectangleRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -56,7 +39,7 @@ TEST_CASE_METHOD(UIRectangleRenderFormatFixture, "UIRectangleRenderFormat submit
     Entity entity = this->world.entities().create();
 
     UITransform transform;
-    transform.rect = Rectangle { Position { 15.0f, 25.0f }, Dimension2D { 40.0f, 12.0f } };
+    transform.rect = Rectangle{Position{15.f, 25.f}, Dimension2D{40.f, 12.f}};
 
     this->world.components().add<UITransform>(entity, transform);
     this->world.components().add<RenderComponent>(entity, RenderComponent { 3, 9 });
@@ -79,10 +62,10 @@ TEST_CASE_METHOD(UIRectangleRenderFormatFixture, "UIRectangleRenderFormat submit
     REQUIRE(effectCmd.color == Color { 9, 9, 9, 255 });
 
     const auto& baseCmd = this->renderer.rectangleCalls[1];
-    REQUIRE(baseCmd.rect.position.x == Catch::Approx(15.0f));
-    REQUIRE(baseCmd.rect.position.y == Catch::Approx(25.0f));
-    REQUIRE(baseCmd.rect.size.width == Catch::Approx(40.0f));
-    REQUIRE(baseCmd.rect.size.height == Catch::Approx(12.0f));
+    REQUIRE(baseCmd.rect.position.x == Catch::Approx(15.f));
+    REQUIRE(baseCmd.rect.position.y == Catch::Approx(25.f));
+    REQUIRE(baseCmd.rect.size.width == Catch::Approx(40.f));
+    REQUIRE(baseCmd.rect.size.height == Catch::Approx(12.f));
     REQUIRE(baseCmd.filled == false);
     REQUIRE(baseCmd.color == Color::WHITE());
     REQUIRE(baseCmd.layer == 3);

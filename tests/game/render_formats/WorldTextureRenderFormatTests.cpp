@@ -1,5 +1,8 @@
 #include "../../../src/game/render_formats/WorldTextureRenderFormat.h"
 
+#include "../../stubs/StubRenderer.h"
+#include "../../stubs/StubTexture.h"
+
 #include "../../../src/domain/components/AnimationControllerComponent.h"
 #include "../../../src/domain/components/OrientationComponent.h"
 #include "../../../src/domain/components/ParallaxComponent.h"
@@ -15,37 +18,12 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <vector>
 
 class WorldTextureRenderFormatFixture
 {
 public:
-    class StubTexture : public Texture
-    {
-    public:
-        int getWidth() const override { return 64; }
-        int getHeight() const override { return 32; }
-    };
-
-    class StubRenderer : public Renderer
-    {
-    public:
-        void clear() override {}
-        void present() override {}
-
-        void drawTexture(const DrawTextureCommand& cmd) override
-        { this->textureCalls.push_back(cmd); }
-
-        void drawFont(const DrawFontCommand&) override {}
-        void drawRectangle(const DrawRectangleCommand&) override {}
-        void drawCircle(const DrawCircleCommand&) override {}
-        void setViewport(const Viewport&) override {}
-
-        std::vector<DrawTextureCommand> textureCalls;
-    };
-
     WorldTextureRenderFormatFixture() : format(this->renderer, this->camera), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -81,7 +59,7 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
     this->world.components().add<SpriteComponent>(entity,
         SpriteComponent {texture, Dimension2D {20.f, 10.f}, Rectangle {Position{2.f, 3.f}, Dimension2D{4.f, 5.f}}, true });
     this->world.components().add<RenderComponent>(entity, RenderComponent { 7, 9 });
-    this->world.components().add<ParallaxComponent>(entity, ParallaxComponent { Position { 0.5f, 1.0f } });
+    this->world.components().add<ParallaxComponent>(entity, ParallaxComponent{Position{ 0.5f, 1.f }});
     this->world.components().add<OrientationComponent>(entity, OrientationComponent { Orientation::Left });
 
     AnimationControllerComponent animationController;
@@ -93,7 +71,7 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
     {
         DrawTextureCommand echo = cmd;
         echo.tint = Color { 1, 2, 3, 255 };
-        echo.dest.position.x += 3.0f;
+        echo.dest.position.x += 3.f;
         batch.add(echo);
     });
     this->world.components().add<VisualEffectsComponent>(entity, fx);
@@ -104,24 +82,24 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
 
     const auto& effectCmd = this->renderer.textureCalls[0];
     REQUIRE(effectCmd.tint == Color { 1, 2, 3, 255 });
-    REQUIRE(effectCmd.dest.position.x == Catch::Approx(553.0f));
+    REQUIRE(effectCmd.dest.position.x == Catch::Approx(553.f));
 
     const auto& baseCmd = this->renderer.textureCalls[1];
     REQUIRE(baseCmd.texture == texture.get());
-    REQUIRE(baseCmd.dest.position.x == Catch::Approx(550.0f));
-    REQUIRE(baseCmd.dest.position.y == Catch::Approx(420.0f));
-    REQUIRE(baseCmd.dest.size.width == Catch::Approx(60.0f));
-    REQUIRE(baseCmd.dest.size.height == Catch::Approx(40.0f));
-    REQUIRE(baseCmd.rotation == Catch::Approx(30.0f));
+    REQUIRE(baseCmd.dest.position.x == Catch::Approx(550.f));
+    REQUIRE(baseCmd.dest.position.y == Catch::Approx(420.f));
+    REQUIRE(baseCmd.dest.size.width == Catch::Approx(60.f));
+    REQUIRE(baseCmd.dest.size.height == Catch::Approx(40.f));
+    REQUIRE(baseCmd.rotation == Catch::Approx(30.f));
     REQUIRE(baseCmd.flipX == true);
     REQUIRE(baseCmd.flipY == false);
     REQUIRE(baseCmd.layer == 7);
     REQUIRE(baseCmd.zIndex == 9);
     REQUIRE(baseCmd.order == 0);
-    REQUIRE(baseCmd.source.position.x == Catch::Approx(2.0f));
-    REQUIRE(baseCmd.source.position.y == Catch::Approx(3.0f));
-    REQUIRE(baseCmd.source.size.width == Catch::Approx(4.0f));
-    REQUIRE(baseCmd.source.size.height == Catch::Approx(5.0f));
+    REQUIRE(baseCmd.source.position.x == Catch::Approx(2.f));
+    REQUIRE(baseCmd.source.position.y == Catch::Approx(3.f));
+    REQUIRE(baseCmd.source.size.width == Catch::Approx(4.f));
+    REQUIRE(baseCmd.source.size.height == Catch::Approx(5.f));
     REQUIRE(baseCmd.useSourceRect == true);
 }
 
@@ -131,9 +109,9 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat skip
     const Entity entity = this->world.entities().create();
 
     this->world.components().add<TransformComponent>(entity,
-        TransformComponent { Position { 10.0f, 20.0f }, Position { 1.0f, 1.0f }, 0.0f });
+        TransformComponent{Position{10.f, 20.f}, Position{1.f, 1.f}, 0.f});
     this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent { nullptr, Dimension2D { 20.0f, 10.0f }, Rectangle {}, false });
+        SpriteComponent { nullptr, Dimension2D { 20.f, 10.f }, Rectangle {}, false });
     this->world.components().add<RenderComponent>(entity, RenderComponent { 0, 0 });
 
     this->format.render(this->context);
@@ -148,9 +126,9 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat resp
     const Entity entity = this->world.entities().create();
 
     this->world.components().add<TransformComponent>(entity,
-        TransformComponent { Position { 100.0f, 80.0f }, Position { -1.0f, 1.0f }, 0.0f });
+        TransformComponent{Position{100.f, 80.f}, Position{-1.f, 1.f}, 0.f});
     this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent { texture, Dimension2D { 20.0f, 10.0f }, Rectangle {}, false });
+        SpriteComponent { texture, Dimension2D { 20.f, 10.f }, Rectangle {}, false });
     this->world.components().add<RenderComponent>(entity, RenderComponent { 0, 0 });
     this->world.components().add<OrientationComponent>(entity, OrientationComponent { Orientation::Left });
 
