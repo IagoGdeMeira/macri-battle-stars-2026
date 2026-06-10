@@ -6,6 +6,7 @@ add_executable(game_tests
     render_formats/WorldCircleRenderFormatTests.cpp
     render_formats/WorldRectangleRenderFormatTests.cpp
     render_formats/WorldTextureRenderFormatTests.cpp
+    scenes/GameSceneTests.cpp
     trigger_conditions/CompositeConditionTests.cpp
     trigger_conditions/HealthBelowConditionTests.cpp
     trigger_conditions/InputPressedConditionTests.cpp
@@ -40,7 +41,6 @@ add_executable(game_tests
     DynamicPushboxResolutionSystemTests.cpp
     FaceOffSystemTests.cpp
     FrictionSystemTests.cpp
-    GameSceneTests.cpp
     GravitySystemTests.cpp
     GroundDetectionSystemTests.cpp
     HitstopSystemTests.cpp

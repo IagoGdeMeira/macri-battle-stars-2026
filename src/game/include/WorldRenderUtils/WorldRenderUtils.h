@@ -13,7 +13,7 @@
 class WorldRenderUtils
 {
 public:
-    static Position worldToScreen(Camera2D& camera, Position worldPos, Viewport& vp, const Position& parallax = {1.0f, 1.0f});
+    static Position worldToScreen(Camera2D& camera, Position worldPos, Viewport& vp, const Position& parallax = {1.f, 1.f});
     static Position resolveParallax(World& world, Entity& entity);
     static void computeSpriteTransform(const Camera2D& camera, const Rectangle& spriteConfig, DrawTextureCommand& cmd);
 };

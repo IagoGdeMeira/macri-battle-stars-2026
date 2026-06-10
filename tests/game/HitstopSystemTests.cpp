@@ -14,7 +14,7 @@
 class HitstopSystemFixture
 {
 public:
-    HitstopSystemFixture() : system(bus), context { world, bus, commandBuffer, 0.0f }
+    HitstopSystemFixture() : system(bus), context { this->world, this->bus, this->commandBuffer, 0.f }
     { this->world.components().registerComponent<HitstopComponent>(); }
 
 protected:
@@ -103,8 +103,8 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem releases freeze when remai
 
     REQUIRE(attackerHitstop.frozen == false);
     REQUIRE(targetHitstop.frozen == false);
-    REQUIRE(attackerHitstop.remaining == Catch::Approx(0.0f));
-    REQUIRE(targetHitstop.remaining == Catch::Approx(0.0f));
+    REQUIRE(attackerHitstop.remaining == Catch::Approx(0.f));
+    REQUIRE(targetHitstop.remaining == Catch::Approx(0.f));
 }
 
 TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem keeps frozen entities frozen across partial updates",

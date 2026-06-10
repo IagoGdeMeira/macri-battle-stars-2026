@@ -14,7 +14,7 @@
 class LocalToWorldSystemFixture
 {
 public:
-    LocalToWorldSystemFixture() : context{ world, bus, commandBuffer, 0.016f }
+    LocalToWorldSystemFixture() : context{ this->world, this->bus, this->commandBuffer, 0.016f }
     {
         this->world.components().registerComponent<TransformComponent>();
         this->world.components().registerComponent<LocalTransform>();
@@ -29,73 +29,85 @@ protected:
     UpdateContext context;
 };
 
-TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates world transform from parent and local transform",
+TEST_CASE_METHOD(LocalToWorldSystemFixture,
+    "LocalToWorldSystem updates world transform from parent and local transform",
     "[unit][local_to_world_system]"
 ) {
-    const auto parent = this->world.entities().create();
-    this->world.components().add<TransformComponent>(parent, TransformComponent{ 10.0f, 20.0f, 2.0f, 0.5f, 0.0f });
+    auto& components = this->world.components();
+    auto& entities = this->world.entities();
 
-    const auto child = this->world.entities().create();
-    this->world.components().add<TransformComponent>(child, TransformComponent{ 0.0f, 0.0f, 1.0f, 1.0f, 0.0f });
-    this->world.components().add<LocalTransform>(child, LocalTransform{ 3.5f, -2.0f, 1.5f, 2.0f, 0.25f });
-    this->world.components().add<ParentComponent>(child, ParentComponent{ parent });
+    const auto parent = entities.create();
+    components.add<TransformComponent>(parent, TransformComponent{10.f, 20.f, 2.f, 0.5f, 0.f});
+
+    const auto child = entities.create();
+    components.add<TransformComponent>(child, TransformComponent{0.f, 0.f, 1.f, 1.f, 0.f});
+    components.add<LocalTransform>(child, LocalTransform{3.5f, -2.f, 1.5f, 2.f, 0.25f});
+    components.add<ParentComponent>(child, ParentComponent{parent});
 
     this->system.update(this->context);
 
-    const auto& childTransform = this->world.components().get<TransformComponent>(child);
-    REQUIRE(childTransform.position.x == 17.0f);
-    REQUIRE(childTransform.position.y == 19.0f);
+    const auto& childTransform = components.get<TransformComponent>(child);
+    REQUIRE(childTransform.position.x == 17.f);
+    REQUIRE(childTransform.position.y == 19.f);
     REQUIRE(childTransform.rotation == 0.25f);
-    REQUIRE(childTransform.scale.x == 3.0f);
-    REQUIRE(childTransform.scale.y == 1.0f);
+    REQUIRE(childTransform.scale.x == 3.f);
+    REQUIRE(childTransform.scale.y == 1.f);
 }
 
-TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem keeps child unchanged when parent has no TransformComponent",
+TEST_CASE_METHOD(LocalToWorldSystemFixture,
+    "LocalToWorldSystem keeps child unchanged when parent has no TransformComponent",
     "[unit][local_to_world_system]"
 ) {
-    const auto parent = this->world.entities().create();
+    auto& components = this->world.components();
+    auto& entities = this->world.entities();
 
-    const auto child = this->world.entities().create();
-    this->world.components().add<TransformComponent>(child, TransformComponent{ 7.0f, 9.0f, 1.2f, 0.8f, 0.5f });
-    this->world.components().add<LocalTransform>(child, LocalTransform{ 4.0f, 5.0f, 2.0f, 2.0f, 1.0f });
-    this->world.components().add<ParentComponent>(child, ParentComponent{ parent });
+    const auto parent = entities.create();
+    const auto child = entities.create();
+
+    components.add<TransformComponent>(child, TransformComponent{7.f, 9.f, 1.2f, 0.8f, 0.5f});
+    components.add<LocalTransform>(child, LocalTransform{4.f, 5.f, 2.f, 2.f, 1.f});
+    components.add<ParentComponent>(child, ParentComponent{ parent });
 
     this->system.update(this->context);
 
-    const auto& childTransform = this->world.components().get<TransformComponent>(child);
-    REQUIRE(childTransform.position.x == 7.0f);
-    REQUIRE(childTransform.position.y == 9.0f);
+    const auto& childTransform = components.get<TransformComponent>(child);
+    REQUIRE(childTransform.position.x == 7.f);
+    REQUIRE(childTransform.position.y == 9.f);
     REQUIRE(childTransform.rotation == 0.5f);
     REQUIRE(childTransform.scale.x == 1.2f);
     REQUIRE(childTransform.scale.y == 0.8f);
 }
 
-TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates each child with its respective parent",
+TEST_CASE_METHOD(LocalToWorldSystemFixture,
+    "LocalToWorldSystem updates each child with its respective parent",
     "[unit][local_to_world_system]"
 ) {
-    const auto parentA = this->world.entities().create();
-    this->world.components().add<TransformComponent>(parentA, TransformComponent{ 100.0f, 50.0f, 1.0f, 1.0f, 0.0f });
+    auto& components = this->world.components();
+    auto& entities = this->world.entities();
 
-    const auto parentB = this->world.entities().create();
-    this->world.components().add<TransformComponent>(parentB, TransformComponent{ -20.0f, 30.0f, 1.0f, 1.0f, 0.0f });
+    const auto parentA = entities.create();
+    components.add<TransformComponent>(parentA, TransformComponent{100.f, 50.f, 1.f, 1.f, 0.f});
 
-    const auto childA = this->world.entities().create();
-    this->world.components().add<TransformComponent>(childA, TransformComponent{ 0.0f, 0.0f, 1.0f, 1.0f, 0.0f });
-    this->world.components().add<LocalTransform>(childA, LocalTransform{ 10.0f, 15.0f, 1.0f, 1.0f, 0.0f });
-    this->world.components().add<ParentComponent>(childA, ParentComponent{ parentA });
+    const auto parentB = entities.create();
+    components.add<TransformComponent>(parentB, TransformComponent{-20.f, 30.f, 1.f, 1.f, 0.f});
 
-    const auto childB = this->world.entities().create();
-    this->world.components().add<TransformComponent>(childB, TransformComponent{ 0.0f, 0.0f, 1.0f, 1.0f, 0.0f });
-    this->world.components().add<LocalTransform>(childB, LocalTransform{ -5.0f, -8.0f, 1.0f, 1.0f, 0.0f });
-    this->world.components().add<ParentComponent>(childB, ParentComponent{ parentB });
+    const auto childA = entities.create();
+    components.add<TransformComponent>(childA, TransformComponent{0.f, 0.f, 1.f, 1.f, 0.f});
+    components.add<LocalTransform>(childA, LocalTransform{10.f, 15.f, 1.f, 1.f, 0.f});
+    components.add<ParentComponent>(childA, ParentComponent{ parentA });
+
+    const auto childB = entities.create();
+    components.add<TransformComponent>(childB, TransformComponent{0.f, 0.f, 1.f, 1.f, 0.f});
+    components.add<LocalTransform>(childB, LocalTransform{-5.f, -8.f, 1.f, 1.f, 0.f});
+    components.add<ParentComponent>(childB, ParentComponent{ parentB });
 
     this->system.update(this->context);
 
-    const auto& childATransform = this->world.components().get<TransformComponent>(childA);
-    REQUIRE(childATransform.position.x == 110.0f);
-    REQUIRE(childATransform.position.y == 65.0f);
+    const auto& childATransform = components.get<TransformComponent>(childA);
+    REQUIRE(childATransform.position.x == 110.f);
+    REQUIRE(childATransform.position.y == 65.f);
 
-    const auto& childBTransform = this->world.components().get<TransformComponent>(childB);
-    REQUIRE(childBTransform.position.x == -25.0f);
-    REQUIRE(childBTransform.position.y == 22.0f);
+    const auto& childBTransform = components.get<TransformComponent>(childB);
+    REQUIRE(childBTransform.position.x == -25.f);
+    REQUIRE(childBTransform.position.y == 22.f);
 }

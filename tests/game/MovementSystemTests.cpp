@@ -36,8 +36,8 @@ public:
     Entity createStaticEntity(float x, float y)
     {
         auto entity = this->scene.world().entities().create();
-        auto& components = this->scene.world().components();
 
+        auto& components = this->scene.world().components();
         components.add<TransformComponent>(entity, TransformComponent{x, y});
 
         return entity;
@@ -45,9 +45,10 @@ public:
 
     Entity createFrozenEntity(float x, float y, float vx, float vy)
     {
-        auto entity = createMovingEntity(x, y, vx, vy);
-        this->scene.world().components().add<HitstopComponent>(entity, 
-            HitstopComponent{ .remaining = 1.0f, .frozen = true });
+        auto entity = this->createMovingEntity(x, y, vx, vy);
+
+        auto& components = this->scene.world().components();
+        components.add<HitstopComponent>(entity, HitstopComponent{ .remaining = 1.f, .frozen = true });
 
         return entity;
     }
@@ -62,7 +63,7 @@ TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem updates position",
 ) {
     auto e = this->createMovingEntity(0.f, 0.f, 1.f, 2.f);
 
-    this->scene.update(1.0f);
+    this->scene.update(1.f);
 
     auto& pos = this->scene.world().components().get<TransformComponent>(e);
 
@@ -75,7 +76,7 @@ TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem does not update position
 ) {
     auto e = this->createStaticEntity(0.f, 0.f);
 
-    this->scene.update(1.0f);
+    this->scene.update(1.f);
 
     auto& pos = this->scene.world().components().get<TransformComponent>(e);
 
@@ -88,7 +89,7 @@ TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem does not update position
 ) {
     auto e = this->createFrozenEntity(0.f, 0.f, 10.f, 20.f);
 
-    this->scene.update(1.0f);
+    this->scene.update(1.f);
 
     auto& pos = this->scene.world().components().get<TransformComponent>(e);
 

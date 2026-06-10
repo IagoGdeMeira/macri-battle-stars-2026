@@ -1,39 +1,22 @@
 #include "../../../src/game/visual_effects/OutlineFontEffect.h"
 
+#include "../../stubs/StubRenderer.h"
+
 #include "../../../src/engine/include/DrawBatch/DrawFontBatch.h"
 #include "../../../src/engine/include/Renderer/Renderer.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <vector>
+
+class TestDrawFontBatch : public DrawFontBatch
+{
+public:
+    void submit(Renderer& renderer) override { DrawFontBatch::submit(renderer); }
+};
 
 class OutlineFontEffectFixture
 {
 public:
-    class TestDrawFontBatch : public DrawFontBatch
-    {
-    public:
-        void submit(Renderer& renderer) override { DrawFontBatch::submit(renderer); }
-    };
-
-    class StubRenderer : public Renderer
-    {
-    public:
-        void clear() override {}
-        void present() override {}
-
-        void drawTexture(const DrawTextureCommand&) override {}
-
-        void drawFont(const DrawFontCommand& cmd) override
-        { this->fontCalls.push_back(cmd); }
-
-        void drawRectangle(const DrawRectangleCommand&) override {}
-        void drawCircle(const DrawCircleCommand&) override {}
-        void setViewport(const Viewport&) override {}
-
-        std::vector<DrawFontCommand> fontCalls;
-    };
-
     StubRenderer renderer;
     TestDrawFontBatch batch;
 };
@@ -47,7 +30,7 @@ TEST_CASE_METHOD(OutlineFontEffectFixture, "OutlineFontEffect adds 8 outline fon
     config.color = Color { 101, 102, 103, 104 };
 
     DrawFontCommand base;
-    base.dest.position = Position { 30.0f, 40.0f };
+    base.dest.position = Position {30.f, 40.f};
     base.color = Color::WHITE();
 
     OutlineFontEffect effect(config);
@@ -59,9 +42,9 @@ TEST_CASE_METHOD(OutlineFontEffectFixture, "OutlineFontEffect adds 8 outline fon
     for (const auto& cmd : this->renderer.fontCalls)
     {
         REQUIRE(cmd.color == config.color);
-        const bool isBasePosition =
-            (cmd.dest.position.x == 30.0f) &&
-            (cmd.dest.position.y == 40.0f);
+
+        auto& pos = cmd.dest.position;
+        const bool isBasePosition = (pos.x == 30.f) && (pos.y == 40.f);
         REQUIRE_FALSE(isBasePosition);
     }
 }

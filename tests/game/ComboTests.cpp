@@ -2,9 +2,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("Combo uses expected defaults",
-    "[unit][combo]"
-) {
+TEST_CASE("Combo uses expected defaults", "[unit][combo]")
+{
     Combo combo;
 
     REQUIRE(combo.name.empty());
@@ -14,9 +13,8 @@ TEST_CASE("Combo uses expected defaults",
     REQUIRE(combo.consumeInput == true);
 }
 
-TEST_CASE("ComboStep stores action and maxDelay",
-    "[unit][combo]"
-) {
+TEST_CASE("ComboStep stores action and maxDelay", "[unit][combo]")
+{
     ComboStep step { InputAction::Punch, 120 };
 
     REQUIRE(step.action == InputAction::Punch);

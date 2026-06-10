@@ -37,23 +37,23 @@ TEST_CASE_METHOD(UILayoutSystemFixture, "UILayoutSystem positions children in a 
 
     auto& components = this->world.components();
     components.add<UITransform>(container, UITransform{});
-    components.get<UITransform>(container).rect.position.x = 0.0f;
-    components.get<UITransform>(container).rect.position.y = 0.0f;
-    components.get<UITransform>(container).rect.size.width = 300.0f;
-    components.get<UITransform>(container).rect.size.height = 100.0f;
+    components.get<UITransform>(container).rect.position.x = 0.f;
+    components.get<UITransform>(container).rect.position.y = 0.f;
+    components.get<UITransform>(container).rect.size.width = 300.f;
+    components.get<UITransform>(container).rect.size.height = 100.f;
 
     FlexContainer flex;
     flex.direction = FlexContainer::FlexDirection::Row;
-    flex.gap = 10.0f;
+    flex.gap = 10.f;
     flex.justify = FlexContainer::JustifyContent::FlexStart;
     flex.align = FlexContainer::AlignItems::FlexStart;
     components.add<FlexContainer>(container, flex);
 
     Entity c1(1), c2(2), c3(3);
 
-    UITransform t1; t1.rect.size.width = 50.0f; t1.rect.size.height = 50.0f;
-    UITransform t2; t2.rect.size.width = 60.0f; t2.rect.size.height = 50.0f;
-    UITransform t3; t3.rect.size.width = 70.0f; t3.rect.size.height = 50.0f;
+    UITransform t1; t1.rect.size.width = 50.f; t1.rect.size.height = 50.f;
+    UITransform t2; t2.rect.size.width = 60.f; t2.rect.size.height = 50.f;
+    UITransform t3; t3.rect.size.width = 70.f; t3.rect.size.height = 50.f;
 
     components.add<ParentComponent>(c1, ParentComponent{ container });
     components.add<UITransform>(c1, t1);
@@ -98,8 +98,8 @@ TEST_CASE_METHOD(UILayoutSystemFixture, "UILayoutSystem aligns children cross-ax
     components.add<FlexContainer>(container, flex);
 
     Entity c1(11), c2(12);
-    UITransform t1; t1.rect.size.width = 40.0f; t1.rect.size.height = 20.0f;
-    UITransform t2; t2.rect.size.width = 60.0f; t2.rect.size.height = 30.0f;
+    UITransform t1; t1.rect.size.width = 40.f; t1.rect.size.height = 20.f;
+    UITransform t2; t2.rect.size.width = 60.f; t2.rect.size.height = 30.f;
 
     components.add<ParentComponent>(c1, ParentComponent{ container });
     components.add<UITransform>(c1, t1);
@@ -109,7 +109,7 @@ TEST_CASE_METHOD(UILayoutSystemFixture, "UILayoutSystem aligns children cross-ax
 
     EventBus eb;
     CommandBuffer cb;
-    UpdateContext ctx{ this->world, eb, cb, 1.0f / 60.0f };
+    UpdateContext ctx{ this->world, eb, cb, 1.f / 60.f };
 
     UILayoutSystem system;
     system.update(ctx);
@@ -120,6 +120,6 @@ TEST_CASE_METHOD(UILayoutSystemFixture, "UILayoutSystem aligns children cross-ax
     auto& tr1 = components.get<UITransform>(c1);
     auto& tr2 = components.get<UITransform>(c2);
 
-    REQUIRE(tr1.rect.position.x == Catch::Approx(innerX + (crossSize - 40.0f) * 0.5f));
-    REQUIRE(tr2.rect.position.x == Catch::Approx(innerX + (crossSize - 60.0f) * 0.5f));
+    REQUIRE(tr1.rect.position.x == Catch::Approx(innerX + (crossSize - 40.f) * 0.5f));
+    REQUIRE(tr2.rect.position.x == Catch::Approx(innerX + (crossSize - 60.f) * 0.5f));
 }

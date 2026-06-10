@@ -17,7 +17,7 @@
 class KnockbackSystemFixture
 {
 public:
-    KnockbackSystemFixture() : system(bus), context { world, bus, commandBuffer, 0.016f }
+    KnockbackSystemFixture() : system(this->bus), context { this->world, this->bus, this->commandBuffer, 0.016f }
     {
         auto& components = this->world.components();
         components.registerComponent<TransformComponent>();
@@ -42,9 +42,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback in c
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<TransformComponent>(attacker, TransformComponent{ 0.0f, 0.0f });
-    components.add<TransformComponent>(target, TransformComponent{ 10.0f, 0.0f });
-    components.add<VelocityComponent>(target, VelocityComponent{ 0.0f, 0.0f });
+    components.add<TransformComponent>(attacker, TransformComponent{0.f, 0.f});
+    components.add<TransformComponent>(target, TransformComponent{10.f, 0.f});
+    components.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
 
     DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
 
@@ -52,8 +52,8 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback in c
     this->system.update(this->context);
 
     const auto& v = components.get<VelocityComponent>(target);
-    REQUIRE(v.velocity.x == Catch::Approx(300.0f));
-    REQUIRE(v.velocity.y == Catch::Approx(0.0f));
+    REQUIRE(v.velocity.x == Catch::Approx(300.f));
+    REQUIRE(v.velocity.y == Catch::Approx(0.f));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem normalizes direction vector",
@@ -65,9 +65,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem normalizes direction v
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<TransformComponent>(attacker, TransformComponent{ 0.0f, 0.0f });
-    components.add<TransformComponent>(target, TransformComponent{ 3.0f, 4.0f });
-    components.add<VelocityComponent>(target, VelocityComponent{ 0.0f, 0.0f });
+    components.add<TransformComponent>(attacker, TransformComponent{0.f, 0.f});
+    components.add<TransformComponent>(target, TransformComponent{3.f, 4.f});
+    components.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
 
     DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
 
@@ -75,8 +75,8 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem normalizes direction v
     this->system.update(this->context);
 
     const auto& v = components.get<VelocityComponent>(target);
-    REQUIRE(v.velocity.x == Catch::Approx(180.0f));
-    REQUIRE(v.velocity.y == Catch::Approx(240.0f));
+    REQUIRE(v.velocity.x == Catch::Approx(180.f));
+    REQUIRE(v.velocity.y == Catch::Approx(240.f));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback multiplier from component",
@@ -88,10 +88,10 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback mult
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<TransformComponent>(attacker, TransformComponent{ 0.0f, 0.0f });
-    components.add<TransformComponent>(target, TransformComponent{ 5.0f, 0.0f });
-    components.add<VelocityComponent>(target, VelocityComponent{ 0.0f, 0.0f });
-    components.add<KnockbackComponent>(target, KnockbackComponent{ 2.0f, 0.5f });
+    components.add<TransformComponent>(attacker, TransformComponent{0.f, 0.f});
+    components.add<TransformComponent>(target, TransformComponent{5.f, 0.f});
+    components.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
+    components.add<KnockbackComponent>(target, KnockbackComponent{2.f, 0.5f});
 
     DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
 
@@ -99,8 +99,8 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback mult
     this->system.update(this->context);
 
     const auto& v = components.get<VelocityComponent>(target);
-    REQUIRE(v.velocity.x == Catch::Approx(300.0f));
-    REQUIRE(v.velocity.y == Catch::Approx(0.0f));
+    REQUIRE(v.velocity.x == Catch::Approx(300.f));
+    REQUIRE(v.velocity.y == Catch::Approx(0.f));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles zero distance (attacker same position as target)",
@@ -112,9 +112,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles zero distance 
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<TransformComponent>(attacker, TransformComponent{ 5.0f, 5.0f });
-    components.add<TransformComponent>(target, TransformComponent{ 5.0f, 5.0f });
-    components.add<VelocityComponent>(target, VelocityComponent{ 10.0f, 10.0f });
+    components.add<TransformComponent>(attacker, TransformComponent{5.f, 5.f});
+    components.add<TransformComponent>(target, TransformComponent{5.f, 5.f});
+    components.add<VelocityComponent>(target, VelocityComponent{10.f, 10.f});
 
     DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
 
@@ -122,11 +122,12 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles zero distance 
     this->system.update(this->context);
 
     const auto& v = components.get<VelocityComponent>(target);
-    REQUIRE(v.velocity.x == 10.0f);
-    REQUIRE(v.velocity.y == 10.0f);
+    REQUIRE(v.velocity.x == 10.f);
+    REQUIRE(v.velocity.y == 10.f);
 }
 
-TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem ignores damage to entities without required components",
+TEST_CASE_METHOD(KnockbackSystemFixture,
+    "KnockbackSystem ignores damage to entities without required components",
     "[unit][knockback_system]"
 ) {
     auto& components = this->world.components();
@@ -135,8 +136,8 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem ignores damage to enti
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<TransformComponent>(attacker, TransformComponent{ 0.0f, 0.0f });
-    components.add<TransformComponent>(target, TransformComponent{ 10.0f, 0.0f });
+    components.add<TransformComponent>(attacker, TransformComponent{ 0.f, 0.f });
+    components.add<TransformComponent>(target, TransformComponent{ 10.f, 0.f });
 
     DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
     this->bus.emit<DamageEvent>(dmg);
@@ -153,9 +154,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem accumulates velocity f
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<TransformComponent>(attacker, TransformComponent{ 0.0f, 0.0f });
-    components.add<TransformComponent>(target, TransformComponent{ 10.0f, 0.0f });
-    components.add<VelocityComponent>(target, VelocityComponent{ 100.0f, 50.0f });
+    components.add<TransformComponent>(attacker, TransformComponent{0.f, 0.f});
+    components.add<TransformComponent>(target, TransformComponent{10.f, 0.f});
+    components.add<VelocityComponent>(target, VelocityComponent{100.f, 50.f});
 
     DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
 
@@ -163,8 +164,8 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem accumulates velocity f
     this->system.update(this->context);
 
     const auto& v = components.get<VelocityComponent>(target);
-    REQUIRE(v.velocity.x == Catch::Approx(400.0f));
-    REQUIRE(v.velocity.y == Catch::Approx(50.0f));
+    REQUIRE(v.velocity.x == Catch::Approx(400.f));
+    REQUIRE(v.velocity.y == Catch::Approx(50.f));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles diagonal knockback",
@@ -176,9 +177,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles diagonal knock
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<TransformComponent>(attacker, TransformComponent{ 0.0f, 0.0f });
-    components.add<TransformComponent>(target, TransformComponent{ 1.0f, 1.0f });
-    components.add<VelocityComponent>(target, VelocityComponent{ 0.0f, 0.0f });
+    components.add<TransformComponent>(attacker, TransformComponent{0.f, 0.f});
+    components.add<TransformComponent>(target, TransformComponent{1.f, 1.f});
+    components.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
 
     DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
 
@@ -187,9 +188,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles diagonal knock
 
     const auto& v = components.get<VelocityComponent>(target);
 
-    float normalized = 1.0f / std::sqrt(2.0f);
-    REQUIRE(v.velocity.x == Catch::Approx(300.0f * normalized));
-    REQUIRE(v.velocity.y == Catch::Approx(300.0f * normalized));
+    float normalized = 1.f / std::sqrt(2.f);
+    REQUIRE(v.velocity.x == Catch::Approx(300.f * normalized));
+    REQUIRE(v.velocity.y == Catch::Approx(300.f * normalized));
 }
 
 TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem default multiplier is 1.0 when no KnockbackComponent",
@@ -201,9 +202,9 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem default multiplier is 
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<TransformComponent>(attacker, TransformComponent{ 0.0f, 0.0f });
-    components.add<TransformComponent>(target, TransformComponent{ 10.0f, 0.0f });
-    components.add<VelocityComponent>(target, VelocityComponent{ 0.0f, 0.0f });
+    components.add<TransformComponent>(attacker, TransformComponent{0.f, 0.f});
+    components.add<TransformComponent>(target, TransformComponent{10.f, 0.f});
+    components.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
 
     DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
 
@@ -211,6 +212,6 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem default multiplier is 
     this->system.update(this->context);
 
     const auto& v = components.get<VelocityComponent>(target);
-    REQUIRE(v.velocity.x == Catch::Approx(300.0f));
-    REQUIRE(v.velocity.y == Catch::Approx(0.0f));
+    REQUIRE(v.velocity.x == Catch::Approx(300.f));
+    REQUIRE(v.velocity.y == Catch::Approx(0.f));
 }

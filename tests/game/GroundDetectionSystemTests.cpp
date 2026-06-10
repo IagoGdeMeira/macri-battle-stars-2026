@@ -18,7 +18,7 @@
 class GroundDetectionSystemFixture
 {
 public:
-    GroundDetectionSystemFixture() : system(bus), context { world, bus, commandBuffer, 0.0f }
+    GroundDetectionSystemFixture() : system(this->bus), context { this->world, this->bus, this->commandBuffer, 0.f }
     {
         auto& components = this->world.components();
         components.registerComponent<GroundedComponent>();
@@ -39,9 +39,9 @@ protected:
     {
         const Entity entity = this->world.entities().create();
         auto& components = this->world.components();
-        components.add<TransformComponent>(entity, TransformComponent{ x, y, 1.0f, 1.0f, 0.0f });
-        components.add<RectangleColliderComponent>(entity, RectangleColliderComponent{ 4.0f, 4.0f });
-        components.add<PushboxComponent>(entity, PushboxComponent{ PushboxComponent::PushboxType::Static, 1.0f, 1.0f });
+        components.add<TransformComponent>(entity, TransformComponent{x, y, 1.f, 1.f, 0.f});
+        components.add<RectangleColliderComponent>(entity, RectangleColliderComponent{4.f, 4.f });
+        components.add<PushboxComponent>(entity, PushboxComponent{PushboxComponent::PushboxType::Static, 1.f, 1.f});
         return entity;
     }
 };
@@ -52,13 +52,13 @@ TEST_CASE_METHOD(GroundDetectionSystemFixture,
 ) {
     const Entity owner = this->world.entities().create();
     const Entity collider = this->world.entities().create();
-    const Entity ground = this->createStaticGround(0.0f, 1.0f);
+    const Entity ground = this->createStaticGround(0.f, 1.f);
 
     auto& components = this->world.components();
-    components.add<GroundedComponent>(owner, GroundedComponent{ false, 0.0f });
-    components.add<TransformComponent>(owner, TransformComponent{ 0.0f, 0.0f, 1.0f, 1.0f, 0.0f });
+    components.add<GroundedComponent>(owner, GroundedComponent{ false, 0.f });
+    components.add<TransformComponent>(owner, TransformComponent{ 0.f, 0.f, 1.f, 1.f, 0.f });
     components.add<ParentComponent>(collider, ParentComponent{ owner });
-    components.add<RectangleColliderComponent>(collider, RectangleColliderComponent{ 4.0f, 4.0f });
+    components.add<RectangleColliderComponent>(collider, RectangleColliderComponent{ 4.f, 4.f });
 
     this->bus.emit<CollisionEvent>(CollisionEvent{ collider, ground });
     this->system.update(this->context);
@@ -72,13 +72,13 @@ TEST_CASE_METHOD(GroundDetectionSystemFixture,
 ) {
     const Entity owner = this->world.entities().create();
     const Entity collider = this->world.entities().create();
-    const Entity wall = this->createStaticGround(3.0f, 0.0f);
+    const Entity wall = this->createStaticGround(3.f, 0.f);
 
     auto& components = this->world.components();
-    components.add<GroundedComponent>(owner, GroundedComponent{ false, 0.0f });
-    components.add<TransformComponent>(owner, TransformComponent{ 0.0f, 0.0f, 1.0f, 1.0f, 0.0f });
+    components.add<GroundedComponent>(owner, GroundedComponent{ false, 0.f });
+    components.add<TransformComponent>(owner, TransformComponent{0.f, 0.f, 1.f, 1.f, 0.f});
     components.add<ParentComponent>(collider, ParentComponent{ owner });
-    components.add<RectangleColliderComponent>(collider, RectangleColliderComponent{ 4.0f, 4.0f });
+    components.add<RectangleColliderComponent>(collider, RectangleColliderComponent{4.f, 4.f});
 
     this->bus.emit<CollisionEvent>(CollisionEvent{ collider, wall });
     this->system.update(this->context);

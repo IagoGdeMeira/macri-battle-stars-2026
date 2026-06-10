@@ -14,6 +14,9 @@
 class FaceOffSystemFixture
 {
 public:
+    EventBus bus;
+    Scene scene{this->bus};
+
     FaceOffSystemFixture()
     {
         auto& components = this->scene.world().components();
@@ -21,9 +24,6 @@ public:
         components.registerComponent<OrientationComponent>();
         components.registerComponent<PlayerComponent>();
     }
-
-    EventBus bus;
-    Scene scene{bus};
 };
 
 TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem with no players does nothing",
@@ -46,7 +46,7 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem with one player does nothi
     const auto entity = this->scene.world().entities().create();
     
     auto& components = this->scene.world().components();
-    components.add<TransformComponent>(entity, TransformComponent{0.0f, 0.0f});
+    components.add<TransformComponent>(entity, TransformComponent{0.f, 0.f});
     components.add<OrientationComponent>(entity, OrientationComponent{Orientation::Right});
     components.add<PlayerComponent>(entity, PlayerComponent{1});
 
@@ -69,11 +69,11 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem sets correct orientations 
     const auto player2 = entities.create();
 
     auto& components = this->scene.world().components();
-    components.add<TransformComponent>(player1, TransformComponent{50.0f, 0.0f});
+    components.add<TransformComponent>(player1, TransformComponent{50.f, 0.f});
     components.add<OrientationComponent>(player1, OrientationComponent{Orientation::Left});
     components.add<PlayerComponent>(player1, PlayerComponent{1});
 
-    components.add<TransformComponent>(player2, TransformComponent{100.0f, 0.0f});
+    components.add<TransformComponent>(player2, TransformComponent{100.f, 0.f});
     components.add<OrientationComponent>(player2, OrientationComponent{Orientation::Right});
     components.add<PlayerComponent>(player2, PlayerComponent{2});
 
@@ -101,11 +101,11 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem emits events when orientat
     const auto player2 = entities.create();
 
     auto& components = this->scene.world().components();
-    components.add<TransformComponent>(player1, TransformComponent{50.0f, 0.0f});
+    components.add<TransformComponent>(player1, TransformComponent{50.f, 0.f});
     components.add<OrientationComponent>(player1, OrientationComponent{Orientation::Left});
     components.add<PlayerComponent>(player1, PlayerComponent{1});
 
-    components.add<TransformComponent>(player2, TransformComponent{100.0f, 0.0f});
+    components.add<TransformComponent>(player2, TransformComponent{100.f, 0.f});
     components.add<OrientationComponent>(player2, OrientationComponent{Orientation::Right});
     components.add<PlayerComponent>(player2, PlayerComponent{2});
 
@@ -134,11 +134,11 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem does not emit events when 
     const auto player2 = entities.create();
     
     auto& components = this->scene.world().components();
-    components.add<TransformComponent>(player1, TransformComponent{50.0f, 0.0f});
+    components.add<TransformComponent>(player1, TransformComponent{50.f, 0.f});
     components.add<OrientationComponent>(player1, OrientationComponent{Orientation::Right});
     components.add<PlayerComponent>(player1, PlayerComponent{1});
 
-    components.add<TransformComponent>(player2, TransformComponent{100.0f, 0.0f});
+    components.add<TransformComponent>(player2, TransformComponent{100.f, 0.f});
     components.add<OrientationComponent>(player2, OrientationComponent{Orientation::Left});
     components.add<PlayerComponent>(player2, PlayerComponent{2});
 
@@ -164,15 +164,15 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem correctly orders and orien
     const auto player3 = entities.create();
 
     auto& components = this->scene.world().components();
-    components.add<TransformComponent>(player1, TransformComponent{200.0f, 0.0f});
+    components.add<TransformComponent>(player1, TransformComponent{200.f, 0.f});
     components.add<OrientationComponent>(player1, OrientationComponent{Orientation::Right});
     components.add<PlayerComponent>(player1, PlayerComponent{1});
 
-    components.add<TransformComponent>(player2, TransformComponent{50.0f, 0.0f});
+    components.add<TransformComponent>(player2, TransformComponent{50.f, 0.f});
     components.add<OrientationComponent>(player2, OrientationComponent{Orientation::Left});
     components.add<PlayerComponent>(player2, PlayerComponent{2});
 
-    components.add<TransformComponent>(player3, TransformComponent{125.0f, 0.0f});
+    components.add<TransformComponent>(player3, TransformComponent{125.f, 0.f});
     components.add<OrientationComponent>(player3, OrientationComponent{Orientation::Right});
     components.add<PlayerComponent>(player3, PlayerComponent{3});
 

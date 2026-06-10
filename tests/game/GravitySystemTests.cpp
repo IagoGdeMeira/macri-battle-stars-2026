@@ -15,7 +15,7 @@
 class GravitySystemFixture
 {
 public:
-    GravitySystemFixture() : system(10.0f), context { world, bus, commandBuffer, 0.0f }
+    GravitySystemFixture() : system(10.f), context { this->world, this->bus, this->commandBuffer, 0.f }
     {
         auto& components = this->world.components();
         components.registerComponent<VelocityComponent>();
@@ -36,32 +36,33 @@ TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem updates vertical velocity 
 ) {
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
-    components.add<VelocityComponent>(entity, VelocityComponent{ 1.0f, 2.0f });
+    components.add<VelocityComponent>(entity, VelocityComponent{ 1.f, 2.f });
     components.add<GravityComponent>(entity, GravityComponent{ 1.5f });
 
     this->context.deltaTime = 0.2f;
     this->system.update(this->context);
 
     const auto& v = components.get<VelocityComponent>(entity);
-    REQUIRE(v.velocity.x == 1.0f);
-    REQUIRE(v.velocity.y == Catch::Approx(5.0f));
+    REQUIRE(v.velocity.x == 1.f);
+    REQUIRE(v.velocity.y == Catch::Approx(5.f));
 }
 
-TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem updates only entities that have VelocityComponent and GravityComponent",
+TEST_CASE_METHOD(GravitySystemFixture,
+    "GravitySystem updates only entities that have VelocityComponent and GravityComponent",
     "[unit][gravity_system]"
 ) {
     auto& components = this->world.components();
     auto& entities = this->world.entities();
     
     const auto withBoth = entities.create();
-    components.add<VelocityComponent>(withBoth, VelocityComponent{ 0.0f, 3.0f });
-    components.add<GravityComponent>(withBoth, GravityComponent{ 2.0f });
+    components.add<VelocityComponent>(withBoth, VelocityComponent{ 0.f, 3.f });
+    components.add<GravityComponent>(withBoth, GravityComponent{ 2.f });
 
     const auto withVelocityOnly = entities.create();
-    components.add<VelocityComponent>(withVelocityOnly, VelocityComponent{ 4.0f, 6.0f });
+    components.add<VelocityComponent>(withVelocityOnly, VelocityComponent{ 4.f, 6.f });
 
     const auto withGravityOnly = entities.create();
-    components.add<GravityComponent>(withGravityOnly, GravityComponent{ 3.0f });
+    components.add<GravityComponent>(withGravityOnly, GravityComponent{ 3.f });
 
     this->context.deltaTime = 0.5f;
     this->system.update(this->context);
@@ -69,9 +70,9 @@ TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem updates only entities that
     const auto& velocityWithBoth = components.get<VelocityComponent>(withBoth);
     const auto& velocityOnly = components.get<VelocityComponent>(withVelocityOnly);
 
-    REQUIRE(velocityWithBoth.velocity.y == Catch::Approx(13.0f));
-    REQUIRE(velocityOnly.velocity.x == 4.0f);
-    REQUIRE(velocityOnly.velocity.y == 6.0f);
+    REQUIRE(velocityWithBoth.velocity.y == Catch::Approx(13.f));
+    REQUIRE(velocityOnly.velocity.x == 4.f);
+    REQUIRE(velocityOnly.velocity.y == 6.f);
     REQUIRE(components.has<GravityComponent>(withGravityOnly));
 }
 
@@ -81,12 +82,12 @@ TEST_CASE_METHOD(GravitySystemFixture, "GravitySystem supports negative gravity 
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
 
-    components.add<VelocityComponent>(entity, VelocityComponent{ 0.0f, 10.0f });
+    components.add<VelocityComponent>(entity, VelocityComponent{ 0.f, 10.f });
     components.add<GravityComponent>(entity, GravityComponent{ -0.5f });
 
     this->context.deltaTime = 0.4f;
     this->system.update(this->context);
 
     const auto& v = components.get<VelocityComponent>(entity);
-    REQUIRE(v.velocity.y == Catch::Approx(8.0f));
+    REQUIRE(v.velocity.y == Catch::Approx(8.f));
 }

@@ -18,7 +18,8 @@
 class DynamicPushboxResolutionSystemFixture
 {
 public:
-    DynamicPushboxResolutionSystemFixture() : system(bus), context { world, bus, commandBuffer, 0.0f }
+    DynamicPushboxResolutionSystemFixture() :
+        system(this->bus), context { this->world, this->bus, this->commandBuffer, 0.0f }
     {
         auto& components = this->world.components();
         components.registerComponent<TransformComponent>();
@@ -38,10 +39,10 @@ protected:
     {
         const Entity entity = this->world.entities().create();
         auto& components = this->world.components();
-        components.add<TransformComponent>(entity, TransformComponent{ x, y, 1.0f, 1.0f, 0.0f });
-        components.add<RectangleColliderComponent>(entity, RectangleColliderComponent{ 4.0f, 4.0f });
-        components.add<PushboxComponent>(entity, PushboxComponent{ PushboxComponent::PushboxType::Dynamic, 1.0f, 1.0f });
-        components.add<VelocityComponent>(entity, VelocityComponent{ vx, vy });
+        components.add<TransformComponent>(entity, TransformComponent{x, y, 1.f, 1.f, 0.f});
+        components.add<RectangleColliderComponent>(entity, RectangleColliderComponent{4.f, 4.f});
+        components.add<PushboxComponent>(entity, PushboxComponent{PushboxComponent::PushboxType::Dynamic, 1.f, 1.f});
+        components.add<VelocityComponent>(entity, VelocityComponent{vx, vy});
         return entity;
     }
 };
@@ -50,8 +51,8 @@ TEST_CASE_METHOD(DynamicPushboxResolutionSystemFixture,
     "DynamicPushboxResolutionSystem separates overlapping dynamic pushboxes along the X axis",
     "[unit][dynamic_pushbox_resolution_system]"
 ) {
-    const Entity left = this->createDynamicRect(0.0f, 0.0f, 3.0f, 0.0f);
-    const Entity right = this->createDynamicRect(1.0f, 0.0f, -2.0f, 0.0f);
+    const Entity left = this->createDynamicRect(0.f, 0.f, 3.f, 0.f);
+    const Entity right = this->createDynamicRect(1.f, 0.f, -2.f, 0.f);
 
     this->bus.emit<CollisionEvent>(CollisionEvent{ left, right });
     this->system.update(this->context);
@@ -64,16 +65,16 @@ TEST_CASE_METHOD(DynamicPushboxResolutionSystemFixture,
 
     REQUIRE(leftTransform.position.x == Catch::Approx(-1.5f));
     REQUIRE(rightTransform.position.x == Catch::Approx(2.5f));
-    REQUIRE(leftVelocity.velocity.x == 0.0f);
-    REQUIRE(rightVelocity.velocity.x == 0.0f);
+    REQUIRE(leftVelocity.velocity.x == 0.f);
+    REQUIRE(rightVelocity.velocity.x == 0.f);
 }
 
 TEST_CASE_METHOD(DynamicPushboxResolutionSystemFixture,
     "DynamicPushboxResolutionSystem separates overlapping dynamic pushboxes along the Y axis",
     "[unit][dynamic_pushbox_resolution_system]"
 ) {
-    const Entity top = this->createDynamicRect(0.0f, 0.0f, 0.0f, 5.0f);
-    const Entity bottom = this->createDynamicRect(0.0f, 1.0f, 0.0f, -1.0f);
+    const Entity top = this->createDynamicRect(0.f, 0.f, 0.f, 5.f);
+    const Entity bottom = this->createDynamicRect(0.f, 1.f, 0.f, -1.f);
 
     this->bus.emit<CollisionEvent>(CollisionEvent{ top, bottom });
     this->system.update(this->context);
@@ -86,6 +87,6 @@ TEST_CASE_METHOD(DynamicPushboxResolutionSystemFixture,
 
     REQUIRE(topTransform.position.y == Catch::Approx(-1.5f));
     REQUIRE(bottomTransform.position.y == Catch::Approx(2.5f));
-    REQUIRE(topVelocity.velocity.y == 0.0f);
-    REQUIRE(bottomVelocity.velocity.y == 0.0f);
+    REQUIRE(topVelocity.velocity.y == 0.f);
+    REQUIRE(bottomVelocity.velocity.y == 0.f);
 }

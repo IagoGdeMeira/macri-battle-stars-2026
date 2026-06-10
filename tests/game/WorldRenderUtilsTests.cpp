@@ -10,32 +10,32 @@ TEST_CASE("WorldRenderUtils::worldToScreen applies camera, zoom and viewport",
     "[unit][world_render_utils]"
 ) {
     Camera2D camera;
-    camera.setPosition(10.0f, 20.0f);
-    camera.setZoom(2.0f);
+    camera.setPosition(10.f, 20.f);
+    camera.setZoom(2.f);
 
     Viewport vp { 0, 0, 800, 600 };
-    Position worldPos { 100.0f, 60.0f };
+    Position worldPos { 100.f, 60.f };
 
     const Position screen = WorldRenderUtils::worldToScreen(camera, worldPos, vp);
 
-    REQUIRE(screen.x == Catch::Approx(580.0f));
-    REQUIRE(screen.y == Catch::Approx(380.0f));
+    REQUIRE(screen.x == Catch::Approx(580.f));
+    REQUIRE(screen.y == Catch::Approx(380.f));
 }
 
 TEST_CASE("WorldRenderUtils::worldToScreen applies parallax factors",
     "[unit][world_render_utils]"
 ) {
     Camera2D camera;
-    camera.setPosition(10.0f, 20.0f);
-    camera.setZoom(2.0f);
+    camera.setPosition(10.f, 20.f);
+    camera.setZoom(2.f);
 
     Viewport vp { 0, 0, 800, 600 };
-    Position worldPos { 100.0f, 60.0f };
+    Position worldPos { 100.f, 60.f };
 
-    const Position screen = WorldRenderUtils::worldToScreen(camera, worldPos, vp, Position { 0.5f, 2.0f });
+    const Position screen = WorldRenderUtils::worldToScreen(camera, worldPos, vp, Position { 0.5f, 2.f });
 
-    REQUIRE(screen.x == Catch::Approx(590.0f));
-    REQUIRE(screen.y == Catch::Approx(340.0f));
+    REQUIRE(screen.x == Catch::Approx(590.f));
+    REQUIRE(screen.y == Catch::Approx(340.f));
 }
 
 TEST_CASE("WorldRenderUtils::resolveParallax reads component when present",
@@ -63,8 +63,8 @@ TEST_CASE("WorldRenderUtils::resolveParallax returns default when absent",
 
     const Position parallax = WorldRenderUtils::resolveParallax(world, entity);
 
-    REQUIRE(parallax.x == Catch::Approx(1.0f));
-    REQUIRE(parallax.y == Catch::Approx(1.0f));
+    REQUIRE(parallax.x == Catch::Approx(1.f));
+    REQUIRE(parallax.y == Catch::Approx(1.f));
 }
 
 TEST_CASE("WorldRenderUtils::computeSpriteTransform applies scaled dimensions and flips",
@@ -74,14 +74,14 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform applies scaled dimensions an
     camera.setZoom(1.5f);
 
     Rectangle spriteConfig;
-    spriteConfig.position = Position { -2.0f, 3.0f };
-    spriteConfig.size = Dimension2D { 16.0f, 8.0f };
+    spriteConfig.position = Position { -2.f, 3.f };
+    spriteConfig.size = Dimension2D { 16.f, 8.f };
 
     DrawTextureCommand cmd;
     WorldRenderUtils::computeSpriteTransform(camera, spriteConfig, cmd);
 
-    REQUIRE(cmd.dest.size.width == Catch::Approx(48.0f));
-    REQUIRE(cmd.dest.size.height == Catch::Approx(36.0f));
+    REQUIRE(cmd.dest.size.width == Catch::Approx(48.f));
+    REQUIRE(cmd.dest.size.height == Catch::Approx(36.f));
     REQUIRE(cmd.flipX == true);
     REQUIRE(cmd.flipY == false);
 }

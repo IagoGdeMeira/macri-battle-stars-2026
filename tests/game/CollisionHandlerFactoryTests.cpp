@@ -15,7 +15,7 @@
 class CollisionHandlerFactoryFixture
 {
 public:
-    CollisionHandlerFactoryFixture() : context { world, bus, commandBuffer, 0.0f }
+    CollisionHandlerFactoryFixture() : context { this->world, this->bus, this->commandBuffer, 0.f }
     {
         auto& components = this->world.components();
         components.registerComponent<TransformComponent>();
@@ -32,7 +32,7 @@ protected:
     Entity createEntity(float x, float y)
     {
         const Entity entity = this->world.entities().create();
-        this->world.components().add<TransformComponent>(entity, TransformComponent{ x, y, 1.0f, 1.0f, 0.0f });
+        this->world.components().add<TransformComponent>(entity, TransformComponent{x, y, 1.f, 1.f, 0.f});
         return entity;
     }
 };
@@ -41,18 +41,19 @@ TEST_CASE_METHOD(CollisionHandlerFactoryFixture,
     "CollisionHandlerFactory prefers rectangle colliders when both shapes are present",
     "[unit][collision_handler_factory]"
 ) {
-    const Entity entity = this->createEntity(5.0f, 7.0f);
-    this->world.components().add<RectangleColliderComponent>(entity, RectangleColliderComponent{ 10.0f, 6.0f });
-    this->world.components().add<CircleColliderComponent>(entity, CircleColliderComponent{ 1.0f });
+    const Entity entity = this->createEntity(5.f, 7.f);
+    auto& components = this->world.components();
+    components.add<RectangleColliderComponent>(entity, RectangleColliderComponent{10.f, 6.f});
+    components.add<CircleColliderComponent>(entity, CircleColliderComponent{1.f});
 
     auto handler = CollisionHandlerFactory::createForEntity(this->context, { entity, std::nullopt });
     REQUIRE(handler);
 
     const auto aabb = handler->getAABB(this->context, { entity, std::nullopt });
-    REQUIRE(aabb.left == Catch::Approx(0.0f));
-    REQUIRE(aabb.right == Catch::Approx(10.0f));
-    REQUIRE(aabb.top == Catch::Approx(4.0f));
-    REQUIRE(aabb.bottom == Catch::Approx(10.0f));
+    REQUIRE(aabb.left == Catch::Approx(0.f));
+    REQUIRE(aabb.right == Catch::Approx(10.f));
+    REQUIRE(aabb.top == Catch::Approx(4.f));
+    REQUIRE(aabb.bottom == Catch::Approx(10.f));
 }
 
 TEST_CASE_METHOD(CollisionHandlerFactoryFixture,
@@ -60,8 +61,8 @@ TEST_CASE_METHOD(CollisionHandlerFactoryFixture,
     "[unit][collision_handler_factory]"
 ) {
     const Entity preferred = this->world.entities().create();
-    const Entity fallback = this->createEntity(3.0f, 4.0f);
-    this->world.components().add<CircleColliderComponent>(fallback, CircleColliderComponent{ 4.0f });
+    const Entity fallback = this->createEntity(3.f, 4.f);
+    this->world.components().add<CircleColliderComponent>(fallback, CircleColliderComponent{4.f});
 
     auto handler = CollisionHandlerFactory::createForEntity(this->context, { preferred, fallback });
     REQUIRE(handler);
