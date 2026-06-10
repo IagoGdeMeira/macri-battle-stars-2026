@@ -11,9 +11,8 @@
 #include <memory>
 #include <vector>
 
-TEST_CASE("SDLKeyboardAdapter emits quit and digital input events",
-    "[integration][sdl_keyboard_adapter]"
-) {
+TEST_CASE("SDLKeyboardAdapter emits quit and digital input events", "[integration][sdl_keyboard_adapter]")
+{
     InputContext inputContext;
     InputBinding binding;
     binding.keyMap[InputSource::keyboard(KeyCode::A)] = InputAction::MoveLeft;

@@ -14,11 +14,8 @@ public:
     ~SDLFontFixture() { TTF_Quit(); }
 };
 
-TEST_CASE_METHOD(SDLFontFixture, "SDLFont throws on invalid font path",
-    "[unit][sdl_font]"
-) {
-    REQUIRE_THROWS_AS(SDLFont("/nonexistent/path/to/font.ttf"), std::runtime_error);
-}
+TEST_CASE_METHOD(SDLFontFixture, "SDLFont throws on invalid font path", "[unit][sdl_font]")
+{ REQUIRE_THROWS_AS(SDLFont("/nonexistent/path/to/font.ttf"), std::runtime_error); }
 
 TEST_CASE_METHOD(SDLFontFixture, "SDLFont retrieves ascent metric at default size",
     "[integration][sdl_font]"
@@ -38,9 +35,8 @@ TEST_CASE_METHOD(SDLFontFixture, "SDLFont retrieves ascent metric at default siz
     REQUIRE(ascent > 0);
 }
 
-TEST_CASE_METHOD(SDLFontFixture, "SDLFont retrieves descent metric at different sizes",
-    "[integration][sdl_font]"
-) {
+TEST_CASE_METHOD(SDLFontFixture, "SDLFont retrieves descent metric at different sizes", "[integration][sdl_font]")
+{
     #if defined(_WIN32)
         const std::string fontPath = "C:\\Windows\\Fonts\\arial.ttf";
     #else
@@ -61,9 +57,8 @@ TEST_CASE_METHOD(SDLFontFixture, "SDLFont retrieves descent metric at different 
     REQUIRE(descent48 >= 0);
 }
 
-TEST_CASE_METHOD(SDLFontFixture, "SDLFont retrieves height metric at different sizes",
-    "[integration][sdl_font]"
-) {
+TEST_CASE_METHOD(SDLFontFixture, "SDLFont retrieves height metric at different sizes", "[integration][sdl_font]")
+{
     #if defined(_WIN32)
         const std::string fontPath = "C:\\Windows\\Fonts\\arial.ttf";
     #else
@@ -87,9 +82,8 @@ TEST_CASE_METHOD(SDLFontFixture, "SDLFont retrieves height metric at different s
     REQUIRE(height48 > height24);
 }
 
-TEST_CASE_METHOD(SDLFontFixture, "SDLFont caches fonts at different sizes",
-    "[integration][sdl_font]"
-) {
+TEST_CASE_METHOD(SDLFontFixture, "SDLFont caches fonts at different sizes", "[integration][sdl_font]")
+{
     #if defined(_WIN32)
         const std::string fontPath = "C:\\Windows\\Fonts\\arial.ttf";
     #else

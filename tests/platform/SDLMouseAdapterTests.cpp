@@ -10,9 +10,8 @@
 #include <memory>
 #include <vector>
 
-TEST_CASE("SDLMouseAdapter emits button and motion events",
-    "[integration][sdl_mouse_adapter]"
-) {
+TEST_CASE("SDLMouseAdapter emits button and motion events", "[integration][sdl_mouse_adapter]")
+{
     std::vector<DigitalInputEvent> receivedButtons;
     std::vector<AnalogInputEvent> receivedMotion;
 

@@ -10,7 +10,7 @@ public:
     void configureAudioDriverForCi() const
     {
         #if defined(__linux__)
-                SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
+            SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
         #endif
     }
 
@@ -30,9 +30,8 @@ public:
     }
 };
 
-TEST_CASE_METHOD(SDLMusicFixture, "SDLMusic handles nullptr gracefully",
-    "[unit][sdl_music]"
-) {
+TEST_CASE_METHOD(SDLMusicFixture, "SDLMusic handles nullptr gracefully", "[unit][sdl_music]")
+{
     SDLMusic music(nullptr);
 
     REQUIRE(music.getVolume() == 100);
@@ -45,9 +44,8 @@ TEST_CASE_METHOD(SDLMusicFixture, "SDLMusic handles nullptr gracefully",
     REQUIRE(music.getVolume() == 100);
 }
 
-TEST_CASE_METHOD(SDLMusicFixture, "SDLMusic setVolume after audio init",
-    "[integration][sdl_music]"
-) {
+TEST_CASE_METHOD(SDLMusicFixture, "SDLMusic setVolume after audio init", "[integration][sdl_music]")
+{
     this->configureAudioDriverForCi();
 
     if (!this->initAudio()) return;

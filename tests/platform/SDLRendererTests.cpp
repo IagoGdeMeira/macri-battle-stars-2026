@@ -43,9 +43,8 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
     SDL_Quit();
 }
 
-TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws textures",
-    "[unit][sdl_renderer]"
-) {
+TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws textures", "[unit][sdl_renderer]")
+{
     this->configureVideoDriverForCi();
     REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
 
@@ -56,11 +55,11 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws textures",
     SDLTexture texture(nullptr);
     DrawTextureCommand cmd;
     cmd.texture = &texture;
-    cmd.dest.position.x = 10.0f;
-    cmd.dest.position.y = 20.0f;
-    cmd.dest.size.width = 32.0f;
-    cmd.dest.size.height = 48.0f;
-    cmd.rotation = 30.0f;
+    cmd.dest.position.x = 10.f;
+    cmd.dest.position.y = 20.f;
+    cmd.dest.size.width = 32.f;
+    cmd.dest.size.height = 48.f;
+    cmd.rotation = 30.f;
     cmd.flipX = true;
     cmd.flipY = false;
 
@@ -71,9 +70,8 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws textures",
     SDL_Quit();
 }
 
-TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws rectangles",
-    "[unit][sdl_renderer]"
-) {
+TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws rectangles", "[unit][sdl_renderer]")
+{
     this->configureVideoDriverForCi();
     REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
 
@@ -84,17 +82,16 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws rectangles",
 
     REQUIRE_NOTHROW(renderer.clear());
     REQUIRE_NOTHROW(renderer.drawRectangle(DrawRectangleCommand{
-        Rectangle{ { 0.0f, 0.0f }, 10.0f, 10.0f }, Color{} }));
+        Rectangle{ { 0.f, 0.f }, 10.f, 10.f }, Color{} }));
     REQUIRE_NOTHROW(renderer.drawRectangle(DrawRectangleCommand{
-        Rectangle{ { 1.0f, 1.0f }, 12.0f, 14.0f }, Color{ 10, 20, 30, 40 }, true }));
+        Rectangle{ { 1.f, 1.f }, 12.f, 14.f }, Color{ 10, 20, 30, 40 }, true }));
     REQUIRE_NOTHROW(renderer.present());
 
     SDL_Quit();
 }
 
-TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws circles",
-    "[unit][sdl_renderer]"
-) {
+TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws circles", "[unit][sdl_renderer]")
+{
     this->configureVideoDriverForCi();
     REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
 
@@ -105,17 +102,16 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws circles",
 
     REQUIRE_NOTHROW(renderer.clear());
     REQUIRE_NOTHROW(renderer.drawCircle(DrawCircleCommand{
-        Circle{ { 4.0f, 5.0f }, 6.0f }, Color{} }));
+        Circle{ { 4.f, 5.f }, 6.f }, Color{} }));
     REQUIRE_NOTHROW(renderer.drawCircle(DrawCircleCommand{
-        Circle{ { 7.0f, 8.0f }, 9.0f }, Color{ 10, 20, 30, 40 }, true }));
+        Circle{ { 7.f, 8.f }, 9.f }, Color{ 10, 20, 30, 40 }, true }));
     REQUIRE_NOTHROW(renderer.present());
 
     SDL_Quit();
 }
 
-TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawFont method defined",
-    "[unit][sdl_renderer]"
-) {
+TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawFont method defined", "[unit][sdl_renderer]")
+{
     this->configureVideoDriverForCi();
     REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
     REQUIRE(TTF_Init() == 0);
@@ -135,7 +131,7 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawFont method defined",
     }
 
     std::string textStr = "Hello";
-    Rectangle textRect{ { 50.0f, 50.0f }, 200.0f, 50.0f };
+    Rectangle textRect{ { 50.f, 50.f }, 200.f, 50.f };
     Color textColor{ 255, 255, 255, 255 };
     
     SDLWindow window;

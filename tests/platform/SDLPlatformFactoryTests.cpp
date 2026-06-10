@@ -4,45 +4,27 @@
 #include "../../src/platform/include/SDLRenderer/SDLRenderer.h"
 #include "../../src/platform/include/SDLWindow/SDLWindow.h"
 
+#include "../stubs/StubWindow.h"
+#include "../stubs/StubRenderer.h"
+
 #include <catch2/catch_test_macros.hpp>
 #include <SDL.h>
 
 class SDLPlatformFactoryFixture
 {
 public:
-    class DummyWindow : public Window
-    {
-    public:
-        void create(int, int, const char*) override {}
-        void setResolution(int, int) override {}
-        void setFullscreen(bool) override {}
-        void getSize(int& width, int& height) override { width = 0; height = 0; }
-    };
-
-    class DummyRenderer : public Renderer
-    {
-    public:
-        void clear() override {}
-        void present() override {}
-        void drawTexture(const DrawTextureCommand& cmd) override { (void) cmd; }
-        void drawFont(const DrawFontCommand& cmd) override { (void) cmd; }
-        void drawRectangle(const DrawRectangleCommand& cmd) override { (void) cmd; }
-        void drawCircle(const DrawCircleCommand& cmd) override { (void) cmd; }
-        
-        void setViewport(const Viewport&) override {}
-    };
     void configureVideoDriverForCi() const
     {
         #if defined(__linux__)
-                SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
-                SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
+            SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
+            SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
         #endif
     }
 
     void configureAudioDriverForCi() const
     {
         #if defined(__linux__)
-                SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
+            SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
         #endif
     }
 };
@@ -70,8 +52,8 @@ TEST_CASE("SDLPlatformFactory createRenderer returns nullptr for non SDLWindow",
     "[unit][sdl_platform_factory]"
 ) {
     SDLPlatformFactory factory;
-    SDLPlatformFactoryFixture::DummyWindow window;
-
+    StubWindow window;
+    
     auto renderer = factory.createRenderer(window);
     REQUIRE(renderer == nullptr);
 }
@@ -107,7 +89,7 @@ TEST_CASE("SDLPlatformFactory createTextureFactory returns nullptr for non SDLRe
     "[unit][sdl_platform_factory]"
 ) {
     SDLPlatformFactory factory;
-    SDLPlatformFactoryFixture::DummyRenderer renderer;
+    StubRenderer renderer;
 
     auto textureFactory = factory.createTextureFactory(renderer);
     REQUIRE(textureFactory == nullptr);

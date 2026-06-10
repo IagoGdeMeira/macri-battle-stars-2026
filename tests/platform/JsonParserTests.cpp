@@ -6,9 +6,8 @@
 #include <stdexcept>
 #include <string>
 
-TEST_CASE("JsonParser parses valid JSON file",
-    "[integration][json_parser]"
-) {
+TEST_CASE("JsonParser parses valid JSON file", "[integration][json_parser]")
+{
     const auto path = std::filesystem::temp_directory_path() / "macri_json_parser_valid_test.json";
 
     {
@@ -28,16 +27,14 @@ TEST_CASE("JsonParser parses valid JSON file",
     std::filesystem::remove(path);
 }
 
-TEST_CASE("JsonParser throws when file cannot be opened",
-    "[integration][json_parser]"
-) {
+TEST_CASE("JsonParser throws when file cannot be opened", "[integration][json_parser]")
+{
     JsonParser parser;
     REQUIRE_THROWS_AS(parser.parse("file/that/does/not/exist.json"), std::runtime_error);
 }
 
-TEST_CASE("JsonParser throws when JSON is invalid",
-    "[integration][json_parser]"
-) {
+TEST_CASE("JsonParser throws when JSON is invalid", "[integration][json_parser]")
+{
     const auto path = std::filesystem::temp_directory_path() / "macri_json_parser_invalid_test.json";
 
     {

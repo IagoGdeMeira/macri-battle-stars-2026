@@ -18,8 +18,8 @@ public:
     void configureVideoDriverForCi() const
     {
         #if defined(__linux__)
-                SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
-                SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
+            SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
+            SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
         #endif
     }
 };

@@ -3,9 +3,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <SDL.h>
 
-TEST_CASE("SDLKeyTranslator maps letters, digits and control keys",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator maps letters, digits and control keys", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_a) == KeyCode::A);
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_z) == KeyCode::Z);
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_0) == KeyCode::Num0);
@@ -46,9 +45,8 @@ TEST_CASE("SDLKeyTranslator maps letters, digits and control keys",
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_KP_DIVIDE) == KeyCode::Divide);
 }
 
-TEST_CASE("SDLKeyTranslator maps navigation and function keys",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator maps navigation and function keys", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_LEFT) == KeyCode::Left);
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_RIGHT) == KeyCode::Right);
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_UP) == KeyCode::Up);
@@ -71,16 +69,14 @@ TEST_CASE("SDLKeyTranslator maps navigation and function keys",
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLK_PAUSE) == KeyCode::Pause);
 }
 
-TEST_CASE("SDLKeyTranslator returns unknown for unmapped keys",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator returns unknown for unmapped keys", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::toKeyCode(-123456) == KeyCode::Unknown);
     REQUIRE(SDLKeyTranslator::toKeyCode(999999) == KeyCode::Unknown);
 }
 
-TEST_CASE("SDLKeyTranslator maps gamepad buttons",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator maps gamepad buttons", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::toGamepadButton(SDL_CONTROLLER_BUTTON_A) == GamepadButton::A);
     REQUIRE(SDLKeyTranslator::toGamepadButton(SDL_CONTROLLER_BUTTON_B) == GamepadButton::B);
     REQUIRE(SDLKeyTranslator::toGamepadButton(SDL_CONTROLLER_BUTTON_X) == GamepadButton::X);
@@ -102,9 +98,8 @@ TEST_CASE("SDLKeyTranslator returns unknown for unmapped gamepad buttons",
     REQUIRE(SDLKeyTranslator::toGamepadButton(999999) == GamepadButton::Unknown);
 }
 
-TEST_CASE("SDLKeyTranslator maps mouse buttons",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator maps mouse buttons", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::toMouseButton(SDL_BUTTON_LEFT) == MouseButton::Left);
     REQUIRE(SDLKeyTranslator::toMouseButton(SDL_BUTTON_RIGHT) == MouseButton::Right);
     REQUIRE(SDLKeyTranslator::toMouseButton(SDL_BUTTON_MIDDLE) == MouseButton::Middle);
@@ -112,16 +107,14 @@ TEST_CASE("SDLKeyTranslator maps mouse buttons",
     REQUIRE(SDLKeyTranslator::toMouseButton(SDL_BUTTON_X2) == MouseButton::X2);
 }
 
-TEST_CASE("SDLKeyTranslator returns unknown for unmapped mouse buttons",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator returns unknown for unmapped mouse buttons", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::toMouseButton(-123456) == MouseButton::Unknown);
     REQUIRE(SDLKeyTranslator::toMouseButton(999999) == MouseButton::Unknown);
 }
 
-TEST_CASE("SDLKeyTranslator reverses KeyCode conversions",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator reverses KeyCode conversions", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLKeyTranslator::fromKeyCode(KeyCode::A)) == KeyCode::A);
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLKeyTranslator::fromKeyCode(KeyCode::Z)) == KeyCode::Z);
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLKeyTranslator::fromKeyCode(KeyCode::M)) == KeyCode::M);
@@ -181,9 +174,8 @@ TEST_CASE("SDLKeyTranslator reverses KeyCode conversions",
     REQUIRE(SDLKeyTranslator::toKeyCode(SDLKeyTranslator::fromKeyCode(KeyCode::Pause)) == KeyCode::Pause);
 }
 
-TEST_CASE("SDLKeyTranslator reverses gamepad button conversions",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator reverses gamepad button conversions", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::toGamepadButton(SDLKeyTranslator::fromGamepadButton(GamepadButton::A)) == GamepadButton::A);
     REQUIRE(SDLKeyTranslator::toGamepadButton(SDLKeyTranslator::fromGamepadButton(GamepadButton::B)) == GamepadButton::B);
     REQUIRE(SDLKeyTranslator::toGamepadButton(SDLKeyTranslator::fromGamepadButton(GamepadButton::X)) == GamepadButton::X);
@@ -200,9 +192,8 @@ TEST_CASE("SDLKeyTranslator reverses gamepad button conversions",
     REQUIRE(SDLKeyTranslator::toGamepadButton(SDLKeyTranslator::fromGamepadButton(GamepadButton::DpadRight)) == GamepadButton::DpadRight);
 }
 
-TEST_CASE("SDLKeyTranslator reverses mouse button conversions",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator reverses mouse button conversions", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::toMouseButton(SDLKeyTranslator::fromMouseButton(MouseButton::Left)) == MouseButton::Left);
     REQUIRE(SDLKeyTranslator::toMouseButton(SDLKeyTranslator::fromMouseButton(MouseButton::Right)) == MouseButton::Right);
     REQUIRE(SDLKeyTranslator::toMouseButton(SDLKeyTranslator::fromMouseButton(MouseButton::Middle)) == MouseButton::Middle);
@@ -210,9 +201,8 @@ TEST_CASE("SDLKeyTranslator reverses mouse button conversions",
     REQUIRE(SDLKeyTranslator::toMouseButton(SDLKeyTranslator::fromMouseButton(MouseButton::X2)) == MouseButton::X2);
 }
 
-TEST_CASE("SDLKeyTranslator returns unknown for invalid reverse conversions",
-    "[unit][sdl_key_translator]"
-) {
+TEST_CASE("SDLKeyTranslator returns unknown for invalid reverse conversions", "[unit][sdl_key_translator]")
+{
     REQUIRE(SDLKeyTranslator::fromKeyCode(KeyCode::Unknown) == SDLK_UNKNOWN);
     REQUIRE(SDLKeyTranslator::fromMouseButton(MouseButton::Unknown) == SDLK_UNKNOWN);
     REQUIRE(SDLKeyTranslator::fromGamepadButton(GamepadButton::Unknown) == SDLK_UNKNOWN);
