@@ -12,7 +12,7 @@ TEST_CASE("Scene updates systems", "[unit][scene]")
     struct TestSystem : System
     {
         bool called = false;
-        void update(UpdateContext&) override{ this->called = true; }
+        void update(UpdateContext&) override { this->called = true; }
     };
 
     EventBus bus;

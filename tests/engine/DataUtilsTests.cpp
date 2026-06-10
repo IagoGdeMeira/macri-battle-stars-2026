@@ -162,6 +162,8 @@ TEST_CASE("DataUtils::setSize sets w and h", "[unit][data_utils]")
 TEST_CASE("DataUtils::setRect sets nested position and size", "[unit][data_utils]")
 {
     StubDataNode node;
+    node.setObject("position", std::make_unique<StubDataNode>());
+    node.setObject("size", std::make_unique<StubDataNode>());
 
     Rectangle rect{{3.f, 4.f}, {7.f, 8.f}};
     DataUtils::setRect(node, rect);
@@ -212,6 +214,6 @@ TEST_CASE("DataUtils::setCorners sets topLeft, topRight, bottomLeft, bottomRight
 
     REQUIRE(node.getFloat("topLeft") == 1.f);
     REQUIRE(node.getFloat("topRight") == 3.f);
-    REQUIRE(node.getFloat("bottomLeft") == 5.f);
-    REQUIRE(node.getFloat("bottomRight") == 7.f);
+    REQUIRE(node.getFloat("bottomRight") == 5.f);
+    REQUIRE(node.getFloat("bottomLeft") == 7.f);
 }

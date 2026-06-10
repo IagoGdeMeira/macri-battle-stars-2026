@@ -85,12 +85,20 @@ void DataUtils::setRect(DataNode& node, const Rectangle& rect)
     if (node.has("position"))
     {
         auto posNode = node.getObject("position");
-        if (posNode) DataUtils::setPosition(*posNode, rect.position);
+        if (posNode)
+        {
+            DataUtils::setPosition(*posNode, rect.position);
+            node.setObject("position", std::move(posNode));
+        }
     }
     if (node.has("size"))
     {
         auto sizeNode = node.getObject("size");
-        if (sizeNode) DataUtils::setSize(*sizeNode, rect.size);
+        if (sizeNode)
+        {
+            DataUtils::setSize(*sizeNode, rect.size);
+            node.setObject("size", std::move(sizeNode));
+        }
     }
 }
 

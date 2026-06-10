@@ -5,9 +5,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <stdexcept>
 
-TEST_CASE("CommandBuffer executes a single command",
-    "[unit][command_buffer]"
-) {
+TEST_CASE("CommandBuffer executes a single command", "[unit][command_buffer]")
+{
     CommandBuffer buffer;
     World world;
 
@@ -19,9 +18,8 @@ TEST_CASE("CommandBuffer executes a single command",
     REQUIRE(executed);
 }
 
-TEST_CASE("CommandBuffer executes multiple commands in order",
-    "[unit][command_buffer]"
-) {
+TEST_CASE("CommandBuffer executes multiple commands in order", "[unit][command_buffer]")
+{
     CommandBuffer buffer;
     World world;
 
@@ -39,9 +37,8 @@ TEST_CASE("CommandBuffer executes multiple commands in order",
     REQUIRE(order[2] == 3);
 }
 
-TEST_CASE("CommandBuffer clears commands after flush",
-    "[unit][command_buffer]"
-) {
+TEST_CASE("CommandBuffer clears commands after flush", "[unit][command_buffer]")
+{
     CommandBuffer buffer;
     World world;
 
@@ -55,9 +52,8 @@ TEST_CASE("CommandBuffer clears commands after flush",
     REQUIRE(count == 1);
 }
 
-TEST_CASE("CommandBuffer can be reused after flush",
-    "[unit][command_buffer]"
-) {
+TEST_CASE("CommandBuffer can be reused after flush", "[unit][command_buffer]")
+{
     CommandBuffer buffer;
     World world;
 
@@ -72,9 +68,8 @@ TEST_CASE("CommandBuffer can be reused after flush",
     REQUIRE(count == 2);
 }
 
-TEST_CASE("CommandBuffer passes correct World instance",
-    "[unit][command_buffer]"
-) {
+TEST_CASE("CommandBuffer passes correct World instance", "[unit][command_buffer]")
+{
     CommandBuffer buffer;
     World world;
 
@@ -86,18 +81,16 @@ TEST_CASE("CommandBuffer passes correct World instance",
     REQUIRE(received == &world);
 }
 
-TEST_CASE("CommandBuffer flush on empty buffer is a no-op",
-    "[unit][command_buffer]"
-) {
+TEST_CASE("CommandBuffer flush on empty buffer is a no-op", "[unit][command_buffer]")
+{
     CommandBuffer buffer;
     World world;
 
     REQUIRE_NOTHROW(buffer.flush(world));
 }
 
-TEST_CASE("CommandBuffer propagates exceptions thrown by commands",
-    "[unit][command_buffer]"
-) {
+TEST_CASE("CommandBuffer propagates exceptions thrown by commands", "[unit][command_buffer]")
+{
     CommandBuffer buffer;
     World world;
 
@@ -110,9 +103,8 @@ TEST_CASE("CommandBuffer propagates exceptions thrown by commands",
     REQUIRE(executedBeforeThrow == 1);
 }
 
-TEST_CASE("CommandBuffer command can enqueue another command for next flush",
-    "[unit][command_buffer]"
-) {
+TEST_CASE("CommandBuffer command can enqueue another command for next flush", "[unit][command_buffer]")
+{
     CommandBuffer buffer;
     World world;
 

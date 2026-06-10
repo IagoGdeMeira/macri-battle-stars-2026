@@ -16,6 +16,9 @@
 class InputSystemFixture
 {
 public:
+    EventBus bus;
+    Scene scene{this->bus};
+
     InputSystemFixture()
     {
         auto& components = this->scene.world().components();
@@ -23,9 +26,6 @@ public:
         components.registerComponent<PlayerComponent>();
         components.registerComponent<AnalogInputComponent>();
     }
-
-    EventBus bus;
-    Scene scene{bus};
 };
 
 TEST_CASE_METHOD(InputSystemFixture, "InputSystem updates mapped action for matching player",

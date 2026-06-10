@@ -9,12 +9,14 @@ std::string JsonNode::getString(const std::string& key, const std::string& fallb
     if (key.empty())
     {
         if (this->data.is_string()) return this->data.get<std::string>();
-        return fallback;
+        if (this->data.is_null()) return fallback;
+        throw std::runtime_error("JsonNode::getString: root value is not a string");
     }
-    
+
     auto it = this->data.find(key);
-    if (it == this->data.end() || !it->is_string()) return fallback;
-    return it->get<std::string>();
+    if (it == this->data.end()) return fallback;
+    if (it->is_string()) return it->get<std::string>();
+    throw std::runtime_error("JsonNode::getString: value for key '" + key + "' is not a string");
 }
 
 int JsonNode::getInt(const std::string& key, const int& fallback) const
@@ -22,12 +24,14 @@ int JsonNode::getInt(const std::string& key, const int& fallback) const
     if (key.empty())
     {
         if (this->data.is_number_integer()) return this->data.get<int>();
-        return fallback;
+        if (this->data.is_null()) return fallback;
+        throw std::runtime_error("JsonNode::getInt: root value is not an integer");
     }
-    
+
     auto it = this->data.find(key);
-    if (it == this->data.end() || !it->is_number_integer()) return fallback;
-    return it->get<int>();
+    if (it == this->data.end()) return fallback;
+    if (it->is_number_integer()) return it->get<int>();
+    throw std::runtime_error("JsonNode::getInt: value for key '" + key + "' is not an integer");
 }
 
 float JsonNode::getFloat(const std::string& key, const float& fallback) const
@@ -35,12 +39,14 @@ float JsonNode::getFloat(const std::string& key, const float& fallback) const
     if (key.empty())
     {
         if (this->data.is_number_float()) return this->data.get<float>();
-        return fallback;
+        if (this->data.is_null()) return fallback;
+        throw std::runtime_error("JsonNode::getFloat: root value is not a float");
     }
-    
+
     auto it = this->data.find(key);
-    if (it == this->data.end() || !it->is_number_float()) return fallback;
-    return it->get<float>();
+    if (it == this->data.end()) return fallback;
+    if (it->is_number_float()) return it->get<float>();
+    throw std::runtime_error("JsonNode::getFloat: value for key '" + key + "' is not a float");
 }
 
 bool JsonNode::getBool(const std::string& key, const bool& fallback) const
@@ -48,12 +54,14 @@ bool JsonNode::getBool(const std::string& key, const bool& fallback) const
     if (key.empty())
     {
         if (this->data.is_boolean()) return this->data.get<bool>();
-        return fallback;
+        if (this->data.is_null()) return fallback;
+        throw std::runtime_error("JsonNode::getBool: root value is not a boolean");
     }
-    
     auto it = this->data.find(key);
-    if (it == this->data.end() || !it->is_boolean()) return fallback;
-    return it->get<bool>();
+
+    if (it == this->data.end()) return fallback;
+    if (it->is_boolean()) return it->get<bool>();
+    throw std::runtime_error("JsonNode::getBool: value for key '" + key + "' is not a boolean");
 }
 
 std::vector<std::unique_ptr<DataNode>> JsonNode::getArray(const std::string& key) const
@@ -108,7 +116,6 @@ void JsonNode::setArray(const std::string& key, std::vector<std::unique_ptr<Data
         if (!jsonNode) throw std::runtime_error("Cannot convert non-JsonNode to JSON array");
         arr.push_back(jsonNode->data);
     }
-    
     if (key.empty()) this->data = arr;
     else this->data[key] = arr;
 }
@@ -117,7 +124,6 @@ void JsonNode::setObject(const std::string& key, std::unique_ptr<DataNode> value
 {
     JsonNode* jsonNode = dynamic_cast<JsonNode*>(value.get());
     if (!jsonNode) throw std::runtime_error("Cannot convert non-JsonNode to JSON object");
-
     if (key.empty()) this->data = jsonNode->data;
     else this->data[key] = jsonNode->data;
 }
