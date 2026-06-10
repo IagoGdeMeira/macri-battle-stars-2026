@@ -1,64 +1,16 @@
 #include "../../src/game/include/TriggerConditionFactory/TriggerConditionFactory.h"
 
-#include "../../src/engine/include/DataNode/DataNode.h"
+#include "../stubs/StubDataNode.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 
 class TriggerConditionFactoryFixture
 {
 public:
-    class Node : public DataNode
-    {
-    public:
-        void setString(const std::string& key, const std::string& value)
-        { this->strings[key] = value; }
-
-        void setFloat(const std::string& key, float value)
-        { this->floats[key] = value; }
-
-        bool has(const std::string& key) const override
-        { return this->strings.contains(key) || this->floats.contains(key); }
-
-        std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
-        {
-            const auto it = this->strings.find(key);
-            if (it == this->strings.end()) return fallback;
-            return it->second;
-        }
-
-        int getInt(const std::string& key, const int& fallback = DataNode::defaultIntFallback) const override
-        {
-            (void)key;
-            return fallback;
-        }
-
-        float getFloat(const std::string& key, const float& fallback = DataNode::defaultFloatFallback) const override
-        {
-            const auto it = this->floats.find(key);
-            if (it == this->floats.end()) return fallback;
-            return it->second;
-        }
-
-        bool getBool(const std::string& key, const bool& fallback = DataNode::defaultBoolFallback) const override
-        {
-            (void)key;
-            return fallback;
-        }
-
-        std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override
-        { throw std::runtime_error("Unexpected array key: " + key); }
-
-    private:
-        std::unordered_map<std::string, std::string> strings;
-        std::unordered_map<std::string, float> floats;
-    };
-
-    Node node;
+    StubDataNode node;
 };
 
 TEST_CASE_METHOD(TriggerConditionFactoryFixture, "TriggerConditionFactory creates min_time conditions",
@@ -66,9 +18,7 @@ TEST_CASE_METHOD(TriggerConditionFactoryFixture, "TriggerConditionFactory create
 ) {
     this->node.setString("type", "min_time");
     this->node.setFloat("value", 0.5f);
-
     auto condition = TriggerConditionFactory::create(this->node);
-
     REQUIRE(condition != nullptr);
 }
 
@@ -77,9 +27,7 @@ TEST_CASE_METHOD(TriggerConditionFactoryFixture, "TriggerConditionFactory create
 ) {
     this->node.setString("type", "input_pressed");
     this->node.setString("action", "Punch");
-
     auto condition = TriggerConditionFactory::create(this->node);
-
     REQUIRE(condition != nullptr);
 }
 
@@ -87,6 +35,5 @@ TEST_CASE_METHOD(TriggerConditionFactoryFixture, "TriggerConditionFactory reject
     "[unit][trigger_condition_factory]"
 ) {
     this->node.setString("type", "unknown");
-
     REQUIRE_THROWS_AS(TriggerConditionFactory::create(this->node), std::runtime_error);
 }

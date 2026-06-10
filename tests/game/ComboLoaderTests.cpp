@@ -1,186 +1,76 @@
 #include "../../src/game/include/ComboLoader/ComboLoader.h"
 
-#include "../../src/engine/include/DataNode/DataNode.h"
-#include "../../src/engine/include/DataParser/DataParser.h"
+#include "../stubs/StubDataNode.h"
+#include "../stubs/StubDataParser.h"
 
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
-#include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 class ComboLoaderFixture
 {
 public:
-    class StubNode : public DataNode
+    std::unique_ptr<StubDataNode> makeStep(const std::string& action, float maxDelay) const
     {
-    public:
-        void setString(const std::string& key, const std::string& value) { this->strings[key] = value; }
-        void setInt(const std::string& key, int value) { this->ints[key] = value; }
-        void setFloat(const std::string& key, float value) { this->floats[key] = value; }
-        void setBool(const std::string& key, bool value) { this->bools[key] = value; }
+        auto step = std::make_unique<StubDataNode>();
+        step->setString("action", action);
+        step->setFloat("maxDelay", maxDelay);
+        return step;
+    }
 
-        void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value)
-        {
-            std::vector<StubNode> converted;
-            converted.reserve(value.size());
+    std::unique_ptr<StubDataNode> makeCombo(
+        const std::string& name,
+        const std::string& trigger,
+        int priority,
+        bool consume,
+        std::vector<std::unique_ptr<StubDataNode>> steps
+    ) const {
+        auto combo = std::make_unique<StubDataNode>();
+        combo->setString("name", name);
+        combo->setString("trigger", trigger);
+        combo->setInt("priority", priority);
+        combo->setBool("consume", consume);
 
-            for (auto& node : value)
-            {
-                auto* typed = dynamic_cast<StubNode*>(node.get());
-                if (!typed) throw std::runtime_error("Unexpected node type in fake tree");
-                converted.push_back(*typed);
-            }
+        std::vector<std::unique_ptr<DataNode>> stepsData;
+        for (auto& s : steps) stepsData.push_back(std::move(s));
+        combo->setArray("steps", std::move(stepsData));
+        return combo;
+    }
 
-            this->arrays[key] = std::move(converted);
-        }
-
-        bool has(const std::string& key) const override
-        {
-            if (this->strings.contains(key)) return true;
-            if (this->ints.contains(key)) return true;
-            if (this->floats.contains(key)) return true;
-            if (this->bools.contains(key)) return true;
-            if (this->arrays.contains(key)) return true;
-            return false;
-        }
-
-        std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
-        {
-            const auto it = this->strings.find(key);
-            if (it == this->strings.end()) return fallback;
-            return it->second;
-        }
-
-        int getInt(const std::string& key, const int& fallback = DataNode::defaultIntFallback) const override
-        {
-            const auto it = this->ints.find(key);
-            if (it == this->ints.end()) return fallback;
-            return it->second;
-        }
-
-        float getFloat(const std::string& key, const float& fallback = DataNode::defaultFloatFallback) const override
-        {
-            const auto it = this->floats.find(key);
-            if (it == this->floats.end()) return fallback;
-            return it->second;
-        }
-
-        bool getBool(const std::string& key, const bool& fallback = DataNode::defaultBoolFallback) const override
-        {
-            const auto it = this->bools.find(key);
-            if (it == this->bools.end()) return fallback;
-            return it->second;
-        }
-
-        std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override
-        {
-            const auto it = this->arrays.find(key);
-            if (it == this->arrays.end()) throw std::runtime_error("Missing array key: " + key);
-
-            std::vector<std::unique_ptr<DataNode>> out;
-            out.reserve(it->second.size());
-
-            for (const auto& node : it->second) out.push_back(std::make_unique<StubNode>(node));
-
-            return out;
-        }
-
-    private:
-        std::unordered_map<std::string, std::string> strings;
-        std::unordered_map<std::string, int> ints;
-        std::unordered_map<std::string, float> floats;
-        std::unordered_map<std::string, bool> bools;
-        std::unordered_map<std::string, std::vector<StubNode>> arrays;
-    };
-
-    class StubParser : public DataParser
+    std::unique_ptr<StubDataNode> makeCombosRoot() const
     {
-    public:
-        explicit StubParser(std::unique_ptr<DataNode> rootNode) : root(std::move(rootNode)) {}
-
-        mutable std::string lastPath;
-
-        std::unique_ptr<DataNode> parse(const std::string &filePath) const override
-        {
-            this->lastPath = filePath;
-
-            auto *typed = dynamic_cast<StubNode *>(this->root.get());
-            if (!typed) throw std::runtime_error("Unexpected root node type in fake parser");
-
-            return std::make_unique<StubNode>(*typed);
-        }
-
-    private:
-        std::unique_ptr<DataNode> root;
-    };
-
-    std::unique_ptr<DataNode> makeCombosRoot() const
-    {
-        auto step1 = std::make_unique<StubNode>();
-        step1->setString("action", "Punch");
-        step1->setFloat("maxDelay", 150.0f);
-
-        auto step2 = std::make_unique<StubNode>();
-        step2->setString("action", "Jump");
-        step2->setFloat("maxDelay", 100.0f);
-
-        auto comboA = std::make_unique<StubNode>();
-        comboA->setString("name", "uppercut");
-        comboA->setString("trigger", "Punched");
-        comboA->setInt("priority", 10);
-        comboA->setBool("consume", false);
-
-        std::vector<std::unique_ptr<DataNode>> comboASteps;
-        comboASteps.push_back(std::move(step1));
-        comboASteps.push_back(std::move(step2));
-        comboA->setArray("steps", std::move(comboASteps));
-
-        auto step3 = std::make_unique<StubNode>();
-        step3->setString("action", "Defend");
-        step3->setFloat("maxDelay", 80.0f);
-
-        auto comboB = std::make_unique<StubNode>();
-        comboB->setString("name", "guard");
-        comboB->setString("trigger", "Kicked");
-        comboB->setInt("priority", 5);
-        comboB->setBool("consume", true);
-
-        std::vector<std::unique_ptr<DataNode>> comboBSteps;
-        comboBSteps.push_back(std::move(step3));
-        comboB->setArray("steps", std::move(comboBSteps));
-
-        auto rootNode = std::make_unique<StubNode>();
+        auto root = std::make_unique<StubDataNode>();
         std::vector<std::unique_ptr<DataNode>> combos;
-        combos.push_back(std::move(comboA));
-        combos.push_back(std::move(comboB));
-        rootNode->setArray("combos", std::move(combos));
-
-        return rootNode;
+        combos.push_back(makeCombo("uppercut", "Punched", 10, false, {
+            this->makeStep("Punch", 150.f),
+            this->makeStep("Jump", 100.f)
+        }));
+        combos.push_back(makeCombo("guard", "Kicked", 5, true, {this->makeStep("Defend", 80.f)}));
+        root->setArray("combos", std::move(combos));
+        return root;
     }
 };
 
 TEST_CASE_METHOD(ComboLoaderFixture, "ComboLoader parses combos with optional fields",
     "[unit][combo_loader]"
 ) {
-    ComboLoaderFixture::StubParser parser(this->makeCombosRoot());
-    ComboLoader loader(parser);
+    StubDataParser parser;
+    parser.registerNode("combos.json", this->makeCombosRoot());
 
-    const auto combos = loader.load("assets/inputs/combos.json");
+    ComboLoader loader(parser);
+    const auto combos = loader.load("combos.json");
 
     REQUIRE(combos.size() == 2);
-
     REQUIRE(combos[0].name == "uppercut");
     REQUIRE(combos[0].trigger == TriggerId::Punched);
     REQUIRE(combos[0].priority == 10);
     REQUIRE(combos[0].consumeInput == false);
     REQUIRE(combos[0].steps.size() == 2);
     REQUIRE(combos[0].steps[0].action == InputAction::Punch);
-    REQUIRE(combos[0].steps[0].maxDelay == 150);
+    REQUIRE(combos[0].steps[0].maxDelay == 150.f);
     REQUIRE(combos[0].steps[1].action == InputAction::Jump);
-    REQUIRE(combos[0].steps[1].maxDelay == 100);
+    REQUIRE(combos[0].steps[1].maxDelay == 100.f);
 
     REQUIRE(combos[1].name == "guard");
     REQUIRE(combos[1].trigger == TriggerId::Kicked);
@@ -188,16 +78,15 @@ TEST_CASE_METHOD(ComboLoaderFixture, "ComboLoader parses combos with optional fi
     REQUIRE(combos[1].consumeInput == true);
     REQUIRE(combos[1].steps.size() == 1);
     REQUIRE(combos[1].steps[0].action == InputAction::Defend);
-    REQUIRE(combos[1].steps[0].maxDelay == 80);
+    REQUIRE(combos[1].steps[0].maxDelay == 80.f);
 }
 
 TEST_CASE_METHOD(ComboLoaderFixture, "ComboLoader forwards file path to parser",
     "[unit][combo_loader]"
 ) {
-    ComboLoaderFixture::StubParser parser(this->makeCombosRoot());
+    StubDataParser parser;
+    parser.registerNode("custom/combos.json", this->makeCombosRoot());
+
     ComboLoader loader(parser);
-
-    (void)loader.load("custom/combos.json");
-
-    REQUIRE(parser.lastPath == "custom/combos.json");
+    REQUIRE_NOTHROW(loader.load("custom/combos.json"));
 }

@@ -14,8 +14,6 @@
 #include "../../src/domain/include/View/View.h"
 #include "../../src/domain/include/StateId/StateId.h"
 
-#include "../../src/engine/include/DataNode/DataNode.h"
-#include "../../src/engine/include/DataParser/DataParser.h"
 #include "../../src/engine/include/DataUtils/DataUtils.h"
 #include "../../src/engine/include/Engine/Engine.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
@@ -26,232 +24,58 @@
 #include "../../src/engine/include/ResourceManager/ResourceManager.h"
 #include "../../src/engine/include/SceneManager/SceneManager.h"
 #include "../../src/engine/include/TextureLoader/TextureLoader.h"
-#include "../../src/engine/include/ThreadPool/ThreadPool.h"
 #include "../../src/engine/include/Window/Window.h"
+
+#include "../stubs/StubDataNode.h"
+#include "../stubs/StubDataParser.h"
+#include "../stubs/StubEngine.h"
+#include "../stubs/StubFontFactory.h"
+#include "../stubs/StubRenderer.h"
+#include "../stubs/StubResourceManager.h"
+#include "../stubs/StubSceneManager.h"
+#include "../stubs/StubTextureFactory.h"
+#include "../stubs/StubWindow.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
-#include <stdexcept>
 #include <string>
-#include <unordered_map>
-#include <utility>
 #include <vector>
-
-class TestNode : public DataNode
-{
-public:
-    void setString(const std::string& key, const std::string& value) { this->strings[key] = value; }
-    void setInt(const std::string& key, int value) { this->ints[key] = value; }
-    void setFloat(const std::string& key, float value) { this->floats[key] = value; }
-    void setBool(const std::string& key, bool value) { this->bools[key] = value; }
-
-    void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value)
-    {
-        std::vector<TestNode> converted;
-        converted.reserve(value.size());
-        for (auto& node : value)
-        {
-            auto* typed = dynamic_cast<TestNode*>(node.get());
-            if (!typed) throw std::runtime_error("Unexpected node type");
-            converted.push_back(*typed);
-        }
-        this->arrays[key] = std::move(converted);
-    }
-
-    void setObject(const std::string& key, std::unique_ptr<DataNode> value)
-    {
-        auto* typed = dynamic_cast<TestNode*>(value.get());
-        if (!typed) throw std::runtime_error("Unexpected node type");
-        this->objects[key] = *typed;
-    }
-
-    bool has(const std::string& key) const override
-    {
-        if (this->strings.contains(key)) return true;
-        if (this->ints.contains(key)) return true;
-        if (this->floats.contains(key)) return true;
-        if (this->bools.contains(key)) return true;
-        if (this->arrays.contains(key)) return true;
-        if (this->objects.contains(key)) return true;
-        return false;
-    }
-
-    std::string getString(const std::string& key, const std::string& fallback = DataNode::defaultStringFallback) const override
-    {
-        auto it = this->strings.find(key);
-        return (it != this->strings.end()) ? it->second : fallback;
-    }
-
-    int getInt(const std::string& key, const int& fallback = DataNode::defaultIntFallback) const override
-    {
-        auto it = this->ints.find(key);
-        return (it != this->ints.end()) ? it->second : fallback;
-    }
-
-    float getFloat(const std::string& key, const float& fallback = DataNode::defaultFloatFallback) const override
-    {
-        auto it = this->floats.find(key);
-        return (it != this->floats.end()) ? it->second : fallback;
-    }
-
-    bool getBool(const std::string& key, const bool& fallback = DataNode::defaultBoolFallback) const override
-    {
-        auto it = this->bools.find(key);
-        return (it != this->bools.end()) ? it->second : fallback;
-    }
-
-    std::vector<std::unique_ptr<DataNode>> getArray(const std::string& key) const override
-    {
-        auto it = this->arrays.find(key);
-        if (it == this->arrays.end()) throw std::runtime_error("Missing array key: " + key);
-        std::vector<std::unique_ptr<DataNode>> out;
-        out.reserve(it->second.size());
-        for (const auto& node : it->second)  out.push_back(std::make_unique<TestNode>(node));
-        return out;
-    }
-
-    std::unique_ptr<DataNode> getObject(const std::string& key) const override
-    {
-        auto it = this->objects.find(key);
-        if (it == this->objects.end()) return nullptr;
-        return std::make_unique<TestNode>(it->second);
-    }
-
-    std::unique_ptr<DataNode> clone() const { return std::make_unique<TestNode>(*this); }
-
-private:
-    std::unordered_map<std::string, std::string> strings;
-    std::unordered_map<std::string, int> ints;
-    std::unordered_map<std::string, float> floats;
-    std::unordered_map<std::string, bool> bools;
-    std::unordered_map<std::string, std::vector<TestNode>> arrays;
-    std::unordered_map<std::string, TestNode> objects;
-};
-
-class StubTexture : public Texture
-{
-public:
-    int getWidth() const override { return 64; }
-    int getHeight() const override { return 96; }
-};
-
-class StubRenderer : public Renderer
-{
-public:
-    void clear() override {}
-    void present() override {}
-    void drawTexture(const DrawTextureCommand&) override {}
-    void drawFont(const DrawFontCommand&) override {}
-    void drawCircle(const DrawCircleCommand&) override {}
-    void drawRectangle(const DrawRectangleCommand&) override {}
-    void setViewport(const Viewport&) override {}
-};
-
-class StubWindow : public Window
-{
-public:
-    void create(int, int, const char*) override {}
-    void setResolution(int, int) override {}
-    void setFullscreen(bool) override {}
-    void getSize(int& w, int& h) override { w = 800; h = 600; }
-};
-
-class StubDataParser : public DataParser
-{
-public:
-    void registerNode(const std::string& path, std::unique_ptr<TestNode> node) { this->nodes[path] = std::move(node); }
-
-    std::unique_ptr<DataNode> parse(const std::string& path) const override
-    {
-        auto it = this->nodes.find(path);
-        if (it != this->nodes.end()) return std::make_unique<TestNode>(*it->second);
-        
-        throw std::runtime_error("Unexpected parser path: " + path);
-    }
-
-private:
-    mutable std::unordered_map<std::string, std::unique_ptr<TestNode>> nodes;
-};
-
-class StubResourceManager : public ResourceManager
-{
-public:
-    StubResourceManager() : ResourceManager(this->pool) {}
-private:
-    ThreadPool pool{1};
-};
-
-class StubTextureFactory : public ITextureFactory
-{
-public:
-    std::shared_ptr<Texture> createTexture(const std::string&) override { return std::make_shared<StubTexture>(); }
-};
-
-class StubFontFactory : public IFontFactory
-{
-public:
-    std::shared_ptr<Font> createFont(const std::string&) override { return nullptr; }
-};
-
-class StubEngine : public Engine
-{
-public:
-    StubEngine(Window& w, GameSettings& s) : Engine(w, s) {}
-};
-
-class DummySceneFactory : public SceneFactory
-{
-public:
-    DummySceneFactory() : SceneFactory(SceneFactory::Config{
-        .window             = this->dummyWindow,
-        .parser             = this->dummyParser,
-        .resourceManager    = this->dummyResourceManager,
-        .textureLoader      = this->dummyTextureLoader,
-        .renderer           = this->dummyRenderer,
-        .eventBus           = this->dummyEventBus,
-        .settings           = this->dummySettings,
-        .engine             = this->dummyEngine,
-        .fontFactory        = this->dummyFontFactory,
-        .textureFactory     = this->dummyTextureFactory
-    }) {}
-
-private:
-    StubWindow dummyWindow;
-    StubDataParser dummyParser;
-    StubResourceManager dummyResourceManager;
-    TextureLoader dummyTextureLoader{this->dummyTextureFactory};
-    StubRenderer dummyRenderer;
-    EventBus dummyEventBus;
-    GameSettings dummySettings;
-    StubEngine dummyEngine{this->dummyWindow, this->dummySettings};
-    StubFontFactory dummyFontFactory;
-    StubTextureFactory dummyTextureFactory;
-};
-
-class StubSceneManager : public SceneManager
-{
-public:
-    StubSceneManager() : SceneManager(this->dummyFactory, this->dummyEngine) {}
-private:
-    DummySceneFactory dummyFactory;
-    StubEngine dummyEngine{this->dummyWindow, this->dummySettings};
-    StubWindow dummyWindow;
-    GameSettings dummySettings;
-};
 
 class GameSceneFixture
 {
 public:
-    std::unique_ptr<TestNode> makeMapNode()
+    StubWindow window;
+    StubRenderer renderer;
+    GameSettings settings;
+    StubResourceManager resourceManager;
+    StubTextureFactory textureFactory;
+    StubFontFactory fontFactory;
+    StubDataParser parser;
+    TextureLoader textureLoader{this->textureFactory};
+    StubEngine engine{this->window, this->settings};
+    StubSceneManager sceneManager;
+
+    GameSceneFixture()
     {
-        auto root = std::make_unique<TestNode>();
+        this->parser.registerNode("assets/maps/stage1.json", this->makeMapNode());
+        this->parser.registerNode("assets/inputs/game_bindings.json", this->makeInputBindingsNode());
+        this->parser.registerNode("assets/combos/default_combos.json", this->makeCombosNode());
+        this->parser.registerNode("assets/triggers/default_triggers.json", this->makeTriggersNode());
+        this->parser.registerNode("assets/characters/knight.json", this->makeCharacterDefNode());
+        this->parser.registerNode("fake_animations.json", this->makeAnimationNode());
+        this->parser.registerNode("fake_fsm.json", this->makeFSMNode());
+    }
+
+    std::unique_ptr<StubDataNode> makeMapNode() const
+    {
+        auto root = std::make_unique<StubDataNode>();
         root->setString("name", "TestStage");
         root->setFloat("floor.y", 400.f);
         root->setString("floor.texture", "assets/floor.png");
         root->setFloat("floor.width", 2000.f);
         root->setFloat("floor.height", 50.f);
-        auto spawn = std::make_unique<TestNode>();
+        auto spawn = std::make_unique<StubDataNode>();
         spawn->setInt("playerId", 0);
         spawn->setFloat("x", 300.f);
         std::vector<std::unique_ptr<DataNode>> spawns;
@@ -265,38 +89,42 @@ public:
         return root;
     }
 
-    std::unique_ptr<TestNode> makeInputBindingsNode()
+    std::unique_ptr<StubDataNode> makeInputBindingsNode() const
     {
-        auto root = std::make_unique<TestNode>();
-        std::vector<std::unique_ptr<DataNode>> players;
-        auto player = std::make_unique<TestNode>();
+        auto root = std::make_unique<StubDataNode>();
+        auto player = std::make_unique<StubDataNode>();
         player->setInt("id", 0);
         player->setArray("bindings", {});
+        std::vector<std::unique_ptr<DataNode>> players;
         players.push_back(std::move(player));
         root->setArray("players", std::move(players));
         return root;
     }
 
-    std::unique_ptr<TestNode> makeCombosNode()
+    std::unique_ptr<StubDataNode> makeCombosNode() const
     {
-        auto root = std::make_unique<TestNode>();
+        auto root = std::make_unique<StubDataNode>();
         root->setArray("combos", {});
         return root;
     }
 
-    std::unique_ptr<TestNode> makeTriggersNode()
+    std::unique_ptr<StubDataNode> makeTriggersNode() const
     {
-        auto root = std::make_unique<TestNode>();
+        auto root = std::make_unique<StubDataNode>();
         root->setArray("bindings", {});
         return root;
     }
 
-    std::unique_ptr<TestNode> makeCharacterDefNode()
+    std::unique_ptr<StubDataNode> makeCharacterDefNode() const
     {
-        auto root = std::make_unique<TestNode>();
+        auto root = std::make_unique<StubDataNode>();
         root->setString("id", "test_fighter");
         root->setString("texture", "assets/sprites/fighter.png");
-        root->DataUtils::parseSize(*root, {64.f, 96.f});
+
+        auto sizeNode = std::make_unique<StubDataNode>();
+        sizeNode->setFloat("w", 64.f);
+        sizeNode->setFloat("h", 96.f);
+        root->setObject("spriteSize", std::move(sizeNode));
         root->setString("animations", "fake_animations.json");
         root->setString("stateMachine", "fake_fsm.json");
         root->setString("collisions", "");
@@ -304,14 +132,14 @@ public:
         return root;
     }
 
-    std::unique_ptr<TestNode> makeAnimationNode()
+    std::unique_ptr<StubDataNode> makeAnimationNode() const
     {
-        auto root = std::make_unique<TestNode>();
-        auto anim = std::make_unique<TestNode>();
+        auto root = std::make_unique<StubDataNode>();
+        auto anim = std::make_unique<StubDataNode>();
         anim->setString("state", "Idle");
         anim->setFloat("frameDuration", 0.1f);
         anim->setBool("loop", true);
-        auto frame = std::make_unique<TestNode>();
+        auto frame = std::make_unique<StubDataNode>();
         frame->setInt("x", 0);
         frame->setInt("y", 0);
         frame->setInt("width", 64);
@@ -325,17 +153,16 @@ public:
         return root;
     }
 
-    std::unique_ptr<TestNode> makeFSMNode()
+    std::unique_ptr<StubDataNode> makeFSMNode() const
     {
-        auto root = std::make_unique<TestNode>();
-
-        auto idleState = std::make_unique<TestNode>();
+        auto root = std::make_unique<StubDataNode>();
+        auto idleState = std::make_unique<StubDataNode>();
         idleState->setString("name", "Idle");
         std::vector<std::unique_ptr<DataNode>> states;
         states.push_back(std::move(idleState));
         root->setArray("states", std::move(states));
 
-        auto transition = std::make_unique<TestNode>();
+        auto transition = std::make_unique<StubDataNode>();
         transition->setString("from", "Idle");
         transition->setString("to", "Idle");
         transition->setString("trigger", "Jumped");
@@ -344,31 +171,8 @@ public:
         std::vector<std::unique_ptr<DataNode>> transitions;
         transitions.push_back(std::move(transition));
         root->setArray("transitions", std::move(transitions));
-
         return root;
     }
-
-    GameSceneFixture()
-    {
-        this->parser.registerNode("assets/maps/stage1.json", this->makeMapNode());
-        this->parser.registerNode("assets/inputs/game_bindings.json", this->makeInputBindingsNode());
-        this->parser.registerNode("assets/combos/default_combos.json", this->makeCombosNode());
-        this->parser.registerNode("assets/triggers/default_triggers.json", this->makeTriggersNode());
-        this->parser.registerNode("assets/characters/knight.json", this->makeCharacterDefNode());
-        this->parser.registerNode("fake_animations.json", this->makeAnimationNode());
-        this->parser.registerNode("fake_fsm.json", this->makeFSMNode());
-    }
-
-    StubWindow window;
-    StubRenderer renderer;
-    GameSettings settings;
-    StubResourceManager resourceManager;
-    StubTextureFactory textureFactory;
-    StubFontFactory fontFactory;
-    StubDataParser parser;
-    TextureLoader textureLoader{this->textureFactory};
-    StubEngine engine{this->window, this->settings};
-    StubSceneManager sceneManager;
 };
 
 TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player entity",
@@ -399,7 +203,8 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player ent
     auto& world = scene.world();
     auto& components = world.components();
 
-    View<PlayerComponent,
+    View<
+        PlayerComponent,
         TransformComponent,
         InputComponent,
         InputBufferComponent,
@@ -408,8 +213,7 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player ent
     > view(components);
 
     int count = 0;
-    for (auto [entity, player, transform, i_, ib_, v_, g_] : view)
-    {
+    for (auto [entity, player, transform, i_, ib_, v_, g_] : view) {
         ++count;
         REQUIRE(player.id == 0);
         REQUIRE(transform.position.x == 300.f);

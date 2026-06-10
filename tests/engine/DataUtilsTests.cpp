@@ -120,3 +120,98 @@ TEST_CASE("DataUtils::parseCorners reads topLeft, topRight, bottomLeft, bottomRi
     REQUIRE(result.bottomLeft == 5.f);
     REQUIRE(result.bottomRight == 7.f);
 }
+
+TEST_CASE("DataUtils::parseCorners returns default when missing", "[unit][data_utils]")
+{
+    StubDataNode node;
+    node.setFloat("topLeft", 1.f);
+    node.setFloat("topRight", 3.f);
+
+    Corners def{10.f, 20.f, 30.f, 40.f};
+
+    Corners result = DataUtils::parseCorners(node, def);
+
+    REQUIRE(result.topLeft == def.topLeft);
+    REQUIRE(result.topRight == def.topRight);
+    REQUIRE(result.bottomLeft == def.bottomLeft);
+    REQUIRE(result.bottomRight == def.bottomRight);
+}
+
+TEST_CASE("DataUtils::setPosition sets x and y", "[unit][data_utils]")
+{
+    StubDataNode node;
+
+    Position pos{1.5f, 2.25f};
+    DataUtils::setPosition(node, pos);
+
+    REQUIRE(node.getFloat("x") == 1.5f);
+    REQUIRE(node.getFloat("y") == 2.25f);
+}
+
+TEST_CASE("DataUtils::setSize sets w and h", "[unit][data_utils]")
+{
+    StubDataNode node;
+
+    Dimension2D size{10.f, 20.f};
+    DataUtils::setSize(node, size);
+
+    REQUIRE(node.getFloat("w") == 10.f);
+    REQUIRE(node.getFloat("h") == 20.f);
+}
+
+TEST_CASE("DataUtils::setRect sets nested position and size", "[unit][data_utils]")
+{
+    StubDataNode node;
+
+    Rectangle rect{{3.f, 4.f}, {7.f, 8.f}};
+    DataUtils::setRect(node, rect);
+
+    auto posNode = node.getObject("position");
+    REQUIRE(posNode != nullptr);
+    REQUIRE(posNode->getFloat("x") == 3.f);
+    REQUIRE(posNode->getFloat("y") == 4.f);
+
+    auto sizeNode = node.getObject("size");
+    REQUIRE(sizeNode != nullptr);
+    REQUIRE(sizeNode->getFloat("w") == 7.f);
+    REQUIRE(sizeNode->getFloat("h") == 8.f);
+}
+
+TEST_CASE("DataUtils::setColor sets r,g,b,a", "[unit][data_utils]")
+{
+    StubDataNode node;
+
+    Color color{10, 20, 30, 128};
+    DataUtils::setColor(node, color);
+
+    REQUIRE(node.getInt("r") == 10);
+    REQUIRE(node.getInt("g") == 20);
+    REQUIRE(node.getInt("b") == 30);
+    REQUIRE(node.getInt("a") == 128);
+}
+
+TEST_CASE("DataUtils::setAABB sets left,right,top,bottom", "[unit][data_utils]")
+{
+    StubDataNode node;
+
+    AABB aabb{1.f, 2.f, 3.f, 4.f};
+    DataUtils::setAABB(node, aabb);
+
+    REQUIRE(node.getFloat("left") == 1.f);
+    REQUIRE(node.getFloat("right") == 2.f);
+    REQUIRE(node.getFloat("top") == 3.f);
+    REQUIRE(node.getFloat("bottom") == 4.f);
+}
+
+TEST_CASE("DataUtils::setCorners sets topLeft, topRight, bottomLeft, bottomRight", "[unit][data_utils]")
+{
+    StubDataNode node;
+
+    Corners corners{1.f, 3.f, 5.f, 7.f};
+    DataUtils::setCorners(node, corners);
+
+    REQUIRE(node.getFloat("topLeft") == 1.f);
+    REQUIRE(node.getFloat("topRight") == 3.f);
+    REQUIRE(node.getFloat("bottomLeft") == 5.f);
+    REQUIRE(node.getFloat("bottomRight") == 7.f);
+}
