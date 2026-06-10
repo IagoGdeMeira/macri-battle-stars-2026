@@ -12,7 +12,6 @@ TEST_CASE("Scene updates systems", "[unit][scene]")
     struct TestSystem : System
     {
         bool called = false;
-
         void update(UpdateContext&) override{ this->called = true; }
     };
 
@@ -31,7 +30,6 @@ TEST_CASE("Scene passes deltaTime to systems", "[unit][scene]")
     struct TestSystem : System
     {
         float received = 0.f;
-
         void update(UpdateContext& ctx) override { this->received = ctx.deltaTime; }
     };
 

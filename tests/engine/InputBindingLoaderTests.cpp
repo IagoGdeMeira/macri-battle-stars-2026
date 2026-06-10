@@ -33,11 +33,18 @@ public:
     {
         auto root = std::make_unique<StubDataNode>();
         std::vector<std::unique_ptr<DataNode>> players;
-        players.push_back(this->makePlayerBindings(1, {
-            this->makeBinding("Punch", "Keyboard.A"),
-            this->makeBinding("Jump", "Keyboard.Space")
-        }));
-        players.push_back(this->makePlayerBindings(2, { this->makeBinding("Defend", "Keyboard.LShift") }));
+
+        std::vector<std::unique_ptr<StubDataNode>> player1Bindings;
+        player1Bindings.push_back(this->makeBinding("Punch", "Keyboard.A"));
+        player1Bindings.push_back(this->makeBinding("Jump", "Keyboard.Space"));
+        auto player1 = this->makePlayerBindings(1, std::move(player1Bindings));
+        players.push_back(std::move(player1));
+
+        std::vector<std::unique_ptr<StubDataNode>> player2Bindings;
+        player2Bindings.push_back(this->makeBinding("Defend", "Keyboard.LShift"));
+        auto player2 = this->makePlayerBindings(2, std::move(player2Bindings));
+        players.push_back(std::move(player2));
+
         root->setArray("players", std::move(players));
         return root;
     }

@@ -9,13 +9,11 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("SystemManager addSystem returns valid reference",
-    "[unit][system_manager]"
-) {
+TEST_CASE("SystemManager addSystem returns valid reference", "[unit][system_manager]")
+{
     struct TestSystem : System
     {
         bool alive = true;
-
         void update(UpdateContext&) override {}
     };
 
@@ -26,13 +24,11 @@ TEST_CASE("SystemManager addSystem returns valid reference",
     REQUIRE(sys.alive);
 }
 
-TEST_CASE("SystemManager updates systems",
-    "[unit][system_manager]"
-) {
+TEST_CASE("SystemManager updates systems", "[unit][system_manager]")
+{
     struct TestSystem : System
     {
         bool called = false;
-
         void update(UpdateContext&) override { this->called = true; }
     };
 
@@ -50,9 +46,8 @@ TEST_CASE("SystemManager updates systems",
     REQUIRE(sys.called);
 }
 
-TEST_CASE("SystemManager preserves execution order",
-    "[unit][system_manager]"
-) {
+TEST_CASE("SystemManager preserves execution order", "[unit][system_manager]")
+{
     struct TestSystem : System
     {
         std::vector<int>& order;
@@ -85,9 +80,8 @@ TEST_CASE("SystemManager preserves execution order",
     REQUIRE(order[2] == 3);
 }
 
-TEST_CASE("SystemManager updates multiple systems",
-    "[unit][system_manager]"
-) {
+TEST_CASE("SystemManager updates multiple systems", "[unit][system_manager]")
+{
     struct TestSystem : System
     {
         int& counter;
@@ -115,9 +109,8 @@ TEST_CASE("SystemManager updates multiple systems",
     REQUIRE(counter == 2);
 }
 
-TEST_CASE("SystemManager passes UpdateContext correctly",
-    "[unit][system_manager]"
-) {
+TEST_CASE("SystemManager passes UpdateContext correctly", "[unit][system_manager]")
+{
     struct TestSystem : System
     {
         World* world = nullptr;
@@ -151,9 +144,8 @@ TEST_CASE("SystemManager passes UpdateContext correctly",
     REQUIRE(sys.dt == 0.5f);
 }
 
-TEST_CASE("SystemManager update with no systems does nothing",
-    "[unit][system_manager]"
-) {
+TEST_CASE("SystemManager update with no systems does nothing", "[unit][system_manager]")
+{
     SystemManager manager;
 
     World world;

@@ -42,11 +42,18 @@ public:
     {
         auto root = std::make_unique<StubDataNode>();
         std::vector<std::unique_ptr<DataNode>> combos;
-        combos.push_back(makeCombo("uppercut", "Punched", 10, false, {
-            this->makeStep("Punch", 150.f),
-            this->makeStep("Jump", 100.f)
-        }));
-        combos.push_back(makeCombo("guard", "Kicked", 5, true, {this->makeStep("Defend", 80.f)}));
+
+        std::vector<std::unique_ptr<StubDataNode>> uppercutSteps;
+        uppercutSteps.push_back(this->makeStep("Punch", 150.f));
+        uppercutSteps.push_back(this->makeStep("Jump", 100.f));
+        auto uppercut = this->makeCombo("uppercut", "Punched", 10, false, std::move(uppercutSteps));
+        combos.push_back(std::move(uppercut));
+
+        std::vector<std::unique_ptr<StubDataNode>> guardSteps;
+        guardSteps.push_back(this->makeStep("Defend", 80.f));
+        auto guard = this->makeCombo("guard", "Kicked", 5, true, std::move(guardSteps));
+        combos.push_back(std::move(guard));
+
         root->setArray("combos", std::move(combos));
         return root;
     }

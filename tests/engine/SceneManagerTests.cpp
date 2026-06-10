@@ -3,21 +3,20 @@
 #include "../../src/domain/include/Color/Color.h"
 #include "../../src/domain/include/Geometry/Geometry.h"
 
-#include "../../src/engine/include/DataNode/DataNode.h"
-#include "../../src/engine/include/DataParser/DataParser.h"
 #include "../../src/engine/include/Engine/Engine.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
 #include "../../src/engine/include/GameSettings/GameSettings.h"
-#include "../../src/engine/include/IFontFactory/IFontFactory.h"
-#include "../../src/engine/include/ITextureFactory/ITextureFactory.h"
-#include "../../src/engine/include/Renderer/Renderer.h"
-#include "../../src/engine/include/ResourceManager/ResourceManager.h"
 #include "../../src/engine/include/Scene/Scene.h"
 #include "../../src/engine/include/SceneFactory/SceneFactory.h"
-#include "../../src/engine/include/TextureLoader/TextureLoader.h"
-#include "../../src/engine/include/ThreadPool/ThreadPool.h"
-#include "../../src/engine/include/Viewport/Viewport.h"
-#include "../../src/engine/include/Window/Window.h"
+
+#include "../stubs/StubWindow.h"
+#include "../stubs/StubRenderer.h"
+#include "../stubs/StubDataParser.h"
+#include "../stubs/StubResourceManager.h"
+#include "../stubs/StubTextureFactory.h"
+#include "../stubs/StubFontFactory.h"
+#include "../stubs/StubTextureLoader.h"
+#include "../stubs/StubEngine.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
@@ -25,62 +24,21 @@
 class SceneManagerFixture
 {
 public:
-    class StubWindow : public Window
-    {
-    public:
-        void create(int, int, const char *) override {}
-        void setResolution(int, int) override {}
-        void setFullscreen(bool) override {}
-        void getSize(int &w, int &h) override { w = 800; h = 600; }
-    };
-
-    class StubRenderer : public Renderer
-    {
-    public:
-        void clear() override {}
-        void present() override {}
-        void drawTexture(const DrawTextureCommand&) override {}
-        void drawFont(const DrawFontCommand&) override {}
-        void drawRectangle(const DrawRectangleCommand&) override {}
-        void drawCircle(const DrawCircleCommand&) override {}
-        void setViewport(const Viewport&) override {}
-    };
-
-    class StubDataParser : public DataParser
-    {
-    public:
-        std::unique_ptr<DataNode> parse(const std::string&) const override { return nullptr; }
-    };
-
-    class StubResourceManager : public ResourceManager
-    {
-    public:
-        StubResourceManager() : ResourceManager(pool) {}
-    private:
-        ThreadPool pool{1};
-    };
-
-    class StubTextureFactory : public ITextureFactory
-    {
-    public:
-        std::shared_ptr<Texture> createTexture(const std::string&) override { return nullptr; }
-    };
-
-    class StubFontFactory : public IFontFactory
-    {
-    public:
-        std::shared_ptr<Font> createFont(const std::string&) override { return nullptr; }
-    };
-
-    class StubTextureLoader : public TextureLoader
-    {
-    public:
-        StubTextureLoader(ITextureFactory& factory) : TextureLoader(factory) {}
-    };
+    StubWindow window;
+    StubRenderer renderer;
+    GameSettings settings;
+    std::unique_ptr<StubEngine> engine;
+    std::unique_ptr<SceneFactory> factory;
+    std::unique_ptr<SceneManager> sceneManager;
+    StubDataParser dataParser;
+    StubResourceManager resourceManager;
+    std::unique_ptr<StubTextureLoader> textureLoader;
+    std::unique_ptr<StubTextureFactory> textureFactory;
+    std::unique_ptr<StubFontFactory> fontFactory;
 
     SceneManagerFixture()
     {
-        this->engine = std::make_unique<Engine>(this->window, this->settings);
+        this->engine = std::make_unique<StubEngine>(this->window, this->settings);
         this->engine->setRenderer(this->renderer);
 
         this->textureFactory = std::make_unique<StubTextureFactory>();
@@ -105,18 +63,6 @@ public:
     }
 
     SceneManager& scenes() { return this->engine->scenes(); }
-
-    StubWindow window;
-    StubRenderer renderer;
-    GameSettings settings;
-    std::unique_ptr<Engine> engine;
-    std::unique_ptr<SceneFactory> factory;
-    std::unique_ptr<SceneManager> sceneManager;
-    StubDataParser dataParser;
-    StubResourceManager resourceManager;
-    std::unique_ptr<StubTextureLoader> textureLoader;
-    std::unique_ptr<StubTextureFactory> textureFactory;
-    std::unique_ptr<StubFontFactory> fontFactory;
 };
 
 class CounterScene : public Scene
