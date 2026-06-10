@@ -8,12 +8,12 @@
 class MinTimeConditionFixture
 {
 public:
-    TriggerConditionContext makeContext()
-    { return TriggerConditionContext { this->world, this->entity, this->state }; }
-
     World world;
     StateComponent state;
-    Entity entity { 1 };
+    Entity entity{1};
+
+    TriggerConditionContext makeContext()
+    { return TriggerConditionContext { this->world, this->entity, this->state }; }
 };
 
 TEST_CASE_METHOD(MinTimeConditionFixture, "MinTimeCondition compares elapsed state time",
@@ -22,5 +22,5 @@ TEST_CASE_METHOD(MinTimeConditionFixture, "MinTimeCondition compares elapsed sta
     this->state.timeInState = 0.75f;
 
     REQUIRE(MinTimeCondition(0.5f).evaluate(this->makeContext()));
-    REQUIRE_FALSE(MinTimeCondition(1.0f).evaluate(this->makeContext()));
+    REQUIRE_FALSE(MinTimeCondition(1.f).evaluate(this->makeContext()));
 }

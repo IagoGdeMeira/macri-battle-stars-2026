@@ -9,6 +9,10 @@
 class HealthBelowConditionFixture
 {
 public:
+    World world;
+    StateComponent state;
+    Entity entity{1};
+
     HealthBelowConditionFixture()
     { this->world.components().registerComponent<HealthComponent>(); }
 
@@ -16,14 +20,7 @@ public:
     { return TriggerConditionContext { this->world, this->entity, this->state }; }
 
     void addHealth(int current, int max = 100)
-    {
-        this->world.components().add<HealthComponent>(
-            this->entity, HealthComponent { current, max });
-    }
-
-    World world;
-    StateComponent state;
-    Entity entity { 1 };
+    { this->world.components().add<HealthComponent>(this->entity, HealthComponent { current, max }); }
 };
 
 TEST_CASE_METHOD(HealthBelowConditionFixture, "HealthBelowCondition compares current health",
@@ -37,6 +34,4 @@ TEST_CASE_METHOD(HealthBelowConditionFixture, "HealthBelowCondition compares cur
 
 TEST_CASE_METHOD(HealthBelowConditionFixture, "HealthBelowCondition fails without HealthComponent",
     "[unit][health_below_condition]"
-) {
-    REQUIRE_FALSE(HealthBelowCondition(50).evaluate(this->makeContext()));
-}
+) { REQUIRE_FALSE(HealthBelowCondition(50).evaluate(this->makeContext())); }

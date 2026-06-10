@@ -14,30 +14,25 @@
 class CompositeConditionFixture
 {
 public:
+    World world;
+    StateComponent state;
+    Entity entity{1};
+    
     CompositeConditionFixture()
     {
-        this->world.components().registerComponent<HealthComponent>();
-        this->world.components().registerComponent<VelocityComponent>();
+        auto& components = this->world.components();
+        components.registerComponent<HealthComponent>();
+        components.registerComponent<VelocityComponent>();
     }
 
     TriggerConditionContext makeContext()
     { return TriggerConditionContext { this->world, this->entity, this->state }; }
 
     void addHealth(int current, int max = 100)
-    {
-        this->world.components().add<HealthComponent>(
-            this->entity, HealthComponent { current, max });
-    }
+    { this->world.components().add<HealthComponent>(this->entity, HealthComponent { current, max }); }
 
     void addVelocity(float vx, float vy)
-    {
-        this->world.components().add<VelocityComponent>(
-            this->entity, VelocityComponent { vx, vy });
-    }
-
-    World world;
-    StateComponent state;
-    Entity entity { 1 };
+    { this->world.components().add<VelocityComponent>(this->entity, VelocityComponent { vx, vy });}
 };
 
 TEST_CASE_METHOD(CompositeConditionFixture, "CompositeCondition combines conditions with AND and OR",
@@ -60,6 +55,6 @@ TEST_CASE_METHOD(CompositeConditionFixture, "CompositeCondition combines conditi
     CompositeCondition orCondition(CompositeCondition::Or, std::move(orConditions));
     REQUIRE_FALSE(orCondition.evaluate(this->makeContext()));
 
-    this->addVelocity(0.6f, 0.0f);
+    this->addVelocity(0.6f, 0.f);
     REQUIRE(orCondition.evaluate(this->makeContext()));
 }

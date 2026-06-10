@@ -11,6 +11,10 @@
 class NotConditionFixture
 {
 public:
+    World world;
+    StateComponent state;
+    Entity entity{1};
+    
     NotConditionFixture()
     { this->world.components().registerComponent<HealthComponent>(); }
 
@@ -18,14 +22,7 @@ public:
     { return TriggerConditionContext { this->world, this->entity, this->state }; }
 
     void addHealth(int current, int max = 100)
-    {
-        this->world.components().add<HealthComponent>(
-            this->entity, HealthComponent { current, max });
-    }
-
-    World world;
-    StateComponent state;
-    Entity entity { 1 };
+    { this->world.components().add<HealthComponent>(this->entity, HealthComponent { current, max }); }
 };
 
 TEST_CASE_METHOD(NotConditionFixture, "NotCondition inverts the nested condition result",
