@@ -36,26 +36,33 @@
 class CharacterLoaderFixture
 {
 public:
-    std::unique_ptr<StubDataNode> makeEmptyClipsRoot()
+    std::unique_ptr<StubDataNode> makeSpriteSize(float w, float h) const
+    {
+        auto sizeNode = std::make_unique<StubDataNode>();
+        sizeNode->setFloat("w", w);
+        sizeNode->setFloat("h", h);
+        return sizeNode;
+    }
+
+    std::unique_ptr<StubDataNode> makeEmptyClipsRoot() const
     {
         auto root = std::make_unique<StubDataNode>();
         root->setArray("clips", std::vector<std::unique_ptr<DataNode>>());
         return root;
     }
 
-    std::unique_ptr<StubDataNode> makeDefinitionRoot()
+    std::unique_ptr<StubDataNode> makeDefinitionRoot() const
     {
         auto root = std::make_unique<StubDataNode>();
         root->setString("id", "fighter_01");
         root->setString("texture", "assets/sprites/fighter.png");
-        root->setInt("spriteWidth", 64);
-        root->setInt("spriteHeight", 96);
+        root->setObject("spriteSize", this->makeSpriteSize(64.f, 96.f));
         root->setString("animations", "assets/animations/fighter_01.json");
         root->setString("stateMachine", "assets/fsm/fighter_01.json");
         return root;
     }
 
-    std::unique_ptr<StubDataNode> makeAnimationRoot()
+    std::unique_ptr<StubDataNode> makeAnimationRoot() const
     {
         auto frame = std::make_unique<StubDataNode>();
         frame->setInt("x", 0);
@@ -78,7 +85,7 @@ public:
         return root;
     }
 
-    std::unique_ptr<StubDataNode> makeStateMachineRoot()
+    std::unique_ptr<StubDataNode> makeStateMachineRoot() const
     {
         auto trans = std::make_unique<StubDataNode>();
         trans->setString("from", "Idle");
@@ -172,8 +179,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     auto defRoot = std::make_unique<StubDataNode>();
     defRoot->setString("id", "fighter_custom");
     defRoot->setString("texture", "assets/sprites/fighter.png");
-    defRoot->setInt("spriteWidth", 64);
-    defRoot->setInt("spriteHeight", 96);
+    defRoot->setObject("spriteSize", this->makeSpriteSize(64.f, 96.f));
     defRoot->setString("animations", "assets/animations/fighter_custom.json");
     defRoot->setString("stateMachine", "assets/fsm/fighter_custom.json");
 
@@ -213,8 +219,8 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
 
     StubDataParser defParser, animParser, fsmParser, clipParser;
     defParser.registerNode("def.json", std::move(defRoot));
-    animParser.registerNode("anim.json", std::move(animRoot));
-    fsmParser.registerNode("fsm.json", std::move(fsmRoot));
+    animParser.registerNode("assets/animations/fighter_custom.json", std::move(animRoot));
+    fsmParser.registerNode("assets/fsm/fighter_custom.json", std::move(fsmRoot));
     clipParser.registerNode("clip.json", std::move(clipRoot));
 
     CharacterDefinitionLoader defLoader(defParser);
