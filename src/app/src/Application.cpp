@@ -3,7 +3,7 @@
 #include "../../engine/include/ResourceManager/ResourceManager.h"
 #include "../../engine/include/TextureLoader/TextureLoader.h"
 
-#include "../../game/scenes/TitleScene.h"
+#include "../../game/scenes/GameScene.h"
 
 #include "../../platform/include/JsonParser/JsonParser.h"
 #include "../../platform/include/SDLPlatformFactory/SDLPlatformFactory.h"
@@ -74,6 +74,12 @@ void Application::setupInitialScene()
     this->sceneManager = std::make_unique<SceneManager>(*this->sceneFactory, *this->engine);
     this->engine->setSceneManager(*this->sceneManager);
 
-    TitleScene::Config titleCfg;
-    this->engine->scenes().changeScene<TitleScene>(std::move(titleCfg));
+    GameScene::Config cfg;
+    cfg.playerSlots = {{0, GameConstants::DEFAULT_CHARACTER_DEF_PATH}, {1, GameConstants::DEFAULT_CHARACTER_DEF_PATH}};
+    cfg.mapPath             = GameConstants::DEFAULT_MAP_PATH;
+    cfg.inputBindingsPath   = GameConstants::DEFAULT_INPUT_BINDINGS_PATH;
+    cfg.combosPath          = GameConstants::DEFAULT_COMBOS_PATH;
+    cfg.triggersPath        = GameConstants::DEFAULT_TRIGGERS_PATH;
+
+    this->engine->scenes().changeScene<GameScene>(std::move(cfg));
 }

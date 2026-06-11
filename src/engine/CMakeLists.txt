@@ -12,7 +12,6 @@ target_sources(engine
         src/InputSystem.cpp
         src/Scene.cpp
         src/SceneManager.cpp
-        src/SystemManager.cpp
 )
 
 target_include_directories(engine

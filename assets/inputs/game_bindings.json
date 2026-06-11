@@ -1,0 +1,39 @@
+{
+  "players": [
+    {
+      "id": 0,
+      "bindings": [
+        { "action": "MoveLeft", "source": "Keyboard.A" },
+        { "action": "MoveLeft", "source": "Gamepad.DpadLeft" },
+        { "action": "MoveRight", "source": "Keyboard.D" },
+        { "action": "MoveRight", "source": "Gamepad.DpadRight" },
+        { "action": "Jump", "source": "Keyboard.W" },
+        { "action": "Jump", "source": "Keyboard.Space" },
+        { "action": "Jump", "source": "Gamepad.A" },
+        { "action": "Punch", "source": "Keyboard.J" },
+        { "action": "Punch", "source": "Gamepad.X" },
+        { "action": "Kick", "source": "Keyboard.K" },
+        { "action": "Kick", "source": "Gamepad.Y" },
+        { "action": "Defend", "source": "Keyboard.L" },
+        { "action": "Defend", "source": "Gamepad.B" }
+      ]
+    },
+    {
+      "id": 1,
+      "bindings": [
+        { "action": "MoveLeft", "source": "Keyboard.Left" },
+        { "action": "MoveLeft", "source": "Gamepad.DpadLeft" },
+        { "action": "MoveRight", "source": "Keyboard.Right" },
+        { "action": "MoveRight", "source": "Gamepad.DpadRight" },
+        { "action": "Jump", "source": "Keyboard.Up" },
+        { "action": "Jump", "source": "Gamepad.A" },
+        { "action": "Punch", "source": "Keyboard.Numpad1" },
+        { "action": "Punch", "source": "Gamepad.X" },
+        { "action": "Kick", "source": "Keyboard.Numpad2" },
+        { "action": "Kick", "source": "Gamepad.Y" },
+        { "action": "Defend", "source": "Keyboard.Numpad3" },
+        { "action": "Defend", "source": "Gamepad.B" }
+      ]
+    }
+  ]
+}

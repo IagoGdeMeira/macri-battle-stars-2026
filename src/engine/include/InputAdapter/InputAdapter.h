@@ -3,8 +3,8 @@
 
 #include "../events/PlatformEvent.h"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 class InputAdapter
 {

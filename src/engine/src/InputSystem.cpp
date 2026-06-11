@@ -42,7 +42,7 @@ void InputSystem::update(UpdateContext& ctx)
 
             auto& state = input.actions[action];
             state.pressed = isPressed;
-            if (isPressed && !wasPressed) state.heldTime = 0.0f;
+            if (isPressed && !wasPressed) state.heldTime = 0.f;
         }
 
         previousSources = playerSources;

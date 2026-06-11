@@ -34,7 +34,7 @@ void InputBufferSystem::update(UpdateContext& ctx)
         for (auto [entity, buffer, player] : view)
         {
             if (player.id != e.playerId) continue;
-            buffer.buffer.push_back({action, 0.0f});
+            buffer.buffer.push_back({action, 0.f});
         }
     }
     this->events.clear();

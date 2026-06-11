@@ -213,7 +213,8 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player ent
     > view(components);
 
     int count = 0;
-    for (auto [entity, player, transform, i_, ib_, v_, g_] : view) {
+    for (auto [entity, player, transform, i_, ib_, v_, g_] : view)
+    {
         ++count;
         REQUIRE(player.id == 0);
         REQUIRE(transform.position.x == 300.f);

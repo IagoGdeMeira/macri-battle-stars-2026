@@ -26,7 +26,7 @@ public:
     uint32_t code() const { return this->sourceCode; }
 
     bool operator==(const InputSource &other) const
-    { return sourceType == other.sourceType && sourceCode == other.sourceCode; }
+    { return this->sourceType == other.sourceType && this->sourceCode == other.sourceCode; }
 
     bool operator!=(const InputSource& other) const { return !(*this == other); }
 

@@ -23,9 +23,9 @@ void SDLMouseAdapter::processEvents(const std::vector<std::unique_ptr<PlatformEv
         }
         else if (const auto* motionEvent = dynamic_cast<const MouseMotionEvent*>(e.get()))
         {
-            float normalizedX = motionEvent->delta.x / 100.0f;
-            if (normalizedX > 1.0f) normalizedX = 1.0f;
-            if (normalizedX < -1.0f) normalizedX = -1.0f;
+            float normalizedX = motionEvent->delta.x / 100.f;
+            if (normalizedX > 1.f) normalizedX = 1.f;
+            if (normalizedX < -1.f) normalizedX = -1.f;
 
             auto src = InputSource::mouse(MouseButton::Left);
             this->eventBus.emit<AnalogInputEvent>(src, this->playerId, normalizedX);
