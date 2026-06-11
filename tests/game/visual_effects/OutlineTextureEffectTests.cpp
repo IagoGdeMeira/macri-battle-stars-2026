@@ -21,7 +21,7 @@ TEST_CASE_METHOD(OutlineTextureEffectFixture, "OutlineTextureEffect adds 8 outli
     OutlineComponent config;
     config.enabled = true;
     config.thickness = 2.f;
-    config.color = Color { 1, 2, 3, 4 };
+    config.color = Color {1, 2, 3, 4};
 
     DrawTextureCommand base;
     base.dest.position = Position {10.f, 20.f};

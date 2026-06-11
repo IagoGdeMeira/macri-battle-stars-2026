@@ -18,13 +18,14 @@ TEST_CASE("InputBufferSystem pushes mapped pressed key to matching player",
     EventBus bus;
     Scene scene(bus);
 
-    scene.world().components().registerComponent<InputBufferComponent>();
-    scene.world().components().registerComponent<PlayerComponent>();
+    auto& components = scene.world().components();
+    components.registerComponent<InputBufferComponent>();
+    components.registerComponent<PlayerComponent>();
 
     const auto entity = scene.world().entities().create();
 
-    scene.world().components().add<InputBufferComponent>(entity, InputBufferComponent{});
-    scene.world().components().add<PlayerComponent>(entity, PlayerComponent { 1 });
+    components.add<InputBufferComponent>(entity, InputBufferComponent{});
+    components.add<PlayerComponent>(entity, PlayerComponent { 1 });
 
     InputContext context;
     context.bindings[1].keyMap[InputSource::keyboard(KeyCode::A)] = InputAction::Punch;
@@ -46,13 +47,14 @@ TEST_CASE("InputBufferSystem ignores key release events",
     EventBus bus;
     Scene scene(bus);
 
-    scene.world().components().registerComponent<InputBufferComponent>();
-    scene.world().components().registerComponent<PlayerComponent>();
+    auto& components = scene.world().components();
+    components.registerComponent<InputBufferComponent>();
+    components.registerComponent<PlayerComponent>();
 
     const auto entity = scene.world().entities().create();
 
-    scene.world().components().add<InputBufferComponent>(entity, InputBufferComponent{});
-    scene.world().components().add<PlayerComponent>(entity, PlayerComponent { 1 });
+    components.add<InputBufferComponent>(entity, InputBufferComponent{});
+    components.add<PlayerComponent>(entity, PlayerComponent { 1 });
 
     InputContext context;
     context.bindings[1].keyMap[InputSource::keyboard(KeyCode::A)] = InputAction::Punch;
@@ -72,24 +74,25 @@ TEST_CASE("InputBufferSystem increments time and drops expired inputs",
     EventBus bus;
     Scene scene(bus);
 
-    scene.world().components().registerComponent<InputBufferComponent>();
-    scene.world().components().registerComponent<PlayerComponent>();
+    auto& components = scene.world().components();
+    components.registerComponent<InputBufferComponent>();
+    components.registerComponent<PlayerComponent>();
 
     const auto entity = scene.world().entities().create();
 
     InputBufferComponent buffer;
     buffer.buffer.push_back({ InputAction::MoveLeft, 0.49f });
-    buffer.buffer.push_back({ InputAction::MoveRight, 0.10f });
+    buffer.buffer.push_back({ InputAction::MoveRight, 0.1f });
 
-    scene.world().components().add<InputBufferComponent>(entity, buffer);
-    scene.world().components().add<PlayerComponent>(entity, PlayerComponent { 2 });
+    components.add<InputBufferComponent>(entity, buffer);
+    components.add<PlayerComponent>(entity, PlayerComponent { 2 });
 
     InputContext context;
     scene.systems().addSystem<InputBufferSystem>(bus, context);
 
     scene.update(0.02f);
 
-    const auto& updated = scene.world().components().get<InputBufferComponent>(entity);
+    const auto& updated = components.get<InputBufferComponent>(entity);
     REQUIRE(updated.buffer.size() == 1);
     REQUIRE(updated.buffer.front().action == InputAction::MoveRight);
     REQUIRE(updated.buffer.front().time == Catch::Approx(0.12f));

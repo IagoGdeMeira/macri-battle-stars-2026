@@ -5,9 +5,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("QuitAction emits QuitEvent",
-    "[unit][quit_action]"
-) {
+TEST_CASE("QuitAction emits QuitEvent", "[unit][quit_action]")
+{
     EventBus bus;
     QuitAction action(bus);
 

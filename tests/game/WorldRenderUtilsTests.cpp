@@ -6,9 +6,8 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("WorldRenderUtils::worldToScreen applies camera, zoom and viewport",
-    "[unit][world_render_utils]"
-) {
+TEST_CASE("WorldRenderUtils::worldToScreen applies camera, zoom and viewport", "[unit][world_render_utils]")
+{
     Camera2D camera;
     camera.setPosition(10.f, 20.f);
     camera.setZoom(2.f);
@@ -22,9 +21,8 @@ TEST_CASE("WorldRenderUtils::worldToScreen applies camera, zoom and viewport",
     REQUIRE(screen.y == Catch::Approx(380.f));
 }
 
-TEST_CASE("WorldRenderUtils::worldToScreen applies parallax factors",
-    "[unit][world_render_utils]"
-) {
+TEST_CASE("WorldRenderUtils::worldToScreen applies parallax factors", "[unit][world_render_utils]")
+{
     Camera2D camera;
     camera.setPosition(10.f, 20.f);
     camera.setZoom(2.f);
@@ -32,20 +30,19 @@ TEST_CASE("WorldRenderUtils::worldToScreen applies parallax factors",
     Viewport vp { 0, 0, 800, 600 };
     Position worldPos { 100.f, 60.f };
 
-    const Position screen = WorldRenderUtils::worldToScreen(camera, worldPos, vp, Position { 0.5f, 2.f });
+    const Position screen = WorldRenderUtils::worldToScreen(camera, worldPos, vp, Position{0.5f, 2.f});
 
     REQUIRE(screen.x == Catch::Approx(590.f));
     REQUIRE(screen.y == Catch::Approx(340.f));
 }
 
-TEST_CASE("WorldRenderUtils::resolveParallax reads component when present",
-    "[unit][world_render_utils]"
-) {
+TEST_CASE("WorldRenderUtils::resolveParallax reads component when present", "[unit][world_render_utils]")
+{
     World world;
     world.components().registerComponent<ParallaxComponent>();
 
     Entity entity = world.entities().create();
-    world.components().add<ParallaxComponent>(entity, ParallaxComponent { Position { 0.3f, 0.7f } });
+    world.components().add<ParallaxComponent>(entity, ParallaxComponent{Position{0.3f, 0.7f}});
 
     const Position parallax = WorldRenderUtils::resolveParallax(world, entity);
 
@@ -53,9 +50,8 @@ TEST_CASE("WorldRenderUtils::resolveParallax reads component when present",
     REQUIRE(parallax.y == Catch::Approx(0.7f));
 }
 
-TEST_CASE("WorldRenderUtils::resolveParallax returns default when absent",
-    "[unit][world_render_utils]"
-) {
+TEST_CASE("WorldRenderUtils::resolveParallax returns default when absent", "[unit][world_render_utils]")
+{
     World world;
     world.components().registerComponent<ParallaxComponent>();
 

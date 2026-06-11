@@ -155,7 +155,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 
     const auto& state = components.get<StateComponent>(entity);
     REQUIRE(state.current == StateId::Idle);
-    REQUIRE(state.timeInState == 0.0f);
+    REQUIRE(state.timeInState == 0.f);
 
     const auto& stateMachine = components.get<StateMachineComponent>(entity);
     REQUIRE(stateMachine.machine.transitions.size() == 1);
@@ -169,7 +169,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 
     const auto& animation = components.get<AnimationComponent>(entity);
     REQUIRE(animation.currentFrame == 0);
-    REQUIRE(animation.elapsedTime == 0.0f);
+    REQUIRE(animation.elapsedTime == 0.f);
     REQUIRE(animation.currentState == StateId::Unknown);
 }
 

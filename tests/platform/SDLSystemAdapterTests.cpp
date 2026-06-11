@@ -8,9 +8,8 @@
 #include <memory>
 #include <vector>
 
-TEST_CASE("SDLSystemAdapter emits QuitEvent for QuitPlatformEvent",
-    "[integration][sdl_system_adapter]"
-) {
+TEST_CASE("SDLSystemAdapter emits QuitEvent for QuitPlatformEvent", "[integration][sdl_system_adapter]")
+{
     EventBus bus;
     SDLSystemAdapter adapter(bus);
 

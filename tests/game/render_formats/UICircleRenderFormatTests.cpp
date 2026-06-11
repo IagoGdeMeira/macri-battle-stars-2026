@@ -18,6 +18,12 @@
 class UICircleRenderFormatFixture
 {
 public:
+    World world;
+    EventBus bus;
+    StubRenderer renderer;
+    UICircleRenderFormat format;
+    RenderContext context;
+
     UICircleRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -25,12 +31,6 @@ public:
         components.registerComponent<RenderComponent>();
         components.registerComponent<VisualEffectsComponent>();
     }
-
-    World world;
-    EventBus bus;
-    StubRenderer renderer;
-    UICircleRenderFormat format;
-    RenderContext context;
 };
 
 TEST_CASE_METHOD(UICircleRenderFormatFixture, "UICircleRenderFormat submits base and visual effect commands",
@@ -48,7 +48,7 @@ TEST_CASE_METHOD(UICircleRenderFormatFixture, "UICircleRenderFormat submits base
     fx.circleEffects.push_back([](DrawCircleBatch& batch, DrawCircleCommand& cmd) {
         DrawCircleCommand halo = cmd;
         halo.filled = true;
-        halo.color = Color { 7, 6, 5, 4 };
+        halo.color = Color {7, 6, 5, 4};
         halo.circle.radius += 1.f;
         batch.add(halo);
     });
@@ -60,7 +60,7 @@ TEST_CASE_METHOD(UICircleRenderFormatFixture, "UICircleRenderFormat submits base
 
     const auto& effectCmd = this->renderer.circleCalls[0];
     REQUIRE(effectCmd.filled == true);
-    REQUIRE(effectCmd.color == Color { 7, 6, 5, 4 });
+    REQUIRE(effectCmd.color == Color {7, 6, 5, 4});
     REQUIRE(effectCmd.circle.radius == Catch::Approx(11.f));
 
     const auto& baseCmd = this->renderer.circleCalls[1];

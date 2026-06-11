@@ -9,9 +9,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("ComboSystem emits best matching combo by priority",
-    "[integration][combo_system]"
-) {
+TEST_CASE("ComboSystem emits best matching combo by priority", "[integration][combo_system]")
+{
     EventBus bus;
     Scene scene(bus);
 
@@ -49,9 +48,8 @@ TEST_CASE("ComboSystem emits best matching combo by priority",
     REQUIRE(emitted[0].trigger == TriggerId::Kicked);
 }
 
-TEST_CASE("ComboSystem clears buffer when combo consumes input",
-    "[integration][combo_system]"
-) {
+TEST_CASE("ComboSystem clears buffer when combo consumes input", "[integration][combo_system]")
+{
     EventBus bus;
     Scene scene(bus);
 
@@ -77,9 +75,8 @@ TEST_CASE("ComboSystem clears buffer when combo consumes input",
     REQUIRE(updated.buffer.empty());
 }
 
-TEST_CASE("ComboSystem keeps buffer when combo does not consume input",
-    "[integration][combo_system]"
-) {
+TEST_CASE("ComboSystem keeps buffer when combo does not consume input", "[integration][combo_system]")
+{
     EventBus bus;
     Scene scene(bus);
 

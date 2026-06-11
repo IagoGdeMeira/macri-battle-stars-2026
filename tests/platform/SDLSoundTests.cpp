@@ -10,7 +10,7 @@ public:
     void configureAudioDriverForCi() const
     {
         #if defined(__linux__)
-                SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
+            SDL_setenv("SDL_AUDIODRIVER", "dummy", 1);
         #endif
     }
 

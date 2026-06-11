@@ -2,9 +2,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("EventBus can deliver events to subscribers",
-    "[unit][event_bus]"
-) {
+TEST_CASE("EventBus can deliver events to subscribers", "[unit][event_bus]")
+{
     EventBus bus;
 
     struct TestEvent { int value; };
@@ -17,9 +16,8 @@ TEST_CASE("EventBus can deliver events to subscribers",
     REQUIRE(received == 42);
 }
 
-TEST_CASE("EventBus must notify multiple subscribers",
-    "[unit][event_bus]"
-) {
+TEST_CASE("EventBus must notify multiple subscribers", "[unit][event_bus]")
+{
     EventBus bus;
 
     struct TestEvent {};
@@ -34,9 +32,8 @@ TEST_CASE("EventBus must notify multiple subscribers",
     REQUIRE(count == 2);
 }
 
-TEST_CASE("EventBus can emit with no subscribers does nothing",
-    "[unit][event_bus]"
-) {
+TEST_CASE("EventBus can emit with no subscribers does nothing", "[unit][event_bus]")
+{
     EventBus bus;
 
     struct TestEvent {};
@@ -44,9 +41,8 @@ TEST_CASE("EventBus can emit with no subscribers does nothing",
     REQUIRE_NOTHROW(bus.emit<TestEvent>());
 }
 
-TEST_CASE("EventBus can isolate event types",
-    "[unit][event_bus]"
-) {
+TEST_CASE("EventBus can isolate event types", "[unit][event_bus]")
+{
     EventBus bus;
 
     struct EventA {};
@@ -64,9 +60,8 @@ TEST_CASE("EventBus can isolate event types",
     REQUIRE(countB == 0);
 }
 
-TEST_CASE("EventBus calls handlers in subscription order",
-    "[unit][event_bus]"
-) {
+TEST_CASE("EventBus calls handlers in subscription order", "[unit][event_bus]")
+{
     EventBus bus;
 
     struct TestEvent {};
@@ -85,9 +80,8 @@ TEST_CASE("EventBus calls handlers in subscription order",
     REQUIRE(order[2] == 3);
 }
 
-TEST_CASE("EventBus supports emitting events inside handler",
-    "[unit][event_bus]"
-) {
+TEST_CASE("EventBus supports emitting events inside handler", "[unit][event_bus]")
+{
     EventBus bus;
 
     struct EventA {};
@@ -103,9 +97,8 @@ TEST_CASE("EventBus supports emitting events inside handler",
     REQUIRE(count == 1);
 }
 
-TEST_CASE("EventBus handles reentrant emit of same event",
-    "[unit][event_bus]"
-) {
+TEST_CASE("EventBus handles reentrant emit of same event", "[unit][event_bus]")
+{
     EventBus bus;
 
     struct TestEvent {};

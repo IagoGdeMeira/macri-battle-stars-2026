@@ -4,8 +4,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("DataUtils::parsePosition reads x and y",
-    "[unit][data_utils]")
+TEST_CASE("DataUtils::parsePosition reads x and y", "[unit][data_utils]")
 {
     StubDataNode node;
     node.setFloat("x", 1.5f);
@@ -17,8 +16,7 @@ TEST_CASE("DataUtils::parsePosition reads x and y",
     REQUIRE(result.y == 2.25f);
 }
 
-TEST_CASE("DataUtils::parsePosition returns default when missing",
-    "[unit][data_utils]")
+TEST_CASE("DataUtils::parsePosition returns default when missing", "[unit][data_utils]")
 {
     StubDataNode node;
     node.setFloat("x", 1.5f);
@@ -31,8 +29,7 @@ TEST_CASE("DataUtils::parsePosition returns default when missing",
     REQUIRE(result.y == def.y);
 }
 
-TEST_CASE("DataUtils::parseSize reads w and h",
-    "[unit][data_utils]")
+TEST_CASE("DataUtils::parseSize reads w and h", "[unit][data_utils]")
 {
     StubDataNode node;
     node.setFloat("w", 10.f);
@@ -44,8 +41,7 @@ TEST_CASE("DataUtils::parseSize reads w and h",
     REQUIRE(result.height == 20.f);
 }
 
-TEST_CASE("DataUtils::parseRect reads nested position and size",
-    "[unit][data_utils]")
+TEST_CASE("DataUtils::parseRect reads nested position and size", "[unit][data_utils]")
 {
     StubDataNode node;
 
@@ -69,8 +65,7 @@ TEST_CASE("DataUtils::parseRect reads nested position and size",
     REQUIRE(result.size.height == 8.f);
 }
 
-TEST_CASE("DataUtils::parseColor reads r,g,b,a",
-    "[unit][data_utils]")
+TEST_CASE("DataUtils::parseColor reads RGBA values", "[unit][data_utils]")
 {
     StubDataNode node;
     node.setInt("r", 10);
@@ -88,8 +83,7 @@ TEST_CASE("DataUtils::parseColor reads r,g,b,a",
     REQUIRE(result.a == 128);
 }
 
-TEST_CASE("DataUtils::parseAABB reads left,right,top,bottom",
-    "[unit][data_utils]")
+TEST_CASE("DataUtils::parseAABB reads left, right, top and bottom", "[unit][data_utils]")
 {
     StubDataNode node;
     node.setFloat("left", 1.f);
@@ -105,7 +99,7 @@ TEST_CASE("DataUtils::parseAABB reads left,right,top,bottom",
     REQUIRE(result.bottom == 4.f);
 }
 
-TEST_CASE("DataUtils::parseCorners reads topLeft, topRight, bottomLeft, bottomRight", "[unit][data_utils]")
+TEST_CASE("DataUtils::parseCorners reads topLeft, topRight, bottomLeft and bottomRight", "[unit][data_utils]")
 {
     StubDataNode node;
     node.setFloat("topLeft", 1.f);
@@ -179,7 +173,7 @@ TEST_CASE("DataUtils::setRect sets nested position and size", "[unit][data_utils
     REQUIRE(sizeNode->getFloat("h") == 8.f);
 }
 
-TEST_CASE("DataUtils::setColor sets r,g,b,a", "[unit][data_utils]")
+TEST_CASE("DataUtils::setColor sets RGBA values", "[unit][data_utils]")
 {
     StubDataNode node;
 
@@ -192,7 +186,7 @@ TEST_CASE("DataUtils::setColor sets r,g,b,a", "[unit][data_utils]")
     REQUIRE(node.getInt("a") == 128);
 }
 
-TEST_CASE("DataUtils::setAABB sets left,right,top,bottom", "[unit][data_utils]")
+TEST_CASE("DataUtils::setAABB sets left, right, top and bottom", "[unit][data_utils]")
 {
     StubDataNode node;
 
@@ -205,8 +199,9 @@ TEST_CASE("DataUtils::setAABB sets left,right,top,bottom", "[unit][data_utils]")
     REQUIRE(node.getFloat("bottom") == 4.f);
 }
 
-TEST_CASE("DataUtils::setCorners sets topLeft, topRight, bottomLeft, bottomRight", "[unit][data_utils]")
-{
+TEST_CASE("DataUtils::setCorners sets topLeft, topRight, bottomLeft and bottomRight",
+    "[unit][data_utils]"
+) {
     StubDataNode node;
 
     Corners corners{1.f, 3.f, 5.f, 7.f};

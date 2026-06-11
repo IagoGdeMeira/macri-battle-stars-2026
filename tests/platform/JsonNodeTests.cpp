@@ -95,7 +95,7 @@ TEST_CASE("JsonNode returns fallback when accessing non-existent key without exp
 
     REQUIRE(node.getString("unknown") == "");
     REQUIRE(node.getInt("unknown") == 0);
-    REQUIRE(node.getFloat("unknown") == 0.0f);
+    REQUIRE(node.getFloat("unknown") == 0.f);
     REQUIRE(node.getBool("unknown") == false);
     REQUIRE_THROWS_AS(node.getArray("unknown"), std::runtime_error);
     REQUIRE(node.getObject("unknown") == nullptr);

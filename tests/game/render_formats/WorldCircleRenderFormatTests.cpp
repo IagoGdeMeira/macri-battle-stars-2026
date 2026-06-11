@@ -19,6 +19,13 @@
 class WorldCircleRenderFormatFixture
 {
 public:
+    World world;
+    EventBus bus;
+    StubRenderer renderer;
+    Camera2D camera;
+    WorldCircleRenderFormat format;
+    RenderContext context;
+
     WorldCircleRenderFormatFixture() : format(this->renderer, this->camera), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -28,15 +35,8 @@ public:
 
         this->camera.setPosition(10.f, 5.f);
         this->camera.setZoom(2.f);
-        this->format.setViewport(Viewport { 0, 0, 1000, 600 });
+        this->format.setViewport(Viewport{0, 0, 1000, 600});
     }
-
-    World world;
-    EventBus bus;
-    StubRenderer renderer;
-    Camera2D camera;
-    WorldCircleRenderFormat format;
-    RenderContext context;
 };
 
 TEST_CASE_METHOD(WorldCircleRenderFormatFixture, "WorldCircleRenderFormat submits base and visual effect commands",

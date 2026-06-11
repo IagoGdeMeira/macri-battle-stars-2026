@@ -29,7 +29,7 @@ TEST_CASE_METHOD(TriggerGenerationSystemFixture, "TriggerGenerationSystem emits 
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Punch] = InputState{true, 0.0f};
+    input.actions[InputAction::Punch] = InputState{true, 0.f};
 
     auto& components = this->scene.world().components();
     components.add<InputComponent>(entity, input);
@@ -56,7 +56,7 @@ TEST_CASE_METHOD(TriggerGenerationSystemFixture, "TriggerGenerationSystem emits 
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Kick] = InputState{true, 0.0f};
+    input.actions[InputAction::Kick] = InputState{true, 0.f};
 
     auto& components = this->scene.world().components();
     components.add<InputComponent>(entity, input);

@@ -28,8 +28,8 @@ TEST_CASE("SDLMouseAdapter emits button and motion events", "[integration][sdl_m
         std::vector<std::unique_ptr<PlatformEvent>> events;
         events.push_back(std::make_unique<MouseButtonEvent>(static_cast<uint32_t>(MouseButton::Left), true));
         events.push_back(std::make_unique<MouseButtonEvent>(static_cast<uint32_t>(MouseButton::Left), false));
-        events.push_back(std::make_unique<MouseMotionEvent>(Position{150.0f, 0.0f}, Position{0.0f, 0.0f}));
-        events.push_back(std::make_unique<MouseMotionEvent>(Position{-250.0f, 0.0f}, Position{0.0f, 0.0f}));
+        events.push_back(std::make_unique<MouseMotionEvent>(Position{150.f, 0.f}, Position{0.f, 0.f}));
+        events.push_back(std::make_unique<MouseMotionEvent>(Position{-250.f, 0.f}, Position{0.f, 0.f}));
 
         adapter.processEvents(events);
     }
@@ -45,8 +45,8 @@ TEST_CASE("SDLMouseAdapter emits button and motion events", "[integration][sdl_m
     REQUIRE(receivedMotion.size() == 2);
     REQUIRE(receivedMotion[0].source == InputSource::mouse(MouseButton::Left));
     REQUIRE(receivedMotion[0].playerId == 3);
-    REQUIRE(receivedMotion[0].value == Catch::Approx(1.0f));
+    REQUIRE(receivedMotion[0].value == Catch::Approx(1.f));
     REQUIRE(receivedMotion[1].source == InputSource::mouse(MouseButton::Left));
     REQUIRE(receivedMotion[1].playerId == 3);
-    REQUIRE(receivedMotion[1].value == Catch::Approx(-1.0f));
+    REQUIRE(receivedMotion[1].value == Catch::Approx(-1.f));
 }

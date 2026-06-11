@@ -27,7 +27,7 @@ TEST_CASE_METHOD(OutlineFontEffectFixture, "OutlineFontEffect adds 8 outline fon
     OutlineComponent config;
     config.enabled = true;
     config.thickness = 1.5f;
-    config.color = Color { 101, 102, 103, 104 };
+    config.color = Color {101, 102, 103, 104};
 
     DrawFontCommand base;
     base.dest.position = Position {30.f, 40.f};

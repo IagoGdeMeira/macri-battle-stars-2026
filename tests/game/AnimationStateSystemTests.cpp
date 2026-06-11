@@ -68,7 +68,7 @@ TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem applies pend
     REQUIRE(updatedController.currentState == StateId::Running);
     REQUIRE(updatedAnimation.currentState == StateId::Running);
     REQUIRE(updatedAnimation.currentFrame == 0);
-    REQUIRE(updatedAnimation.elapsedTime == 0.0f);
+    REQUIRE(updatedAnimation.elapsedTime == 0.f);
     REQUIRE(updatedAnimation.animation.frames.size() == 1);
     REQUIRE(updatedAnimation.animation.frames[0].x == 16);
 }
@@ -198,7 +198,7 @@ TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem applies pend
     REQUIRE(updatedController.currentState == StateId::Jumping);
     REQUIRE(updatedAnimation.currentState == StateId::Jumping);
     REQUIRE(updatedAnimation.currentFrame == 0);
-    REQUIRE(updatedAnimation.elapsedTime == 0.0f);
+    REQUIRE(updatedAnimation.elapsedTime == 0.f);
     REQUIRE(updatedAnimation.animation.frames[0].x == 32);
 }
 
@@ -276,7 +276,7 @@ TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem resets anima
 
     REQUIRE(updatedAnimation.currentState == StateId::Idle);
     REQUIRE(updatedAnimation.currentFrame == 0);
-    REQUIRE(updatedAnimation.elapsedTime == 0.0f);
+    REQUIRE(updatedAnimation.elapsedTime == 0.f);
     REQUIRE(updatedAnimation.animation.frames[0].x == 50);
 }
 

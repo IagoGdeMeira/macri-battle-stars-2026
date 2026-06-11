@@ -82,14 +82,7 @@ class LifecycleScene : public Scene
 {
 public:
     struct Config : public Scene::Config
-    {
-        int* updates = nullptr;
-        int* renders = nullptr;
-        int* enters = nullptr;
-        int* exits = nullptr;
-        int* pauses = nullptr;
-        int* resumes = nullptr;
-    };
+    { int *updates = nullptr, *renders = nullptr, *enters = nullptr, *exits = nullptr, *pauses = nullptr, *resumes = nullptr; };
 
     explicit LifecycleScene(Config&& cfg) :
         Scene(*cfg.eventBus),

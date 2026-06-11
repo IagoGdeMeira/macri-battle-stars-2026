@@ -35,8 +35,8 @@ TEST_CASE("SDLGamepadAdapter emits button and axis events from a virtual joystic
         std::vector<std::unique_ptr<PlatformEvent>> events;
         events.push_back(std::make_unique<GamepadButtonEvent>(static_cast<uint32_t>(GamepadButton::A), true));
         events.push_back(std::make_unique<GamepadButtonEvent>(static_cast<uint32_t>(GamepadButton::A), false));
-        events.push_back(std::make_unique<GamepadAxisEvent>(0, 16384.0f / 32767.0f));
-        events.push_back(std::make_unique<GamepadAxisEvent>(1, -16384.0f / 32767.0f));
+        events.push_back(std::make_unique<GamepadAxisEvent>(0, 16384.f / 32767.f));
+        events.push_back(std::make_unique<GamepadAxisEvent>(1, -16384.f / 32767.f));
 
         adapter.processEvents(events);
     }
@@ -52,10 +52,10 @@ TEST_CASE("SDLGamepadAdapter emits button and axis events from a virtual joystic
     REQUIRE(receivedAxes.size() == 2);
     REQUIRE(receivedAxes[0].source == InputSource::gamepad(GamepadButton::LeftStick));
     REQUIRE(receivedAxes[0].playerId == 7);
-    REQUIRE(receivedAxes[0].value == Catch::Approx(16384.0f / 32767.0f));
+    REQUIRE(receivedAxes[0].value == Catch::Approx(16384.f / 32767.f));
     REQUIRE(receivedAxes[1].source == InputSource::gamepad(GamepadButton::LeftStick));
     REQUIRE(receivedAxes[1].playerId == 7);
-    REQUIRE(receivedAxes[1].value == Catch::Approx(-16384.0f / 32767.0f));
+    REQUIRE(receivedAxes[1].value == Catch::Approx(-16384.f / 32767.f));
 
     REQUIRE(SDL_JoystickDetachVirtual(deviceIndex) == 0);
     SDL_Quit();

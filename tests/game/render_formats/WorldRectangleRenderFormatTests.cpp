@@ -29,7 +29,7 @@ public:
 
         this->camera.setPosition(5.f, 0.f);
         this->camera.setZoom(2.f);
-        this->format.setViewport(Viewport { 0, 0, 800, 600 });
+        this->format.setViewport(Viewport{0, 0, 800, 600});
     }
 
     World world;

@@ -21,6 +21,12 @@
 class UIFontRenderFormatFixture
 {
 public:
+    World world;
+    EventBus bus;
+    StubRenderer renderer;
+    UIFontRenderFormat format;
+    RenderContext context;
+
     UIFontRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -29,12 +35,6 @@ public:
         components.registerComponent<UITransform>();
         components.registerComponent<VisualEffectsComponent>();
     }
-
-    World world;
-    EventBus bus;
-    StubRenderer renderer;
-    UIFontRenderFormat format;
-    RenderContext context;
 };
 
 TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and visual effect commands",
@@ -60,7 +60,7 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
     VisualEffectsComponent fx;
     fx.fontEffects.push_back([](DrawFontBatch& batch, DrawFontCommand& cmd) {
         DrawFontCommand outline = cmd;
-        outline.color = Color { 1, 2, 3, 4 };
+        outline.color = Color {1, 2, 3, 4};
         outline.dest.position.y += 2.f;
         batch.add(outline);
     });
@@ -80,7 +80,7 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
     REQUIRE(baseCmd.dest.position.x == Catch::Approx(30.f));
     REQUIRE(baseCmd.dest.position.y == Catch::Approx(50.f));
     REQUIRE(baseCmd.fontSize == 16);
-    REQUIRE(baseCmd.color == Color { 5, 6, 7, 8 });
+    REQUIRE(baseCmd.color == Color {5, 6, 7, 8});
     REQUIRE(baseCmd.layer == 4);
     REQUIRE(baseCmd.zIndex == 1);
     REQUIRE(baseCmd.order == 0);

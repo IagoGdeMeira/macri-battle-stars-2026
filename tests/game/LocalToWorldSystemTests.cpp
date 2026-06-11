@@ -29,8 +29,7 @@ protected:
     UpdateContext context;
 };
 
-TEST_CASE_METHOD(LocalToWorldSystemFixture,
-    "LocalToWorldSystem updates world transform from parent and local transform",
+TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates world transform from parent and local transform",
     "[unit][local_to_world_system]"
 ) {
     auto& components = this->world.components();
@@ -54,8 +53,7 @@ TEST_CASE_METHOD(LocalToWorldSystemFixture,
     REQUIRE(childTransform.scale.y == 1.f);
 }
 
-TEST_CASE_METHOD(LocalToWorldSystemFixture,
-    "LocalToWorldSystem keeps child unchanged when parent has no TransformComponent",
+TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem keeps child unchanged when parent has no TransformComponent",
     "[unit][local_to_world_system]"
 ) {
     auto& components = this->world.components();
@@ -78,8 +76,7 @@ TEST_CASE_METHOD(LocalToWorldSystemFixture,
     REQUIRE(childTransform.scale.y == 0.8f);
 }
 
-TEST_CASE_METHOD(LocalToWorldSystemFixture,
-    "LocalToWorldSystem updates each child with its respective parent",
+TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates each child with its respective parent",
     "[unit][local_to_world_system]"
 ) {
     auto& components = this->world.components();

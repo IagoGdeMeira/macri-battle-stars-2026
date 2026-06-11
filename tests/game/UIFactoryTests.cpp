@@ -78,10 +78,9 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createPanel adds base UI component
     REQUIRE(box.padding.bottom == Catch::Approx(8.f));
 }
 
-TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createText builds a text entity",
-    "[unit][ui_factory]"
-) {
-    Entity text = this->factory.createText("Play", 24.0f, Color::WHITE(), Position{ 5.0f, 6.0f });
+TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createText builds a text entity", "[unit][ui_factory]")
+{
+    Entity text = this->factory.createText("Play", 24.0f, Color::WHITE(), Position{5.0f, 6.0f});
 
     auto& components = this->world.components();
 
@@ -97,10 +96,9 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createText builds a text entity",
     REQUIRE(uiText.fontSize == Catch::Approx(24.0f));
 }
 
-TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createImage builds a sprite entity",
-    "[unit][ui_factory]"
-) {
-    Entity image = this->factory.createImage("assets/ui/icon.png", Rectangle{ Position{ 1.0f, 2.0f }, Dimension2D{ 32.0f, 48.0f } });
+TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createImage builds a sprite entity", "[unit][ui_factory]")
+{
+    Entity image = this->factory.createImage("assets/ui/icon.png", Rectangle{Position{1.f, 2.f}, Dimension2D{32.f, 48.f}});
 
     auto& components = this->world.components();
 
@@ -113,9 +111,8 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createImage builds a sprite entity
     REQUIRE(sprite.texture == this->textureFactory.textureToReturn);
 }
 
-TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createButton wires focus, text and action",
-    "[unit][ui_factory]"
-) {
+TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createButton wires focus, text and action", "[unit][ui_factory]")
+{
     int executed = 0;
     auto action = std::make_shared<CountingAction>(executed);
 

@@ -38,7 +38,7 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can be created from an SDL win
 
     REQUIRE_NOTHROW(renderer.clear());
     REQUIRE_NOTHROW(renderer.present());
-    REQUIRE_NOTHROW(renderer.setViewport(Viewport{ 0, 0, 800, 600 }));
+    REQUIRE_NOTHROW(renderer.setViewport(Viewport{0, 0, 800, 600}));
 
     SDL_Quit();
 }
@@ -81,10 +81,8 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws rectangles", "[unit][sdl
     SDLRenderer renderer(window.get());
 
     REQUIRE_NOTHROW(renderer.clear());
-    REQUIRE_NOTHROW(renderer.drawRectangle(DrawRectangleCommand{
-        Rectangle{ { 0.f, 0.f }, 10.f, 10.f }, Color{} }));
-    REQUIRE_NOTHROW(renderer.drawRectangle(DrawRectangleCommand{
-        Rectangle{ { 1.f, 1.f }, 12.f, 14.f }, Color{ 10, 20, 30, 40 }, true }));
+    REQUIRE_NOTHROW(renderer.drawRectangle(DrawRectangleCommand{Rectangle{{0.f, 0.f}, 10.f, 10.f}, Color{}}));
+    REQUIRE_NOTHROW(renderer.drawRectangle(DrawRectangleCommand{Rectangle{{1.f, 1.f}, 12.f, 14.f}, Color{10, 20, 30, 40}, true}));
     REQUIRE_NOTHROW(renderer.present());
 
     SDL_Quit();
@@ -101,10 +99,8 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws circles", "[unit][sdl_re
     SDLRenderer renderer(window.get());
 
     REQUIRE_NOTHROW(renderer.clear());
-    REQUIRE_NOTHROW(renderer.drawCircle(DrawCircleCommand{
-        Circle{ { 4.f, 5.f }, 6.f }, Color{} }));
-    REQUIRE_NOTHROW(renderer.drawCircle(DrawCircleCommand{
-        Circle{ { 7.f, 8.f }, 9.f }, Color{ 10, 20, 30, 40 }, true }));
+    REQUIRE_NOTHROW(renderer.drawCircle(DrawCircleCommand{Circle{{4.f, 5.f}, 6.f}, Color{}}));
+    REQUIRE_NOTHROW(renderer.drawCircle(DrawCircleCommand{Circle{{7.f, 8.f}, 9.f}, Color{10, 20, 30, 40}, true}));
     REQUIRE_NOTHROW(renderer.present());
 
     SDL_Quit();
@@ -131,8 +127,8 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawFont method defined", 
     }
 
     std::string textStr = "Hello";
-    Rectangle textRect{ { 50.f, 50.f }, 200.f, 50.f };
-    Color textColor{ 255, 255, 255, 255 };
+    Rectangle textRect{{50.f, 50.f}, 200.f, 50.f};
+    Color textColor{255, 255, 255, 255};
     
     SDLWindow window;
     window.create(800, 600, "Text Rendering Test");

@@ -206,9 +206,8 @@ TEST_CASE_METHOD(MenuLoaderFixture, "MenuLoader parses menu elements and forward
     REQUIRE(image->imagePath == "assets/ui/logo.png");
 }
 
-TEST_CASE_METHOD(MenuLoaderFixture, "MenuLoader throws on unknown element type",
-    "[unit][menu_loader]"
-) {
+TEST_CASE_METHOD(MenuLoaderFixture, "MenuLoader throws on unknown element type", "[unit][menu_loader]")
+{
     auto unknown = std::make_unique<StubDataNode>();
     unknown->setString("type", "SomethingElse");
 

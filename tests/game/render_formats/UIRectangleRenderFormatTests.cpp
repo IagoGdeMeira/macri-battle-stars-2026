@@ -18,6 +18,12 @@
 class UIRectangleRenderFormatFixture
 {
 public:
+    World world;
+    EventBus bus;
+    StubRenderer renderer;
+    UIRectangleRenderFormat format;
+    RenderContext context;
+
     UIRectangleRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -25,12 +31,6 @@ public:
         components.registerComponent<RenderComponent>();
         components.registerComponent<VisualEffectsComponent>();
     }
-
-    World world;
-    EventBus bus;
-    StubRenderer renderer;
-    UIRectangleRenderFormat format;
-    RenderContext context;
 };
 
 TEST_CASE_METHOD(UIRectangleRenderFormatFixture, "UIRectangleRenderFormat submits base and visual effect commands",
@@ -48,7 +48,7 @@ TEST_CASE_METHOD(UIRectangleRenderFormatFixture, "UIRectangleRenderFormat submit
     fx.rectangleEffects.push_back([](DrawRectangleBatch& batch, DrawRectangleCommand& cmd) {
         DrawRectangleCommand glow = cmd;
         glow.filled = true;
-        glow.color = Color { 9, 9, 9, 255 };
+        glow.color = Color {9, 9, 9, 255};
         batch.add(glow);
     });
     this->world.components().add<VisualEffectsComponent>(entity, fx);
@@ -59,7 +59,7 @@ TEST_CASE_METHOD(UIRectangleRenderFormatFixture, "UIRectangleRenderFormat submit
 
     const auto& effectCmd = this->renderer.rectangleCalls[0];
     REQUIRE(effectCmd.filled == true);
-    REQUIRE(effectCmd.color == Color { 9, 9, 9, 255 });
+    REQUIRE(effectCmd.color == Color {9, 9, 9, 255});
 
     const auto& baseCmd = this->renderer.rectangleCalls[1];
     REQUIRE(baseCmd.rect.position.x == Catch::Approx(15.f));

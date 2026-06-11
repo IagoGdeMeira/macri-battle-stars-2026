@@ -24,6 +24,13 @@
 class WorldTextureRenderFormatFixture
 {
 public:
+    World world;
+    EventBus bus;
+    StubRenderer renderer;
+    Camera2D camera;
+    WorldTextureRenderFormat format;
+    RenderContext context;
+
     WorldTextureRenderFormatFixture() : format(this->renderer, this->camera), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -35,17 +42,10 @@ public:
         components.registerComponent<ParallaxComponent>();
         components.registerComponent<VisualEffectsComponent>();
 
-        this->camera.setPosition(50.0f, 20.0f);
-        this->camera.setZoom(2.0f);
-        this->format.setViewport(Viewport { 0, 0, 800, 600 });
+        this->camera.setPosition(50.f, 20.f);
+        this->camera.setZoom(2.f);
+        this->format.setViewport(Viewport{ 0, 0, 800, 600});
     }
-
-    World world;
-    EventBus bus;
-    StubRenderer renderer;
-    Camera2D camera;
-    WorldTextureRenderFormat format;
-    RenderContext context;
 };
 
 TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat submits base and visual effect commands",
@@ -70,7 +70,7 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
     fx.textureEffects.push_back([](DrawTextureBatch& batch, DrawTextureCommand& cmd) 
     {
         DrawTextureCommand echo = cmd;
-        echo.tint = Color { 1, 2, 3, 255 };
+        echo.tint = Color {1, 2, 3, 255};
         echo.dest.position.x += 3.f;
         batch.add(echo);
     });
@@ -81,7 +81,7 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
     REQUIRE(this->renderer.textureCalls.size() == 2);
 
     const auto& effectCmd = this->renderer.textureCalls[0];
-    REQUIRE(effectCmd.tint == Color { 1, 2, 3, 255 });
+    REQUIRE(effectCmd.tint == Color {1, 2, 3, 255});
     REQUIRE(effectCmd.dest.position.x == Catch::Approx(553.f));
 
     const auto& baseCmd = this->renderer.textureCalls[1];
@@ -111,7 +111,7 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat skip
     this->world.components().add<TransformComponent>(entity,
         TransformComponent{Position{10.f, 20.f}, Position{1.f, 1.f}, 0.f});
     this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent { nullptr, Dimension2D { 20.f, 10.f }, Rectangle {}, false });
+        SpriteComponent { nullptr, Dimension2D {20.f, 10.f}, Rectangle {}, false });
     this->world.components().add<RenderComponent>(entity, RenderComponent { 0, 0 });
 
     this->format.render(this->context);
@@ -128,7 +128,7 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat resp
     this->world.components().add<TransformComponent>(entity,
         TransformComponent{Position{100.f, 80.f}, Position{-1.f, 1.f}, 0.f});
     this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent { texture, Dimension2D { 20.f, 10.f }, Rectangle {}, false });
+        SpriteComponent { texture, Dimension2D {20.f, 10.f}, Rectangle {}, false });
     this->world.components().add<RenderComponent>(entity, RenderComponent { 0, 0 });
     this->world.components().add<OrientationComponent>(entity, OrientationComponent { Orientation::Left });
 

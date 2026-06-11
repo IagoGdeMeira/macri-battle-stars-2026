@@ -21,6 +21,12 @@
 class UITextureRenderFormatFixture
 {
 public:
+    World world;
+    EventBus bus;
+    StubRenderer renderer;
+    UITextureRenderFormat format;
+    RenderContext context;
+
     UITextureRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& components = this->world.components();
@@ -29,12 +35,6 @@ public:
         components.registerComponent<RenderComponent>();
         components.registerComponent<VisualEffectsComponent>();
     }
-
-    World world;
-    EventBus bus;
-    StubRenderer renderer;
-    UITextureRenderFormat format;
-    RenderContext context;
 };
 
 TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits base and visual effect commands",

@@ -62,16 +62,14 @@ protected:
     RenderContext context;
 };
 
-TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer configures viewports on draw",
-    "[unit][world_drawer]"
-) {
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer configures viewports on draw", "[unit][world_drawer]")
+{
     this->drawer.draw(this->context);
     REQUIRE(this->renderer.calls.setViewport == 1);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer updates viewport on window resize",
-    "[unit][world_drawer]"
-) {
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer updates viewport on window resize", "[unit][world_drawer]")
+{
     this->bus.emit<WindowResizedEvent>(WindowResizedEvent { 1920, 1080 });
     this->drawer.draw(this->context);
 
@@ -146,7 +144,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
     components.add<RenderComponent>(entity, RenderComponent{ 0 });
 
-    this->camera.setPosition(0.0f, 0.0f);
+    this->camera.setPosition(0.f, 0.f);
     this->camera.setZoom(1.5f);
 
     this->drawer.draw(this->context);
@@ -161,9 +159,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     REQUIRE(this->renderer.lastDraw.flipY == false);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip flags to renderer",
-    "[unit][world_drawer]"
-) {
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip flags to renderer", "[unit][world_drawer]")
+{
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
 
@@ -184,9 +181,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip fla
     REQUIRE(this->renderer.lastDraw.flipY == true);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards sprite source rect to renderer",
-    "[unit][world_drawer]"
-) {
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards sprite source rect to renderer", "[unit][world_drawer]")
+{
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
 
@@ -204,9 +200,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards sprite source rect to
     REQUIRE(this->renderer.lastDraw.srcHeight == 10);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer skips sprites without textures",
-    "[unit][world_drawer]"
-) {
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer skips sprites without textures", "[unit][world_drawer]")
+{
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
 
@@ -219,9 +214,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer skips sprites without textures
     REQUIRE(this->renderer.calls.drawTexture == 0);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws filled rectangle shapes",
-    "[unit][world_drawer]"
-) {
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws filled rectangle shapes", "[unit][world_drawer]")
+{
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
 
@@ -246,9 +240,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws filled rectangle shapes"
     REQUIRE(this->renderer.lastColor.a == 4);
 }
 
-TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes",
-    "[unit][world_drawer]"
-) {
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes", "[unit][world_drawer]")
+{
     const auto entity = this->world.entities().create();
     auto& components = this->world.components();
 

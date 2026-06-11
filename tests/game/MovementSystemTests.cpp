@@ -12,7 +12,7 @@
 class MovementSystemFixture
 {
 public:
-    MovementSystemFixture() : bus(), scene(bus)
+    MovementSystemFixture() : bus(), scene(this->bus)
     {
         auto& components = this->scene.world().components();
         components.registerComponent<TransformComponent>();
@@ -58,9 +58,8 @@ protected:
     Scene scene;
 };
 
-TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem updates position",
-    "[integration][movement_system]"
-) {
+TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem updates position", "[integration][movement_system]")
+{
     auto e = this->createMovingEntity(0.f, 0.f, 1.f, 2.f);
 
     this->scene.update(1.f);
