@@ -10,7 +10,7 @@
 struct BackgroundLayer
 {
     std::string texturePath;
-    float parallaxFactorX, parallaxFactorY;
+    Position parallaxFactor { 1.f, 1.f };
     int zIndex;
     bool repeatX;
 };
@@ -21,14 +21,11 @@ struct MapData
 {
     std::string name;
     std::vector<BackgroundLayer> backgroundLayers;
-    float floorY;
+    float floorY, gravity = 980.f, floorFriction = 5.f, airFriction = 2.f;
     std::string floorTexture;
-    float floorWidth, floorHeight;
+    Dimension2D floorSize { 0.f, 0.f };
     std::vector<Rectangle> walls;
     std::vector<SpawnPoint> spawnPoints;
-    float gravity = 980.0f;
-    float floorFriction = 5.0f;
-    float airFriction = 2.0f;
 };
 
 #endif // map_data_h

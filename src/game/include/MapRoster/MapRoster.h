@@ -7,7 +7,8 @@
 
 struct MapEntry { std::string id, name, definitionPath; };
 
-class MapRoster {
+class MapRoster
+{
 public:
     void addEntry(const MapEntry& entry);
 

@@ -10,18 +10,18 @@ MapData MapLoader::load(const std::string& path) const
     map.name = root->getString("name");
     map.floorY = root->getFloat("floor.y");
     map.floorTexture = root->getString("floor.texture");
-    map.floorWidth = root->getFloat("floor.width");
-    map.floorHeight = root->getFloat("floor.height");
-    map.gravity = root->getFloat("gravity", 980.0f);
-    map.floorFriction = root->getFloat("floorFriction", 5.0f);
-    map.airFriction = root->getFloat("airFriction", 2.0f);
+    map.floorSize.width = root->getFloat("floor.width");
+    map.floorSize.height = root->getFloat("floor.height");
+    map.gravity = root->getFloat("gravity", 980.f);
+    map.floorFriction = root->getFloat("floorFriction", 5.f);
+    map.airFriction = root->getFloat("airFriction", 2.f);
 
     for (auto& layerNode : root->getArray("backgroundLayers"))
     {
         BackgroundLayer layer;
         layer.texturePath = layerNode->getString("texture");
-        layer.parallaxFactorX = layerNode->getFloat("parallaxFactorX");
-        layer.parallaxFactorY = layerNode->getFloat("parallaxFactorY");
+        layer.parallaxFactor.x = layerNode->getFloat("parallaxFactor.x");
+        layer.parallaxFactor.y = layerNode->getFloat("parallaxFactor.y");
         layer.zIndex = layerNode->getInt("zIndex");
         layer.repeatX = layerNode->getBool("repeatX");
         map.backgroundLayers.push_back(layer);

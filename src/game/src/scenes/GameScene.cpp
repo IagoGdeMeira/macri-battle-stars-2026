@@ -168,9 +168,9 @@ void GameScene::prepareBackgroundLayers()
 
 void GameScene::prepareFloor()
 {
-    Position floorPos{ this->mapData.floorWidth * 0.5f, this->mapData.floorY };
+    Position floorPos{ this->mapData.floorSize.width * 0.5f, this->mapData.floorY };
     Entity floorBody = this->entityFactory->createStaticBody(floorPos);
-    this->entityFactory->addStaticCollider(floorBody, Rectangle{{0, 0}, this->mapData.floorWidth, this->mapData.floorHeight });
+    this->entityFactory->addStaticCollider(floorBody, Rectangle{{0, 0}, this->mapData.floorSize.width, this->mapData.floorSize.height });
 }
 
 void GameScene::prepareWalls()

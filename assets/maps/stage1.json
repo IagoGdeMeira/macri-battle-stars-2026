@@ -1,0 +1,22 @@
+{
+	"name": "Training Grounds",
+	"floor": { "y": 400, "texture": "assets/sprites/floor.png", "width": 2000, "height": 50 },
+  	"walls": [
+    	{ "x": 100, "y": 300, "width": 50, "height": 150 }
+  	],
+  	"spawnPoints": [
+    	{ "playerId": 0, "x": 400 },
+    	{ "playerId": 1, "x": 1400 }
+  	],
+  	"gravity": 980,
+  	"floorFriction": 5,
+  	"airFriction": 2,
+  	"backgroundLayers": [
+		{
+			"texture": "assets/sprites/background.png",
+			"parallaxFactor": { "x": 0.5, "y": 0.2 },
+			"zIndex": 0,
+			"repeatX": true
+		}
+  	]
+}

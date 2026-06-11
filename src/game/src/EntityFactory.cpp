@@ -89,7 +89,7 @@ Entity EntityFactory::createBackgroundLayer(const BackgroundLayer& layer)
     sprite.useSourceRect = false;
     comp.add<SpriteComponent>(e, std::move(sprite));
 
-    comp.add<ParallaxComponent>(e, ParallaxComponent{layer.parallaxFactorX, layer.parallaxFactorY});
+    comp.add<ParallaxComponent>(e, ParallaxComponent{layer.parallaxFactor});
     comp.add<RenderComponent>(e, RenderComponent{0, layer.zIndex});
 
     return e;

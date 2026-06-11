@@ -15,8 +15,8 @@ public:
     {
         auto layer = std::make_unique<StubDataNode>();
         layer->setString("texture", "assets/maps/bg.png");
-        layer->setFloat("parallaxFactorX", 0.5f);
-        layer->setFloat("parallaxFactorY", 0.25f);
+        layer->setFloat("parallaxFactor.x", 0.5f);
+        layer->setFloat("parallaxFactor.y", 0.25f);
         layer->setInt("zIndex", 3);
         layer->setBool("repeatX", true);
         return layer;
@@ -79,16 +79,16 @@ TEST_CASE_METHOD(MapLoaderFixture, "MapLoader parses map data", "[unit][map_load
     REQUIRE(map.name == "Dojo");
     REQUIRE(map.floorY == 420.f);
     REQUIRE(map.floorTexture == "assets/maps/floor.png");
-    REQUIRE(map.floorWidth == 1280.f);
-    REQUIRE(map.floorHeight == 64.f);
+    REQUIRE(map.floorSize.width == 1280.f);
+    REQUIRE(map.floorSize.height == 64.f);
     REQUIRE(map.gravity == 900.f);
     REQUIRE(map.floorFriction == 6.5f);
     REQUIRE(map.airFriction == 2.75f);
 
     REQUIRE(map.backgroundLayers.size() == 1);
     REQUIRE(map.backgroundLayers[0].texturePath == "assets/maps/bg.png");
-    REQUIRE(map.backgroundLayers[0].parallaxFactorX == 0.5f);
-    REQUIRE(map.backgroundLayers[0].parallaxFactorY == 0.25f);
+    REQUIRE(map.backgroundLayers[0].parallaxFactor.x == 0.5f);
+    REQUIRE(map.backgroundLayers[0].parallaxFactor.y == 0.25f);
     REQUIRE(map.backgroundLayers[0].zIndex == 3);
     REQUIRE(map.backgroundLayers[0].repeatX == true);
 
