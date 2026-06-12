@@ -1,0 +1,22 @@
+{
+    "states": [
+        { "name": "Idle" },
+        { "name": "Running" },
+        { "name": "Jumping" },
+        { "name": "Falling" },
+        { "name": "Punching" },
+        { "name": "Kicking" }
+    ],
+    "transitions": [
+        { "from": "Idle", "to": "Running", "trigger": "MoveRight", "conditions": [] },
+        { "from": "Running", "to": "Idle", "trigger": "MoveRightReleased", "conditions": [] },
+        { "from": "Idle", "to": "Jumping", "trigger": "Jump", "conditions": [] },
+        { "from": "Running", "to": "Jumping", "trigger": "Jump", "conditions": [] },
+        { "from": "Jumping", "to": "Falling", "trigger": "Fall", "conditions": [] },
+        { "from": "Falling", "to": "Idle", "trigger": "Landed", "conditions": [] },
+        { "from": "Idle", "to": "Punching", "trigger": "Punched", "conditions": [] },
+        { "from": "Punching", "to": "Idle", "trigger": "PunchEnded", "conditions": [] },
+        { "from": "Idle", "to": "Kicking", "trigger": "Kicked", "conditions": [] },
+        { "from": "Kicking", "to": "Idle", "trigger": "KickEnded", "conditions": [] }
+    ]
+}

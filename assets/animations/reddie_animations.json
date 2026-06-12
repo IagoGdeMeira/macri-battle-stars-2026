@@ -1,0 +1,62 @@
+{
+    "animations": [
+        {
+            "state": "Idle",
+            "frameDuration": 0.12,
+            "loop": true,
+            "direction": "Right",
+            "frames": [
+                { "x": 0, "y": 0, "width": 400, "height": 600 }
+            ]
+        },
+        {
+            "state": "Running",
+            "frameDuration": 0.08,
+            "loop": true,
+            "direction": "Right",
+            "frames": [
+                { "x": 400, "y": 0, "width": 400, "height": 600 },
+                { "x": 800, "y": 0, "width": 400, "height": 600 },
+                { "x": 1200, "y": 0, "width": 400, "height": 600 }
+            ]
+        },
+        {
+            "state": "Jumping",
+            "frameDuration": 0.1,
+            "loop": false,
+            "direction": "Right",
+            "frames": [
+                { "x": 1600, "y": 0, "width": 400, "height": 600 }
+            ]
+        },
+        {
+            "state": "Falling",
+            "frameDuration": 0.1,
+            "loop": false,
+            "direction": "Right",
+            "frames": [
+                { "x": 2000, "y": 0, "width": 400, "height": 600 }
+            ]
+        },
+        {
+            "state": "Punching",
+            "frameDuration": 0.05,
+            "loop": false,
+            "direction": "Right",
+            "frames": [
+                { "x": 2400, "y": 0, "width": 400, "height": 600 },
+                { "x": 2800, "y": 0, "width": 400, "height": 600 }
+            ]
+        },
+        {
+            "state": "Kicking",
+            "frameDuration": 0.05,
+            "loop": false,
+            "direction": "Right",
+            "frames": [
+                { "x": 3200, "y": 0, "width": 400, "height": 600 },
+                { "x": 3600, "y": 0, "width": 400, "height": 600 }
+            ]
+        }
+    ]
+}

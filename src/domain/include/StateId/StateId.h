@@ -1,8 +1,8 @@
 #ifndef state_id_h
 #define state_id_h
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <string>
 #include <unordered_map>
@@ -10,9 +10,7 @@
 class StateId
 {
 public:
-    using ValueType = std::int32_t;
-
-    enum class BaseState : ValueType
+    enum class BaseState : std::int32_t
     {
         Unknown = -1,
         Idle = 0,
@@ -33,20 +31,20 @@ public:
     struct Hash
     {
         std::size_t operator()(const StateId& stateId) const
-        { return std::hash<ValueType>{}(stateId.value()); }
+        { return std::hash<std::int32_t>{}(stateId.value()); }
     };
 
-    StateId() : id(static_cast<ValueType>(BaseState::Unknown)) {}
-    explicit StateId(BaseState base) : id(static_cast<ValueType>(base)) {}
+    StateId() : id(static_cast<std::int32_t>(BaseState::Unknown)) {}
+    explicit StateId(BaseState base) : id(static_cast<std::int32_t>(base)) {}
 
-    static StateId createCustom(ValueType id);
+    static StateId createCustom(std::int32_t id);
 
     bool operator==(const StateId& other) const { return this->id == other.id; }
     bool operator!=(const StateId& other) const { return !(*this == other); }
 
-    ValueType value() const { return this->id; }
-    bool isCustom() const { return this->id >= static_cast<ValueType>(BaseState::CustomStart); }
-    bool isUnknown() const { return this->id == static_cast<ValueType>(BaseState::Unknown); }
+    std::int32_t value() const { return this->id; }
+    bool isCustom() const { return this->id >= static_cast<std::int32_t>(BaseState::CustomStart); }
+    bool isUnknown() const { return this->id == static_cast<std::int32_t>(BaseState::Unknown); }
 
     static bool isBaseName(const std::string& name) { return StateId::nameToId.contains(name); }
     static StateId fromBaseName(const std::string& name);
@@ -67,12 +65,12 @@ public:
     static const StateId SpecialAttack;
 
 private:
-    explicit StateId(ValueType value) : id(value) {}
+    explicit StateId(std::int32_t value) : id(value) {}
 
-    ValueType id;
+    std::int32_t id;
 
     static const std::unordered_map<std::string, StateId::BaseState> nameToId;
-    static const std::unordered_map<StateId::ValueType, std::string> idToName;
+    static const std::unordered_map<std::int32_t, std::string> idToName;
 };
 
 #endif // state_id_h

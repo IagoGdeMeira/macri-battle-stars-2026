@@ -22,11 +22,10 @@ void AnimationSystem::update(UpdateContext& ctx)
             anim.elapsedTime -= frameDuration;
             anim.currentFrame++;
 
-            if (anim.currentFrame >= (int)anim.animation.frames.size())
-            {
-                if (anim.animation.loop) anim.currentFrame = 0;
-                else anim.currentFrame = (int)anim.animation.frames.size() - 1;
-            }
+            if (anim.currentFrame < (int)anim.animation.frames.size()) continue;
+            
+            if (anim.animation.loop) anim.currentFrame = 0;
+            else anim.currentFrame = (int)anim.animation.frames.size() - 1;
         }
 
         const auto& frame = anim.animation.frames[anim.currentFrame];

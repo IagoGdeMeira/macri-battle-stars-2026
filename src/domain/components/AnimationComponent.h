@@ -8,7 +8,7 @@ struct AnimationComponent
 {
     Animation animation;
 
-    float elapsedTime = 0.0f;
+    float elapsedTime = 0.f;
     int currentFrame = 0;
 
     StateId currentState = StateId::Unknown;

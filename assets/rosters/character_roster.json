@@ -1,0 +1,5 @@
+{
+    "characters": [
+        { "id": "reddie", "name": "Reddie, the Red", "definition": "assets/characters/reddie.json" }
+    ]
+}

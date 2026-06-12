@@ -1,0 +1,10 @@
+{
+    "id": "reddie",
+    "texture": "assets/sprites/reddie.png",
+    "spriteSize": { "w": 400, "h": 600 },
+    "animations": "assets/animations/reddie_animations.json",
+    "stateMachine": "assets/fsm/reddie_fsm.json",
+    "combos": "assets/combos/default_combos.json",
+    "collisions": "assets/collisions/reddie_collisions.json",
+    "customStates": []
+}

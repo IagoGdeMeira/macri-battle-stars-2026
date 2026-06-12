@@ -56,7 +56,7 @@ void InputSystem::update(UpdateContext& ctx)
             if (player.id != e.playerId) continue;
 
             if (e.source.type() == InputSource::Type::Mouse || e.source.type() == InputSource::Type::Gamepad)
-            { analog.moveX += e.value; }
+            { analog.move.x += e.value; }
         }
     }
 

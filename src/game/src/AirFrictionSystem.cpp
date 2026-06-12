@@ -12,31 +12,34 @@
 
 void AirFrictionSystem::update(UpdateContext& ctx)
 {
-    auto view = View<VelocityComponent, GroundedComponent, AirFrictionComponent>(ctx.world.components());
+    auto& components = ctx.world.components();    
+    auto view = View<VelocityComponent, GroundedComponent, AirFrictionComponent>(components);
     
     for (auto [entity, v, g, air] : view)
     {
-        if (ctx.world.components().has<HitstopComponent>(entity))
-        { if (ctx.world.components().get<HitstopComponent>(entity).frozen) continue; }
+        if (components.has<HitstopComponent>(entity))
+        { if (components.get<HitstopComponent>(entity).frozen) continue; }
 
         if (g.onGround) continue;
 
-        float effectiveX = this->airFriction * air.multiplierX;
-        float effectiveY = this->airFriction * air.multiplierY;
+        auto& airF = this->airFriction;
 
-        if (effectiveX < 0.0f) effectiveX = 0.0f;
-        if (effectiveY < 0.0f) effectiveY = 0.0f;
+        Position effective = {airF * air.multiplier.x, airF * air.multiplier.y};
+        this->setNegativePositionToZero(effective);
 
-        float decayX = 1.0f - (effectiveX * 0.01f * ctx.deltaTime);
-        float decayY = 1.0f - (effectiveY * 0.01f * ctx.deltaTime);
+        Position decay = {1.f - (effective.x * 0.01f * ctx.deltaTime), 1.f - (effective.y * 0.01f * ctx.deltaTime)};
+        this->setNegativePositionToZero(decay);
 
-        if (decayX < 0.0f) decayX = 0.0f;
-        if (decayY < 0.0f) decayY = 0.0f;
+        v.velocity.x *= decay.x;
+        v.velocity.y *= decay.y;
 
-        v.velocity.x *= decayX;
-        v.velocity.y *= decayY;
-
-        if (std::abs(v.velocity.x) < 1.0f) v.velocity.x = 0.0f;
-        if (std::abs(v.velocity.y) < 1.0f) v.velocity.y = 0.0f;
+        if (std::abs(v.velocity.x) < 1.f) v.velocity.x = 0.f;
+        if (std::abs(v.velocity.y) < 1.f) v.velocity.y = 0.f;
     }
+}
+
+void AirFrictionSystem::setNegativePositionToZero(Position& pos)
+{
+    if (pos.x < 0.f) pos.x = 0.f;
+    if (pos.y < 0.f) pos.y = 0.f;
 }

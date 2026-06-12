@@ -57,7 +57,7 @@ void AnimationStateSystem::update(UpdateContext &ctx)
 
         anim.animation    = *chosen;
         anim.currentFrame = 0;
-        anim.elapsedTime  = 0.0f;
+        anim.elapsedTime  = 0.f;
         anim.currentState = controller.currentState;
     }
 }

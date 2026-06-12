@@ -4,8 +4,6 @@
 #include "../include/Animation/AnimationSet.h"
 #include "../include/StateId/StateId.h"
 
-#include <unordered_map>
-
 struct AnimationControllerComponent
 {
     AnimationSet animations;

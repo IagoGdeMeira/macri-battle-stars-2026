@@ -16,9 +16,9 @@ const StateId StateId::BeingHit(StateId::BaseState::BeingHit);
 const StateId StateId::ChargingSpecial(StateId::BaseState::ChargingSpecial);
 const StateId StateId::SpecialAttack(StateId::BaseState::SpecialAttack);
 
-StateId StateId::createCustom(ValueType customId)
+StateId StateId::createCustom(std::int32_t customId)
 {
-    if (customId < static_cast<ValueType>(BaseState::CustomStart))
+    if (customId < static_cast<std::int32_t>(BaseState::CustomStart))
     { throw std::invalid_argument("Custom StateId must be >= BaseState::CustomStart"); }
 
     return StateId(customId);
@@ -57,19 +57,19 @@ const std::unordered_map<std::string, StateId::BaseState> StateId::nameToId =
     { "SpecialAttack", StateId::BaseState::SpecialAttack }
 };
 
-const std::unordered_map<StateId::ValueType, std::string> StateId::idToName =
+const std::unordered_map<std::int32_t, std::string> StateId::idToName =
 {
-    { static_cast<StateId::ValueType>(StateId::BaseState::Unknown), "Unknown" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::Idle), "Idle" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::Running), "Running" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::Walking), "Walking" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::Jumping), "Jumping" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::Falling), "Falling" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::Punching), "Punching" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::Kicking), "Kicking" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::Blocking), "Blocking" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::Dying), "Dying" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::BeingHit), "BeingHit" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::ChargingSpecial), "ChargingSpecial" },
-    { static_cast<StateId::ValueType>(StateId::BaseState::SpecialAttack), "SpecialAttack" }
+    { static_cast<std::int32_t>(StateId::BaseState::Unknown), "Unknown" },
+    { static_cast<std::int32_t>(StateId::BaseState::Idle), "Idle" },
+    { static_cast<std::int32_t>(StateId::BaseState::Running), "Running" },
+    { static_cast<std::int32_t>(StateId::BaseState::Walking), "Walking" },
+    { static_cast<std::int32_t>(StateId::BaseState::Jumping), "Jumping" },
+    { static_cast<std::int32_t>(StateId::BaseState::Falling), "Falling" },
+    { static_cast<std::int32_t>(StateId::BaseState::Punching), "Punching" },
+    { static_cast<std::int32_t>(StateId::BaseState::Kicking), "Kicking" },
+    { static_cast<std::int32_t>(StateId::BaseState::Blocking), "Blocking" },
+    { static_cast<std::int32_t>(StateId::BaseState::Dying), "Dying" },
+    { static_cast<std::int32_t>(StateId::BaseState::BeingHit), "BeingHit" },
+    { static_cast<std::int32_t>(StateId::BaseState::ChargingSpecial), "ChargingSpecial" },
+    { static_cast<std::int32_t>(StateId::BaseState::SpecialAttack), "SpecialAttack" }
 };

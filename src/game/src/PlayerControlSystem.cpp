@@ -39,8 +39,8 @@ void PlayerControlSystem::update(UpdateContext& ctx)
 
         if (canMove)
         {
-            float targetVx = 0.0f;
-            if (analog.moveX != 0.0f) targetVx = analog.moveX * this->moveSpeed;
+            float targetVx = 0.f;
+            if (analog.move.x != 0.f) targetVx = analog.move.x * this->moveSpeed;
             else
             {
                 if (this->hasInputAction(input, InputAction::MoveLeft)) targetVx = -this->moveSpeed;
@@ -48,7 +48,7 @@ void PlayerControlSystem::update(UpdateContext& ctx)
             }
             velocity.velocity.x = targetVx;
         }
-        else velocity.velocity.x = 0.0f;
+        else velocity.velocity.x = 0.f;
         
         bool grounded = false;
         if (comp.has<GroundedComponent>(entity)) grounded = comp.get<GroundedComponent>(entity).onGround;
@@ -94,13 +94,13 @@ void PlayerControlSystem::applyMovement(UpdateContext& ctx, Entity entity, bool 
     auto& comp = ctx.world.components();
     auto& velocity = comp.get<VelocityComponent>(entity);
     
-    if (!canMove) { velocity.velocity.x = 0.0f; return; }
+    if (!canMove) { velocity.velocity.x = 0.f; return; }
 
     auto& input  = comp.get<InputComponent>(entity);
     auto& analog = comp.get<AnalogInputComponent>(entity);
-    float targetVx = 0.0f;
+    float targetVx = 0.f;
 
-    if (analog.moveX != 0.0f) targetVx = analog.moveX * this->moveSpeed;
+    if (analog.move.x != 0.f) targetVx = analog.move.x * this->moveSpeed;
     else
     {
         if (this->hasInputAction(input, InputAction::MoveLeft)) targetVx = -this->moveSpeed;

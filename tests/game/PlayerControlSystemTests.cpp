@@ -48,7 +48,7 @@ TEST_CASE_METHOD(PlayerControlSystemFixture, "PlayerControlSystem moves, jumps a
     input.actions[InputAction::Jump] = InputState{true, 0.f};
 
     AnalogInputComponent analog;
-    analog.moveX = 1.f;
+    analog.move.x = 1.f;
 
     StateComponent state;
     state.current = StateId::Idle;
@@ -93,7 +93,7 @@ TEST_CASE_METHOD(PlayerControlSystemFixture, "PlayerControlSystem blocks movemen
     input.actions[InputAction::Defend] = InputState{true, 0.f};
 
     AnalogInputComponent analog;
-    analog.moveX = 1.f;
+    analog.move.x = 1.f;
 
     StateComponent state;
     state.current = StateId::BeingHit;
@@ -129,7 +129,7 @@ TEST_CASE_METHOD(PlayerControlSystemFixture, "PlayerControlSystem blocks movemen
     input.actions[InputAction::MoveRight] = InputState{true, 0.f};
 
     AnalogInputComponent analog;
-    analog.moveX = 1.f;
+    analog.move.x = 1.f;
 
     StateComponent state;
     state.current = StateId::Idle;
