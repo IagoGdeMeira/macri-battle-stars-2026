@@ -17,25 +17,25 @@ public:
     void registerComponent();
 
     template <typename T>
-    void add(Entity entity, const T& component);
+    void add(Entity entity, const T& component) { this->getStorage<T>()->add(entity, component); }
+    template <typename T>
+    void add(Entity entity, T&& component) { this->getStorage<T>()->add(entity, std::move(component)); }
 
     template <typename T>
-    void add(Entity entity, T&& component);
+    void remove(Entity entity) { this->getStorage<T>()->remove(entity); }
 
     template <typename T>
-    void remove(Entity entity);
+    bool has(Entity entity) const { return this->getStorage<T>()->has(entity); }
 
     template <typename T>
-    bool has(Entity entity) const;
+    T& get(Entity entity) { return this->getStorage<T>()->get(entity); }
+    template <typename T>
+    const T& get(Entity entity) const { return this->getStorage<T>()->get(entity); }
 
     template <typename T>
-    T& get(Entity entity);
-
+    IComponentStorage* storage() { return this->getStorage<T>(); }
     template <typename T>
-    IComponentStorage* storage();
-
-    template <typename T>
-    const ComponentStorage<T>* storage() const;
+    const IComponentStorage* storage() const { return this->getStorage<T>(); }
 
     void entityDestroyed(Entity entity);
 
@@ -45,11 +45,14 @@ private:
     static uint32_t nextComponentTypeId;
 
     template <typename T>
-    static uint32_t componentTypeId();
+    static uint32_t getTypeId()
+    {
+        static uint32_t id = nextComponentTypeId++;
+        return id;
+    }
 
     template <typename T>
     ComponentStorage<T>* getStorage();
-
     template <typename T>
     const ComponentStorage<T>* getStorage() const;
 };

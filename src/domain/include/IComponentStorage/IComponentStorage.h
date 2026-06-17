@@ -11,9 +11,7 @@ public:
     virtual ~IComponentStorage() = default;
 
     virtual void remove(Entity e) = 0;
-
     virtual bool has(Entity e) const = 0;
-
     virtual size_t size() const = 0;
 
     virtual const std::vector<Entity>& entities() const = 0;

@@ -10,19 +10,17 @@ template <typename T>
 class ComponentStorage : public IComponentStorage
 {
 public:
-    void add(Entity entity, const T& component);
-    void add(Entity entity, T&& component);
+    template <typename U>
+    void add(Entity entity, U &&component);
 
     void remove(Entity entity) override;
-
     bool has(Entity entity) const override;
+    size_t size() const override { return this->denseComponents.size(); }
 
     T& get(Entity entity);
-    const T& get(Entity entity) const;
+    const T& get(Entity entity) const { return const_cast<ComponentStorage<T>*>(this)->get(entity); }
 
-    size_t size() const override;
-
-    const std::vector<Entity>& entities() const override;
+    const std::vector<Entity>& entities() const override { return this->denseEntities; }
 
 private:
     std::vector<Entity> denseEntities;

@@ -7,36 +7,16 @@
 #include <utility>
 
 template<typename T>
-void ComponentStorage<T>::add(Entity entity, const T& component)
+template<typename U>
+void ComponentStorage<T>::add(Entity entity, U&& component)
 {
     uint32_t id = entity.id;
-
     if (id >= this->sparse.size()) this->sparse.resize(id + 1, UINT32_MAX);
-        
     assert(!this->has(entity) && "Component already exists");
 
     uint32_t index = static_cast<uint32_t>(this->denseComponents.size());
-
     this->denseEntities.push_back(entity);
-    this->denseComponents.push_back(component);
-
-    this->sparse[id] = index;
-}
-
-template<typename T>
-void ComponentStorage<T>::add(Entity entity, T&& component)
-{
-    uint32_t id = entity.id;
-
-    if (id >= this->sparse.size()) this->sparse.resize(id + 1, UINT32_MAX);
-
-    assert(!this->has(entity) && "Component already exists");
-
-    uint32_t index = static_cast<uint32_t>(this->denseComponents.size());
-
-    this->denseEntities.push_back(entity);
-    this->denseComponents.push_back(std::move(component));
-
+    this->denseComponents.push_back(std::forward<U>(component));
     this->sparse[id] = index;
 }
 
@@ -69,37 +49,19 @@ template <typename T>
 bool ComponentStorage<T>::has(Entity entity) const
 {
     uint32_t id = entity.id;
-
     if (id >= this->sparse.size()) return false;
 
     uint32_t index = this->sparse[id];
-
     if (index == UINT32_MAX) return false;
 
-    return index < this->denseEntities.size()
-        && this->denseEntities[index].id == id;
+    return index < this->denseEntities.size() && this->denseEntities[index].id == id;
 }
 
 template <typename T>
 T& ComponentStorage<T>::get(Entity entity)
 {
     assert(this->has(entity) && "Component does not exist");
-
     return this->denseComponents[this->sparse[entity.id]];
 }
-
-template <typename T>
-const T& ComponentStorage<T>::get(Entity entity) const
-{
-    assert(this->has(entity) && "Component does not exist");
-
-    return this->denseComponents[this->sparse[entity.id]];
-}
-
-template <typename T>
-size_t ComponentStorage<T>::size() const { return this->denseComponents.size(); }
-
-template <typename T>
-const std::vector<Entity>& ComponentStorage<T>::entities() const { return this->denseEntities; }
 
 #endif // component_storage_inl
