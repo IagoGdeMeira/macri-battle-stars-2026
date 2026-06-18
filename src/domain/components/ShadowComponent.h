@@ -1,14 +1,14 @@
 #ifndef shadow_component_h
 #define shadow_component_h
 
-#include "../include/Color/Color.h"
-#include "../include/Geometry/Geometry.h"
+#include "../value_objects/Color/Color.h"
+#include "../value_objects/Geometry/Geometry.h"
 
 struct ShadowComponent
 {
     Color color = Color::BLACK();
-    Position offset { 2.0f, 2.0f };
-    float blurRadius = 4.0f;
+    Position offset { 2.f, 2.f };
+    float blurRadius = 4.f;
     bool enabled = true;
 };
 

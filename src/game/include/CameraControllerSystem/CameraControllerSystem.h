@@ -3,7 +3,7 @@
 
 #include "../Camera2D/Camera2D.h"
 
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/System/System.h"
 #include "../../engine/include/Window/Window.h"

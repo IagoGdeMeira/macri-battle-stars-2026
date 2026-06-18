@@ -2,8 +2,8 @@
 #define ui_element_h
 
 #include "../../domain/components/BoxModel.h"
-#include "../../domain/include/Color/Color.h"
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Color/Color.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include <string>
 

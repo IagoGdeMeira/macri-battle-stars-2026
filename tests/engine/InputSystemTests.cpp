@@ -3,7 +3,7 @@
 #include "../../src/domain/components/AnalogInputComponent.h"
 #include "../../src/domain/components/InputComponent.h"
 #include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/include/InputAction/InputAction.h"
+#include "../../src/domain/value_objects/InputAction/InputAction.h"
 
 #include "../../src/engine/events/InputEvent.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
@@ -79,7 +79,7 @@ TEST_CASE_METHOD(InputSystemFixture, "InputSystem ignores events from other play
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Defend] = InputState{false, 0.0f};
+    input.actions[InputAction::Defend] = InputState{false, 0.f};
 
     auto& components = this->scene.world().components();
     components.add<InputComponent>(entity, input);

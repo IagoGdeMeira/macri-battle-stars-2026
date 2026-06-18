@@ -1,7 +1,8 @@
 #include "../include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 
+#include "../../domain/value_objects/StateId/StateId.h"
+
 #include "../../engine/include/DataUtils/DataUtils.h"
-#include "../../domain/include/StateId/StateId.h"
 
 #include <stdexcept>
 

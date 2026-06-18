@@ -2,7 +2,7 @@
 #define orientation_changed_event_h
 
 #include "../include/Entity/Entity.h"
-#include "../include/Orientation/Orientation.h"
+#include "../value_objects/Orientation/Orientation.h"
 
 struct OrientationChangedEvent { Entity entity; Orientation previous, current; };
 

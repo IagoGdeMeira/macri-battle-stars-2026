@@ -22,7 +22,7 @@
 #include "../../../src/domain/components/TransformComponent.h"
 #include "../../../src/domain/components/VelocityComponent.h"
 #include "../../../src/domain/include/View/View.h"
-#include "../../../src/domain/include/StateId/StateId.h"
+#include "../../../src/domain/value_objects/StateId/StateId.h"
 
 #include "../../../src/engine/include/DataUtils/DataUtils.h"
 #include "../../../src/engine/include/Engine/Engine.h"

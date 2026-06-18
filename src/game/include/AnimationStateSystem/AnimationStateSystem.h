@@ -5,7 +5,7 @@
 
 #include "../../domain/events/OrientationChangedEvent.h"
 #include "../../domain/include/Entity/Entity.h"
-#include "../../domain/include/StateId/StateId.h"
+#include "../../domain/value_objects/StateId/StateId.h"
 
 #include "../../engine/include/EventBus/EventBus.h"
 #include "../../engine/include/System/System.h"

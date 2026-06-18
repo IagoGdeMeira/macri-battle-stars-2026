@@ -1,9 +1,9 @@
 #ifndef collision_clip_loader_h
 #define collision_clip_loader_h
 
-#include "../../domain/include/CollisionFrame/CollisionFrame.h"
-#include "../../domain/include/Geometry/Geometry.h"
-#include "../../domain/include/StateId/StateId.h"
+#include "../../domain/value_objects/CollisionFrame/CollisionFrame.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "../../domain/value_objects/StateId/StateId.h"
 
 #include "../../engine/include/DataParser/DataParser.h"
 

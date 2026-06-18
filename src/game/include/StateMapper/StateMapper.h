@@ -1,7 +1,7 @@
 #ifndef state_mapper_h
 #define state_mapper_h
 
-#include "../../domain/include/StateId/StateId.h"
+#include "../../domain/value_objects/StateId/StateId.h"
 
 #include <string>
 

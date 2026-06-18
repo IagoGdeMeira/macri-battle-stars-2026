@@ -1,7 +1,7 @@
 #ifndef camera_2d_h
 #define camera_2d_h
 
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 class Camera2D
 {

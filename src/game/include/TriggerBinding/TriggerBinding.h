@@ -1,8 +1,8 @@
 #ifndef trigger_binding_h
 #define trigger_binding_h
 
-#include "../../domain/include/InputAction/InputAction.h"
-#include "../../domain/include/TriggerId/TriggerId.h"
+#include "../../domain/value_objects/InputAction/InputAction.h"
+#include "../../domain/value_objects/TriggerId/TriggerId.h"
 
 #include <vector>
 

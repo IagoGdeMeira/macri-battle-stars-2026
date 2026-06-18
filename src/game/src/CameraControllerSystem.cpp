@@ -2,8 +2,8 @@
 
 #include "../../domain/components/PlayerComponent.h"
 #include "../../domain/components/TransformComponent.h"
-#include "../../domain/include/Geometry/Geometry.h"
 #include "../../domain/include/View/View.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 

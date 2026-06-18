@@ -1,7 +1,7 @@
 #ifndef application_h
 #define application_h
 
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/DataParser/DataParser.h"
 #include "../../engine/include/Engine/Engine.h"

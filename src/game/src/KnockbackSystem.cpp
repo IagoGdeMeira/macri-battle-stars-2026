@@ -4,7 +4,7 @@
 #include "../../domain/components/VelocityComponent.h"
 #include "../../domain/components/KnockbackComponent.h"
 #include "../../domain/events/DamageEvent.h"
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
@@ -25,7 +25,7 @@ void KnockbackSystem::update(UpdateContext& ctx)
         if (!components.has<TransformComponent>(e.target)) continue;
         if (!components.has<VelocityComponent>(e.target)) continue;
 
-        Position dir = {0.0f, 0.0f};
+        Position dir = {0.f, 0.f};
         if (components.has<TransformComponent>(e.attacker))
         {
             const auto& atkTrans = components.get<TransformComponent>(e.attacker);
@@ -37,8 +37,8 @@ void KnockbackSystem::update(UpdateContext& ctx)
         float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
         if (length > 0) { dir.x /= length; dir.y /= length; }
 
-        float baseForce = 300.0f;
-        float multiplier = 1.0f;
+        float baseForce = 300.f;
+        float multiplier = 1.f;
         
         if (components.has<KnockbackComponent>(e.target))
         {

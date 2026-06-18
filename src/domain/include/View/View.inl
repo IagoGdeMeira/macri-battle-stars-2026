@@ -16,20 +16,16 @@ View<Components...>::View(ComponentManager& componentManager) : manager(componen
 
     for (size_t i = 1; i < storages.size(); i++)
     {
-        if (storages[i]->size() < this->baseStorage->size())
-        {
-            this->baseStorage = storages[i];
-            this->baseIndex = i;
-        }
+        if (storages[i]->size() >= this->baseStorage->size()) continue;
+        
+        this->baseStorage = storages[i];
+        this->baseIndex = i;
     }
 }
 
 template <typename... Components>
 View<Components...>::Iterator::Iterator(
-    ComponentManager& manager,
-    const std::vector<Entity>& entities,
-    size_t index,
-    size_t baseIndex
+    ComponentManager& manager, const std::vector<Entity>& entities, size_t index, size_t baseIndex
 ) : manager(manager), entities(entities), index(index), baseIndex(baseIndex) { this->advance(); }
 
 template <typename... Components>
@@ -53,7 +49,6 @@ template <typename... Components>
 auto View<Components...>::Iterator::operator*()
 {
     Entity e = this->entities[this->index];
-
     return std::tuple<Entity, Components&...>(e, this->manager.get<Components>(e)...);
 }
 
@@ -63,13 +58,13 @@ bool View<Components...>::Iterator::matches(Entity e)
 
 template <typename... Components>
 template <size_t... I>
-bool View<Components...>::Iterator::matchesImpl(
-    Entity e,
-    std::index_sequence<I...>
-) { return ((
-    I == this->baseIndex
-    || this->manager.has<std::tuple_element_t<I, std::tuple<Components...>>>(e)) && ...
-); }
+bool View<Components...>::Iterator::matchesImpl(Entity e, std::index_sequence<I...>)
+{
+    return ((
+        I == this->baseIndex ||
+        this->manager.has<std::tuple_element_t<I, std::tuple<Components...>>>(e)) && ...
+    );
+}
 
 template <typename... Components>
 void View<Components...>::Iterator::advance()
@@ -91,13 +86,6 @@ View<Components...>::begin()
 template <typename... Components>
 typename View<Components...>::Iterator
 View<Components...>::end()
-{
-    return Iterator(
-        this->manager,
-        this->baseStorage->entities(),
-        this->baseStorage->entities().size(),
-        this->baseIndex
-    );
-}
+{ return Iterator(this->manager, this->baseStorage->entities(), this->baseStorage->entities().size(), this->baseIndex); }
 
 #endif // view_inl

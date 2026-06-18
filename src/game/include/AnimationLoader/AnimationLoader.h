@@ -1,8 +1,8 @@
 #ifndef animation_loader_h
 #define animation_loader_h
 
-#include "../../domain/include/Animation/AnimationSet.h"
-#include "../../domain/include/StateId/StateId.h"
+#include "../../domain/value_objects/Animation/AnimationSet.h"
+#include "../../domain/value_objects/StateId/StateId.h"
 
 #include "../../engine/include/DataParser/DataParser.h"
 

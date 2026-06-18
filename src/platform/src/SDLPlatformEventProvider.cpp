@@ -2,7 +2,7 @@
 
 #include "../include/SDLKeyTranslator/SDLKeyTranslator.h"
 
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/GamepadButton/GamepadButton.h"
 #include "../../engine/include/KeyCode/KeyCode.h"
@@ -58,7 +58,7 @@ std::vector<std::unique_ptr<PlatformEvent>> SDLPlatformEventProvider::pollEvents
             {
                 auto& axis = sdlEvent.jaxis;
                 events.push_back(std::make_unique<GamepadAxisEvent>(
-                    static_cast<uint32_t>(axis.axis), static_cast<float>(axis.value) / 32767.0f));
+                    static_cast<uint32_t>(axis.axis), static_cast<float>(axis.value) / 32767.f));
                 break;
             }
             case SDL_WINDOWEVENT:

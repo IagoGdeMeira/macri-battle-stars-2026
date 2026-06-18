@@ -6,8 +6,8 @@
 #include "../../domain/components/ShapeRenderComponent.h"
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/components/VisualEffectsComponent.h"
-#include "../../domain/include/CollisionFrame/ColliderDef.h"
 #include "../../domain/include/View/View.h"
+#include "../../domain/value_objects/CollisionFrame/ColliderDef.h"
 
 #include "../../engine/include/RenderContext/RenderContext.h"
 

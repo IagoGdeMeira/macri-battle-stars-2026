@@ -4,8 +4,8 @@
 #include "../../src/domain/components/AnimationControllerComponent.h"
 #include "../../src/domain/components/OrientationComponent.h"
 #include "../../src/domain/events/OrientationChangedEvent.h"
-#include "../../src/domain/include/Animation/Animation.h"
 #include "../../src/domain/include/World/World.h"
+#include "../../src/domain/value_objects/Animation/Animation.h"
 
 #include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
 #include "../../src/engine/include/EventBus/EventBus.h"

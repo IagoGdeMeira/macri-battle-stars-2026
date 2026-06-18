@@ -1,7 +1,7 @@
 #ifndef air_friction_component_h
 #define air_friction_component_h
 
-#include "../include/Geometry/Geometry.h"
+#include "../value_objects/Geometry/Geometry.h"
 
 struct AirFrictionComponent { Position multiplier{1.f, 1.f}; };
 

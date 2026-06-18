@@ -4,13 +4,13 @@
 #include <string>
 #include <vector>
 
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 struct CharacterDefinition
 {
     std::string id;
 
-    Dimension2D spriteSize {0, 0};
+    Dimension2D spriteSize {0.f, 0.f};
     std::string texturePath, animationsPath, stateMachinePath, combosPath, collisionsPath;
     
     std::vector<std::string> customStates;

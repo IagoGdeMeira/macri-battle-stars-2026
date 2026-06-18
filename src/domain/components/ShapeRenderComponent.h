@@ -1,9 +1,9 @@
 #ifndef shape_render_component_h
 #define shape_render_component_h
 
-#include "../include/CollisionFrame/ColliderDef.h"
-#include "../include/Color/Color.h"
-#include "../include/Geometry/Geometry.h"
+#include "../value_objects/CollisionFrame/ColliderDef.h"
+#include "../value_objects/Color/Color.h"
+#include "../value_objects/Geometry/Geometry.h"
 
 #include <memory>
 

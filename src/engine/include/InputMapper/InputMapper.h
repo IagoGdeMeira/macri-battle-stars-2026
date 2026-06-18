@@ -6,7 +6,7 @@
 #include "../KeyCode/KeyCode.h"
 #include "../MouseButton/MouseButton.h"
 
-#include "../../domain/include/InputAction/InputAction.h"
+#include "../../domain/value_objects/InputAction/InputAction.h"
 
 #include <string>
 

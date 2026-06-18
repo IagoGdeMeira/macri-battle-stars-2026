@@ -1,7 +1,7 @@
 #ifndef platform_event_h
 #define platform_event_h
 
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include <cstdint>
 #include <memory>

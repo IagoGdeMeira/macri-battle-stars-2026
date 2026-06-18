@@ -1,9 +1,9 @@
 #ifndef ui_factory_h
 #define ui_factory_h
 
-#include "../../domain/include/Color/Color.h"
 #include "../../domain/include/Entity/Entity.h"
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Color/Color.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include <memory>
 #include <string>

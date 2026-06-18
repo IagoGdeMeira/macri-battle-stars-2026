@@ -1,8 +1,8 @@
 #ifndef animation_controller_component_h
 #define animation_controller_component_h
 
-#include "../include/Animation/AnimationSet.h"
-#include "../include/StateId/StateId.h"
+#include "../value_objects/Animation/AnimationSet.h"
+#include "../value_objects/StateId/StateId.h"
 
 struct AnimationControllerComponent
 {

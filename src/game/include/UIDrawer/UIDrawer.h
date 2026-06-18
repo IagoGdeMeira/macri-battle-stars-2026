@@ -7,7 +7,7 @@
 #include "../../domain/components/ShadowComponent.h"
 #include "../../domain/components/UITransform.h"
 #include "../../domain/include/Entity/Entity.h"
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/Drawer/Drawer.h"
 #include "../../engine/include/EventBus/EventBus.h"

@@ -1,8 +1,8 @@
 #ifndef animation_component_h
 #define animation_component_h
 
-#include "../include/Animation/Animation.h"
-#include "../include/StateId/StateId.h"
+#include "../value_objects/Animation/Animation.h"
+#include "../value_objects/StateId/StateId.h"
 
 struct AnimationComponent
 {

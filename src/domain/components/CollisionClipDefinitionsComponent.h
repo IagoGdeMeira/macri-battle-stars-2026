@@ -1,8 +1,8 @@
 #ifndef collision_clip_definitions_component_h
 #define collision_clip_definitions_component_h
 
-#include "../include/CollisionFrame/CollisionFrame.h"
-#include "../include/StateId/StateId.h"
+#include "../value_objects/CollisionFrame/CollisionFrame.h"
+#include "../value_objects/StateId/StateId.h"
 
 #include <memory>
 #include <unordered_map>

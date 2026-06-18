@@ -10,8 +10,8 @@
 #include "../stubs/StubTextureLoader.h"
 #include "../stubs/StubWindow.h"
 
-#include "../../src/domain/include/Color/Color.h"
-#include "../../src/domain/include/Geometry/Geometry.h"
+#include "../../src/domain/value_objects/Color/Color.h"
+#include "../../src/domain/value_objects/Geometry/Geometry.h"
 
 #include "../../src/engine/events/QuitEvent.h"
 #include "../../src/engine/include/Engine/Engine.h"

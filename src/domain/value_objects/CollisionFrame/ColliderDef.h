@@ -1,7 +1,7 @@
 #ifndef collider_def_h
 #define collider_def_h
 
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../Geometry/Geometry.h"
 
 #include <memory>
 

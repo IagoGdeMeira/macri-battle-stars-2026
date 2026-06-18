@@ -6,8 +6,8 @@
 #include "../Texture/Texture.h"
 #include "../Viewport/Viewport.h"
 
-#include "../../domain/include/Color/Color.h"
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Color/Color.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include <cstdint>
 #include <memory>

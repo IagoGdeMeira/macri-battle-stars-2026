@@ -1,6 +1,6 @@
 #include "../../src/platform/include/SDLRenderer/SDLRenderer.h"
 
-#include "../../src/domain/include/Color/Color.h"
+#include "../../src/domain/value_objects/Color/Color.h"
 
 #include "../../src/engine/include/Viewport/Viewport.h"
 

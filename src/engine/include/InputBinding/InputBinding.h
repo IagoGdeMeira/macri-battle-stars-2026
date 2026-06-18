@@ -3,7 +3,7 @@
 
 #include "../InputSource/InputSource.h"
 
-#include "../../domain/include/InputAction/InputAction.h"
+#include "../../domain/value_objects/InputAction/InputAction.h"
 
 #include <unordered_map>
 

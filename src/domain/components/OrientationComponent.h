@@ -1,7 +1,7 @@
 #ifndef orientation_component_h
 #define orientation_component_h
 
-#include "../include/Orientation/Orientation.h"
+#include "../value_objects/Orientation/Orientation.h"
 
 struct OrientationComponent { Orientation direction = Orientation::Right; };
 

@@ -1,7 +1,7 @@
 #ifndef sprite_component_h
 #define sprite_component_h
 
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/Texture/Texture.h"
 

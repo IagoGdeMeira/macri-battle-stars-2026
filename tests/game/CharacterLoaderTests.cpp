@@ -14,9 +14,9 @@
 #include "../../src/domain/components/StateComponent.h"
 #include "../../src/domain/components/StateMachineComponent.h"
 #include "../../src/domain/components/StateMappingComponent.h"
-#include "../../src/domain/include/StateId/StateId.h"
-#include "../../src/domain/include/TriggerId/TriggerId.h"
 #include "../../src/domain/include/World/World.h"
+#include "../../src/domain/value_objects/StateId/StateId.h"
+#include "../../src/domain/value_objects/TriggerId/TriggerId.h"
 
 #include "../../src/engine/include/DataParser/DataParser.h"
 #include "../../src/engine/include/ResourceManager/ResourceManager.h"

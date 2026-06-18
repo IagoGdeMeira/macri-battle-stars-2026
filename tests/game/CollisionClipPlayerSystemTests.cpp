@@ -14,9 +14,9 @@
 #include "../../src/domain/components/ParentComponent.h"
 #include "../../src/domain/components/PushboxComponent.h"
 #include "../../src/domain/components/RectangleColliderComponent.h"
-#include "../../src/domain/include/CollisionFrame/CollisionFrame.h"
-#include "../../src/domain/include/World/World.h"
 #include "../../src/domain/events/OrientationChangedEvent.h"
+#include "../../src/domain/include/World/World.h"
+#include "../../src/domain/value_objects/CollisionFrame/CollisionFrame.h"
 
 #include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
 #include "../../src/engine/include/EventBus/EventBus.h"

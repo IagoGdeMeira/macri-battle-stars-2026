@@ -2,7 +2,7 @@
 
 #include "../../src/domain/components/InputBufferComponent.h"
 #include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/include/InputAction/InputAction.h"
+#include "../../src/domain/value_objects/InputAction/InputAction.h"
 
 #include "../../src/engine/events/InputEvent.h"
 #include "../../src/engine/include/InputSource/InputSource.h"

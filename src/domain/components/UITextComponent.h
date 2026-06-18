@@ -1,7 +1,7 @@
 #ifndef ui_text_component_h
 #define ui_text_component_h
 
-#include "../include/Color/Color.h"
+#include "../value_objects/Color/Color.h"
 
 #include <memory>
 #include <string>
@@ -14,7 +14,7 @@ struct UITextComponent
     std::string text;
     Color color = { 255, 255, 255, 255 };
     bool needsUpdate = true;
-    float fontSize = -1.0f, letterSpacing = 0.0f, lineSpacing = 0.0f;
+    float fontSize = -1.f, letterSpacing = 0.f, lineSpacing = 0.f;
 };
 
 #endif // ui_text_component_h

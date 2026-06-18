@@ -1,7 +1,6 @@
 #include "../include/PlayerControlSystem/PlayerControlSystem.h"
 
 #include "../events/TriggerEvent.h"
-#include "../include/TriggerId/TriggerId.h"
 
 #include "../../domain/components/AnalogInputComponent.h"
 #include "../../domain/components/GroundedComponent.h"
@@ -10,9 +9,10 @@
 #include "../../domain/components/PlayerComponent.h"
 #include "../../domain/components/StateComponent.h"
 #include "../../domain/components/VelocityComponent.h"
-#include "../../domain/include/InputAction/InputAction.h"
-#include "../../domain/include/StateId/StateId.h"
 #include "../../domain/include/View/View.h"
+#include "../../domain/value_objects/InputAction/InputAction.h"
+#include "../../domain/value_objects/StateId/StateId.h"
+#include "../../domain/value_objects/TriggerId/TriggerId.h"
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 

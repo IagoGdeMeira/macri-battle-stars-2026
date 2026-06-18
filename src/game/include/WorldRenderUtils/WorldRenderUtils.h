@@ -4,8 +4,8 @@
 #include "../Camera2D/Camera2D.h"
 
 #include "../../domain/include/Entity/Entity.h"
-#include "../../domain/include/Geometry/Geometry.h"
 #include "../../domain/include/World/World.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/DrawCommands/DrawCommands.h"
 #include "../../engine/include/Viewport/Viewport.h"

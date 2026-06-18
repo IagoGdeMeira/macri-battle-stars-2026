@@ -4,7 +4,7 @@
 #include "../Camera2D/Camera2D.h"
 #include "../IRenderFormat/IRenderFormat.h"
 
-#include "../../domain/include/Geometry/Geometry.h"
+#include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/Drawer/Drawer.h"
 #include "../../engine/include/EventBus/EventBus.h"

@@ -1,12 +1,12 @@
 #ifndef outline_component_h
 #define outline_component_h
 
-#include "../include/Color/Color.h"
+#include "../value_objects/Color/Color.h"
 
 struct OutlineComponent
 {
     Color color = Color::BLACK();
-    float thickness = 2.0f, blurRadius = 0.0f;
+    float thickness = 2.f, blurRadius = 0.f;
     bool enabled = true;
 };
 

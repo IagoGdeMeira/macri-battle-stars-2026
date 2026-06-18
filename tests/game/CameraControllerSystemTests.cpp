@@ -4,8 +4,8 @@
 
 #include "../../src/domain/components/PlayerComponent.h"
 #include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/include/Geometry/Geometry.h"
 #include "../../src/domain/include/World/World.h"
+#include "../../src/domain/value_objects/Geometry/Geometry.h"
 
 #include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
