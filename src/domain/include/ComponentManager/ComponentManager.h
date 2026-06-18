@@ -3,7 +3,6 @@
 
 #include "../ComponentStorage/ComponentStorage.h"
 #include "../Entity/Entity.h"
-#include "../IComponentStorage/IComponentStorage.h"
 
 #include <cstdint>
 #include <memory>
@@ -33,9 +32,9 @@ public:
     const T& get(Entity entity) const { return this->getStorage<T>()->get(entity); }
 
     template <typename T>
-    IComponentStorage* storage() { return this->getStorage<T>(); }
+    ComponentStorage<T>* storage() { return this->getStorage<T>(); }
     template <typename T>
-    const IComponentStorage* storage() const { return this->getStorage<T>(); }
+    const ComponentStorage<T>* storage() const { return this->getStorage<T>(); }
 
     void entityDestroyed(Entity entity);
 
@@ -47,7 +46,7 @@ private:
     template <typename T>
     static uint32_t getTypeId()
     {
-        static uint32_t id = nextComponentTypeId++;
+        static uint32_t id = ComponentManager::nextComponentTypeId++;
         return id;
     }
 

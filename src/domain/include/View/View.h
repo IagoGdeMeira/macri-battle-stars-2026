@@ -2,7 +2,7 @@
 #define view_h
 
 #include "../ComponentManager/ComponentManager.h"
-#include "../IComponentStorage/IComponentStorage.h"
+#include "../ComponentStorage/ComponentStorage.h"
 
 #include <tuple>
 #include <utility>
