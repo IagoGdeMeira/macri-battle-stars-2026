@@ -11,7 +11,7 @@ struct Entity
     Entity(uint32_t id) : id(id) {}
 
     bool operator==(const Entity& other) const { return this->id == other.id; }
-    bool operator!=(const Entity& other) const { return this->id != other.id; }
+    bool operator!=(const Entity& other) const { return !(*this == other); }
 
     struct Hash
     {
