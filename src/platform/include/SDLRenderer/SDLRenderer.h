@@ -13,21 +13,20 @@ class SDLRenderer : public Renderer
 {
 public:
     SDLRenderer(SDL_Window* window);
-    ~SDLRenderer();
+    ~SDLRenderer() { if (this->renderer) SDL_DestroyRenderer(this->renderer); }
 
-    void clear() override;
-    void present() override;
+    void clear() override { SDL_RenderClear(this->renderer); }
+    void present() override { SDL_RenderPresent(this->renderer); }
+    void setViewport(const Viewport& viewport) override;
 
     SDL_Renderer* get() const { return this->renderer; }
 
-    void drawTexture(const DrawTextureCommand& cmd) override;
-    void drawFont(const DrawFontCommand& cmd) override;
-    void drawRectangle(const DrawRectangleCommand& cmd) override;
-    void drawCircle(const DrawCircleCommand& cmd) override;
-
-    void setViewport(const Viewport& viewport) override;
-
 private:
+    void drawTextureImpl(const DrawTextureCommand& cmd);
+    void drawFontImpl(const DrawFontCommand& cmd);
+    void drawRectangleImpl(const DrawRectangleCommand& cmd);
+    void drawCircleImpl(const DrawCircleCommand& cmd);
+
     void drawRectOutline(const Rectangle& rect, const Color& color);
     void drawRectFilled(const Rectangle& rect, const Color& color);
     void drawCircleOutline(const Circle& circle, const Color& color);

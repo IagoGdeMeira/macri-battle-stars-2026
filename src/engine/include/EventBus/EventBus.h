@@ -19,10 +19,8 @@ public:
     void emit(Args&&...args);
 
 private:
-    std::unordered_map<
-        std::type_index,
-        std::vector<std::function<void(const void*)>>>
-        handlers;
+    using HandlerBase = std::function<void(const void*)>;
+    std::unordered_map<std::type_index, std::vector<HandlerBase>> handlers;
 };
 
 #include "EventBus.inl"
