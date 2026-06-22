@@ -8,45 +8,58 @@
 #include <stdexcept>
 
 SDLRenderer::SDLRenderer(SDL_Window* window)
-{ this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); }
+{
+    this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-SDLRenderer::~SDLRenderer() { if (this->renderer) SDL_DestroyRenderer(this->renderer); }
+    this->registerHandler<DrawTextureCommand>([this]
+        (const DrawTextureCommand& cmd) { this->drawTextureImpl(cmd); });
+    this->registerHandler<DrawFontCommand>([this]
+        (const DrawFontCommand& cmd) { this->drawFontImpl(cmd); });
+    this->registerHandler<DrawRectangleCommand>([this]
+        (const DrawRectangleCommand& cmd) { this->drawRectangleImpl(cmd); });
+    this->registerHandler<DrawCircleCommand>([this]
+        (const DrawCircleCommand& cmd) { this->drawCircleImpl(cmd); });
+}
 
-void SDLRenderer::clear() { SDL_RenderClear(this->renderer); }
+void SDLRenderer::setViewport(const Viewport& viewport)
+{
+    SDL_Rect rect = { viewport.x, viewport.y, viewport.width, viewport.height };
+    SDL_RenderSetViewport(this->renderer, &rect);
+}
 
-void SDLRenderer::present() { SDL_RenderPresent(this->renderer); }
-
-void SDLRenderer::drawTexture(const DrawTextureCommand& cmd)
+void SDLRenderer::drawTextureImpl(const DrawTextureCommand& cmd)
 {
     if (!cmd.texture) return;
     const SDLTexture& sdlTex = static_cast<const SDLTexture&>(*cmd.texture);
 
+    auto& dest = cmd.dest;
     SDL_Rect dst =
     {
-        static_cast<int>(std::lround(cmd.dest.position.x)),
-        static_cast<int>(std::lround(cmd.dest.position.y)),
-        static_cast<int>(std::lround(cmd.dest.size.width)),
-        static_cast<int>(std::lround(cmd.dest.size.height))
+        static_cast<int>(std::lround(dest.position.x)),
+        static_cast<int>(std::lround(dest.position.y)),
+        static_cast<int>(std::lround(dest.size.width)),
+        static_cast<int>(std::lround(dest.size.height))
     };
     
     SDL_Rect* srcPtr = nullptr;
     SDL_Rect src;
     if (cmd.useSourceRect)
     {
+        auto& source = cmd.source;
         src =
         {
-            static_cast<int>(std::lround(cmd.source.position.x)),
-            static_cast<int>(std::lround(cmd.source.position.y)),
-            static_cast<int>(std::lround(cmd.source.size.width)),
-            static_cast<int>(std::lround(cmd.source.size.height))
+            static_cast<int>(std::lround(source.position.x)),
+            static_cast<int>(std::lround(source.position.y)),
+            static_cast<int>(std::lround(source.size.width)),
+            static_cast<int>(std::lround(source.size.height))
         };
         srcPtr = &src;
     }
 
     SDL_Point pivot =
     {
-        static_cast<int>(cmd.pivot.x * cmd.dest.size.width),
-        static_cast<int>(cmd.pivot.y * cmd.dest.size.height)
+        static_cast<int>(cmd.pivot.x * dest.size.width),
+        static_cast<int>(cmd.pivot.y * dest.size.height)
     };
 
     SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -56,8 +69,8 @@ void SDLRenderer::drawTexture(const DrawTextureCommand& cmd)
     SDL_BlendMode sdlBlend = SDL_BLENDMODE_BLEND;
     switch (cmd.blend)
     {
-        case BlendMode::Normal: sdlBlend = SDL_BLENDMODE_BLEND; break;
-        case BlendMode::Add: sdlBlend = SDL_BLENDMODE_ADD; break;
+        case BlendMode::Normal:   sdlBlend = SDL_BLENDMODE_BLEND; break;
+        case BlendMode::Add:      sdlBlend = SDL_BLENDMODE_ADD; break;
         case BlendMode::Multiply: sdlBlend = SDL_BLENDMODE_MOD; break;
     }
 
@@ -79,7 +92,7 @@ void SDLRenderer::drawTexture(const DrawTextureCommand& cmd)
     SDL_SetTextureBlendMode(sdlTex.get(), oldBlend);
 }
 
-void SDLRenderer::drawFont(const DrawFontCommand& cmd)
+void SDLRenderer::drawFontImpl(const DrawFontCommand& cmd)
 {
     if (!cmd.font) return;
     if (!this->renderer) return;
@@ -101,12 +114,13 @@ void SDLRenderer::drawFont(const DrawFontCommand& cmd)
     SDL_Texture* texture = SDL_CreateTextureFromSurface(this->renderer, surface);
     if (texture)
     {
+        auto& dest = cmd.dest;
         SDL_Rect dst =
         {
-            static_cast<int>(std::lround(cmd.dest.position.x)),
-            static_cast<int>(std::lround(cmd.dest.position.y)),
-            static_cast<int>(std::lround(cmd.dest.size.width)),
-            static_cast<int>(std::lround(cmd.dest.size.height))
+            static_cast<int>(std::lround(dest.position.x)),
+            static_cast<int>(std::lround(dest.position.y)),
+            static_cast<int>(std::lround(dest.size.width)),
+            static_cast<int>(std::lround(dest.size.height))
         };
         SDL_RenderCopy(this->renderer, texture, nullptr, &dst);
         SDL_DestroyTexture(texture);
@@ -114,22 +128,16 @@ void SDLRenderer::drawFont(const DrawFontCommand& cmd)
     SDL_FreeSurface(surface);
 }
 
-void SDLRenderer::drawRectangle(const DrawRectangleCommand& cmd)
+void SDLRenderer::drawRectangleImpl(const DrawRectangleCommand& cmd)
 {
     if (cmd.filled) this->drawRectFilled(cmd.rect, cmd.color);
     else this->drawRectOutline(cmd.rect, cmd.color);
 }
 
-void SDLRenderer::drawCircle(const DrawCircleCommand& cmd)
+void SDLRenderer::drawCircleImpl(const DrawCircleCommand& cmd)
 {
     if (cmd.filled) this->drawCircleFilled(cmd.circle, cmd.color);
     else this->drawCircleOutline(cmd.circle, cmd.color);
-}
-
-void SDLRenderer::setViewport(const Viewport& viewport)
-{
-    SDL_Rect rect = { viewport.x, viewport.y, viewport.width, viewport.height };
-    SDL_RenderSetViewport(this->renderer, &rect);
 }
 
 void SDLRenderer::drawRectOutline(const Rectangle& rect, const Color& color)

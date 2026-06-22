@@ -64,7 +64,7 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws textures", "[unit][sdl_r
     cmd.flipY = false;
 
     REQUIRE_NOTHROW(renderer.clear());
-    REQUIRE_NOTHROW(renderer.drawTexture(cmd));
+    REQUIRE_NOTHROW(renderer.draw(cmd));
     REQUIRE_NOTHROW(renderer.present());
 
     SDL_Quit();
@@ -80,9 +80,25 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws rectangles", "[unit][sdl
 
     SDLRenderer renderer(window.get());
 
+    DrawRectangleCommand cmd1;
+    cmd1.rect = Rectangle{{0.f, 0.f}, 10.f, 10.f};
+    cmd1.color = Color{};
+    cmd1.filled = false;
+    cmd1.layer = 0;
+    cmd1.zIndex = 0;
+    cmd1.order = 0;
+
+    DrawRectangleCommand cmd2;
+    cmd2.rect = Rectangle{{1.f, 1.f}, 12.f, 14.f};
+    cmd2.color = Color{10, 20, 30, 40};
+    cmd2.filled = true;
+    cmd2.layer = 0;
+    cmd2.zIndex = 0;
+    cmd2.order = 0;
+
     REQUIRE_NOTHROW(renderer.clear());
-    REQUIRE_NOTHROW(renderer.drawRectangle(DrawRectangleCommand{Rectangle{{0.f, 0.f}, 10.f, 10.f}, Color{}}));
-    REQUIRE_NOTHROW(renderer.drawRectangle(DrawRectangleCommand{Rectangle{{1.f, 1.f}, 12.f, 14.f}, Color{10, 20, 30, 40}, true}));
+    REQUIRE_NOTHROW(renderer.draw(cmd1));
+    REQUIRE_NOTHROW(renderer.draw(cmd2));
     REQUIRE_NOTHROW(renderer.present());
 
     SDL_Quit();
@@ -98,9 +114,25 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws circles", "[unit][sdl_re
 
     SDLRenderer renderer(window.get());
 
+    DrawCircleCommand cmd1;
+    cmd1.circle = Circle{{4.f, 5.f}, 6.f};
+    cmd1.color = Color{};
+    cmd1.filled = false;
+    cmd1.layer = 0;
+    cmd1.zIndex = 0;
+    cmd1.order = 0;
+
+    DrawCircleCommand cmd2;
+    cmd2.circle = Circle{{7.f, 8.f}, 9.f};
+    cmd2.color = Color{10, 20, 30, 40};
+    cmd2.filled = true;
+    cmd2.layer = 0;
+    cmd2.zIndex = 0;
+    cmd2.order = 0;
+
     REQUIRE_NOTHROW(renderer.clear());
-    REQUIRE_NOTHROW(renderer.drawCircle(DrawCircleCommand{Circle{{4.f, 5.f}, 6.f}, Color{}}));
-    REQUIRE_NOTHROW(renderer.drawCircle(DrawCircleCommand{Circle{{7.f, 8.f}, 9.f}, Color{10, 20, 30, 40}, true}));
+    REQUIRE_NOTHROW(renderer.draw(cmd1));
+    REQUIRE_NOTHROW(renderer.draw(cmd2));
     REQUIRE_NOTHROW(renderer.present());
 
     SDL_Quit();
@@ -139,12 +171,21 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawFont method defined", 
 
     SDLFont font(fontPath);
     
-    DrawFontCommand cmd{ textStr, &font, textRect, 18, textColor };
+    DrawFontCommand cmd;
+    cmd.text = textStr;
+    cmd.font = &font;
+    cmd.dest = textRect;
+    cmd.fontSize = 18;
+    cmd.color = textColor;
+    cmd.layer = 0;
+    cmd.zIndex = 0;
+    cmd.order = 0;
+
     REQUIRE_NOTHROW(font.getFontWithSize(cmd.fontSize));
 
     {
         REQUIRE_NOTHROW(renderer.clear());
-        REQUIRE_NOTHROW(renderer.drawFont(cmd));
+        REQUIRE_NOTHROW(renderer.draw(cmd));
         REQUIRE_NOTHROW(renderer.present());
     }
 
