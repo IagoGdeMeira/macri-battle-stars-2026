@@ -27,13 +27,9 @@ void StaticPushboxResolutionSystem::update(UpdateContext& ctx)
         auto& pushA = comp.get<PushboxComponent>(a);
         auto& pushB = comp.get<PushboxComponent>(b);
 
-        if (pushA.type == PushboxComponent::PushboxType::Dynamic &&
-            pushB.type == PushboxComponent::PushboxType::Static)
-        { this->resolveStaticCollision(ctx, a, b); }
-        else if (
-            pushB.type == PushboxComponent::PushboxType::Dynamic &&
-            pushA.type == PushboxComponent::PushboxType::Static)
-        { this->resolveStaticCollision(ctx, b, a); }
+        using PushType = PushboxComponent::PushboxType;
+        if (pushA.type == PushType::Dynamic && pushB.type == PushType::Static) this->resolveStaticCollision(ctx, a, b);
+        else if (pushB.type == PushType::Dynamic && pushA.type == PushType::Static) this->resolveStaticCollision(ctx, b, a);
     }
     
     this->collisions.clear();
@@ -57,8 +53,8 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
 
     TransformComponent& dynTrans = dynHandler->getTransform(ctx, {dyn, std::nullopt});
 
-    const Position dynCenter{ (dynAABB.left + dynAABB.right) * 0.5f, (dynAABB.top + dynAABB.bottom) * 0.5f };
-    const Position staCenter{ (staAABB.left + staAABB.right) * 0.5f, (staAABB.top + staAABB.bottom) * 0.5f };
+    const Position dynCenter{(dynAABB.left + dynAABB.right) * 0.5f, (dynAABB.top + dynAABB.bottom) * 0.5f};
+    const Position staCenter{(staAABB.left + staAABB.right) * 0.5f, (staAABB.top + staAABB.bottom) * 0.5f};
 
     auto& comp = ctx.world.components();
 

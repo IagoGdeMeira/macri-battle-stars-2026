@@ -27,10 +27,7 @@ void DamageSystem::update(UpdateContext& ctx)
         Entity target = b;
 
         if (components.has<HitboxComponent>(b) && components.has<HurtboxComponent>(a))
-        {
-            attacker = b;
-            target = a;
-        }
+        { attacker = b; target = a; }
 
         if (!components.has<HitboxComponent>(attacker)) continue;
         if (!components.has<HurtboxComponent>(target)) continue;

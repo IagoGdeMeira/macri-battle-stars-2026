@@ -14,7 +14,8 @@
 class MenuLoader
 {
 public:
-    MenuLoader(DataParser& parser, UIActionFactory& actionFactory);
+    MenuLoader(DataParser& parser, UIActionFactory& actionFactory) :
+        parser(parser), actionFactory(actionFactory) {}
 
     MenuData load(const std::string& path) const;
 

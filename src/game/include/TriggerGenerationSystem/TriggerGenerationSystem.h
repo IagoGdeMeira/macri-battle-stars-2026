@@ -9,9 +9,7 @@
 class TriggerGenerationSystem : public System
 {
 public:
-    TriggerGenerationSystem(EventBus& bus, TriggerContext& context) :
-        bus(bus), context(context) {}
-
+    TriggerGenerationSystem(EventBus& bus, TriggerContext& context) : bus(bus), context(context) {}
     void update(UpdateContext& ctx) override;
 
 private:

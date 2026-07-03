@@ -6,9 +6,6 @@
 
 #include <stdexcept>
 
-MenuLoader::MenuLoader(DataParser& parser, UIActionFactory& actionFactory) :
-    parser(parser), actionFactory(actionFactory) {}
-
 MenuData MenuLoader::load(const std::string& path) const
 {
     auto root = this->parser.parse(path);

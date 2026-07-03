@@ -17,7 +17,8 @@ class World;
 class EntityFactory
 {
 public:
-    EntityFactory(World& world, ResourceManager& resourceManager, TextureLoader& textureLoader);
+    EntityFactory(World& world, ResourceManager& resourceManager, TextureLoader& textureLoader):
+        world(world), resourceManager(resourceManager), textureLoader(textureLoader) {}
 
     Entity createStaticBody(const Position& position);
     Entity addStaticCollider(Entity parent, const Rectangle& rect);

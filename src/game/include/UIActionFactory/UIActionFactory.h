@@ -9,15 +9,9 @@
 class UIActionFactory
 {
 public:
-    struct Config
-    {
-        EventBus& eventBus;
-        SceneManager& sceneManager;
-    };
+    struct Config { EventBus& eventBus; SceneManager& sceneManager; };
 
-    explicit UIActionFactory(const Config& config) :
-        eventBus(config.eventBus),
-        sceneManager(config.sceneManager) {}
+    explicit UIActionFactory(const Config& config) : eventBus(config.eventBus), sceneManager(config.sceneManager) {}
 
     std::unique_ptr<IUIAction> create(const std::string& type) const;
 

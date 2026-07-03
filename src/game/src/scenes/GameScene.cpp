@@ -112,22 +112,13 @@ void GameScene::loadInputContext(const std::string& path)
 }
 
 void GameScene::loadMap(const std::string& path)
-{
-    MapLoader loader(this->parser);
-    this->mapData = loader.load(path);
-}
+{ this->mapData = MapLoader(this->parser).load(path); }
 
 void GameScene::loadCombos(const std::string& path)
-{
-    ComboLoader loader(this->parser);
-    this->combos = loader.load(path);
-}
+{ this->combos = ComboLoader(this->parser).load(path); }
 
 void GameScene::loadTriggerBindings(const std::string& path)
-{
-    TriggerBindingLoader loader(this->parser);
-    this->triggerContext = loader.load(path);
-}
+{ this->triggerContext = TriggerBindingLoader(this->parser).load(path); }
 
 void GameScene::createCharacterLoader()
 {

@@ -10,7 +10,8 @@ class EventBus;
 class SDLMouseAdapter : public InputAdapter
 {
 public:
-    SDLMouseAdapter(EventBus& eventBus, uint32_t assignedPlayer);
+    SDLMouseAdapter(EventBus& eventBus, uint32_t assignedPlayer) : 
+        eventBus(eventBus), playerId(assignedPlayer) {}
     
     void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events) override;
 

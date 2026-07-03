@@ -27,8 +27,8 @@ void DynamicPushboxResolutionSystem::update(UpdateContext& ctx)
         auto& pushA = comp.get<PushboxComponent>(a);
         auto& pushB = comp.get<PushboxComponent>(b);
 
-        if (pushA.type != PushboxComponent::PushboxType::Dynamic ||
-            pushB.type != PushboxComponent::PushboxType::Dynamic) continue;
+        using PushType = PushboxComponent::PushboxType;
+        if (pushA.type != PushType::Dynamic || pushB.type != PushType::Dynamic) continue;
 
         this->resolveDynamicCollision(ctx, a, b);
     }

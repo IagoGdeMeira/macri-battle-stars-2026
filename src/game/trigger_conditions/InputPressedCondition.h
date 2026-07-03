@@ -17,7 +17,7 @@ public:
         if (!components.has<InputComponent>(ctx.entity)) return false;
 
         const auto& input = components.get<InputComponent>(ctx.entity);
-        const auto it = input.actions.find(action);
+        const auto it = input.actions.find(this->action);
         return it != input.actions.end() && it->second.pressed;
     }
 

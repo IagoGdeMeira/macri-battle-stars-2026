@@ -21,9 +21,6 @@
 #include "../../engine/include/Texture/Texture.h"
 #include "../../engine/include/TextureLoader/TextureLoader.h"
 
-EntityFactory::EntityFactory(World& world, ResourceManager& resourceManager, TextureLoader& textureLoader) :
-    world(world), resourceManager(resourceManager), textureLoader(textureLoader) {}
-
 Entity EntityFactory::createStaticBody(const Position& position)
 {
     Entity e = this->world.entities().create();

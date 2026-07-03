@@ -14,17 +14,13 @@ void TriggerGenerationSystem::processInputTriggers(UpdateContext& ctx)
 {
     auto view = View<InputComponent, PlayerComponent>(ctx.world.components());
 
-    for (auto [entity, input, player] : view)
+    for (auto [entity, input, p_] : view) for (const auto& [action, state] : input.actions)
     {
-        for (const auto& [action, state] : input.actions)
-        {
-            if (!state.pressed) continue;
+        if (!state.pressed) continue;
 
-            auto it = this->context.bindings.find(action);
-            if (it == this->context.bindings.end()) continue;
+        auto it = this->context.bindings.find(action);
+        if (it == this->context.bindings.end()) continue;
 
-            for (auto trigger : it->second)
-            { this->bus.emit<TriggerEvent>(TriggerEvent{ entity, trigger }); }
-        }
+        for (auto trigger : it->second) this->bus.emit<TriggerEvent>(TriggerEvent{ entity, trigger });
     }
 }

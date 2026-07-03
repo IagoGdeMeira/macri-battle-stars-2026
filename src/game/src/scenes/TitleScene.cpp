@@ -34,10 +34,7 @@ void TitleScene::init()
 }
 
 void TitleScene::loadInputContext()
-{
-    InputBindingLoader loader(this->parser);
-    this->inputContext = std::make_unique<InputContext>(loader.load("assets/inputs/input_bindings.json"));
-}
+{ this->inputContext = std::make_unique<InputContext>(InputBindingLoader(this->parser).load("assets/inputs/input_bindings.json")); }
 
 void TitleScene::setupInputAdapters()
 {

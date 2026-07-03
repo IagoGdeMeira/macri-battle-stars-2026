@@ -7,9 +7,6 @@
 
 #include <SDL.h>
 
-SDLMouseAdapter::SDLMouseAdapter(EventBus& eventBus, uint32_t assignedPlayer) :
-    eventBus(eventBus), playerId(assignedPlayer) {}
-
 void SDLMouseAdapter::processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events)
 {
     for (const auto& e : events)

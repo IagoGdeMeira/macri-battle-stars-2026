@@ -22,9 +22,7 @@ std::unique_ptr<ITriggerCondition> TriggerConditionFactory::create(const DataNod
         std::vector<std::unique_ptr<ITriggerCondition>> children;
         CType ctype = (type == "and") ? CType::And : CType::Or;
 
-        for (auto& child : node.getArray("conditions"))
-        {  children.push_back(TriggerConditionFactory::create(*child)); }
-
+        for (auto& child : node.getArray("conditions")) children.push_back(TriggerConditionFactory::create(*child));
         return std::make_unique<CompositeCondition>(ctype, std::move(children));
     }
 
