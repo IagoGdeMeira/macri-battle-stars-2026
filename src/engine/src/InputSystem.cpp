@@ -25,9 +25,9 @@ void InputSystem::update(UpdateContext& ctx)
     auto digitalView = View<InputComponent, PlayerComponent>(comp);
     for (auto [entity, input, player] : digitalView)
     {
-        auto& binding = context.bindings[player.id];
-        auto& playerSources = sourceStates[player.id];
-        auto& previousSources = previousSourceStates[player.id];
+        auto& binding = this->context.bindings[player.id];
+        auto& playerSources = this->sourceStates[player.id];
+        auto& previousSources = this->previousSourceStates[player.id];
 
         for (auto& [action, state] : input.actions)
         {

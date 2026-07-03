@@ -80,7 +80,7 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createPanel adds base UI component
 
 TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createText builds a text entity", "[unit][ui_factory]")
 {
-    Entity text = this->factory.createText("Play", 24.0f, Color::WHITE(), Position{5.0f, 6.0f});
+    Entity text = this->factory.createText("Play", 24.f, Color::WHITE(), Position{5.f, 6.f});
 
     auto& components = this->world.components();
 
@@ -93,7 +93,7 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createText builds a text entity", 
     const auto& uiText = components.get<UITextComponent>(text);
     REQUIRE(uiText.text == "Play");
     REQUIRE(uiText.font == this->fontFactory.fontToReturn);
-    REQUIRE(uiText.fontSize == Catch::Approx(24.0f));
+    REQUIRE(uiText.fontSize == Catch::Approx(24.f));
 }
 
 TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createImage builds a sprite entity", "[unit][ui_factory]")

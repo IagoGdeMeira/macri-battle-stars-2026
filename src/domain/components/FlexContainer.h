@@ -11,7 +11,7 @@ struct FlexContainer
     JustifyContent justify = JustifyContent::FlexStart;
     AlignItems align = AlignItems::Stretch;
 
-    float gap = 0.0f;
+    float gap = 0.f;
     bool needsLayout = true;
 };
 

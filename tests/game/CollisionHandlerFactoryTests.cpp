@@ -68,8 +68,8 @@ TEST_CASE_METHOD(CollisionHandlerFactoryFixture,
     REQUIRE(handler);
 
     const auto aabb = handler->getAABB(this->context, { preferred, fallback });
-    REQUIRE(aabb.left == Catch::Approx(-1.0f));
-    REQUIRE(aabb.right == Catch::Approx(7.0f));
-    REQUIRE(aabb.top == Catch::Approx(0.0f));
-    REQUIRE(aabb.bottom == Catch::Approx(8.0f));
+    REQUIRE(aabb.left == Catch::Approx(-1.f));
+    REQUIRE(aabb.right == Catch::Approx(7.f));
+    REQUIRE(aabb.top == Catch::Approx(0.f));
+    REQUIRE(aabb.bottom == Catch::Approx(8.f));
 }

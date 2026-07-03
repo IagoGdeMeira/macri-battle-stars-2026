@@ -10,7 +10,6 @@ class IFontFactory
 {
 public:
     virtual ~IFontFactory() = default;
-
     virtual std::shared_ptr<Font> createFont(const std::string& path) = 0;
 };
 

@@ -21,7 +21,7 @@ void HitstopSystem::update(UpdateContext& ctx)
         if (!comp.has<HitstopComponent>(entity)) continue;
         auto& hitstop = comp.get<HitstopComponent>(entity);
         
-        hitstop.remaining = hitstopDuration;
+        hitstop.remaining = this->hitstopDuration;
         hitstop.frozen = true;
     }
     
@@ -33,8 +33,8 @@ void HitstopSystem::update(UpdateContext& ctx)
         if (!hitstop.frozen) continue;
         hitstop.remaining -= ctx.deltaTime;
         
-        if (hitstop.remaining > 0.0f) continue;
+        if (hitstop.remaining > 0.f) continue;
         hitstop.frozen = false;
-        hitstop.remaining = 0.0f;
+        hitstop.remaining = 0.f;
     }
 }

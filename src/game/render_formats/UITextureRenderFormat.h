@@ -33,8 +33,8 @@ public:
             cmd.texture = sprite.texture.get();
             cmd.dest = transform.rect;
             cmd.rotation = transform.rotation;
-            cmd.flipX = (transform.scale.x < 0.0f);
-            cmd.flipY = (transform.scale.y < 0.0f);
+            cmd.flipX = (transform.scale.x < 0.f);
+            cmd.flipY = (transform.scale.y < 0.f);
             cmd.layer = render.layer;
             cmd.zIndex = render.zIndex;
             cmd.order = order++;

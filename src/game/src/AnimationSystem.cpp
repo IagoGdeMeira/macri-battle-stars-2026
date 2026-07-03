@@ -9,26 +9,26 @@
 void AnimationSystem::update(UpdateContext& ctx)
 {
     auto view = View<AnimationComponent, SpriteComponent>(ctx.world.components());
-
     for (auto [entity, anim, sprite] : view)
     {
-        if (anim.animation.frames.empty()) continue;
+        auto& animation = anim.animation;
+        if (animation.frames.empty()) continue;
 
         anim.elapsedTime += ctx.deltaTime;
 
-        const float frameDuration = anim.animation.frameDuration;
+        const float frameDuration = animation.frameDuration;
         while (anim.elapsedTime >= frameDuration)
         {
             anim.elapsedTime -= frameDuration;
             anim.currentFrame++;
 
-            if (anim.currentFrame < (int)anim.animation.frames.size()) continue;
+            if (anim.currentFrame < (int)animation.frames.size()) continue;
             
-            if (anim.animation.loop) anim.currentFrame = 0;
-            else anim.currentFrame = (int)anim.animation.frames.size() - 1;
+            if (animation.loop) anim.currentFrame = 0;
+            else anim.currentFrame = (int)animation.frames.size() - 1;
         }
 
-        const auto& frame = anim.animation.frames[anim.currentFrame];
+        const auto& frame = animation.frames[anim.currentFrame];
 
         sprite.source.position.x = static_cast<float>(frame.x);
         sprite.source.position.y = static_cast<float>(frame.y);

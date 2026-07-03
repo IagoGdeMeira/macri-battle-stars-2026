@@ -12,7 +12,7 @@
 class PlayerControlSystem : public System
 {
 public:
-    PlayerControlSystem(EventBus& bus, float moveSpeed = 300.0f, float jumpImpulse = -500.0f);
+    PlayerControlSystem(EventBus& bus, float moveSpeed = 300.f, float jumpImpulse = -500.f);
     
     void update(UpdateContext& ctx) override;
 

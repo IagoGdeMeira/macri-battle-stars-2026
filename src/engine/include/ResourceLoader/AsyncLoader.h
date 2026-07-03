@@ -13,7 +13,7 @@ public:
     std::future<std::shared_ptr<T>> load(
         ResourceLoader<T>& loader,
         const std::string& path
-    ) { return pool.enqueue([&loader, path]() { return loader.load(path); }); }
+    ) { return this->pool.enqueue([&loader, path]() { return loader.load(path); }); }
 
 private:
     ThreadPool& pool;

@@ -38,7 +38,7 @@ TEST_CASE("InputBufferSystem pushes mapped pressed key to matching player",
     const auto& updated = scene.world().components().get<InputBufferComponent>(entity);
     REQUIRE(updated.buffer.size() == 1);
     REQUIRE(updated.buffer.back().action == InputAction::Punch);
-    REQUIRE(updated.buffer.back().time == 0.0f);
+    REQUIRE(updated.buffer.back().time == 0.f);
 }
 
 TEST_CASE("InputBufferSystem ignores key release events",

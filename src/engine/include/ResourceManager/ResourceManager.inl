@@ -71,19 +71,11 @@ std::string ResourceManager::makeKey(const std::string& path)
 { return std::string(typeid(T).name()) + ":" + path; }
 
 template<typename T>
-std::future<std::shared_ptr<T>> ResourceManager::makeReadyFuture(
-    std::shared_ptr<T> resource
-) {
-    return std::async(std::launch::deferred, [resource]()
-    { return resource; });
-}
+std::future<std::shared_ptr<T>> ResourceManager::makeReadyFuture(std::shared_ptr<T> resource)
+{ return std::async(std::launch::deferred, [resource]() { return resource; }); }
 
 template<typename T>
-std::future<std::shared_ptr<T>> ResourceManager::wrapFuture(
-    std::shared_future<std::shared_ptr<void>> f
-) {
-    return std::async(std::launch::deferred, [f]()
-    { return std::static_pointer_cast<T>(f.get()); });
-}
+std::future<std::shared_ptr<T>> ResourceManager::wrapFuture(std::shared_future<std::shared_ptr<void>> future)
+{ return std::async(std::launch::deferred, [future]() { return std::static_pointer_cast<T>(future.get()); }); }
 
 #endif // resource_manager_inl

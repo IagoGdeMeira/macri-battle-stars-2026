@@ -3,7 +3,7 @@
 
 struct FlexItem
 {
-    float grow = .0f, shrink = 1.0f, basis = -1.0f;
+    float grow = 0.f, shrink = 1.f, basis = -1.f;
     bool isFocused = false;
 };
 

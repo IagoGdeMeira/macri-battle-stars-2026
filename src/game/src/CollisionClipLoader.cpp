@@ -81,7 +81,7 @@ HurtboxDef CollisionClipLoader::parseHurtbox(const DataNode& node) const
 {
     HurtboxDef def;
     def.collider = this->parseCollider(node);
-    def.damageMultiplier = node.getFloat("damageMultiplier", 1.0f);
+    def.damageMultiplier = node.getFloat("damageMultiplier", 1.f);
     return def;
 }
 
@@ -89,8 +89,8 @@ PushboxDef CollisionClipLoader::parsePushbox(const DataNode& node) const
 {
     PushboxDef def;
     def.collider = this->parseCollider(node);
-    def.mass = node.getFloat("mass", 1.0f);
-    def.pushResistance = node.getFloat("pushResistance", 1.0f);
+    def.mass = node.getFloat("mass", 1.f);
+    def.pushResistance = node.getFloat("pushResistance", 1.f);
     def.type = node.getString("type", "Dynamic") == "Dynamic"
         ? PushboxDef::Type::Dynamic
         : PushboxDef::Type::Static;
@@ -104,6 +104,6 @@ void CollisionClipLoader::parseOffset(Position& offset, const DataNode& node) co
     auto offsetNode = node.getObject("offset");
     if (!offsetNode) throw std::runtime_error("'offset' must be an object with keys 'x' and 'y'");
 
-    offset.x = offsetNode->getFloat("x", 0.0f);
-    offset.y = offsetNode->getFloat("y", 0.0f);
+    offset.x = offsetNode->getFloat("x", 0.f);
+    offset.y = offsetNode->getFloat("y", 0.f);
 }

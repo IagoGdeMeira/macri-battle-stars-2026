@@ -11,7 +11,7 @@ struct TextElement : public UIElement
 {
     std::string text;
     std::string fontPath = "assets/fonts/default.ttf";
-    float fontSize = 24.0f;
+    float fontSize = 24.f;
     Color color = Color::WHITE();
 };
 

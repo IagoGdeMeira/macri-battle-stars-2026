@@ -5,8 +5,7 @@
 int main()
 {
     Application app;
-    app.setWindowTitle("Macri Battle Stars")
-       .setWindowSize(800, 600);
+    app.setWindowTitle("Macri Battle Stars").setWindowSize(800, 600);
 
     return app.run();
 }

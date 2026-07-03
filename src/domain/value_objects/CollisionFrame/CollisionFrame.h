@@ -22,7 +22,7 @@ struct HitboxDef
 struct HurtboxDef
 {
     std::unique_ptr<ColliderDef> collider;
-    float damageMultiplier = 1.0f;
+    float damageMultiplier = 1.f;
     ColliderDebugDef debug;
 };
 
@@ -32,13 +32,13 @@ struct PushboxDef
 
     std::unique_ptr<ColliderDef> collider;
     Type type = Type::Dynamic;
-    float mass = 1.0f, pushResistance = 1.0f;
+    float mass = 1.f, pushResistance = 1.f;
     ColliderDebugDef debug;
 };
 
 struct CollisionFrame
 {
-    float duration = 0.0f;
+    float duration = 0.f;
     std::vector<HitboxDef> hitboxes;
     std::vector<HurtboxDef> hurtboxes;
     std::vector<PushboxDef> pushboxes;

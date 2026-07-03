@@ -20,7 +20,7 @@ Position WorldRenderUtils::resolveParallax(World& world, Entity& entity)
         const auto& parallax = world.components().get<ParallaxComponent>(entity);
         return parallax.factor;
     }
-    return {1.0f, 1.0f};
+    return Position{1.f, 1.f};
 }
 
 void WorldRenderUtils::computeSpriteTransform(const Camera2D& camera, const Rectangle& spriteConfig, DrawTextureCommand& cmd)
@@ -29,6 +29,6 @@ void WorldRenderUtils::computeSpriteTransform(const Camera2D& camera, const Rect
     const float width = spriteConfig.size.width * std::abs(spriteConfig.position.x) * zoom;
     const float height = spriteConfig.size.height * std::abs(spriteConfig.position.y) * zoom;
     cmd.dest.size = { width, height };
-    cmd.flipX = spriteConfig.position.x < 0.0f;
-    cmd.flipY = spriteConfig.position.y < 0.0f;
+    cmd.flipX = spriteConfig.position.x < 0.f;
+    cmd.flipY = spriteConfig.position.y < 0.f;
 }

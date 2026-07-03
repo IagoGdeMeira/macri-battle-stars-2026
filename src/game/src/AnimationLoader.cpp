@@ -13,7 +13,7 @@ AnimationSet AnimationLoader::load(const std::string& path) const
 
 AnimationSet AnimationLoader::load(const std::string& path, const StateIdMapper& mapper) const
 {
-    auto root = parser.parse(path);
+    auto root = this->parser.parse(path);
     AnimationSet set;
 
     for (auto& node : root->getArray("animations"))

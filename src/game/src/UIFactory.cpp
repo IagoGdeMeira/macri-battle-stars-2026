@@ -44,7 +44,7 @@ Entity UIFactory::createButton(const std::string& text, const Rectangle& rect, s
     flex.justify = FlexContainer::JustifyContent::Center;
     flex.align = FlexContainer::AlignItems::Center;
 
-    Entity textEntity = this->createText(text, 24.0f, Color::WHITE(), {0, 0});
+    Entity textEntity = this->createText(text, 24.f, Color::WHITE(), {0, 0});
     comp.add<ParentComponent>(textEntity, ParentComponent{ button });
     comp.get<FlexItem>(textEntity);
 

@@ -4,7 +4,7 @@
 struct GroundedComponent
 {
     bool onGround = false;
-    float frictionReduction = 0.0f;
+    float frictionReduction = 0.f;
 };
 
 #endif // grounded_component_h

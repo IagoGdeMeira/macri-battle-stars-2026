@@ -85,11 +85,9 @@ void UILayoutSystem::distributeMainAxis(Item item, ItemGap& itemGap, Distributio
             if (orderedChildren.size() > 1) between = params.freeSpace / (orderedChildren.size() - 1);
             break;
         case Justify::SpaceAround: 
-            if (!orderedChildren.empty()) 
-            {
-                between = params.freeSpace / orderedChildren.size();
-                startOffset = between * 0.5f;
-            }
+            if (orderedChildren.empty()) break;
+            between = params.freeSpace / orderedChildren.size();
+            startOffset = between * 0.5f;
             break;
         default: break;
     }
@@ -110,13 +108,13 @@ void UILayoutSystem::positionItemMenu(Item item, float& cursor, ItemGap& itemGap
 
     if (itemGap.isColumn)
     {
-        itemTransform.rect.position.y = cursor + (itemBox ? itemBox->margin.top : 0.0f);
-        cursor += itemTransform.rect.size.height + (itemBox ? itemBox->margin.top + itemBox->margin.bottom : 0.0f) + itemGap.gap;
+        itemTransform.rect.position.y = cursor + (itemBox ? itemBox->margin.top : 0.f);
+        cursor += itemTransform.rect.size.height + (itemBox ? itemBox->margin.top + itemBox->margin.bottom : 0.f) + itemGap.gap;
     }
     else
     {
-        itemTransform.rect.position.x = cursor + (itemBox ? itemBox->margin.left : 0.0f);
-        cursor += itemTransform.rect.size.width + (itemBox ? itemBox->margin.left + itemBox->margin.right : 0.0f) + itemGap.gap;
+        itemTransform.rect.position.x = cursor + (itemBox ? itemBox->margin.left : 0.f);
+        cursor += itemTransform.rect.size.width + (itemBox ? itemBox->margin.left + itemBox->margin.right : 0.f) + itemGap.gap;
     }
 }
 
@@ -128,7 +126,7 @@ void UILayoutSystem::alignItemCross(Item item, AlignmentParams& params)
     float itemCrossSize = params.isColumn ? itemTransform.rect.size.width : itemTransform.rect.size.height;
     
     BoxModel* itemBox = components.has<BoxModel>(item.entity) ? &components.get<BoxModel>(item.entity) : nullptr;
-    float marginStart = itemBox ? (params.isColumn ? itemBox->margin.left : itemBox->margin.top) : 0.0f;
+    float marginStart = itemBox ? (params.isColumn ? itemBox->margin.left : itemBox->margin.top) : 0.f;
 
     float pos = params.crossPos + marginStart;
 

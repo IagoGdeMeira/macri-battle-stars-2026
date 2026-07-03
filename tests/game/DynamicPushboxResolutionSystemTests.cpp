@@ -19,7 +19,7 @@ class DynamicPushboxResolutionSystemFixture
 {
 public:
     DynamicPushboxResolutionSystemFixture() :
-        system(this->bus), context { this->world, this->bus, this->commandBuffer, 0.0f }
+        system(this->bus), context { this->world, this->bus, this->commandBuffer, 0.f }
     {
         auto& components = this->world.components();
         components.registerComponent<TransformComponent>();

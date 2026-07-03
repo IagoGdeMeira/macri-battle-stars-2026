@@ -42,34 +42,34 @@ std::string StateId::toBaseName(StateId id)
 
 const std::unordered_map<std::string, StateId::BaseState> StateId::nameToId =
 {
-    { "Unknown", StateId::BaseState::Unknown },
-    { "Idle", StateId::BaseState::Idle },
-    { "Running", StateId::BaseState::Running },
-    { "Walking", StateId::BaseState::Walking },
-    { "Jumping", StateId::BaseState::Jumping },
-    { "Falling", StateId::BaseState::Falling },
-    { "Punching", StateId::BaseState::Punching },
-    { "Kicking", StateId::BaseState::Kicking },
-    { "Blocking", StateId::BaseState::Blocking },
-    { "Dying", StateId::BaseState::Dying },
-    { "BeingHit", StateId::BaseState::BeingHit },
-    { "ChargingSpecial", StateId::BaseState::ChargingSpecial },
-    { "SpecialAttack", StateId::BaseState::SpecialAttack }
+    { "Unknown",            StateId::BaseState::Unknown },
+    { "Idle",               StateId::BaseState::Idle },
+    { "Running",            StateId::BaseState::Running },
+    { "Walking",            StateId::BaseState::Walking },
+    { "Jumping",            StateId::BaseState::Jumping },
+    { "Falling",            StateId::BaseState::Falling },
+    { "Punching",           StateId::BaseState::Punching },
+    { "Kicking",            StateId::BaseState::Kicking },
+    { "Blocking",           StateId::BaseState::Blocking },
+    { "Dying",              StateId::BaseState::Dying },
+    { "BeingHit",           StateId::BaseState::BeingHit },
+    { "ChargingSpecial",    StateId::BaseState::ChargingSpecial },
+    { "SpecialAttack",      StateId::BaseState::SpecialAttack }
 };
 
 const std::unordered_map<std::int32_t, std::string> StateId::idToName =
 {
-    { static_cast<std::int32_t>(StateId::BaseState::Unknown), "Unknown" },
-    { static_cast<std::int32_t>(StateId::BaseState::Idle), "Idle" },
-    { static_cast<std::int32_t>(StateId::BaseState::Running), "Running" },
-    { static_cast<std::int32_t>(StateId::BaseState::Walking), "Walking" },
-    { static_cast<std::int32_t>(StateId::BaseState::Jumping), "Jumping" },
-    { static_cast<std::int32_t>(StateId::BaseState::Falling), "Falling" },
-    { static_cast<std::int32_t>(StateId::BaseState::Punching), "Punching" },
-    { static_cast<std::int32_t>(StateId::BaseState::Kicking), "Kicking" },
-    { static_cast<std::int32_t>(StateId::BaseState::Blocking), "Blocking" },
-    { static_cast<std::int32_t>(StateId::BaseState::Dying), "Dying" },
-    { static_cast<std::int32_t>(StateId::BaseState::BeingHit), "BeingHit" },
-    { static_cast<std::int32_t>(StateId::BaseState::ChargingSpecial), "ChargingSpecial" },
-    { static_cast<std::int32_t>(StateId::BaseState::SpecialAttack), "SpecialAttack" }
+    { static_cast<std::int32_t>(StateId::BaseState::Unknown),           "Unknown" },
+    { static_cast<std::int32_t>(StateId::BaseState::Idle),              "Idle" },
+    { static_cast<std::int32_t>(StateId::BaseState::Running),           "Running" },
+    { static_cast<std::int32_t>(StateId::BaseState::Walking),           "Walking" },
+    { static_cast<std::int32_t>(StateId::BaseState::Jumping),           "Jumping" },
+    { static_cast<std::int32_t>(StateId::BaseState::Falling),           "Falling" },
+    { static_cast<std::int32_t>(StateId::BaseState::Punching),          "Punching" },
+    { static_cast<std::int32_t>(StateId::BaseState::Kicking),           "Kicking" },
+    { static_cast<std::int32_t>(StateId::BaseState::Blocking),          "Blocking" },
+    { static_cast<std::int32_t>(StateId::BaseState::Dying),             "Dying" },
+    { static_cast<std::int32_t>(StateId::BaseState::BeingHit),          "BeingHit" },
+    { static_cast<std::int32_t>(StateId::BaseState::ChargingSpecial),   "ChargingSpecial" },
+    { static_cast<std::int32_t>(StateId::BaseState::SpecialAttack),     "SpecialAttack" }
 };

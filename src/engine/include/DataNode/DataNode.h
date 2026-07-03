@@ -14,7 +14,7 @@ public:
 
     inline static const std::string defaultStringFallback{};
     inline static constexpr int defaultIntFallback = 0;
-    inline static constexpr float defaultFloatFallback = 0.0f;
+    inline static constexpr float defaultFloatFallback = 0.f;
     inline static constexpr bool defaultBoolFallback = false;
 
     virtual std::string getString(const std::string& key, const std::string& fallback = defaultStringFallback) const = 0;

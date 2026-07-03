@@ -46,19 +46,15 @@ auto ThreadPool::enqueue(F&& f) -> std::future<decltype(f())>
 {
     using ReturnType = decltype(f());
 
-    auto task = std::make_shared<std::packaged_task<ReturnType()>>(
-        std::forward<F>(f));
-
+    auto task = std::make_shared<std::packaged_task<ReturnType()>>(std::forward<F>(f));
     std::future<ReturnType> result = task->get_future();
 
     {
         std::unique_lock<std::mutex> lock(this->mutex);
-
         this->tasks.emplace([task]() { (*task)(); });
     }
 
     this->condition.notify_one();
-
     return result;
 }
 

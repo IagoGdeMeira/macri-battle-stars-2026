@@ -32,7 +32,6 @@ private:
 
     bool hasTrigger(const StateTransition& transition, TriggerId trigger);
     bool conditionsAreValid(const StateTransition& transition, TriggerConditionContext& ctx);
-    const StateTransition* findTransition(FindTransitionParams& params);
 };
 
 #endif // state_system_h

@@ -81,7 +81,7 @@ void MenuLoader::parseBaseFields(const DataNode& node, UIElement& elem) const
 void MenuLoader::parseTextFields(const DataNode& node, TextElement& elem) const
 {
     elem.text = node.getString("text");
-    elem.fontSize = node.getFloat("fontSize", 24.0f);
+    elem.fontSize = node.getFloat("fontSize", 24.f);
     elem.color = node.has("color") ? DataUtils::parseColor(*node.getObject("color")) : Color();
     elem.fontPath = node.getString("font", "assets/fonts/default.ttf");
 }

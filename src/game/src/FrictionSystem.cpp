@@ -20,14 +20,14 @@ void FrictionSystem::update(UpdateContext& ctx)
 
         if (!g.onGround) continue;
 
-        float effectiveFriction = this->friction * (1.0f - g.frictionReduction);
-        if (effectiveFriction < 0.0f) effectiveFriction = 0.0f;
+        float effectiveFriction = this->friction * (1.f - g.frictionReduction);
+        if (effectiveFriction < 0.f) effectiveFriction = 0.f;
 
-        float decay = 1.0f - (effectiveFriction * 0.01f * ctx.deltaTime);
-        if (decay < 0.0f) decay = 0.0f;
+        float decay = 1.f - (effectiveFriction * 0.01f * ctx.deltaTime);
+        if (decay < 0.f) decay = 0.f;
 
         v.velocity.x *= decay;
 
-        if (std::abs(v.velocity.x) < 1.0f) v.velocity.x = 0.0f;
+        if (std::abs(v.velocity.x) < 1.f) v.velocity.x = 0.f;
     }
 }

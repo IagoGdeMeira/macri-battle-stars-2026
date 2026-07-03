@@ -18,7 +18,7 @@ public:
     bool isPlaying() const override;
 
 private:
-    static constexpr float VOLUME_SCALE = 128.0f / 100.0f;
+    static constexpr float VOLUME_SCALE = 128.f / 100.f;
 
     Mix_Chunk* chunk;
     int channel = -1;

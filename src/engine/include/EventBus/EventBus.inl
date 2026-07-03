@@ -9,9 +9,7 @@ template <typename Event>
 void EventBus::subscribe(Handler<Event> handler)
 {
     auto& list = this->handlers[typeid(Event)];
-
-    list.push_back([handler](const void* eventPtr)
-        { handler(*static_cast<const Event*>(eventPtr)); });
+    list.push_back([handler](const void* eventPtr){ handler(*static_cast<const Event*>(eventPtr)); });
 }
 
 template <typename Event, typename... Args>

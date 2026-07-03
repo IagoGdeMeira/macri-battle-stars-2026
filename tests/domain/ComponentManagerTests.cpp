@@ -28,8 +28,8 @@ TEST_CASE("ComponentManager can add and get components", "[unit][component_manag
 
     auto& p = manager.get<Position>(e);
 
-    REQUIRE(p.x == 10.0f);
-    REQUIRE(p.y == 20.0f);
+    REQUIRE(p.x == 10.f);
+    REQUIRE(p.y == 20.f);
 }
 
 TEST_CASE("ComponentManager can check for components", "[unit][component_manager]")

@@ -26,8 +26,8 @@ private:
     AABB bounds;
 
     float minZoom = 0.5f;
-    float maxZoom = 2.0f;
-    float padding = 50.0f;
+    float maxZoom = 2.f;
+    float padding = 50.f;
 };
 
 #endif // camera_controller_system_h

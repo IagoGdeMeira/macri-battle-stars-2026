@@ -19,7 +19,7 @@ public:
         auto& t = this->config.thickness;
         for (float dx = -t; dx <= t; dx += t) for (float dy = -t; dy <= t; dy += t)
         {
-            if (dx == 0.0f && dy == 0.0f) continue;
+            if (dx == 0.f && dy == 0.f) continue;
 
             DrawTextureCommand cmd = base;
             cmd.tint = this->config.color;

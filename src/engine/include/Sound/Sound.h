@@ -13,7 +13,7 @@ public:
     virtual bool isPlaying() const = 0;
 
 protected:
-    static int scaleVolume(int userVolume) { (void) userVolume; return 0; }
+    static int scaleVolume(int userVolume) { (void)userVolume; return 0; }
 };
 
 #endif // sound_h

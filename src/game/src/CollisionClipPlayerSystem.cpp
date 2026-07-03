@@ -37,7 +37,7 @@ void CollisionClipPlayerSystem::update(UpdateContext& ctx)
         {
             player.currentClip = it->second;
             player.currentFrame = 0;
-            player.elapsedTime = 0.0f;
+            player.elapsedTime = 0.f;
             player.playing = true;
         }
         else player.playing = false;

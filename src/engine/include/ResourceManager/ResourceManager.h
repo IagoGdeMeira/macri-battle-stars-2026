@@ -18,16 +18,10 @@ public:
     ResourceManager(ThreadPool& pool) : async(pool) {}
 
     template<typename T>
-    std::shared_ptr<T> load(
-        ResourceLoader<T>& loader,
-        const std::string& path
-    );
+    std::shared_ptr<T> load(ResourceLoader<T>& loader, const std::string& path);
 
     template<typename T>
-    std::future<std::shared_ptr<T>> loadAsync(
-        ResourceLoader<T>& loader,
-        const std::string& path
-    );
+    std::future<std::shared_ptr<T>> loadAsync(ResourceLoader<T>& loader, const std::string& path);
 
 private:
     std::unordered_map<std::string, std::weak_ptr<void>> resources;
@@ -44,9 +38,7 @@ private:
     std::future<std::shared_ptr<T>> makeReadyFuture(std::shared_ptr<T> resource);
 
     template<typename T>
-    std::future<std::shared_ptr<T>> wrapFuture(
-        std::shared_future<std::shared_ptr<void>> f
-    );
+    std::future<std::shared_ptr<T>> wrapFuture(std::shared_future<std::shared_ptr<void>> future);
 };
 
 #include "ResourceManager.inl"

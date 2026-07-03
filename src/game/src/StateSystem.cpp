@@ -49,9 +49,13 @@ void StateSystem::update(UpdateContext& ctx)
             if (!this->conditionsAreValid(transition, cctx)) continue;
 
             bool matched = false;
-            for (auto trigger : triggers) if (this->hasTrigger(transition, trigger))
-            { matched = true; break; }
-
+            for (auto trigger : triggers)
+            {
+                if (!this->hasTrigger(transition, trigger)) continue;
+                
+                matched = true;
+                break;
+            }
             if (!matched) continue;
 
             if (!best || transition.priority > bestPriority)
@@ -66,10 +70,9 @@ void StateSystem::update(UpdateContext& ctx)
             StateId previous = state.current;
 
             state.current = best->to;
-            state.timeInState = 0.0f;
+            state.timeInState = 0.f;
 
-            this->bus.emit<StateChangedEvent>(
-                StateChangedEvent{ entity, previous, state.current });
+            this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, previous, state.current });
         }
     }
 
@@ -78,42 +81,12 @@ void StateSystem::update(UpdateContext& ctx)
 
 bool StateSystem::hasTrigger(const StateTransition& transition, TriggerId trigger)
 {
-    return std::find(
-        transition.triggers.begin(),
-        transition.triggers.end(),
-        trigger
-    ) != transition.triggers.end();
+    auto& trgs = transition.triggers;
+    return std::find(trgs.begin(), trgs.end(), trigger) != trgs.end();
 }
 
 bool StateSystem::conditionsAreValid(const StateTransition& transition, TriggerConditionContext& ctx)
 {
     for (const auto& cond : transition.conditions) if (!cond->evaluate(ctx)) return false;
     return true;
-}
-
-const StateTransition* StateSystem::findTransition(FindTransitionParams& params)
-{
-    const StateTransition* best = nullptr;
-    int bestPriority = std::numeric_limits<int>::min();
-
-    for (const auto& transition : params.stateMachine.transitions)
-    {
-        if (transition.from != params.currentState) continue;
-        if (!this->conditionsAreValid(transition, params.ctx)) continue;
-
-        bool matched = false;
-
-        for (auto trigger : params.triggers) if (this->hasTrigger(transition, trigger))
-        { matched = true; break; }
-        
-        if (!matched) continue;
-
-        if (!best || transition.priority > bestPriority)
-        {
-            best = &transition;
-            bestPriority = transition.priority;
-        }
-    }
-
-    return best;
 }
