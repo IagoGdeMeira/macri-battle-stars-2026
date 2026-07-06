@@ -19,6 +19,8 @@ enum class TriggerId
     LookedDown,
     LookedLeft,
     LookedRight,
+    Crouched,
+    CrouchReleased
 };
 
 #endif // trigger_id_h

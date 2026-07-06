@@ -1,0 +1,136 @@
+{
+    "states": [
+        { "name": "Idle" },
+        { "name": "Running" },
+        { "name": "Crouching" },
+        { "name": "Jumping" },
+        { "name": "Falling" },
+        { "name": "Punching" },
+        { "name": "Kicking" },
+        { "name": "Blocking" }
+    ],
+    "transitions": [
+        { "from": "Idle", "to": "Running", "triggers": ["MoveRight", "MoveLeft"], "conditions": [] },
+        { "from": "Running", "to": "Idle", "triggers": ["MoveRightReleased", "MoveLeftReleased"], "conditions": [] },
+        {
+        "from": "Idle",
+        "to": "Crouching",
+        "triggers": ["Crouch"],
+        "conditions": []
+        },
+        {
+        "from": "Running",
+        "to": "Crouching",
+        "triggers": ["Crouch"],
+        "conditions": []
+        },
+        {
+        "from": "Crouching",
+        "to": "Idle",
+        "triggers": ["CrouchReleased"],
+        "conditions": []
+        },
+        {
+        "from": "Idle",
+        "to": "Jumping",
+        "triggers": ["Jump"],
+        "conditions": []
+        },
+        {
+        "from": "Running",
+        "to": "Jumping",
+        "triggers": ["Jump"],
+        "conditions": []
+        },
+        {
+        "from": "Crouching",
+        "to": "Jumping",
+        "triggers": ["Jump"],
+        "conditions": []
+        },
+        {
+        "from": "Jumping",
+        "to": "Falling",
+        "triggers": ["Fall"],
+        "conditions": []
+        },
+        {
+        "from": "Falling",
+        "to": "Idle",
+        "triggers": ["Landed"],
+        "conditions": []
+        },
+        {
+        "from": "Idle",
+        "to": "Punching",
+        "triggers": ["Punched"],
+        "conditions": []
+        },
+        {
+        "from": "Running",
+        "to": "Punching",
+        "triggers": ["Punched"],
+        "conditions": []
+        },
+        {
+        "from": "Crouching",
+        "to": "Punching",
+        "triggers": ["Punched"],
+        "conditions": []
+        },
+        {
+        "from": "Punching",
+        "to": "Idle",
+        "triggers": ["PunchEnded"],
+        "conditions": []
+        },
+        {
+        "from": "Idle",
+        "to": "Kicking",
+        "triggers": ["Kicked"],
+        "conditions": []
+        },
+        {
+        "from": "Running",
+        "to": "Kicking",
+        "triggers": ["Kicked"],
+        "conditions": []
+        },
+        {
+        "from": "Crouching",
+        "to": "Kicking",
+        "triggers": ["Kicked"],
+        "conditions": []
+        },
+        {
+        "from": "Kicking",
+        "to": "Idle",
+        "triggers": ["KickEnded"],
+        "conditions": []
+        },
+        {
+        "from": "Idle",
+        "to": "Blocking",
+        "triggers": ["Blocked"],
+        "conditions": []
+        },
+        {
+        "from": "Running",
+        "to": "Blocking",
+        "triggers": ["Blocked"],
+        "conditions": []
+        },
+        {
+        "from": "Crouching",
+        "to": "Blocking",
+        "triggers": ["Blocked"],
+        "conditions": []
+        },
+        {
+        "from": "Blocking",
+        "to": "Idle",
+        "triggers": ["BlockEnded"],
+        "conditions": []
+        }
+    ]
+}

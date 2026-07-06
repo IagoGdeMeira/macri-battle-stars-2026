@@ -19,6 +19,8 @@ TriggerId TriggerMapper::fromString(const std::string& triggerName)
     if (triggerName == "LookedDown")                return TriggerId::LookedDown;
     if (triggerName == "LookedLeft")                return TriggerId::LookedLeft;
     if (triggerName == "LookedRight")               return TriggerId::LookedRight;
+    if (triggerName == "Crouched")                  return TriggerId::Crouched;
+    if (triggerName == "CrouchReleased")            return TriggerId::CrouchReleased;
 
     throw std::invalid_argument("Unknown trigger name: " + triggerName);
 }

@@ -12,6 +12,7 @@ InputAction InputMapper::stringToAction(const std::string& actionStr)
     if (actionStr == "Punch")       return InputAction::Punch;
     if (actionStr == "Kick")        return InputAction::Kick;
     if (actionStr == "Defend")      return InputAction::Defend;
+    if (actionStr == "Crouch")      return InputAction::Crouch;
     
     return InputAction::None;
 }
@@ -28,6 +29,7 @@ std::string InputMapper::actionToString(InputAction action)
         case InputAction::Punch:      return "Punch";
         case InputAction::Kick:       return "Kick";
         case InputAction::Defend:     return "Defend";
+        case InputAction::Crouch:     return "Crouch";
         
         default: return "None";
     }

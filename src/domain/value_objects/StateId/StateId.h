@@ -25,6 +25,7 @@ public:
         BeingHit,
         ChargingSpecial,
         SpecialAttack,
+        Crouching,
         CustomStart = 1000
     };
 
@@ -63,6 +64,7 @@ public:
     static const StateId BeingHit;
     static const StateId ChargingSpecial;
     static const StateId SpecialAttack;
+    static const StateId Crouching;
 
 private:
     explicit StateId(std::int32_t value) : id(value) {}

@@ -11,7 +11,8 @@ enum class InputAction
     Punch,
     Kick,
     Defend,
-    Jump
+    Jump,
+    Crouch
 };
 
 #endif // input_action_h

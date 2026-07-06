@@ -16,9 +16,6 @@
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
-PlayerControlSystem::PlayerControlSystem(EventBus& bus, float moveSpeed, float jumpImpulse) :
-    bus(bus), moveSpeed(moveSpeed), jumpImpulse(jumpImpulse) {}
-
 void PlayerControlSystem::update(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();
@@ -30,33 +27,43 @@ void PlayerControlSystem::update(UpdateContext& ctx)
         PlayerComponent
     >(comp);
 
-    for (auto [entity, input, analog, state, velocity, player] : view)
+    for (auto [entity, input, analog, state, velocity, p_] : view)
     {
-        if (ctx.world.components().has<HitstopComponent>(entity))
-        { if (ctx.world.components().get<HitstopComponent>(entity).frozen) continue; }
+        if (comp.has<HitstopComponent>(entity) && comp.get<HitstopComponent>(entity).frozen)
+            continue;
+
+        bool grounded = comp.has<GroundedComponent>(entity) && comp.get<GroundedComponent>(entity).onGround;
+
+        bool crouchPressed = this->hasInputAction(input, InputAction::Crouch);
+        bool wasCrouching = this->wasCrouching[entity];
+
+        if (crouchPressed && !wasCrouching && grounded)
+        { this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Crouched}); }
+        else if (!crouchPressed && wasCrouching)
+        { this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::CrouchReleased}); }
+
+        this->wasCrouching[entity] = crouchPressed;
 
         bool canMove = this->canMove(state.current);
-
         if (canMove)
         {
             float targetVx = 0.f;
             if (analog.move.x != 0.f) targetVx = analog.move.x * this->moveSpeed;
             else
             {
-                if (this->hasInputAction(input, InputAction::MoveLeft)) targetVx = -this->moveSpeed;
-                else if (this->hasInputAction(input, InputAction::MoveRight)) targetVx = this->moveSpeed;
+                if (this->hasInputAction(input, InputAction::MoveLeft))
+                    targetVx = -this->moveSpeed;
+                else if (this->hasInputAction(input, InputAction::MoveRight))
+                    targetVx = this->moveSpeed;
             }
             velocity.velocity.x = targetVx;
         }
         else velocity.velocity.x = 0.f;
         
-        bool grounded = false;
-        if (comp.has<GroundedComponent>(entity)) grounded = comp.get<GroundedComponent>(entity).onGround;
-
         if (grounded && this->hasInputAction(input, InputAction::Jump))
         { velocity.velocity.y = this->jumpImpulse; }
 
-        if (!canMove) continue; 
+        if (!canMove) continue;
 
         if (this->hasInputAction(input, InputAction::Punch))
         { this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Punched}); }
@@ -89,6 +96,7 @@ bool PlayerControlSystem::canMove(StateId state) const
 bool PlayerControlSystem::hasInputAction(InputComponent& input, InputAction action) const
 { return input.actions.count(action) && input.actions.at(action).pressed; }
 
+/*
 void PlayerControlSystem::applyMovement(UpdateContext& ctx, Entity entity, bool canMove) const
 {
     auto& comp = ctx.world.components();
@@ -137,3 +145,4 @@ void PlayerControlSystem::emitTriggers(UpdateContext& ctx, Entity entity, bool c
     if (this->hasInputAction(input, InputAction::Defend))
     { this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Blocked}); }
 }
+*/
