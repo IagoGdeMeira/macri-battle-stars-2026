@@ -3,7 +3,7 @@
     "texture": "assets/sprites/reddie_beta.png",
     "spriteSize": { "w": 183, "h": 367 },
     "animations": "assets/animations/reddie_beta_animations.json",
-    "stateMachine": "assets/fsms/reddie_beta_fsm.json",
+    "stateMachine": "assets/fsm/reddie_beta_fsm.json",
     "combos": "assets/combos/default_combos.json",
     "collisions": "assets/collisions/reddie_beta_collisions.json",
     "customStates": []

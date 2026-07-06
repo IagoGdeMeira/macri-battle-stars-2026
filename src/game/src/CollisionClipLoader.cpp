@@ -15,7 +15,8 @@ CollisionClipLoader::ClipMap CollisionClipLoader::load(
     auto root = parser.parse(path);
     ClipMap result;
 
-    for (auto& clipNode : root->getArray("collisionClips"))
+    const std::string clipsKey = root->has("collisionClips") ? "collisionClips" : "clips";
+    for (auto& clipNode : root->getArray(clipsKey))
     {
         std::string stateStr = clipNode->getString("state");
         StateId state = mapper.fromString(stateStr);

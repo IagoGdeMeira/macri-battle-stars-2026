@@ -1,0 +1,178 @@
+{
+    "clips": [
+        {
+            "state": "Idle",
+            "frames": [
+                {
+                    "duration": 0.12,
+                    "pushboxes": [
+                        {
+                            "offset": { "x": 0, "y": 0 },
+                            "width": 60,
+                            "height": 130,
+                            "type": "Dynamic",
+                            "mass": 1.0,
+                            "pushResistance": 1.0
+                        }
+                    ],
+                    "hitboxes": [],
+                    "hurtboxes": []
+                }
+            ]
+        },
+        {
+            "state": "Running",
+            "frames": [
+                {
+                    "duration": 0.08,
+                    "pushboxes": [
+                        {
+                            "offset": { "x": 0, "y": 0 },
+                            "width": 60,
+                            "height": 130,
+                            "type": "Dynamic",
+                            "mass": 1.0,
+                            "pushResistance": 1.0
+                        }
+                    ],
+                    "hitboxes": [],
+                    "hurtboxes": []
+                }
+            ]
+        },
+        {
+            "state": "Crouching",
+            "frames": [
+                {
+                    "duration": 0.1,
+                    "pushboxes": [
+                        {
+                            "offset": { "x": 0, "y": 30 },
+                            "width": 60,
+                            "height": 80,
+                            "type": "Dynamic",
+                            "mass": 1.0,
+                            "pushResistance": 1.0
+                        }
+                    ],
+                    "hitboxes": [],
+                    "hurtboxes": []
+                }
+            ]
+        },
+        {
+            "state": "Jumping",
+            "frames": [
+                {
+                    "duration": 0.1,
+                    "pushboxes": [
+                        {
+                            "offset": { "x": 0, "y": 0 },
+                            "width": 60,
+                            "height": 130,
+                            "type": "Dynamic",
+                            "mass": 1.0,
+                            "pushResistance": 1.0
+                        }
+                    ],
+                    "hitboxes": [],
+                    "hurtboxes": []
+                }
+            ]
+        },
+        {
+            "state": "Falling",
+            "frames": [
+                {
+                    "duration": 0.1,
+                    "pushboxes": [
+                        {
+                            "offset": { "x": 0, "y": 0 },
+                            "width": 60,
+                            "height": 130,
+                            "type": "Dynamic",
+                            "mass": 1.0,
+                            "pushResistance": 1.0
+                        }
+                    ],
+                    "hitboxes": [],
+                    "hurtboxes": []
+                }
+            ]
+        },
+        {
+            "state": "Punching",
+            "frames": [
+                {
+                    "duration": 0.05,
+                    "pushboxes": [
+                        {
+                            "offset": { "x": 0, "y": 0 },
+                            "width": 60,
+                            "height": 130,
+                            "type": "Dynamic",
+                            "mass": 1.0,
+                            "pushResistance": 1.0
+                        }
+                    ],
+                    "hitboxes": [
+                        {
+                            "offset": { "x": 40, "y": 10 },
+                            "width": 30,
+                            "height": 30,
+                            "damage": 10
+                        }
+                    ],
+                    "hurtboxes": []
+                }
+            ]
+        },
+        {
+            "state": "Kicking",
+            "frames": [
+                {
+                    "duration": 0.05,
+                    "pushboxes": [
+                        {
+                            "offset": { "x": 0, "y": 0 },
+                            "width": 60,
+                            "height": 130,
+                            "type": "Dynamic",
+                            "mass": 1.0,
+                            "pushResistance": 1.0
+                        }
+                    ],
+                    "hitboxes": [
+                        {
+                            "offset": { "x": 50, "y": 40 },
+                            "width": 30,
+                            "height": 30,
+                            "damage": 15
+                        }
+                    ],
+                    "hurtboxes": []
+                }
+            ]
+        },
+        {
+            "state": "Blocking",
+            "frames": [
+                {
+                    "duration": 0.1,
+                    "pushboxes": [
+                        {
+                            "offset": { "x": 0, "y": 0 },
+                            "width": 60,
+                            "height": 130,
+                            "type": "Dynamic",
+                            "mass": 1.0,
+                            "pushResistance": 2.0
+                        }
+                    ],
+                    "hitboxes": [],
+                    "hurtboxes": []
+                }
+            ]
+        }
+    ]
+}

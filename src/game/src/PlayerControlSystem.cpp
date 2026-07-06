@@ -35,11 +35,11 @@ void PlayerControlSystem::update(UpdateContext& ctx)
         bool grounded = comp.has<GroundedComponent>(entity) && comp.get<GroundedComponent>(entity).onGround;
 
         bool crouchPressed = this->hasInputAction(input, InputAction::Crouch);
-        bool wasCrouching = this->wasCrouching[entity];
+        bool wasPlayerCrouching = this->wasCrouching[entity];
 
-        if (crouchPressed && !wasCrouching && grounded)
+        if (crouchPressed && !wasPlayerCrouching && grounded)
         { this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Crouched}); }
-        else if (!crouchPressed && wasCrouching)
+        else if (!crouchPressed && wasPlayerCrouching)
         { this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::CrouchReleased}); }
 
         this->wasCrouching[entity] = crouchPressed;
@@ -51,10 +51,8 @@ void PlayerControlSystem::update(UpdateContext& ctx)
             if (analog.move.x != 0.f) targetVx = analog.move.x * this->moveSpeed;
             else
             {
-                if (this->hasInputAction(input, InputAction::MoveLeft))
-                    targetVx = -this->moveSpeed;
-                else if (this->hasInputAction(input, InputAction::MoveRight))
-                    targetVx = this->moveSpeed;
+                if (this->hasInputAction(input, InputAction::MoveLeft)) targetVx = -this->moveSpeed;
+                else if (this->hasInputAction(input, InputAction::MoveRight)) targetVx = this->moveSpeed;
             }
             velocity.velocity.x = targetVx;
         }

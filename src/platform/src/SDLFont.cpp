@@ -1,11 +1,14 @@
 #include "../include/SDLFont/SDLFont.h"
 
+#include "../../engine/include/PathResolver/PathResolver.h"
+
 #include <stdexcept>
 #include <cmath>
 
 SDLFont::SDLFont(const std::string& path) : path(path)
 {
-    this->baseFont = TTF_OpenFont(path.c_str(), 24);
+    this->path = PathResolver::resolve(path).string();
+    this->baseFont = TTF_OpenFont(this->path.c_str(), 24);
     if (!this->baseFont) throw std::runtime_error("Failed to open font: " + path);
 
     this->sizeCache[24] = this->baseFont;

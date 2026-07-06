@@ -4,6 +4,12 @@
 
 TriggerId TriggerMapper::fromString(const std::string& triggerName)
 {
+    if (triggerName == "MoveLeft")                 return TriggerId::MoveLeft;
+    if (triggerName == "MoveLeftReleased")         return TriggerId::MoveLeftReleased;
+    if (triggerName == "MoveRight")                return TriggerId::MoveRight;
+    if (triggerName == "MoveRightReleased")        return TriggerId::MoveRightReleased;
+    if (triggerName == "Jump")                     return TriggerId::Jump;
+    if (triggerName == "Fall")                     return TriggerId::Fall;
     if (triggerName == "Jumped")                    return TriggerId::Jumped;
     if (triggerName == "Landed")                    return TriggerId::Landed;
     if (triggerName == "Kicked")                    return TriggerId::Kicked;

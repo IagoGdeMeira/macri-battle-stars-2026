@@ -38,14 +38,14 @@ float JsonNode::getFloat(const std::string& key, const float& fallback) const
 {
     if (key.empty())
     {
-        if (this->data.is_number_float()) return this->data.get<float>();
+        if (this->data.is_number_float() || this->data.is_number_integer()) return this->data.get<float>();
         if (this->data.is_null()) return fallback;
         throw std::runtime_error("JsonNode::getFloat: root value is not a float");
     }
 
     auto it = this->data.find(key);
     if (it == this->data.end()) return fallback;
-    if (it->is_number_float()) return it->get<float>();
+    if (it->is_number_float() || it->is_number_integer()) return it->get<float>();
     throw std::runtime_error("JsonNode::getFloat: value for key '" + key + "' is not a float");
 }
 

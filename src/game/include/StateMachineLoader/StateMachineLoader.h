@@ -3,7 +3,12 @@
 
 #include "../StateMachine/StateMachine.h"
 
+#include "../../domain/value_objects/StateId/StateId.h"
+
 #include "../../engine/include/DataParser/DataParser.h"
+
+#include <functional>
+#include <string>
 
 class StateIdMapper;
 
@@ -17,6 +22,8 @@ public:
 
 private:
     DataParser& parser;
+
+    StateMachine loadInternal(const std::string& path, std::function<StateId(const std::string&)> resolver) const;
 };
 
 #endif // state_machine_loader_h

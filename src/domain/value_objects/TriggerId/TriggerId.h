@@ -4,6 +4,12 @@
 enum class TriggerId
 {
     Unknown = -1,
+    MoveLeft,
+    MoveLeftReleased,
+    MoveRight,
+    MoveRightReleased,
+    Jump,
+    Fall,
     Jumped,
     Landed,
     Kicked,

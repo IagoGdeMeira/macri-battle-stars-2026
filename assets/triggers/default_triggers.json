@@ -1,4 +1,8 @@
 {
     "bindings": [
+        { "action": "MoveLeft", "triggers": [{ "trigger": "MoveLeft" }] },
+        { "action": "MoveRight", "triggers": [{ "trigger": "MoveRight" }] },
+        { "action": "Crouch", "triggers": [{ "trigger": "Crouched" }] },
+        { "action": "Jump", "triggers": [{ "trigger": "Jump" }] }
     ]
 }
