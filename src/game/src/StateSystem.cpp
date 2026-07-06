@@ -21,43 +21,40 @@ void StateSystem::update(UpdateContext& ctx)
 {
     auto& components = ctx.world.components();
 
-    auto view = View<StateComponent>(components);
-    for (auto [entity, state] : view) state.timeInState += ctx.deltaTime;
+    auto stateView = View<StateComponent>(components);
+    for (auto [entity, state] : stateView) state.timeInState += ctx.deltaTime;
 
     std::unordered_map<Entity, std::vector<TriggerId>, Entity::Hash> grouped;
     for (const auto& e : this->events) grouped[e.entity].push_back(e.trigger);
 
-    for (const auto& entry : grouped)
+    auto machineView = View<StateComponent, StateMachineComponent>(components);
+    for (auto [entity, state, machineComp] : machineView)
     {
-        Entity entity = entry.first;
-        const auto& triggers = entry.second;
+        auto it = grouped.find(entity);
+        const std::vector<TriggerId>* triggersPtr = (it != grouped.end()) ? &it->second : nullptr;
 
-        if (!components.has<StateComponent>(entity)) continue;
-        if (!components.has<StateMachineComponent>(entity)) continue;
-
-        auto& state = components.get<StateComponent>(entity);
-        auto& machine = components.get<StateMachineComponent>(entity).machine;
-
-        TriggerConditionContext cctx { ctx.world, entity, state };
+        TriggerConditionContext cctx{ ctx.world, entity, state };
 
         const StateTransition* best = nullptr;
         int bestPriority = std::numeric_limits<int>::min();
 
-        for (const auto& transition : machine.transitions)
+        for (const auto& transition : machineComp.machine.transitions)
         {
             if (transition.from != state.current) continue;
             if (!this->conditionsAreValid(transition, cctx)) continue;
 
-            bool matched = false;
-            for (auto trigger : triggers)
+            bool triggerMatched = false;
+            if (!transition.triggers.empty())
             {
-                if (!this->hasTrigger(transition, trigger)) continue;
-                
-                matched = true;
-                break;
+                if (triggersPtr) for (auto trigger : *triggersPtr)
+                {
+                    if (!this->hasTrigger(transition, trigger)) continue;
+                    
+                    triggerMatched = true;
+                    break;
+                }
+                if (!triggerMatched) continue;
             }
-            if (!matched) continue;
-
             if (!best || transition.priority > bestPriority)
             {
                 best = &transition;
@@ -68,10 +65,8 @@ void StateSystem::update(UpdateContext& ctx)
         if (best)
         {
             StateId previous = state.current;
-
             state.current = best->to;
             state.timeInState = 0.f;
-
             this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, previous, state.current });
         }
     }
