@@ -10,6 +10,7 @@
 #include "../../domain/components/StateComponent.h"
 #include "../../domain/components/StateMappingComponent.h"
 #include "../../domain/components/StateMachineComponent.h"
+#include "../../domain/utils/Logger/Logger.h"
 
 #include <memory>
 
@@ -18,7 +19,7 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     auto def = this->defLoader.load(path);
 
     Entity entity = world.entities().create();
-    auto& components = world.components();
+    auto& comp = world.components();
 
     auto texture = this->resourceManager.load<Texture>(this->textureLoader, def.texturePath);
 
@@ -29,20 +30,21 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     sprite.source.position = { 0.f, 0.f };
     sprite.source.size = sprite.size;
     sprite.useSourceRect = false;
-    components.add<SpriteComponent>(entity, std::move(sprite));
+    comp.add<SpriteComponent>(entity, std::move(sprite));
+    LOG_DEBUG("Creating sprite with texture {} size {}x{}", def.texturePath, def.spriteSize.width, def.spriteSize.height);
 
     auto mapper = std::make_shared<StateIdMapper>();
     for (const auto& customStateName : def.customStates) mapper->addCustomMapping(customStateName);
 
     auto fsm = this->fsmLoader.load(def.stateMachinePath, *mapper);
-    components.add<StateComponent>(entity, StateComponent{});
-    components.add<StateMappingComponent>(entity, StateMappingComponent{ mapper });
-    components.add<StateMachineComponent>(entity, StateMachineComponent{ std::move(fsm) });
+    comp.add<StateComponent>(entity, StateComponent{});
+    comp.add<StateMappingComponent>(entity, StateMappingComponent{ mapper });
+    comp.add<StateMachineComponent>(entity, StateMachineComponent{ std::move(fsm) });
 
     AnimationControllerComponent controller;
     controller.animations = this->animLoader.load(def.animationsPath, *mapper);
-    components.add<AnimationControllerComponent>(entity, std::move(controller));
-    components.add<AnimationComponent>(entity, AnimationComponent{});
+    comp.add<AnimationControllerComponent>(entity, std::move(controller));
+    comp.add<AnimationComponent>(entity, AnimationComponent{});
 
     if (!def.collisionsPath.empty())
     {
@@ -52,9 +54,9 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
         for (auto& [state, clip] : clipMap)
         { clipDefs.clips[state] = std::make_shared<CollisionClip>(std::move(clip)); }
 
-        components.add<CollisionClipDefinitionsComponent>(entity, std::move(clipDefs));
+        comp.add<CollisionClipDefinitionsComponent>(entity, std::move(clipDefs));
     }
-    components.add<CollisionClipPlayerComponent>(entity, CollisionClipPlayerComponent{});
+    comp.add<CollisionClipPlayerComponent>(entity, CollisionClipPlayerComponent{});
 
     return entity;
 }

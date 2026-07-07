@@ -8,6 +8,7 @@
 #include "../../domain/components/SpriteComponent.h"
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/components/VisualEffectsComponent.h"
+#include "../../domain/utils/Logger/Logger.h"
 
 #include "../../engine/include/RenderContext/RenderContext.h"
 
@@ -21,10 +22,19 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
     {
         if (!sprite.texture) continue;
         DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++);
+        
+        auto& srcPos = cmd.source.position;
+        auto& srcSize = cmd.source.size;
+        auto& destPos = cmd.dest.position;
+        auto& destSize = cmd.dest.size;
 
-        if (ctx.world.components().has<VisualEffectsComponent>(entity))
+        LOG_DEBUG("Rendering entity {}: source=({}, {}) size=({}x{}) dest=({}, {}) size=({}x{})",
+            entity.id, srcPos.x, srcPos.y, srcSize.width, srcSize.height, destPos.x, destPos.y, destSize.width, destSize.height);
+
+        auto& comp = ctx.world.components();
+        if (comp.has<VisualEffectsComponent>(entity))
         {
-            const auto& fx = ctx.world.components().get<VisualEffectsComponent>(entity);
+            const auto& fx = comp.get<VisualEffectsComponent>(entity);
             for (auto& effect : fx.textureEffects) effect(this->batch, cmd);
         }
         this->batch.add(cmd);

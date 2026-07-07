@@ -2,11 +2,14 @@
 
 #include "../include/Application/Application.h"
 
+#include "../../domain/utils/Logger/Logger.h"
+
 #include <exception>
 #include <iostream>
 
 int main()
 {
+    Logger::setLevel(Logger::LogLevel::DEBUG);
     try
     {
         Application app;
@@ -14,7 +17,7 @@ int main()
 
         return app.run();
     }
-    catch (const std::exception& e) { std::cerr << e.what() << '\n'; }
-
+    catch (const std::exception& e) { LOG_ERROR("Exception: {}", e.what()); }
+    catch (...) { LOG_ERROR("Unknown exception occurred."); }
     return 1;
 }

@@ -4,6 +4,7 @@
 #include "../../stubs/StubDataParser.h"
 #include "../../stubs/StubEngine.h"
 #include "../../stubs/StubFontFactory.h"
+#include "../../stubs/StubPlatformFactory.h"
 #include "../../stubs/StubRenderer.h"
 #include "../../stubs/StubResourceManager.h"
 #include "../../stubs/StubSceneManager.h"
@@ -17,6 +18,7 @@
 #include "../../../src/domain/components/InputBufferComponent.h"
 #include "../../../src/domain/components/InputComponent.h"
 #include "../../../src/domain/components/PlayerComponent.h"
+#include "../../../src/domain/components/RenderComponent.h"
 #include "../../../src/domain/components/SpriteComponent.h"
 #include "../../../src/domain/components/StateComponent.h"
 #include "../../../src/domain/components/TransformComponent.h"
@@ -55,6 +57,7 @@ public:
     TextureLoader textureLoader{this->textureFactory};
     StubEngine engine{this->window, this->settings};
     StubSceneManager sceneManager;
+    StubPlatformFactory platformFactory;
 
     GameSceneFixture()
     {
@@ -190,6 +193,7 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player ent
     cfg.engine          = &this->engine;
     cfg.fontFactory     = &this->fontFactory;
     cfg.textureFactory  = &this->textureFactory;
+    cfg.platformFactory = &this->platformFactory;
 
     cfg.playerSlots         = { {0, "assets/characters/knight.json"} };
     cfg.mapPath             = "assets/maps/stage1.json";
@@ -209,17 +213,18 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player ent
         InputComponent,
         InputBufferComponent,
         VelocityComponent,
-        GroundedComponent
+        GroundedComponent,
+        RenderComponent
     > view(components);
 
     int count = 0;
-    for (auto [entity, player, transform, i_, ib_, v_, g_] : view)
+    for (auto [entity, player, transform, i_, ib_, v_, g_, r] : view)
     {
         ++count;
         REQUIRE(player.id == 0);
         REQUIRE(transform.position.x == 300.f);
         REQUIRE(transform.position.y == Catch::Approx(400.f - 48.f));
-        (void)entity; (void)i_; (void)ib_; (void)v_; (void)g_;
+        (void)entity; (void)i_; (void)ib_; (void)v_; (void)g_; (void)r;
     }
     REQUIRE(count == 1);
 }

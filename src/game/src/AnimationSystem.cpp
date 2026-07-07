@@ -30,10 +30,13 @@ void AnimationSystem::update(UpdateContext& ctx)
 
         const auto& frame = animation.frames[anim.currentFrame];
 
-        sprite.source.position.x = static_cast<float>(frame.x);
-        sprite.source.position.y = static_cast<float>(frame.y);
-        sprite.source.size.width = static_cast<float>(frame.width);
-        sprite.source.size.height = static_cast<float>(frame.height);
+        auto& pos = sprite.source.position;
+        auto& size = sprite.source.size;
+
+        pos.x = static_cast<float>(frame.x);
+        pos.y = static_cast<float>(frame.y);
+        size.width = static_cast<float>(frame.width);
+        size.height = static_cast<float>(frame.height);
         sprite.useSourceRect = true;
     }
 }
