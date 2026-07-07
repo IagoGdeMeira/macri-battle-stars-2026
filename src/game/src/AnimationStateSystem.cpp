@@ -4,6 +4,7 @@
 #include "../../domain/components/AnimationControllerComponent.h"
 #include "../../domain/components/OrientationComponent.h"
 #include "../../domain/include/View/View.h"
+#include "../../domain/utils/Logger/Logger.h"
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
@@ -24,6 +25,7 @@ void AnimationStateSystem::update(UpdateContext &ctx)
     {
         if (!components.has<AnimationControllerComponent>(change.entity)) continue;
         components.get<AnimationControllerComponent>(change.entity).currentState = change.current;
+        LOG_DEBUG("AnimationStateSystem: StateChangedEvent for entity {} -> state {}", change.entity.id, change.current.value());
     }
     this->stateChanges.clear();
 
@@ -32,12 +34,18 @@ void AnimationStateSystem::update(UpdateContext &ctx)
         if (!components.has<AnimationComponent>(oc.entity)) continue;
         if (!components.has<AnimationControllerComponent>(oc.entity)) continue; 
         components.get<AnimationComponent>(oc.entity).currentState = StateId::Unknown;
+        LOG_DEBUG("AnimationStateSystem: OrientationChangedEvent for entity {}, resetting animation state", oc.entity.id);
     }
     this->orientationChanges.clear();
 
     auto view = View<AnimationComponent, AnimationControllerComponent>(components);
     for (auto [entity, anim, controller] : view)
     {
+        auto& ctrlState = controller.currentState;
+        auto& animState = anim.currentState;
+        LOG_DEBUG("AnimationStateSystem: entity {} controller state = {} (value {}), anim state = {} (value {})",
+            entity.id, ctrlState.value(), ctrlState.value(), animState.value(), animState.value());
+
         if (anim.currentState == controller.currentState) continue;
 
         auto itRight = controller.animations.right.find(controller.currentState);
@@ -49,12 +57,18 @@ void AnimationStateSystem::update(UpdateContext &ctx)
             const auto& orientation = components.get<OrientationComponent>(entity);
             if (orientation.direction == Orientation::Left)
             {
-                auto itLeft = controller.animations.left.find(controller.currentState);
-                if (itLeft != controller.animations.left.end()) chosen = &itLeft->second;
+                auto& leftAnim = controller.animations.left;
+                auto itLeft = leftAnim.find(controller.currentState);
+                if (itLeft != leftAnim.end()) chosen = &itLeft->second;
             }
         }
-        if (!chosen) continue;
+        if (!chosen)
+        {
+            LOG_DEBUG("AnimationStateSystem: no animation found for state {}", controller.currentState.value());
+            continue;
+        }
 
+        LOG_DEBUG("AnimationStateSystem: entity {} switching to animation with {} frames", entity.id, chosen->frames.size());
         anim.animation    = *chosen;
         anim.currentFrame = 0;
         anim.elapsedTime  = 0.f;

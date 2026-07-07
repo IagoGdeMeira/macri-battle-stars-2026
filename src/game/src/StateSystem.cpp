@@ -4,6 +4,7 @@
 
 #include "../../domain/components/StateComponent.h"
 #include "../../domain/components/StateMachineComponent.h"
+#include "../../domain/utils/Logger/Logger.h"
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
@@ -14,47 +15,54 @@
 StateSystem::StateSystem(EventBus& eventBus) : bus(eventBus)
 {
     this->bus.subscribe<TriggerEvent>([this](const TriggerEvent& event)
-    { this->events.push_back(event); });
+    {
+        this->events.push_back(event);
+        LOG_DEBUG("StateSystem: received {} triggers", this->events.size());
+    });
 }
 
 void StateSystem::update(UpdateContext& ctx)
 {
     auto& components = ctx.world.components();
 
-    auto stateView = View<StateComponent>(components);
-    for (auto [entity, state] : stateView) state.timeInState += ctx.deltaTime;
+    auto view = View<StateComponent>(components);
+    for (auto [entity, state] : view) state.timeInState += ctx.deltaTime;
 
     std::unordered_map<Entity, std::vector<TriggerId>, Entity::Hash> grouped;
     for (const auto& e : this->events) grouped[e.entity].push_back(e.trigger);
 
-    auto machineView = View<StateComponent, StateMachineComponent>(components);
-    for (auto [entity, state, machineComp] : machineView)
+    for (const auto& entry : grouped)
     {
-        auto it = grouped.find(entity);
-        const std::vector<TriggerId>* triggersPtr = (it != grouped.end()) ? &it->second : nullptr;
+        Entity entity = entry.first;
+        const auto& triggers = entry.second;
 
-        TriggerConditionContext cctx{ ctx.world, entity, state };
+        LOG_DEBUG("StateSystem: entity {} has {} triggers", entity.id, triggers.size());
+
+        if (!components.has<StateComponent>(entity)) continue;
+        if (!components.has<StateMachineComponent>(entity)) continue;
+
+        auto& state = components.get<StateComponent>(entity);
+        auto& machine = components.get<StateMachineComponent>(entity).machine;
+
+        TriggerConditionContext cctx { ctx.world, entity, state };
 
         const StateTransition* best = nullptr;
         int bestPriority = std::numeric_limits<int>::min();
 
-        for (const auto& transition : machineComp.machine.transitions)
+        for (const auto& transition : machine.transitions)
         {
             if (transition.from != state.current) continue;
             if (!this->conditionsAreValid(transition, cctx)) continue;
 
-            bool triggerMatched = false;
-            if (!transition.triggers.empty())
+            bool matched = false;
+            for (auto trigger : triggers)
             {
-                if (triggersPtr) for (auto trigger : *triggersPtr)
-                {
-                    if (!this->hasTrigger(transition, trigger)) continue;
-                    
-                    triggerMatched = true;
-                    break;
-                }
-                if (!triggerMatched) continue;
+                if (!this->hasTrigger(transition, trigger)) continue;
+                matched = true;
+                break;
             }
+            if (!matched) continue;
+
             if (!best || transition.priority > bestPriority)
             {
                 best = &transition;
@@ -67,10 +75,12 @@ void StateSystem::update(UpdateContext& ctx)
             StateId previous = state.current;
             state.current = best->to;
             state.timeInState = 0.f;
+
+            LOG_DEBUG("StateSystem: applying transition from {} to {}", previous.value(), state.current.value());
+
             this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, previous, state.current });
         }
     }
-
     this->events.clear();
 }
 

@@ -31,13 +31,15 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     sprite.source.size = sprite.size;
     sprite.useSourceRect = false;
     comp.add<SpriteComponent>(entity, std::move(sprite));
-    LOG_DEBUG("Creating sprite with texture {} size {}x{}", def.texturePath, def.spriteSize.width, def.spriteSize.height);
+
+    LOG_DEBUG("CharacterLoader: created entity {} with sprite texture {} size {}x{}",
+        entity.id, def.texturePath, def.spriteSize.width, def.spriteSize.height);
 
     auto mapper = std::make_shared<StateIdMapper>();
     for (const auto& customStateName : def.customStates) mapper->addCustomMapping(customStateName);
 
     auto fsm = this->fsmLoader.load(def.stateMachinePath, *mapper);
-    comp.add<StateComponent>(entity, StateComponent{});
+    comp.add<StateComponent>(entity, StateComponent{ StateId::Idle });
     comp.add<StateMappingComponent>(entity, StateMappingComponent{ mapper });
     comp.add<StateMachineComponent>(entity, StateMachineComponent{ std::move(fsm) });
 
@@ -45,6 +47,8 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     controller.animations = this->animLoader.load(def.animationsPath, *mapper);
     comp.add<AnimationControllerComponent>(entity, std::move(controller));
     comp.add<AnimationComponent>(entity, AnimationComponent{});
+
+    LOG_DEBUG("CharacterLoader: entity {} has {} animations", entity.id, controller.animations.right.size());
 
     if (!def.collisionsPath.empty())
     {
@@ -57,6 +61,5 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
         comp.add<CollisionClipDefinitionsComponent>(entity, std::move(clipDefs));
     }
     comp.add<CollisionClipPlayerComponent>(entity, CollisionClipPlayerComponent{});
-
     return entity;
 }
