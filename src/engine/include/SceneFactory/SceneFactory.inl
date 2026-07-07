@@ -17,6 +17,7 @@ std::unique_ptr<Scene> SceneFactory::createScene(typename SceneType::Config cfg,
     cfg.engine          = &this->engine;
     cfg.fontFactory     = &this->fontFactory;
     cfg.textureFactory  = &this->textureFactory;
+    cfg.platformFactory = this->platformFactory;
 
     return std::make_unique<SceneType>(std::move(cfg));
 }

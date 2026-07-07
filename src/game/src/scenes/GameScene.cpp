@@ -43,6 +43,7 @@
 
 #include "../../engine/include/InputBindingLoader/InputBindingLoader.h"
 #include "../../engine/include/InputContext/InputContext.h"
+#include "../../engine/include/InputManager/InputManager.h"
 #include "../../engine/include/RenderContext/RenderContext.h"
 #include "../../engine/include/InputBufferSystem/InputBufferSystem.h"
 #include "../../engine/include/InputSystem/InputSystem.h"
@@ -60,6 +61,7 @@ GameScene::GameScene(Config&& config) :
     engine(*config.engine),
     fontFactory(*config.fontFactory),
     textureFactory(*config.textureFactory),
+    platformFactory(*config.platformFactory),
     playerSlots(std::move(config.playerSlots))
 {
     this->loadInputContext(config.inputBindingsPath);
@@ -67,6 +69,8 @@ GameScene::GameScene(Config&& config) :
 
     if (!config.combosPath.empty()) this->loadCombos(config.combosPath);
     if (!config.triggersPath.empty()) this->loadTriggerBindings(config.triggersPath);
+
+    this->setupInputAdapters();
 
     this->createCharacterLoader();
     this->camera = std::make_unique<Camera2D>();
@@ -109,6 +113,20 @@ void GameScene::loadInputContext(const std::string& path)
 {
     InputBindingLoader loader(this->parser);
     this->inputContext = std::make_unique<InputContext>(loader.load(path));
+}
+
+void GameScene::setupInputAdapters()
+{
+    auto& inputManager = this->engine.input();
+
+    inputManager.setProvider(this->platformFactory.createEventProvider());
+    inputManager.addAdapter(this->platformFactory.createKeyboardAdapter(this->eventBus, *this->inputContext));
+    inputManager.addAdapter(this->platformFactory.createMouseAdapter(this->eventBus));
+
+    auto gamepadAdapters = this->platformFactory.createGamepadAdapters(this->eventBus, 1);
+    for (auto& adapter : gamepadAdapters) inputManager.addAdapter(std::move(adapter));
+
+    inputManager.addAdapter(this->platformFactory.createSystemAdapter(this->eventBus));
 }
 
 void GameScene::loadMap(const std::string& path)
@@ -161,7 +179,7 @@ void GameScene::prepareFloor()
 {
     Position floorPos{ this->mapData.floorSize.width * 0.5f, this->mapData.floorY };
     Entity floorBody = this->entityFactory->createStaticBody(floorPos);
-    this->entityFactory->addStaticCollider(floorBody, Rectangle{{0, 0}, this->mapData.floorSize.width, this->mapData.floorSize.height });
+    this->entityFactory->addStaticCollider(floorBody, Rectangle{{0, 0}, this->mapData.floorSize.width, this->mapData.floorSize.height});
 }
 
 void GameScene::prepareWalls()

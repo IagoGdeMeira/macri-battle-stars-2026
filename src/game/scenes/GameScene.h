@@ -15,6 +15,7 @@
 #include "../../engine/include/GameSettings/GameSettings.h"
 #include "../../engine/include/IFontFactory/IFontFactory.h"
 #include "../../engine/include/InputContext/InputContext.h"
+#include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
 #include "../../engine/include/ITextureFactory/ITextureFactory.h"
 #include "../../engine/include/Renderer/Renderer.h"
 #include "../../engine/include/ResourceManager/ResourceManager.h"
@@ -35,6 +36,7 @@ public:
 
     struct Config : public Scene::Config
     {
+        IPlatformFactory* platformFactory = nullptr;
         std::vector<PlayerSlot> playerSlots;
         std::string mapPath, inputBindingsPath, combosPath, triggersPath;
     };
@@ -58,6 +60,7 @@ private:
     Engine& engine;
     IFontFactory& fontFactory;
     ITextureFactory& textureFactory;
+    IPlatformFactory& platformFactory;
 
     std::vector<PlayerSlot> playerSlots;
     std::vector<Combo> combos;
@@ -76,6 +79,7 @@ private:
     std::unique_ptr<CollisionClipLoader> clipLoader;
 
     void loadInputContext(const std::string& path);
+    void setupInputAdapters();
     void loadMap(const std::string& path);
     void loadCombos(const std::string& path);
     void loadTriggerBindings(const std::string& path);

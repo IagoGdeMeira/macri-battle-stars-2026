@@ -5,6 +5,7 @@
 #include "../EventBus/EventBus.h"
 #include "../GameSettings/GameSettings.h"
 #include "../IFontFactory/IFontFactory.h"
+#include "../IPlatformFactory/IPlatformFactory.h"
 #include "../ITextureFactory/ITextureFactory.h"
 #include "../Renderer/Renderer.h"
 #include "../ResourceManager/ResourceManager.h"
@@ -32,6 +33,7 @@ public:
         Engine& engine;
         IFontFactory& fontFactory;
         ITextureFactory& textureFactory;
+        IPlatformFactory* platformFactory = nullptr;
     };
 
     explicit SceneFactory(Config&& config) : 
@@ -44,7 +46,8 @@ public:
         settings(config.settings),
         engine(config.engine),
         fontFactory(config.fontFactory),
-        textureFactory(config.textureFactory) {}
+        textureFactory(config.textureFactory),
+        platformFactory(config.platformFactory) {}
 
     template <typename SceneType>
     std::unique_ptr<Scene> createScene(typename SceneType::Config cfg, SceneManager* sceneManager);
@@ -60,6 +63,7 @@ private:
     Engine& engine;
     IFontFactory& fontFactory;
     ITextureFactory& textureFactory;
+    IPlatformFactory* platformFactory;
 };
 
 #include "SceneFactory.inl"

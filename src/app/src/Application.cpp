@@ -68,7 +68,8 @@ void Application::setupInitialScene()
         .settings           = this->gameSettings,
         .engine             = *this->engine,
         .fontFactory        = *this->fontFactory,
-        .textureFactory     = *this->textureFactory
+        .textureFactory     = *this->textureFactory,
+        .platformFactory    = this->platformFactory.get()
     });
 
     this->sceneManager = std::make_unique<SceneManager>(*this->sceneFactory, *this->engine);

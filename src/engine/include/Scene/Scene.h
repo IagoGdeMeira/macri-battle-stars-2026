@@ -13,6 +13,7 @@ class Engine;
 class EventBus;
 class GameSettings;
 class IFontFactory;
+class IPlatformFactory;
 class ITextureFactory;
 class Renderer;
 class ResourceManager;
@@ -37,6 +38,7 @@ public:
         GameSettings* settings = nullptr;
         Engine* engine = nullptr;
         IFontFactory* fontFactory = nullptr;
+        IPlatformFactory* platformFactory = nullptr;
         ITextureFactory* textureFactory = nullptr;
     };
 
