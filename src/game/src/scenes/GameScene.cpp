@@ -41,6 +41,7 @@
 #include "../../domain/components/StateComponent.h"
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/components/VelocityComponent.h"
+#include "../../domain/utils/Logger/Logger.h"
 
 #include "../../engine/include/InputBindingLoader/InputBindingLoader.h"
 #include "../../engine/include/InputContext/InputContext.h"
@@ -217,6 +218,9 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     comp.add<AirFrictionComponent>(entity, AirFrictionComponent{});
     comp.add<GroundedComponent>(entity, GroundedComponent{});
     comp.add<RenderComponent>(entity, RenderComponent{ 0, 0 });
+
+    LOG_DEBUG("GameScene: player entity {} state.current = {}",
+        entity.id, comp.get<StateComponent>(entity).current.value());
 
     float spawnX = 400.f;
     for (const auto& sp : this->mapData.spawnPoints)

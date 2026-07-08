@@ -17,15 +17,15 @@ StateSystem::StateSystem(EventBus& eventBus) : bus(eventBus)
     this->bus.subscribe<TriggerEvent>([this](const TriggerEvent& event)
     {
         this->events.push_back(event);
-        LOG_DEBUG("StateSystem: received {} triggers", this->events.size());
+        LOG_DEBUG("StateSystem: received trigger {}", static_cast<int>(event.trigger));
     });
 }
 
 void StateSystem::update(UpdateContext& ctx)
 {
-    auto& components = ctx.world.components();
+    auto& comp = ctx.world.components();
 
-    auto view = View<StateComponent>(components);
+    auto view = View<StateComponent>(comp);
     for (auto [entity, state] : view) state.timeInState += ctx.deltaTime;
 
     std::unordered_map<Entity, std::vector<TriggerId>, Entity::Hash> grouped;
@@ -38,11 +38,11 @@ void StateSystem::update(UpdateContext& ctx)
 
         LOG_DEBUG("StateSystem: entity {} has {} triggers", entity.id, triggers.size());
 
-        if (!components.has<StateComponent>(entity)) continue;
-        if (!components.has<StateMachineComponent>(entity)) continue;
+        if (!comp.has<StateComponent>(entity)) continue;
+        if (!comp.has<StateMachineComponent>(entity)) continue;
 
-        auto& state = components.get<StateComponent>(entity);
-        auto& machine = components.get<StateMachineComponent>(entity).machine;
+        auto& state = comp.get<StateComponent>(entity);
+        auto& machine = comp.get<StateMachineComponent>(entity).machine;
 
         TriggerConditionContext cctx { ctx.world, entity, state };
 

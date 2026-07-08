@@ -128,46 +128,46 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     });
 
     World world;
-    auto& components = world.components();
-    components.registerComponent<SpriteComponent>();
-    components.registerComponent<StateComponent>();
-    components.registerComponent<StateMappingComponent>();
-    components.registerComponent<StateMachineComponent>();
-    components.registerComponent<AnimationControllerComponent>();
-    components.registerComponent<AnimationComponent>();
-    components.registerComponent<CollisionClipDefinitionsComponent>();
-    components.registerComponent<CollisionClipPlayerComponent>();
+    auto& comp = world.components();
+    comp.registerComponent<SpriteComponent>();
+    comp.registerComponent<StateComponent>();
+    comp.registerComponent<StateMappingComponent>();
+    comp.registerComponent<StateMachineComponent>();
+    comp.registerComponent<AnimationControllerComponent>();
+    comp.registerComponent<AnimationComponent>();
+    comp.registerComponent<CollisionClipDefinitionsComponent>();
+    comp.registerComponent<CollisionClipPlayerComponent>();
 
     const auto entity = loader.create(world, "assets/characters/fighter_01.json");
 
-    REQUIRE(components.has<SpriteComponent>(entity));
-    REQUIRE(components.has<StateComponent>(entity));
-    REQUIRE(components.has<StateMappingComponent>(entity));
-    REQUIRE(components.has<StateMachineComponent>(entity));
-    REQUIRE(components.has<AnimationControllerComponent>(entity));
-    REQUIRE(components.has<AnimationComponent>(entity));
+    REQUIRE(comp.has<SpriteComponent>(entity));
+    REQUIRE(comp.has<StateComponent>(entity));
+    REQUIRE(comp.has<StateMappingComponent>(entity));
+    REQUIRE(comp.has<StateMachineComponent>(entity));
+    REQUIRE(comp.has<AnimationControllerComponent>(entity));
+    REQUIRE(comp.has<AnimationComponent>(entity));
 
-    const auto& sprite = components.get<SpriteComponent>(entity);
+    const auto& sprite = comp.get<SpriteComponent>(entity);
     REQUIRE(sprite.texture == textureFactory.textureToReturn);
     REQUIRE(sprite.source.size.width == 64);
     REQUIRE(sprite.source.size.height == 96);
     REQUIRE(sprite.useSourceRect == false);
 
-    const auto& state = components.get<StateComponent>(entity);
+    const auto& state = comp.get<StateComponent>(entity);
     REQUIRE(state.current == StateId::Idle);
     REQUIRE(state.timeInState == 0.f);
 
-    const auto& stateMachine = components.get<StateMachineComponent>(entity);
+    const auto& stateMachine = comp.get<StateMachineComponent>(entity);
     REQUIRE(stateMachine.machine.transitions.size() == 1);
     REQUIRE(stateMachine.machine.transitions[0].from == StateId::Idle);
     REQUIRE(stateMachine.machine.transitions[0].to == StateId::Punching);
 
-    const auto& controller = components.get<AnimationControllerComponent>(entity);
+    const auto& controller = comp.get<AnimationControllerComponent>(entity);
     REQUIRE(controller.animations.right.size() == 1);
     REQUIRE(controller.animations.right.contains(StateId::Idle));
     REQUIRE(controller.currentState == StateId::Unknown);
 
-    const auto& animation = components.get<AnimationComponent>(entity);
+    const auto& animation = comp.get<AnimationComponent>(entity);
     REQUIRE(animation.currentFrame == 0);
     REQUIRE(animation.elapsedTime == 0.f);
     REQUIRE(animation.currentState == StateId::Unknown);
@@ -242,27 +242,27 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     });
 
     World world;
-    auto& components = world.components();
-    components.registerComponent<SpriteComponent>();
-    components.registerComponent<StateComponent>();
-    components.registerComponent<StateMappingComponent>();
-    components.registerComponent<StateMachineComponent>();
-    components.registerComponent<AnimationControllerComponent>();
-    components.registerComponent<AnimationComponent>();
-    components.registerComponent<CollisionClipDefinitionsComponent>();
-    components.registerComponent<CollisionClipPlayerComponent>();
+    auto& comp = world.components();
+    comp.registerComponent<SpriteComponent>();
+    comp.registerComponent<StateComponent>();
+    comp.registerComponent<StateMappingComponent>();
+    comp.registerComponent<StateMachineComponent>();
+    comp.registerComponent<AnimationControllerComponent>();
+    comp.registerComponent<AnimationComponent>();
+    comp.registerComponent<CollisionClipDefinitionsComponent>();
+    comp.registerComponent<CollisionClipPlayerComponent>();
 
     const auto entity = loader.create(world, "def.json");
 
-    const auto& mapping = components.get<StateMappingComponent>(entity);
+    const auto& mapping = comp.get<StateMappingComponent>(entity);
     REQUIRE(mapping.mapper != nullptr);
     const auto customStateId = mapping.mapper->fromString("PowerCharge");
     REQUIRE(customStateId.isCustom());
 
-    const auto& stateMachine = components.get<StateMachineComponent>(entity);
+    const auto& stateMachine = comp.get<StateMachineComponent>(entity);
     REQUIRE(stateMachine.machine.transitions.size() == 1);
     REQUIRE(stateMachine.machine.transitions[0].to == customStateId);
 
-    const auto& controller = components.get<AnimationControllerComponent>(entity);
+    const auto& controller = comp.get<AnimationControllerComponent>(entity);
     REQUIRE(controller.animations.right.contains(customStateId));
 }

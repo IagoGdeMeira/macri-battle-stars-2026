@@ -2,6 +2,7 @@
 
 #include "../include/StateIdMapper/StateIdMapper.h"
 #include "../include/StateMapper/StateMapper.h"
+#include "../../domain/utils/Logger/Logger.h"
 
 #include <stdexcept>
 
@@ -13,7 +14,7 @@ AnimationSet AnimationLoader::load(const std::string& path) const
 
 AnimationSet AnimationLoader::load(const std::string& path, const StateIdMapper& mapper) const
 {
-    auto root = this->parser.parse(path);
+    auto root = parser.parse(path);
     AnimationSet set;
 
     for (auto& node : root->getArray("animations"))
@@ -41,8 +42,10 @@ AnimationSet AnimationLoader::load(const std::string& path, const StateIdMapper&
             set.left[state] = std::move(anim);
             set.symmetric = false;
         }
-        else set.right[state] = std::move(anim);    
+        else set.right[state] = std::move(anim);
     }
 
+    LOG_DEBUG("AnimationLoader: loaded {} animations for state Idle (contains: {})",
+        set.right.size(), set.right.contains(StateId::Idle));
     return set;
 }

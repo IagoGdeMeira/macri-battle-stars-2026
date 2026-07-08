@@ -48,12 +48,12 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem applies matching transition",
     StateSystem system(bus);
 
     World world;
-    auto& components = world.components();
-    components.registerComponent<StateComponent>();
-    components.registerComponent<StateMachineComponent>();
+    auto& comp = world.components();
+    comp.registerComponent<StateComponent>();
+    comp.registerComponent<StateMachineComponent>();
 
     const auto entity = world.entities().create();
-    components.add<StateComponent>(entity, StateComponent{});
+    comp.add<StateComponent>(entity, StateComponent{});
     this->attachMachine(world, entity, this->makeMachineWithTrigger());
 
     CommandBuffer commandBuffer;
@@ -62,7 +62,7 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem applies matching transition",
     bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Punched });
     system.update(ctx);
 
-    const auto& state = components.get<StateComponent>(entity);
+    const auto& state = comp.get<StateComponent>(entity);
 
     REQUIRE(state.current == StateId::Blocking);
     REQUIRE(state.timeInState == 0.f);
@@ -83,12 +83,12 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem chooses the highest priority t
     REQUIRE(machine.transitions[1].to == StateId::Blocking);
 
     World world;
-    auto& components = world.components();
-    components.registerComponent<StateComponent>();
-    components.registerComponent<StateMachineComponent>();
+    auto& comp = world.components();
+    comp.registerComponent<StateComponent>();
+    comp.registerComponent<StateMachineComponent>();
 
     const auto entity = world.entities().create();
-    components.add<StateComponent>(entity, StateComponent{});
+    comp.add<StateComponent>(entity, StateComponent{});
     this->attachMachine(world, entity, std::move(machine));
 
     CommandBuffer commandBuffer;
@@ -97,7 +97,7 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem chooses the highest priority t
     bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Punched });
     system.update(ctx);
 
-    const auto& state = components.get<StateComponent>(entity);
+    const auto& state = comp.get<StateComponent>(entity);
 
     REQUIRE(state.current == StateId::Blocking);
     REQUIRE(state.timeInState == 0.f);
@@ -127,12 +127,12 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem applies only one transition pe
     machine.transitions.push_back(std::move(second));
 
     World world;
-    auto& components = world.components();
-    components.registerComponent<StateComponent>();
-    components.registerComponent<StateMachineComponent>();
+    auto& comp = world.components();
+    comp.registerComponent<StateComponent>();
+    comp.registerComponent<StateMachineComponent>();
 
     const auto entity = world.entities().create();
-    components.add<StateComponent>(entity, StateComponent{});
+    comp.add<StateComponent>(entity, StateComponent{});
     this->attachMachine(world, entity, std::move(machine));
 
     CommandBuffer commandBuffer;
@@ -142,7 +142,7 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem applies only one transition pe
     bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Kicked });
     system.update(ctx);
 
-    const auto& state = components.get<StateComponent>(entity);
+    const auto& state = comp.get<StateComponent>(entity);
 
     REQUIRE(state.current == StateId::Walking);
     REQUIRE(state.timeInState == 0.f);
@@ -155,15 +155,15 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem keeps other entities unchanged
     StateSystem system(bus);
 
     World world;
-    auto& components = world.components();
-    components.registerComponent<StateComponent>();
-    components.registerComponent<StateMachineComponent>();
+    auto& comp = world.components();
+    comp.registerComponent<StateComponent>();
+    comp.registerComponent<StateMachineComponent>();
 
     const auto target = world.entities().create();
     const auto other = world.entities().create();
 
-    components.add<StateComponent>(target, StateComponent{});
-    components.add<StateComponent>(other, StateComponent{});
+    comp.add<StateComponent>(target, StateComponent{});
+    comp.add<StateComponent>(other, StateComponent{});
     this->attachMachine(world, target, this->makeMachineWithTrigger());
     this->attachMachine(world, other, this->makeMachineWithTrigger());
 
@@ -173,8 +173,8 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem keeps other entities unchanged
     bus.emit<TriggerEvent>(TriggerEvent{ other, TriggerId::Punched });
     system.update(ctx);
 
-    const auto& targetState = components.get<StateComponent>(target);
-    const auto& otherState = components.get<StateComponent>(other);
+    const auto& targetState = comp.get<StateComponent>(target);
+    const auto& otherState = comp.get<StateComponent>(other);
 
     REQUIRE(targetState.current == StateId::Idle);
     REQUIRE(otherState.current == StateId::Blocking);
@@ -196,15 +196,15 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem respects transition conditions
     StateSystem system(bus);
 
     World world;
-    auto& components = world.components();
-    components.registerComponent<StateComponent>();
-    components.registerComponent<StateMachineComponent>();
+    auto& comp = world.components();
+    comp.registerComponent<StateComponent>();
+    comp.registerComponent<StateMachineComponent>();
 
     const auto entity = world.entities().create();
 
     StateComponent state;
     state.timeInState = 0.25f;
-    components.add<StateComponent>(entity, state);
+    comp.add<StateComponent>(entity, state);
     this->attachMachine(world, entity, std::move(machine));
 
     CommandBuffer commandBuffer;
@@ -213,7 +213,7 @@ TEST_CASE_METHOD(StateSystemFixture, "StateSystem respects transition conditions
     bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Punched });
     system.update(ctx);
 
-    const auto& updated = components.get<StateComponent>(entity);
+    const auto& updated = comp.get<StateComponent>(entity);
 
     REQUIRE(updated.current == StateId::Idle);
     REQUIRE(updated.timeInState == 0.35f);

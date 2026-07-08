@@ -19,8 +19,9 @@ class AnimationSystemFixture
 public:
     AnimationSystemFixture() : system(), context{ this->world, this->bus, this->commandBuffer, 0.f }
     {
-        this->world.components().registerComponent<AnimationComponent>();
-        this->world.components().registerComponent<SpriteComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<AnimationComponent>();
+        comp.registerComponent<SpriteComponent>();
     }
 
 protected:
@@ -37,16 +38,15 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem advances sprite source
 ) {
     const auto entity = this->world.entities().create();
 
-    this->world.components().add<AnimationComponent>(entity,
-        AnimationComponent{ Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 0 });
-    this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
+    auto& comp = this->world.components();
+    comp.add<AnimationComponent>(entity, AnimationComponent{ Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 0 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
 
     this->context.deltaTime = 0.1f;
     this->system.update(this->context);
 
-    auto& animation = this->world.components().get<AnimationComponent>(entity);
-    auto& sprite = this->world.components().get<SpriteComponent>(entity);
+    auto& animation = comp.get<AnimationComponent>(entity);
+    auto& sprite = comp.get<SpriteComponent>(entity);
 
     REQUIRE(animation.currentFrame == 1);
     REQUIRE(animation.elapsedTime == 0.f);
@@ -62,16 +62,15 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem loops back to the firs
 ) {
     const auto entity = this->world.entities().create();
 
-    this->world.components().add<AnimationComponent>(entity,
-        AnimationComponent { Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 1 });
-    this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
+    auto& comp = this->world.components();
+    comp.add<AnimationComponent>(entity, AnimationComponent { Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 1 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
 
     this->context.deltaTime = 0.1f;
     this->system.update(this->context);
 
-    auto& animation = this->world.components().get<AnimationComponent>(entity);
-    auto& sprite = this->world.components().get<SpriteComponent>(entity);
+    auto& animation = comp.get<AnimationComponent>(entity);
+    auto& sprite = comp.get<SpriteComponent>(entity);
 
     REQUIRE(animation.currentFrame == 0);
     REQUIRE(sprite.source.position.x == 0);
@@ -85,16 +84,15 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem holds the last frame w
 ) {
     const auto entity = this->world.entities().create();
 
-    this->world.components().add<AnimationComponent>(entity,
-        AnimationComponent{ Animation {{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, false}, 0.f, 1 });
-    this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
+    auto& comp = this->world.components();
+    comp.add<AnimationComponent>(entity, AnimationComponent{ Animation {{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, false}, 0.f, 1 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
 
     this->context.deltaTime = 0.3f;
     this->system.update(this->context);
 
-    auto& animation = this->world.components().get<AnimationComponent>(entity);
-    auto& sprite = this->world.components().get<SpriteComponent>(entity);
+    auto& animation = comp.get<AnimationComponent>(entity);
+    auto& sprite = comp.get<SpriteComponent>(entity);
 
     REQUIRE(animation.currentFrame == 1);
     REQUIRE(sprite.source.position.x == 16);

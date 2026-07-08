@@ -45,19 +45,25 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 
     AnimationControllerComponent controller;
     controller.animations = this->animLoader.load(def.animationsPath, *mapper);
-    comp.add<AnimationControllerComponent>(entity, std::move(controller));
-    comp.add<AnimationComponent>(entity, AnimationComponent{});
+    LOG_DEBUG("CharacterLoader: animations loaded, contains Idle = {}",
+        controller.animations.right.contains(StateId::Idle));
 
-    LOG_DEBUG("CharacterLoader: entity {} has {} animations", entity.id, controller.animations.right.size());
+    controller.currentState = StateId::Idle;
+    comp.add<AnimationControllerComponent>(entity, std::move(controller));
+
+    AnimationComponent anim;
+    anim.currentState = StateId::Idle;
+    comp.add<AnimationComponent>(entity, std::move(anim));
+
+    LOG_DEBUG("CharacterLoader: entity {} has {} animations",
+        entity.id, comp.get<AnimationControllerComponent>(entity).animations.right.size());
 
     if (!def.collisionsPath.empty())
     {
         auto clipMap = this->clipLoader.load(def.collisionsPath, *mapper);
         CollisionClipDefinitionsComponent clipDefs;
 
-        for (auto& [state, clip] : clipMap)
-        { clipDefs.clips[state] = std::make_shared<CollisionClip>(std::move(clip)); }
-
+        for (auto& [state, clip] : clipMap) clipDefs.clips[state] = std::make_shared<CollisionClip>(std::move(clip));
         comp.add<CollisionClipDefinitionsComponent>(entity, std::move(clipDefs));
     }
     comp.add<CollisionClipPlayerComponent>(entity, CollisionClipPlayerComponent{});
