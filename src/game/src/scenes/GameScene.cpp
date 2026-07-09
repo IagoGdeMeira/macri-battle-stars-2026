@@ -252,7 +252,6 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
         transform.position.y = this->mapData.floorY - (sprite.size.height * 0.5f);
     }
     else transform.position.y = this->mapData.floorY - 32.f;
-    
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
 }
