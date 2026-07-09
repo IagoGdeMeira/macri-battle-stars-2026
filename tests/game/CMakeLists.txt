@@ -24,6 +24,7 @@ add_executable(game_tests
     AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
     AnimationSystemTests.cpp
+    AttackSystemTests.cpp
     Camera2DTests.cpp
     CameraControllerSystemTests.cpp
     ComponentRegistryTests.cpp
@@ -38,14 +39,17 @@ add_executable(game_tests
     ComboLoaderTests.cpp
     ComboSystemTests.cpp
     ComboTests.cpp
+    CrouchSystemTests.cpp
     DirectionTriggerSystemTests.cpp
     DynamicPushboxResolutionSystemTests.cpp
     FaceOffSystemTests.cpp
+    FallTriggerSystemTests.cpp
     FrictionSystemTests.cpp
     GravitySystemTests.cpp
     GroundDetectionSystemTests.cpp
     HitstopSystemTests.cpp
     HorizontalMovementSystemTests.cpp
+    JumpSystemTests.cpp
     KnockbackSystemTests.cpp
     LocalToWorldSystemTests.cpp
     MenuLoaderTests.cpp
@@ -54,7 +58,6 @@ add_executable(game_tests
     MapRosterLoaderTests.cpp
     MenuLoaderTests.cpp
     MovementSystemTests.cpp
-    PlayerControlSystemTests.cpp
     StateMachineLoaderTests.cpp
     StateMapperTests.cpp
     StateSystemTests.cpp

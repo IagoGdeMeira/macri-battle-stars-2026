@@ -4,6 +4,7 @@
 #include "../include/AnimationLoader/AnimationLoader.h"
 #include "../include/AnimationStateSystem/AnimationStateSystem.h"
 #include "../include/AnimationSystem/AnimationSystem.h"
+#include "../include/AttackSystem/AttackSystem.h"
 #include "../include/CameraControllerSystem/CameraControllerSystem.h"
 #include "../include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 #include "../include/CollisionClipLoader/CollisionClipLoader.h"
@@ -12,16 +13,20 @@
 #include "../include/ComboLoader/ComboLoader.h"
 #include "../include/ComboSystem/ComboSystem.h"
 #include "../include/ComponentRegistry/ComponentRegistry.h"
+#include "../include/CrouchSystem/CrouchSystem.h"
 #include "../include/DamageSystem/DamageSystem.h"
+#include "../include/DirectionTriggerSystem/DirectionTriggerSystem.h"
 #include "../include/DynamicPushboxResolutionSystem/DynamicPushboxResolutionSystem.h"
 #include "../include/FaceOffSystem/FaceOffSystem.h"
+#include "../include/FallTriggerSystem/FallTriggerSystem.h"
 #include "../include/FrictionSystem/FrictionSystem.h"
 #include "../include/GravitySystem/GravitySystem.h"
 #include "../include/GroundDetectionSystem/GroundDetectionSystem.h"
+#include "../include/HorizontalMovementSystem/HorizontalMovementSystem.h"
+#include "../include/JumpSystem/JumpSystem.h"
 #include "../include/LocalToWorldSystem/LocalToWorldSystem.h"
 #include "../include/MapLoader/MapLoader.h"
 #include "../include/MovementSystem/MovementSystem.h"
-#include "../include/PlayerControlSystem/PlayerControlSystem.h"
 #include "../include/StateMachineLoader/StateMachineLoader.h"
 #include "../include/StateSystem/StateSystem.h"
 #include "../include/StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
@@ -44,11 +49,11 @@
 #include "../../domain/utils/Logger/Logger.h"
 
 #include "../../engine/include/InputBindingLoader/InputBindingLoader.h"
+#include "../../engine/include/InputBufferSystem/InputBufferSystem.h"
 #include "../../engine/include/InputContext/InputContext.h"
 #include "../../engine/include/InputManager/InputManager.h"
-#include "../../engine/include/RenderContext/RenderContext.h"
-#include "../../engine/include/InputBufferSystem/InputBufferSystem.h"
 #include "../../engine/include/InputSystem/InputSystem.h"
+#include "../../engine/include/RenderContext/RenderContext.h"
 
 GameScene::GameScene(Config&& config) :
     Scene(*config.eventBus),
@@ -90,22 +95,35 @@ void GameScene::init()
     systems.addSystem<TriggerGenerationSystem>(events, this->triggerContext);
     systems.addSystem<InputBufferSystem>(events, *this->inputContext);
     systems.addSystem<ComboSystem>(events, this->combos);
+
+    systems.addSystem<DirectionTriggerSystem>(events);
+    systems.addSystem<CrouchSystem>(events);
+    systems.addSystem<AttackSystem>(events, InputAction::Punch, TriggerId::Punched);
+    systems.addSystem<AttackSystem>(events, InputAction::Kick, TriggerId::Kicked);
+    systems.addSystem<AttackSystem>(events, InputAction::Defend, TriggerId::Blocked);
+    systems.addSystem<FallTriggerSystem>(events);
+
     systems.addSystem<StateSystem>(events);
-    systems.addSystem<CollisionClipPlayerSystem>(events, *this->entityFactory);
-    systems.addSystem<PlayerControlSystem>(events, 300.f, -500.f);
+
+    systems.addSystem<HorizontalMovementSystem>(300.f);
+    systems.addSystem<JumpSystem>(events, -500.f);
     systems.addSystem<FaceOffSystem>(events);
     systems.addSystem<GravitySystem>(this->mapData.gravity);
     systems.addSystem<AirFrictionSystem>(this->mapData.airFriction);
     systems.addSystem<MovementSystem>();
     systems.addSystem<LocalToWorldSystem>();
+
     systems.addSystem<AnimationStateSystem>(events);
     systems.addSystem<AnimationSystem>();
+
     systems.addSystem<CollisionDetectionSystem>();
     systems.addSystem<GroundDetectionSystem>(events);
     systems.addSystem<StaticPushboxResolutionSystem>(events);
     systems.addSystem<DynamicPushboxResolutionSystem>(events);
     systems.addSystem<FrictionSystem>(this->mapData.floorFriction);
+
     systems.addSystem<DamageSystem>(events);
+    systems.addSystem<CollisionClipPlayerSystem>(events, *this->entityFactory);
     systems.addSystem<CameraControllerSystem>(*this->camera, this->window);
 
     this->worldDrawer = std::make_unique<WorldDrawer>(events, this->renderer, *this->camera, this->settings);
@@ -195,11 +213,7 @@ void GameScene::prepareWalls()
     }
 }
 
-void GameScene::preparePlayers()
-{
-    for (const auto& slot : this->playerSlots)
-        this->preparePlayer(slot);
-}
+void GameScene::preparePlayers() { for (const auto& slot : this->playerSlots) this->preparePlayer(slot); }
 
 void GameScene::preparePlayer(const PlayerSlot& slot)
 {
@@ -238,6 +252,7 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
         transform.position.y = this->mapData.floorY - (sprite.size.height * 0.5f);
     }
     else transform.position.y = this->mapData.floorY - 32.f;
+    
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
 }
