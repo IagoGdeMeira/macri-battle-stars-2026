@@ -25,6 +25,7 @@ target_sources(game
         src/ComboSystem.cpp
         src/ComponentRegistry.cpp
         src/DamageSystem.cpp
+        src/DirectionTriggerSystem.cpp
         src/DynamicPushboxResolutionSystem.cpp
         src/EntityFactory.cpp
         src/FaceOffSystem.cpp
@@ -32,6 +33,7 @@ target_sources(game
         src/GravitySystem.cpp
         src/GroundDetectionSystem.cpp
         src/HitstopSystem.cpp
+        src/HorizontalMovementSystem.cpp
         src/KnockbackSystem.cpp
         src/LocalToWorldSystem.cpp
         src/MapLoader.cpp

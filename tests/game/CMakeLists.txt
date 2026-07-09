@@ -38,12 +38,14 @@ add_executable(game_tests
     ComboLoaderTests.cpp
     ComboSystemTests.cpp
     ComboTests.cpp
+    DirectionTriggerSystemTests.cpp
     DynamicPushboxResolutionSystemTests.cpp
     FaceOffSystemTests.cpp
     FrictionSystemTests.cpp
     GravitySystemTests.cpp
     GroundDetectionSystemTests.cpp
     HitstopSystemTests.cpp
+    HorizontalMovementSystemTests.cpp
     KnockbackSystemTests.cpp
     LocalToWorldSystemTests.cpp
     MenuLoaderTests.cpp

@@ -165,12 +165,12 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     const auto& controller = comp.get<AnimationControllerComponent>(entity);
     REQUIRE(controller.animations.right.size() == 1);
     REQUIRE(controller.animations.right.contains(StateId::Idle));
-    REQUIRE(controller.currentState == StateId::Unknown);
+    REQUIRE(controller.currentState == StateId::Idle);
 
     const auto& animation = comp.get<AnimationComponent>(entity);
     REQUIRE(animation.currentFrame == 0);
     REQUIRE(animation.elapsedTime == 0.f);
-    REQUIRE(animation.currentState == StateId::Unknown);
+    REQUIRE(animation.currentState == StateId::Idle);
 }
 
 TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states per character definition",
