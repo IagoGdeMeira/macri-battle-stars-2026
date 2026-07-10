@@ -13,8 +13,8 @@ void GravitySystem::update(UpdateContext& ctx)
 
     for (auto [entity, v, g] : view)
     {
-        if (ctx.world.components().has<HitstopComponent>(entity))
-        { if (ctx.world.components().get<HitstopComponent>(entity).frozen) continue; }
+        auto& comp = ctx.world.components();
+        if (comp.has<HitstopComponent>(entity) && comp.get<HitstopComponent>(entity).frozen) continue;
 
         float appliedGravity = this->baseGravity * g.gravityScale;
         v.velocity.y += appliedGravity * ctx.deltaTime;

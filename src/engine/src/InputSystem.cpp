@@ -49,14 +49,16 @@ void InputSystem::update(UpdateContext& ctx)
     }
 
     auto analogView = View<AnalogInputComponent, PlayerComponent>(comp);
+
+    for (auto [entity, analog, player] : analogView) analog.move = {0.f, 0.f};
     for (auto& e : this->analogEvents)
     {
+        if (e.source.type() == InputSource::Type::Mouse) continue;
+
         for (auto [entity, analog, player] : analogView)
         {
             if (player.id != e.playerId) continue;
-
-            if (e.source.type() == InputSource::Type::Mouse || e.source.type() == InputSource::Type::Gamepad)
-            { analog.move.x += e.value; }
+            analog.move.x = e.value; 
         }
     }
 

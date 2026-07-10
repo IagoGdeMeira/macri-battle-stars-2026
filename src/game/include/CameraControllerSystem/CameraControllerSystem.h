@@ -25,8 +25,8 @@ private:
     Window& window;
     AABB bounds;
 
-    float minZoom = 0.5f;
-    float maxZoom = 2.f;
+    float minZoom = 0.8f;
+    float maxZoom = 1.5f;
     float padding = 50.f;
 };
 

@@ -141,7 +141,6 @@ void GameScene::setupInputAdapters()
 
     inputManager.setProvider(this->platformFactory.createEventProvider());
     inputManager.addAdapter(this->platformFactory.createKeyboardAdapter(this->eventBus, *this->inputContext));
-    inputManager.addAdapter(this->platformFactory.createMouseAdapter(this->eventBus));
 
     auto gamepadAdapters = this->platformFactory.createGamepadAdapters(this->eventBus, 1);
     for (auto& adapter : gamepadAdapters) inputManager.addAdapter(std::move(adapter));

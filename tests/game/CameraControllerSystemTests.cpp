@@ -18,8 +18,9 @@ class CameraControllerSystemFixture
 public:
     CameraControllerSystemFixture() : ctx { this->world, this->bus, this->commandBuffer, 0.016f }
     {
-        this->world.components().registerComponent<TransformComponent>();
-        this->world.components().registerComponent<PlayerComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<PlayerComponent>();
     }
 
     World world;
@@ -49,8 +50,9 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem centers 
     "[unit][camera_controller_system]"
 ) {
     const auto entity = this->world.entities().create();
-    this->world.components().add<TransformComponent>(entity, TransformComponent { 100.f, 200.f, 1.f, 1.f, 0.f });
-    this->world.components().add<PlayerComponent>(entity, PlayerComponent { 1 });
+    auto& comp = this->world.components();
+    comp.add<TransformComponent>(entity, TransformComponent { 100.f, 200.f, 1.f, 1.f, 0.f });
+    comp.add<PlayerComponent>(entity, PlayerComponent { 1 });
 
     AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
     CameraControllerSystem system(this->camera, this->window, bounds);
@@ -66,12 +68,13 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps c
     "[unit][camera_controller_system]"
 ) {
     const auto entityA = this->world.entities().create();
-    this->world.components().add<TransformComponent>(entityA, TransformComponent { 100.f, 100.f, 1.f, 1.f, 0.f });
-    this->world.components().add<PlayerComponent>(entityA, PlayerComponent { 1 });
+    auto& comp = this->world.components();
+    comp.add<TransformComponent>(entityA, TransformComponent { 100.f, 100.f, 1.f, 1.f, 0.f });
+    comp.add<PlayerComponent>(entityA, PlayerComponent { 1 });
 
     const auto entityB = this->world.entities().create();
-    this->world.components().add<TransformComponent>(entityB, TransformComponent { 250.f, 200.f, 1.f, 1.f, 0.f });
-    this->world.components().add<PlayerComponent>(entityB, PlayerComponent { 2 });
+    comp.add<TransformComponent>(entityB, TransformComponent { 250.f, 200.f, 1.f, 1.f, 0.f });
+    comp.add<PlayerComponent>(entityB, PlayerComponent { 2 });
 
     AABB bounds { 0.f, 300.f, 0.f, 220.f };
     CameraControllerSystem system(this->camera, this->window, bounds);
