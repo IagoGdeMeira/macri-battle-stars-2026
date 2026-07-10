@@ -3,6 +3,19 @@
 
 #include "Logger.h"
 
+template<typename... Args>
+void Logger::log(Logger::LogLevel level, std::string_view format, Args&&... args)
+{
+    if (level < Logger::globalLevel) return;
+
+    std::ostream& out = (level >= Logger::LogLevel::WARN) ? std::cerr : std::cout;
+    if (Logger::timestampEnabled) out << "[" << Logger::currentTimestamp() << "] ";
+    
+    out << "[" << Logger::levelToString(level) << "] ";
+    Logger::format(out, format, std::forward<Args>(args)...);
+    out << std::endl;
+}
+
 template<typename T, typename... Args>
 void Logger::format(std::ostream& out, std::string_view format, T&& value, Args&&... args)
 {

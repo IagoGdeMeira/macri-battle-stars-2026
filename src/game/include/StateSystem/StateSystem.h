@@ -15,7 +15,6 @@ class StateSystem : public System
 {
 public:
     StateSystem(EventBus& eventBus);
-
     void update(UpdateContext& ctx) override;
 
 private:

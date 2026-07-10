@@ -15,7 +15,6 @@ class InputSystem : public System
 {
 public:
     InputSystem(EventBus& bus, InputContext& inputContext);
-
     void update(UpdateContext& ctx) override;
 
 private:

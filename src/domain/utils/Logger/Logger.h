@@ -40,17 +40,7 @@ private:
     static bool timestampEnabled;
 
     template<typename... Args>
-    static void log(Logger::LogLevel level, std::string_view format, Args&&... args)
-    {
-        if (level < Logger::globalLevel) return;
-
-        std::ostream& out = (level >= Logger::LogLevel::WARN) ? std::cerr : std::cout;
-        if (Logger::timestampEnabled) out << "[" << Logger::currentTimestamp() << "] ";
-        
-        out << "[" << Logger::levelToString(level) << "] ";
-        Logger::format(out, format, std::forward<Args>(args)...);
-        out << std::endl;
-    }
+    static void log(Logger::LogLevel level, std::string_view format, Args&&... args);
 
     static std::string levelToString(Logger::LogLevel level);
     static std::string currentTimestamp();

@@ -59,7 +59,6 @@ add_executable(game_tests
     MenuLoaderTests.cpp
     MovementSystemTests.cpp
     StateMachineLoaderTests.cpp
-    StateMapperTests.cpp
     StateSystemTests.cpp
     StaticPushboxResolutionSystemTests.cpp
     TriggerBindingLoaderTests.cpp

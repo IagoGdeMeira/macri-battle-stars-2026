@@ -1,7 +1,6 @@
 #include "../include/AnimationLoader/AnimationLoader.h"
 
 #include "../include/StateIdMapper/StateIdMapper.h"
-#include "../include/StateMapper/StateMapper.h"
 #include "../../domain/utils/Logger/Logger.h"
 
 #include <stdexcept>

@@ -46,7 +46,6 @@ target_sources(game
         src/MenuLoader.cpp
         src/StateMachineLoader.cpp
         src/StateIdMapper.cpp
-        src/StateMapper.cpp
         src/StateSystem.cpp
         src/StaticPushboxResolutionSystem.cpp
         src/TriggerBindingLoader.cpp

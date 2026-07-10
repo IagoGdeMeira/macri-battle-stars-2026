@@ -22,8 +22,6 @@ public:
 
 private:
     DataParser& parser;
-
-    StateMachine loadInternal(const std::string& path, std::function<StateId(const std::string&)> resolver) const;
 };
 
 #endif // state_machine_loader_h

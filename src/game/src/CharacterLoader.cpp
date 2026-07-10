@@ -51,10 +51,6 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     controller.currentState = StateId::Idle;
     comp.add<AnimationControllerComponent>(entity, std::move(controller));
 
-    AnimationComponent anim;
-    anim.currentState = StateId::Idle;
-    comp.add<AnimationComponent>(entity, std::move(anim));
-
     LOG_DEBUG("CharacterLoader: entity {} has {} animations",
         entity.id, comp.get<AnimationControllerComponent>(entity).animations.right.size());
 
@@ -67,5 +63,22 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
         comp.add<CollisionClipDefinitionsComponent>(entity, std::move(clipDefs));
     }
     comp.add<CollisionClipPlayerComponent>(entity, CollisionClipPlayerComponent{});
+
+    AnimationComponent anim;
+    anim.currentState = StateId::Idle;
+    anim.currentFrame = 0;
+    anim.elapsedTime = 0.f;
+
+    const auto& controllerRef = comp.get<AnimationControllerComponent>(entity);
+    auto it = controllerRef.animations.right.find(StateId::Idle);
+    if (it != controllerRef.animations.right.end())
+    {
+        anim.animation = it->second;
+        LOG_DEBUG("CharacterLoader: initialized entity {} with Idle animation ({} frames)",
+            entity.id, anim.animation.frames.size());
+    }
+    else LOG_WARN("CharacterLoader: Idle animation not found for entity {}", entity.id);
+    
+    comp.add<AnimationComponent>(entity, std::move(anim));
     return entity;
 }
