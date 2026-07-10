@@ -176,6 +176,7 @@ void GameScene::render()
 {
     RenderContext ctx{ this->world(), this->eventBus };
     this->worldDrawer->draw(ctx);
+    LOG_DEBUG("GameScene::render called");
 }
 
 void GameScene::prepareScene()

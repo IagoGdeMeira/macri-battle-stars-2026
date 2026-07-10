@@ -22,6 +22,8 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
     {
         if (!sprite.texture) continue;
         DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++);
+
+        LOG_DEBUG("WorldTextureRenderFormat: entity {}, has texture: {}", entity.id, sprite.texture ? "yes" : "no");
         
         auto& srcPos = cmd.source.position;
         auto& srcSize = cmd.source.size;

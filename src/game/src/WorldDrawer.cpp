@@ -4,6 +4,8 @@
 #include "../render_formats/WorldRectangleRenderFormat.h"
 #include "../render_formats/WorldTextureRenderFormat.h"
 
+#include "../../domain/utils/Logger/Logger.h"
+
 #include "../../engine/events/WindowResizedEvent.h"
 
 WorldDrawer::WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera, GameSettings& settings) :
@@ -28,6 +30,7 @@ void WorldDrawer::draw(RenderContext& ctx)
 {
     this->renderer.setViewport(this->worldViewport);
     for (auto& format : this->formats) format->render(ctx);
+    LOG_DEBUG("WorldDrawer::draw called");
 }
 
 void WorldDrawer::recalculateViewport()

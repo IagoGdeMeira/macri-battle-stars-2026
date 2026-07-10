@@ -14,6 +14,7 @@
 #include "../../domain/components/LifetimeComponent.h"
 #include "../../domain/components/PushboxComponent.h"
 #include "../../domain/components/ShapeRenderComponent.h"
+#include "../../domain/utils/Logger/Logger.h"
 #include "../../domain/value_objects/CollisionFrame/ColliderDef.h"
 #include "../../domain/value_objects/CollisionFrame/CollisionFrame.h"
 
@@ -78,6 +79,7 @@ Entity EntityFactory::createBackgroundLayer(const BackgroundLayer& layer)
     auto& comp = this->world.components();
 
     auto texture = this->resourceManager.load<Texture>(this->textureLoader, layer.texturePath);
+    LOG_DEBUG("Background layer texture: {} (path: {})", texture ? "OK" : "NULL", layer.texturePath);
 
     SpriteComponent sprite;
     sprite.texture = texture;
@@ -86,9 +88,13 @@ Entity EntityFactory::createBackgroundLayer(const BackgroundLayer& layer)
     sprite.useSourceRect = false;
     comp.add<SpriteComponent>(e, std::move(sprite));
 
+    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f, 1.f, 1.f, 0.f});
+
     comp.add<ParallaxComponent>(e, ParallaxComponent{layer.parallaxFactor});
     comp.add<RenderComponent>(e, RenderComponent{0, layer.zIndex});
 
+    LOG_DEBUG("Background layer entity {} created with zIndex={}, parallax=({}, {})",
+        e.id, layer.zIndex, layer.parallaxFactor.x, layer.parallaxFactor.y);
     return e;
 }
 
