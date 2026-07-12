@@ -22,7 +22,7 @@
 #include "../../engine/include/Texture/Texture.h"
 #include "../../engine/include/TextureLoader/TextureLoader.h"
 
-Entity EntityFactory::createStaticEntity(const Position& position, const Rectangle& rect, Entity parent)
+Entity EntityFactory::createStaticEntity(const Position& position, const Rectangle& rect, std::optional<Entity> parent)
 {
     RectangleDef rectDef;
     rectDef.offset = {0.f, 0.f};
@@ -31,7 +31,7 @@ Entity EntityFactory::createStaticEntity(const Position& position, const Rectang
     return this->createStaticEntityImpl(position, rectDef, parent);
 }
 
-Entity EntityFactory::createStaticEntity(const Position& position, const Circle& circle, Entity parent)
+Entity EntityFactory::createStaticEntity(const Position& position, const Circle& circle, std::optional<Entity> parent)
 {
     CircleDef circleDef;
     circleDef.offset = {0.f, 0.f};
@@ -123,6 +123,7 @@ Entity EntityFactory::createFloorChild(
     if (!texturePath.empty())
     {
         this->addSprite(e, texturePath);
+        comp.get<SpriteComponent>(e).size = size;
         this->addRender(e, 0, 0);
     }
 
@@ -140,21 +141,27 @@ Entity EntityFactory::createWallChild(const Position& position, const Dimension2
     return e;
 }
 
-Entity EntityFactory::createStaticEntityImpl(const Position& position, const ColliderDef& colliderDef, Entity parent)
+Entity EntityFactory::createStaticEntityImpl(const Position& position, const ColliderDef& colliderDef, std::optional<Entity> parent)
 {
-    Entity e = this->world.entities().create();
+    auto& entities = this->world.entities();
     auto& comp = this->world.components();
 
-    if (parent != Entity::null())
+    Entity e = entities.create();
+
+    if (parent.has_value())
     {
-        comp.add<ParentComponent>(e, ParentComponent{parent});
-        comp.add<LocalTransform>(e, LocalTransform{position.x, position.y});
+        Entity p = parent.value();
+        if (entities.isAlive(p))
+        {
+            comp.add<ParentComponent>(e, ParentComponent{p});
+            comp.add<LocalTransform>(e, LocalTransform{position.x, position.y});
+        }
+        else comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
     }
     else comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
-    
+
     this->addColliderComponents(e, colliderDef);
-    using PType = PushboxComponent::PushboxType;
-    comp.add<PushboxComponent>(e, PushboxComponent{PType::Static});
+    comp.add<PushboxComponent>(e, PushboxComponent{PushboxComponent::PushboxType::Static});
 
     ColliderDebugDef debug;
     debug.color = {128, 128, 128, 128};
@@ -167,6 +174,7 @@ Entity EntityFactory::createStaticEntityImpl(const Position& position, const Col
 void EntityFactory::addColliderComponents(Entity entity, const ColliderDef& collider)
 {
     auto& comp = this->world.components();
+
     using CType = ColliderDef::ColliderType;
     switch (collider.getType())
     {
@@ -188,6 +196,7 @@ void EntityFactory::addColliderComponents(Entity entity, const ColliderDef& coll
 void EntityFactory::addDebugVisual(Entity entity, const ColliderDef& collider, const ColliderDebugDef& debug)
 {
     if (!debug.enabled) return;
+
     auto& comp = this->world.components();
     ShapeRenderComponent shape;
     shape.shape = collider.clone();

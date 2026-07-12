@@ -42,6 +42,7 @@ add_executable(game_tests
     CrouchSystemTests.cpp
     DirectionTriggerSystemTests.cpp
     DynamicPushboxResolutionSystemTests.cpp
+    EntityFactoryTests.cpp
     FaceOffSystemTests.cpp
     FallTriggerSystemTests.cpp
     FrictionSystemTests.cpp

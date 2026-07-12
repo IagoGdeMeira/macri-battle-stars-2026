@@ -18,8 +18,6 @@ struct Entity
         size_t operator()(const Entity& entity) const noexcept
         { return std::hash<uint32_t>{}(entity.id); }
     };
-
-    static const Entity null() { return Entity{0}; }
 };
 
 #endif // entity_h

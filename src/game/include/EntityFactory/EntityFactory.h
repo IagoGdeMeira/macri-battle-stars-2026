@@ -6,6 +6,7 @@
 #include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 class ResourceManager;
@@ -18,8 +19,8 @@ public:
     EntityFactory(World& world, ResourceManager& resourceManager, TextureLoader& textureLoader) :
         world(world), resourceManager(resourceManager), textureLoader(textureLoader) {}
 
-    Entity createStaticEntity(const Position& position, const Rectangle& rect, Entity parent = Entity::null());
-    Entity createStaticEntity(const Position& position, const Circle& circle, Entity parent = Entity::null());
+    Entity createStaticEntity(const Position& position, const Rectangle& rect, std::optional<Entity> parent = std::nullopt);
+    Entity createStaticEntity(const Position& position, const Circle& circle, std::optional<Entity> parent = std::nullopt);
     Entity createPushbox(Entity parent, const PushboxDef& def, bool facingLeft);
     Entity createHitbox(Entity parent, const HitboxDef& def, bool facingLeft);
     Entity createHurtbox(Entity parent, const HurtboxDef& def, bool facingLeft);
@@ -33,7 +34,7 @@ private:
     ResourceManager& resourceManager;
     TextureLoader& textureLoader;
 
-    Entity createStaticEntityImpl(const Position& position, const ColliderDef& colliderDef, Entity parent);
+    Entity createStaticEntityImpl(const Position& position, const ColliderDef& colliderDef, std::optional<Entity> parent);
 
     void addColliderComponents(Entity entity, const ColliderDef& collider);
     void addDebugVisual(Entity entity, const ColliderDef& collider, const ColliderDebugDef& debug);

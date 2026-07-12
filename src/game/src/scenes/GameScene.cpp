@@ -70,7 +70,7 @@ GameScene::GameScene(Config&& cfg) :
     platformFactory(*cfg.platformFactory),
     playerSlots(std::move(cfg.playerSlots)),
     mapPath(cfg.mapPath),
-    mapRoot(Entity::null())
+    mapRoot(Entity{0})
 {
     this->loadInputContext(cfg.inputBindingsPath);
 
@@ -108,6 +108,8 @@ void GameScene::init()
     systems.addSystem<HorizontalMovementSystem>(300.f);
     systems.addSystem<JumpSystem>(events, -500.f);
     systems.addSystem<FaceOffSystem>(events);
+
+    if (!this->world().entities().isAlive(this->mapRoot)) throw std::runtime_error("GameScene::init() - mapRoot is not alive");
 
     auto& mapComp = this->world().components().get<MapComponent>(this->mapRoot);
 
