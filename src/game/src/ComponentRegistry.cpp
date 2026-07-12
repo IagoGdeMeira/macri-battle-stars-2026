@@ -26,6 +26,7 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<KnockbackComponent>();
     components.registerComponent<LifetimeComponent>();
     components.registerComponent<LocalTransform>();
+    components.registerComponent<MapComponent>();
     components.registerComponent<OrientationComponent>();
     components.registerComponent<OutlineComponent>();
     components.registerComponent<ParallaxComponent>();

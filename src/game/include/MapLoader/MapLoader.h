@@ -1,19 +1,23 @@
 #ifndef map_loader_h
 #define map_loader_h
 
-#include "../MapData/MapData.h"
+#include "../../domain/include/Entity/Entity.h"
 
 #include "../../engine/include/DataParser/DataParser.h"
+
+class EntityFactory;
+class World;
 
 class MapLoader
 {
 public:
-    explicit MapLoader(DataParser& parser) : parser(parser) {}
+    MapLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
 
-    MapData load(const std::string& path) const;
+    Entity load(World& world, const std::string& path);
 
 private:
     DataParser& parser;
+    EntityFactory& factory;
 };
 
 #endif // map_loader_h

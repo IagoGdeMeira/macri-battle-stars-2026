@@ -26,10 +26,10 @@ public:
 
     UICircleRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
-        auto& components = this->world.components();
-        components.registerComponent<UITransform>();
-        components.registerComponent<RenderComponent>();
-        components.registerComponent<VisualEffectsComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<UITransform>();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<VisualEffectsComponent>();
     }
 };
 
@@ -41,9 +41,9 @@ TEST_CASE_METHOD(UICircleRenderFormatFixture, "UICircleRenderFormat submits base
     UITransform transform;
     transform.rect = Rectangle{Position{10.f, 20.f}, Dimension2D{30.f, 20.f}};
 
-    auto& components = this->world.components();
-    components.add<UITransform>(entity, transform);
-    components.add<RenderComponent>(entity, RenderComponent { 8, 2 });
+    auto& comp = this->world.components();
+    comp.add<UITransform>(entity, transform);
+    comp.add<RenderComponent>(entity, RenderComponent { 8, 2 });
 
     VisualEffectsComponent fx;
     fx.circleEffects.push_back([](DrawCircleBatch& batch, DrawCircleCommand& cmd) {
@@ -53,7 +53,7 @@ TEST_CASE_METHOD(UICircleRenderFormatFixture, "UICircleRenderFormat submits base
         halo.circle.radius += 1.f;
         batch.add(halo);
     });
-    components.add<VisualEffectsComponent>(entity, fx);
+    comp.add<VisualEffectsComponent>(entity, fx);
 
     this->format.render(this->context);
 

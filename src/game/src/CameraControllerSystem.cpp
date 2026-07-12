@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <limits>
 
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
@@ -18,20 +17,16 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     auto it = view.begin();
     if (it == view.end()) return;
 
-    AABB playerBounds =
-    {
-        std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest(),
-        std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest()
-    };
+    AABB playerBounds = {limits::max(), limits::lowest(), limits::max(), limits::lowest()};
 
     for (; it != view.end(); ++it)
     {
         auto [entity, transform, player] = *it;
 
         auto& pos = transform.position;
-        playerBounds.left = std::min(playerBounds.left, pos.x);
-        playerBounds.top = std::min(playerBounds.top, pos.y);
-        playerBounds.right = std::max(playerBounds.right, pos.x);
+        playerBounds.left   = std::min(playerBounds.left, pos.x);
+        playerBounds.top    = std::min(playerBounds.top, pos.y);
+        playerBounds.right  = std::max(playerBounds.right, pos.x);
         playerBounds.bottom = std::max(playerBounds.bottom, pos.y);
     }
 
@@ -50,7 +45,7 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     AABB map = this->bounds;
     Dimension2D halfScreen = {(screenW / targetZoom) * 0.5f, (screenH / targetZoom) * 0.5f};
     
-    float clampedX = (map.left + map.right) * 0.5f;
+    float clampedX  = (map.left + map.right) * 0.5f;
     float minClampX = map.left + halfScreen.width;
     float maxClampX = map.right - halfScreen.width;
     if (minClampX <= maxClampX) clampedX = std::clamp(center.x, minClampX, maxClampX);

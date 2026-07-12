@@ -13,21 +13,32 @@
 class CameraControllerSystem : public System
 {
 public: 
-    CameraControllerSystem(Camera2D& camera, Window& window, AABB bounds = AABB{
-        std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max(),
-        std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max()
-    }) : camera(camera), window(window), bounds(bounds) {}
+    using limits = std::numeric_limits<float>;
+
+    struct Config 
+    {
+        Camera2D& camera;
+        Window& window;
+        float minZoom = 0.8f, maxZoom = 1.5f, padding = 50.f;
+        AABB bounds = AABB{limits::lowest(), limits::max(), limits::lowest(), limits::max()};
+    };
+
+    CameraControllerSystem(Config&& cfg) :
+        camera(cfg.camera),
+        window(cfg.window),
+        minZoom(cfg.minZoom),
+        maxZoom(cfg.maxZoom),
+        padding(cfg.padding),
+        bounds(cfg.bounds) {}
 
     void update(UpdateContext& ctx) override;
 
 private:
     Camera2D& camera;
     Window& window;
-    AABB bounds;
 
-    float minZoom = 0.8f;
-    float maxZoom = 1.5f;
-    float padding = 50.f;
+    float minZoom, maxZoom, padding;
+    AABB bounds;
 };
 
 #endif // camera_controller_system_h

@@ -74,10 +74,12 @@ public:
     {
         auto root = std::make_unique<StubDataNode>();
         root->setString("name", "TestStage");
-        root->setFloat("floor.y", 400.f);
-        root->setString("floor.texture", "assets/floor.png");
-        root->setFloat("floor.width", 2000.f);
-        root->setFloat("floor.height", 50.f);
+        auto floorNode = std::make_unique<StubDataNode>();
+        floorNode->setFloat("y", 400.f);
+        floorNode->setString("texture", "assets/floor.png");
+        floorNode->setFloat("width", 2000.f);
+        floorNode->setFloat("height", 50.f);
+        root->setObject("floor", std::move(floorNode));
         auto spawn = std::make_unique<StubDataNode>();
         spawn->setInt("playerId", 0);
         spawn->setFloat("x", 300.f);
@@ -193,7 +195,7 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player ent
     cfg.engine          = &this->engine;
     cfg.fontFactory     = &this->fontFactory;
     cfg.textureFactory  = &this->textureFactory;
-    cfg.platformFactory = &this->platformFactory;
+    cfg.platformFactory = nullptr;
 
     cfg.playerSlots         = { {0, "assets/characters/knight.json"} };
     cfg.mapPath             = "assets/maps/stage1.json";

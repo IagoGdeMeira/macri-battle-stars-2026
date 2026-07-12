@@ -5,9 +5,11 @@
 #include "../include/CharacterLoader/CharacterLoader.h"
 #include "../include/Combo/Combo.h"
 #include "../include/EntityFactory/EntityFactory.h"
-#include "../include/MapData/MapData.h"
 #include "../include/TriggerContext/TriggerContext.h"
 #include "../include/WorldDrawer/WorldDrawer.h"
+
+#include "../../domain/components/MapComponent.h"
+#include "../../domain/include/Entity/Entity.h"
 
 #include "../../engine/include/DataParser/DataParser.h"
 #include "../../engine/include/Engine/Engine.h"
@@ -41,7 +43,7 @@ public:
         std::string mapPath, inputBindingsPath, combosPath, triggersPath;
     };
 
-    explicit GameScene(Config&& config);
+    explicit GameScene(Config&& cfg);
     
     void init() override;
     void render() override;
@@ -64,9 +66,8 @@ private:
 
     std::vector<PlayerSlot> playerSlots;
     std::vector<Combo> combos;
-
-    MapData mapData;
     TriggerContext triggerContext;
+    std::string mapPath;
 
     std::unique_ptr<InputContext> inputContext;
     std::unique_ptr<Camera2D> camera;
@@ -78,17 +79,17 @@ private:
     std::unique_ptr<StateMachineLoader> fsmLoader;
     std::unique_ptr<CollisionClipLoader> clipLoader;
 
+    Entity mapRoot;
+
     void loadInputContext(const std::string& path);
     void setupInputAdapters();
     void loadMap(const std::string& path);
     void loadCombos(const std::string& path);
     void loadTriggerBindings(const std::string& path);
     void createCharacterLoader();
+
     void prepareScene();
     void prepareComponents();
-    void prepareBackgroundLayers();
-    void prepareFloor();
-    void prepareWalls();
     void preparePlayers();
     void preparePlayer(const PlayerSlot& slot);
 };

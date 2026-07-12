@@ -34,7 +34,13 @@ public:
 TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem keeps camera unchanged when no players exist",
     "[unit][camera_controller_system]"
 ) {
-    CameraControllerSystem system(this->camera, this->window);
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera     = this->camera,
+        .window     = this->window,
+        .minZoom    = 0.8f,
+        .maxZoom    = 1.5f,
+        .padding    = 50.f
+    });
 
     this->camera.setPosition(12.f, -8.f);
     this->camera.setZoom(1.25f);
@@ -55,13 +61,20 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem centers 
     comp.add<PlayerComponent>(entity, PlayerComponent { 1 });
 
     AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
-    CameraControllerSystem system(this->camera, this->window, bounds);
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera     = this->camera,
+        .window     = this->window,
+        .minZoom    = 0.8f,
+        .maxZoom    = 1.5f,
+        .padding    = 50.f,
+        .bounds     = bounds
+    });
 
     system.update(this->ctx);
 
     REQUIRE(this->camera.getPosition().x == 100.f);
     REQUIRE(this->camera.getPosition().y == 200.f);
-    REQUIRE(this->camera.getZoom() == 2.f);
+    REQUIRE(this->camera.getZoom() == 1.5f);
 }
 
 TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps camera position to map bounds",
@@ -77,11 +90,18 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps c
     comp.add<PlayerComponent>(entityB, PlayerComponent { 2 });
 
     AABB bounds { 0.f, 300.f, 0.f, 220.f };
-    CameraControllerSystem system(this->camera, this->window, bounds);
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera     = this->camera,
+        .window     = this->window,
+        .minZoom    = 0.8f,
+        .maxZoom    = 1.5f,
+        .padding    = 50.f,
+        .bounds     = bounds
+    });
 
     system.update(this->ctx);
 
     REQUIRE(this->camera.getPosition().x == 150.f);
     REQUIRE(this->camera.getPosition().y == 110.f);
-    REQUIRE(this->camera.getZoom() == 2.f);
+    REQUIRE(this->camera.getZoom() == 1.5f);
 }

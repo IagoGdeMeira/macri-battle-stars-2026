@@ -40,7 +40,6 @@
 #include "../../domain/components/InputBufferComponent.h"
 #include "../../domain/components/InputComponent.h"
 #include "../../domain/components/PlayerComponent.h"
-#include "../../domain/components/RectangleColliderComponent.h"
 #include "../../domain/components/RenderComponent.h"
 #include "../../domain/components/SpriteComponent.h"
 #include "../../domain/components/StateComponent.h"
@@ -55,29 +54,30 @@
 #include "../../engine/include/InputSystem/InputSystem.h"
 #include "../../engine/include/RenderContext/RenderContext.h"
 
-GameScene::GameScene(Config&& config) :
-    Scene(*config.eventBus),
-    eventBus(*config.eventBus),
-    sceneManager(*config.sceneManager),
-    renderer(*config.renderer),
-    window(*config.window),
-    parser(*config.parser),
-    resourceManager(*config.resourceManager),
-    textureLoader(*config.textureLoader),
-    settings(*config.settings),
-    engine(*config.engine),
-    fontFactory(*config.fontFactory),
-    textureFactory(*config.textureFactory),
-    platformFactory(*config.platformFactory),
-    playerSlots(std::move(config.playerSlots))
+GameScene::GameScene(Config&& cfg) :
+    Scene(*cfg.eventBus),
+    eventBus(*cfg.eventBus),
+    sceneManager(*cfg.sceneManager),
+    renderer(*cfg.renderer),
+    window(*cfg.window),
+    parser(*cfg.parser),
+    resourceManager(*cfg.resourceManager),
+    textureLoader(*cfg.textureLoader),
+    settings(*cfg.settings),
+    engine(*cfg.engine),
+    fontFactory(*cfg.fontFactory),
+    textureFactory(*cfg.textureFactory),
+    platformFactory(*cfg.platformFactory),
+    playerSlots(std::move(cfg.playerSlots)),
+    mapPath(cfg.mapPath),
+    mapRoot(Entity::null())
 {
-    this->loadInputContext(config.inputBindingsPath);
-    this->loadMap(config.mapPath);
+    this->loadInputContext(cfg.inputBindingsPath);
 
-    if (!config.combosPath.empty()) this->loadCombos(config.combosPath);
-    if (!config.triggersPath.empty()) this->loadTriggerBindings(config.triggersPath);
+    if (!cfg.combosPath.empty()) this->loadCombos(cfg.combosPath);
+    if (!cfg.triggersPath.empty()) this->loadTriggerBindings(cfg.triggersPath);
 
-    if (config.platformFactory) this->setupInputAdapters();
+    if (cfg.platformFactory) this->setupInputAdapters();
 
     this->createCharacterLoader();
     this->camera = std::make_unique<Camera2D>();
@@ -108,8 +108,11 @@ void GameScene::init()
     systems.addSystem<HorizontalMovementSystem>(300.f);
     systems.addSystem<JumpSystem>(events, -500.f);
     systems.addSystem<FaceOffSystem>(events);
-    systems.addSystem<GravitySystem>(this->mapData.gravity);
-    systems.addSystem<AirFrictionSystem>(this->mapData.airFriction);
+
+    auto& mapComp = this->world().components().get<MapComponent>(this->mapRoot);
+
+    systems.addSystem<GravitySystem>(mapComp.gravity);
+    systems.addSystem<AirFrictionSystem>(mapComp.airFriction);
     systems.addSystem<MovementSystem>();
     systems.addSystem<LocalToWorldSystem>();
 
@@ -120,11 +123,17 @@ void GameScene::init()
     systems.addSystem<GroundDetectionSystem>(events);
     systems.addSystem<StaticPushboxResolutionSystem>(events);
     systems.addSystem<DynamicPushboxResolutionSystem>(events);
-    systems.addSystem<FrictionSystem>(this->mapData.floorFriction);
+    systems.addSystem<FrictionSystem>(mapComp.floorFriction);
 
     systems.addSystem<DamageSystem>(events);
     systems.addSystem<CollisionClipPlayerSystem>(events, *this->entityFactory);
-    systems.addSystem<CameraControllerSystem>(*this->camera, this->window);
+
+    CameraControllerSystem::Config camCfg{
+        .camera = *this->camera,
+        .window = this->window,
+        .bounds = mapComp.worldBounds
+    };
+    systems.addSystem<CameraControllerSystem>(std::move(camCfg));
 
     this->worldDrawer = std::make_unique<WorldDrawer>(events, this->renderer, *this->camera, this->settings);
 }
@@ -148,7 +157,11 @@ void GameScene::setupInputAdapters()
     inputManager.addAdapter(this->platformFactory.createSystemAdapter(this->eventBus));
 }
 
-void GameScene::loadMap(const std::string& path) { this->mapData = MapLoader(this->parser).load(path); }
+void GameScene::loadMap(const std::string& path)
+{
+    MapLoader mapLoader(this->parser, *this->entityFactory);
+    this->mapRoot = mapLoader.load(this->world(), path);
+}
 
 void GameScene::loadCombos(const std::string& path) { this->combos = ComboLoader(this->parser).load(path); }
 
@@ -181,37 +194,11 @@ void GameScene::render()
 void GameScene::prepareScene()
 {
     this->prepareComponents();
-    this->prepareBackgroundLayers();
-    this->prepareFloor();
-    this->prepareWalls();
+    this->loadMap(this->mapPath);
     this->preparePlayers();
 }
 
 void GameScene::prepareComponents() { ComponentRegistry::registerAll(this->world().components()); }
-
-void GameScene::prepareBackgroundLayers()
-{ for (const auto& layer : this->mapData.backgroundLayers) this->entityFactory->createBackgroundLayer(layer); }
-
-void GameScene::prepareFloor()
-{
-    Position floorPos{ this->mapData.floorSize.width * 0.5f, this->mapData.floorY };
-    Entity floorBody = this->entityFactory->createStaticBody(floorPos);
-    this->entityFactory->addStaticCollider(floorBody, Rectangle{{0, 0}, this->mapData.floorSize.width, this->mapData.floorSize.height});
-}
-
-void GameScene::prepareWalls()
-{
-    auto& comp = this->world().components();
-    auto& entities = this->world().entities();
-
-    for (const auto& wall : this->mapData.walls)
-    {
-        Entity w = entities.create();
-        TransformComponent wTransform{wall.position.x + wall.size.width * 0.5f, wall.position.y + wall.size.height * 0.5f};
-        comp.add<TransformComponent>(w, wTransform);
-        comp.add<RectangleColliderComponent>(w, RectangleColliderComponent{ wall.size.width, wall.size.height });
-    }
-}
 
 void GameScene::preparePlayers() { for (const auto& slot : this->playerSlots) this->preparePlayer(slot); }
 
@@ -236,12 +223,10 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     LOG_DEBUG("GameScene: player entity {} state.current = {}",
         entity.id, comp.get<StateComponent>(entity).current.value());
 
+    const auto& mapComp = comp.get<MapComponent>(this->mapRoot);
+
     float spawnX = 400.f;
-    for (const auto& sp : this->mapData.spawnPoints)
-    {
-        if (sp.playerId != slot.playerId) continue;
-        spawnX = sp.x; break;
-    }
+    for (const auto& sp : mapComp.spawnPoints) if (sp.playerId == slot.playerId) { spawnX = sp.x; break; }
 
     auto& transform = comp.get<TransformComponent>(entity);
     transform.position.x = spawnX;
@@ -249,9 +234,9 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     if (comp.has<SpriteComponent>(entity))
     {
         const auto& sprite = comp.get<SpriteComponent>(entity);
-        transform.position.y = this->mapData.floorY - (sprite.size.height * 0.5f);
+        transform.position.y = mapComp.floorY - (sprite.size.height * 0.5f);
     }
-    else transform.position.y = this->mapData.floorY - 32.f;
+    else transform.position.y = mapComp.floorY - 32.f;
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
 }

@@ -8,60 +8,61 @@
 TEST_CASE("ComponentRegistry registers every game component",
     "[unit][component_registry]"
 ) {
-    ComponentManager components;
+    ComponentManager comp;
 
-    ComponentRegistry::registerAll(components);
+    ComponentRegistry::registerAll(comp);
 
-    REQUIRE(components.storage<AirFrictionComponent>() != nullptr);
-    REQUIRE(components.storage<AnalogInputComponent>() != nullptr);
-    REQUIRE(components.storage<AnimationComponent>() != nullptr);
-    REQUIRE(components.storage<AnimationControllerComponent>() != nullptr);
-    REQUIRE(components.storage<BoxModel>() != nullptr);
-    REQUIRE(components.storage<CircleColliderComponent>() != nullptr);
-    REQUIRE(components.storage<CollisionClipDefinitionsComponent>() != nullptr);
-    REQUIRE(components.storage<CollisionClipPlayerComponent>() != nullptr);
-    REQUIRE(components.storage<FlexContainer>() != nullptr);
-    REQUIRE(components.storage<FlexItem>() != nullptr);
-    REQUIRE(components.storage<GravityComponent>() != nullptr);
-    REQUIRE(components.storage<GroundedComponent>() != nullptr);
-    REQUIRE(components.storage<HealthComponent>() != nullptr);
-    REQUIRE(components.storage<HitboxComponent>() != nullptr);
-    REQUIRE(components.storage<HitstopComponent>() != nullptr);
-    REQUIRE(components.storage<HurtboxComponent>() != nullptr);
-    REQUIRE(components.storage<InputBufferComponent>() != nullptr);
-    REQUIRE(components.storage<InputComponent>() != nullptr);
-    REQUIRE(components.storage<KnockbackComponent>() != nullptr);
-    REQUIRE(components.storage<LifetimeComponent>() != nullptr);
-    REQUIRE(components.storage<LocalTransform>() != nullptr);
-    REQUIRE(components.storage<OrientationComponent>() != nullptr);
-    REQUIRE(components.storage<OutlineComponent>() != nullptr);
-    REQUIRE(components.storage<ParallaxComponent>() != nullptr);
-    REQUIRE(components.storage<ParentComponent>() != nullptr);
-    REQUIRE(components.storage<PlayerComponent>() != nullptr);
-    REQUIRE(components.storage<PushboxComponent>() != nullptr);
-    REQUIRE(components.storage<RectangleColliderComponent>() != nullptr);
-    REQUIRE(components.storage<RenderComponent>() != nullptr);
-    REQUIRE(components.storage<ShadowComponent>() != nullptr);
-    REQUIRE(components.storage<ShapeRenderComponent>() != nullptr);
-    REQUIRE(components.storage<SpriteComponent>() != nullptr);
-    REQUIRE(components.storage<StateComponent>() != nullptr);
-    REQUIRE(components.storage<StateMappingComponent>() != nullptr);
-    REQUIRE(components.storage<StateMachineComponent>() != nullptr);
-    REQUIRE(components.storage<TransformComponent>() != nullptr);
-    REQUIRE(components.storage<UIActionComponent>() != nullptr);
-    REQUIRE(components.storage<UIFocusable>() != nullptr);
-    REQUIRE(components.storage<UISpriteComponent>() != nullptr);
-    REQUIRE(components.storage<UITextComponent>() != nullptr);
-    REQUIRE(components.storage<UITransform>() != nullptr);
-    REQUIRE(components.storage<VelocityComponent>() != nullptr);
-    REQUIRE(components.storage<VisualEffectsComponent>() != nullptr);
+    REQUIRE(comp.storage<AirFrictionComponent>() != nullptr);
+    REQUIRE(comp.storage<AnalogInputComponent>() != nullptr);
+    REQUIRE(comp.storage<AnimationComponent>() != nullptr);
+    REQUIRE(comp.storage<AnimationControllerComponent>() != nullptr);
+    REQUIRE(comp.storage<BoxModel>() != nullptr);
+    REQUIRE(comp.storage<CircleColliderComponent>() != nullptr);
+    REQUIRE(comp.storage<CollisionClipDefinitionsComponent>() != nullptr);
+    REQUIRE(comp.storage<CollisionClipPlayerComponent>() != nullptr);
+    REQUIRE(comp.storage<FlexContainer>() != nullptr);
+    REQUIRE(comp.storage<FlexItem>() != nullptr);
+    REQUIRE(comp.storage<GravityComponent>() != nullptr);
+    REQUIRE(comp.storage<GroundedComponent>() != nullptr);
+    REQUIRE(comp.storage<HealthComponent>() != nullptr);
+    REQUIRE(comp.storage<HitboxComponent>() != nullptr);
+    REQUIRE(comp.storage<HitstopComponent>() != nullptr);
+    REQUIRE(comp.storage<HurtboxComponent>() != nullptr);
+    REQUIRE(comp.storage<InputBufferComponent>() != nullptr);
+    REQUIRE(comp.storage<InputComponent>() != nullptr);
+    REQUIRE(comp.storage<KnockbackComponent>() != nullptr);
+    REQUIRE(comp.storage<LifetimeComponent>() != nullptr);
+    REQUIRE(comp.storage<LocalTransform>() != nullptr);
+    REQUIRE(comp.storage<MapComponent>() != nullptr);
+    REQUIRE(comp.storage<OrientationComponent>() != nullptr);
+    REQUIRE(comp.storage<OutlineComponent>() != nullptr);
+    REQUIRE(comp.storage<ParallaxComponent>() != nullptr);
+    REQUIRE(comp.storage<ParentComponent>() != nullptr);
+    REQUIRE(comp.storage<PlayerComponent>() != nullptr);
+    REQUIRE(comp.storage<PushboxComponent>() != nullptr);
+    REQUIRE(comp.storage<RectangleColliderComponent>() != nullptr);
+    REQUIRE(comp.storage<RenderComponent>() != nullptr);
+    REQUIRE(comp.storage<ShadowComponent>() != nullptr);
+    REQUIRE(comp.storage<ShapeRenderComponent>() != nullptr);
+    REQUIRE(comp.storage<SpriteComponent>() != nullptr);
+    REQUIRE(comp.storage<StateComponent>() != nullptr);
+    REQUIRE(comp.storage<StateMappingComponent>() != nullptr);
+    REQUIRE(comp.storage<StateMachineComponent>() != nullptr);
+    REQUIRE(comp.storage<TransformComponent>() != nullptr);
+    REQUIRE(comp.storage<UIActionComponent>() != nullptr);
+    REQUIRE(comp.storage<UIFocusable>() != nullptr);
+    REQUIRE(comp.storage<UISpriteComponent>() != nullptr);
+    REQUIRE(comp.storage<UITextComponent>() != nullptr);
+    REQUIRE(comp.storage<UITransform>() != nullptr);
+    REQUIRE(comp.storage<VelocityComponent>() != nullptr);
+    REQUIRE(comp.storage<VisualEffectsComponent>() != nullptr);
 }
 
 TEST_CASE("ComponentRegistry can be invoked more than once safely",
     "[unit][component_registry]"
 ) {
-    ComponentManager components;
+    ComponentManager comp;
 
-    REQUIRE_NOTHROW(ComponentRegistry::registerAll(components));
-    REQUIRE_NOTHROW(ComponentRegistry::registerAll(components));
+    REQUIRE_NOTHROW(ComponentRegistry::registerAll(comp));
+    REQUIRE_NOTHROW(ComponentRegistry::registerAll(comp));
 }

@@ -47,20 +47,20 @@ public:
         system(this->bus, this->entityFactory),
         context{this->world, this->bus, this->commandBuffer, 0.016f}
     {
-        auto& components = this->world.components();
-        components.registerComponent<CollisionClipPlayerComponent>();
-        components.registerComponent<CollisionClipDefinitionsComponent>();
-        components.registerComponent<OrientationComponent>();
-        components.registerComponent<ParentComponent>();
-        components.registerComponent<HitboxComponent>();
-        components.registerComponent<HurtboxComponent>();
-        components.registerComponent<PushboxComponent>();
-        components.registerComponent<LocalTransform>();
-        components.registerComponent<RectangleColliderComponent>();
-        components.registerComponent<CircleColliderComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<CollisionClipPlayerComponent>();
+        comp.registerComponent<CollisionClipDefinitionsComponent>();
+        comp.registerComponent<OrientationComponent>();
+        comp.registerComponent<ParentComponent>();
+        comp.registerComponent<HitboxComponent>();
+        comp.registerComponent<HurtboxComponent>();
+        comp.registerComponent<PushboxComponent>();
+        comp.registerComponent<LocalTransform>();
+        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<CircleColliderComponent>();
     }
 
-    static std::shared_ptr<CollisionClip> makeCollisionClip(bool loop = true, int frameCount = 2)
+    std::shared_ptr<CollisionClip> makeCollisionClip(bool loop = true, int frameCount = 2)
     {
         auto clip = std::make_shared<CollisionClip>();
         clip->loop = loop;
@@ -88,23 +88,23 @@ TEST_CASE_METHOD(CollisionClipPlayerSystemFixture, "CollisionClipPlayerSystem cr
     "[integration][collision_clip_player_system]"
 ) {
     const auto entity = this->world.entities().create();
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
-    components.add<CollisionClipPlayerComponent>(entity, CollisionClipPlayerComponent{});
+    comp.add<CollisionClipPlayerComponent>(entity, CollisionClipPlayerComponent{});
     auto clip = this->makeCollisionClip();
     CollisionClipDefinitionsComponent defs;
     defs.clips[StateId::Idle] = clip;
-    components.add<CollisionClipDefinitionsComponent>(entity, defs);
-    components.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Right });
+    comp.add<CollisionClipDefinitionsComponent>(entity, defs);
+    comp.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Right });
 
     this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, StateId::Running, StateId::Idle });
     this->system.update(this->context);
 
-    auto view = View<ParentComponent>(components);
+    auto view = View<ParentComponent>(comp);
     bool foundHitbox = false;
     for (auto [child, parent] : view)
     {
-        if (parent.parent != entity || !components.has<HitboxComponent>(child)) continue;
+        if (parent.parent != entity || !comp.has<HitboxComponent>(child)) continue;
         foundHitbox = true;
         break;
     }
@@ -115,7 +115,7 @@ TEST_CASE_METHOD(CollisionClipPlayerSystemFixture, "CollisionClipPlayerSystem re
     "[integration][collision_clip_player_system]"
 ) {
     const auto entity = this->world.entities().create();
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
     auto clip = this->makeCollisionClip();
     CollisionClipPlayerComponent player;
@@ -123,14 +123,14 @@ TEST_CASE_METHOD(CollisionClipPlayerSystemFixture, "CollisionClipPlayerSystem re
     player.currentClip = clip;
     player.currentFrame = 0;
     
-    components.add<CollisionClipPlayerComponent>(entity, player);
-    components.add<CollisionClipDefinitionsComponent>(entity, CollisionClipDefinitionsComponent{});
-    components.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Left });
+    comp.add<CollisionClipPlayerComponent>(entity, player);
+    comp.add<CollisionClipDefinitionsComponent>(entity, CollisionClipDefinitionsComponent{});
+    comp.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Left });
 
     this->bus.emit<OrientationChangedEvent>(OrientationChangedEvent{ entity, Orientation::Right, Orientation::Left });
     this->system.update(this->context);
 
-    auto view = View<ParentComponent>(components);
+    auto view = View<ParentComponent>(comp);
     bool hasChild = false;
     for (auto [child, parent] : view)
     {

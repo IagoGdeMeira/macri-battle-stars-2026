@@ -22,114 +22,36 @@
 #include "../../engine/include/Texture/Texture.h"
 #include "../../engine/include/TextureLoader/TextureLoader.h"
 
-Entity EntityFactory::createStaticBody(const Position& position)
+Entity EntityFactory::createStaticEntity(const Position& position, const Rectangle& rect, Entity parent)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
-    comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
-    return e;
-}
-
-Entity EntityFactory::addStaticCollider(Entity parent, const Rectangle& rect)
-{
-    Entity collider = this->world.entities().create();
-    auto& comp = this->world.components();
-
-    comp.add<ParentComponent>(collider, ParentComponent{parent});
-    comp.add<LocalTransform>(collider, LocalTransform{rect.position.x, rect.position.y});
-    comp.add<RectangleColliderComponent>(collider, RectangleColliderComponent{rect.size.width, rect.size.height});
-    comp.add<PushboxComponent>(collider, PushboxComponent{PushboxComponent::PushboxType::Static});
-
-    ColliderDebugDef staticDebug;
-    staticDebug.color = {128, 128, 128, 128};
-    staticDebug.enabled = true;
-    
     RectangleDef rectDef;
+    rectDef.offset = {0.f, 0.f};
     rectDef.width = rect.size.width;
     rectDef.height = rect.size.height;
-    this->addDebugVisual(collider, rectDef, staticDebug);
-
-    return collider;
+    return this->createStaticEntityImpl(position, rectDef, parent);
 }
 
-Entity EntityFactory::addStaticCollider(Entity parent, const Circle& circle)
+Entity EntityFactory::createStaticEntity(const Position& position, const Circle& circle, Entity parent)
 {
-    Entity collider = this->world.entities().create();
-    auto& comp = this->world.components();
-
-    comp.add<ParentComponent>(collider, ParentComponent{parent});
-    comp.add<LocalTransform>(collider, LocalTransform{circle.position.x, circle.position.y});
-    comp.add<CircleColliderComponent>(collider, CircleColliderComponent{circle.radius});
-    comp.add<PushboxComponent>(collider, PushboxComponent{PushboxComponent::PushboxType::Static});
-
-    ColliderDebugDef staticDebug;
-    staticDebug.color = {128, 128, 128, 128};
-    staticDebug.enabled = true;
-
     CircleDef circleDef;
+    circleDef.offset = {0.f, 0.f};
     circleDef.radius = circle.radius;
-    this->addDebugVisual(collider, circleDef, staticDebug);
-
-    return collider;
+    return this->createStaticEntityImpl(position, circleDef, parent);
 }
 
-Entity EntityFactory::createBackgroundLayer(const BackgroundLayer& layer)
+Entity EntityFactory::createPushbox(Entity parent, const PushboxDef& def, bool facingLeft)
 {
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    auto texture = this->resourceManager.load<Texture>(this->textureLoader, layer.texturePath);
-    LOG_DEBUG("Background layer texture: {} (path: {})", texture ? "OK" : "NULL", layer.texturePath);
+    float finalOffsetX = facingLeft ? -def.collider->offset.x : def.collider->offset.x;
+    comp.add<ParentComponent>(e, ParentComponent{parent});
+    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offset.y});
+    this->addColliderComponents(e, *def.collider);
+    comp.add<PushboxComponent>(e, PushboxComponent{def.type, def.mass, def.pushResistance});
+    this->addDebugVisual(e, *def.collider, def.debug);
 
-    SpriteComponent sprite;
-    sprite.texture = texture;
-    sprite.size.width = static_cast<float>(texture->getWidth());
-    sprite.size.height = static_cast<float>(texture->getHeight());
-    sprite.useSourceRect = false;
-    comp.add<SpriteComponent>(e, std::move(sprite));
-
-    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f, 1.f, 1.f, 0.f});
-
-    comp.add<ParallaxComponent>(e, ParallaxComponent{layer.parallaxFactor});
-    comp.add<RenderComponent>(e, RenderComponent{0, layer.zIndex});
-
-    LOG_DEBUG("Background layer entity {} created with zIndex={}, parallax=({}, {})",
-        e.id, layer.zIndex, layer.parallaxFactor.x, layer.parallaxFactor.y);
     return e;
-}
-
-void EntityFactory::addColliderComponents(Entity entity, const ColliderDef& collider)
-{
-    auto& comp = this->world.components();
-
-    switch (collider.getType())
-    {
-        case ColliderDef::ColliderType::Rectangle:
-        {
-            auto& rect = static_cast<const RectangleDef&>(collider);
-            comp.add<RectangleColliderComponent>(entity, RectangleColliderComponent{rect.width, rect.height});
-            break;
-        }
-        case ColliderDef::ColliderType::Circle:
-        {
-            auto& circ = static_cast<const CircleDef&>(collider);
-            comp.add<CircleColliderComponent>(entity, CircleColliderComponent{circ.radius});
-            break;
-        }
-    }
-}
-
-void EntityFactory::addDebugVisual(Entity entity, const ColliderDef& collider, const ColliderDebugDef& debug)
-{
-    if (!debug.enabled) return;
-
-    auto& comp = this->world.components();
-    ShapeRenderComponent shape;
-    shape.shape = collider.clone();
-    shape.color = {debug.color.r, debug.color.g, debug.color.b, debug.color.a};
-    shape.filled = false;
-    shape.layer = 10;
-    comp.add<ShapeRenderComponent>(entity, std::move(shape));
 }
 
 Entity EntityFactory::createHitbox(Entity parent, const HitboxDef& def, bool facingLeft)
@@ -143,6 +65,7 @@ Entity EntityFactory::createHitbox(Entity parent, const HitboxDef& def, bool fac
     this->addColliderComponents(e, *def.collider);
     comp.add<HitboxComponent>(e, HitboxComponent{def.damage});
     this->addDebugVisual(e, *def.collider, def.debug);
+
     return e;
 }
 
@@ -161,37 +84,139 @@ Entity EntityFactory::createHurtbox(Entity parent, const HurtboxDef& def, bool f
     return e;
 }
 
-Entity EntityFactory::createPushbox(Entity parent, const PushboxDef& def, bool facingLeft)
+Entity EntityFactory::createSpriteEffect(const std::string& texturePath, const Position& position, float duration)
 {
+    Entity e = this->world.entities().create();
+    this->addSprite(e, texturePath);
+    auto& comp = this->world.components();
+    comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
+    comp.add<LifetimeComponent>(e, LifetimeComponent{duration});
+    return e;
+}
+
+Entity EntityFactory::createBackgroundChild(
+    const std::string& texturePath,
+    const Position& parallax,
+    int zIndex,
+    Entity parent
+) {
+    Entity e = this->world.entities().create();
+    this->addSprite(e, texturePath);
+    this->addRender(e, 0, zIndex);
+    this->addParallax(e, parallax);
+    this->addParentAndLocal(e, parent, {0.f, 0.f});
+    return e;
+}
+
+Entity EntityFactory::createFloorChild(
+    const std::string& texturePath,
+    const Position& position,
+    const Dimension2D& size,
+    Entity parent
+) {
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalOffsetX = facingLeft ? -def.collider->offset.x : def.collider->offset.x;
-    comp.add<ParentComponent>(e, ParentComponent{parent});
-    comp.add<LocalTransform>(e, LocalTransform{finalOffsetX, def.collider->offset.y});
-    this->addColliderComponents(e, *def.collider);
-    comp.add<PushboxComponent>(e, PushboxComponent{def.type, def.mass, def.pushResistance});
-    this->addDebugVisual(e, *def.collider, def.debug);
+    this->addParentAndLocal(e, parent, position);
+    comp.add<RectangleColliderComponent>(e, RectangleColliderComponent{size.width, size.height});
+
+    if (!texturePath.empty())
+    {
+        this->addSprite(e, texturePath);
+        this->addRender(e, 0, 0);
+    }
 
     return e;
 }
 
-
-Entity EntityFactory::createSpriteEffect(const std::string& texturePath, const Position& position, float duration)
+Entity EntityFactory::createWallChild(const Position& position, const Dimension2D& size, Entity parent)
 {
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    auto texture = this->resourceManager.load<Texture>(this->textureLoader, texturePath);
+    this->addParentAndLocal(e, parent, position);
+    comp.add<RectangleColliderComponent>(e, RectangleColliderComponent{size.width, size.height});
 
+    return e;
+}
+
+Entity EntityFactory::createStaticEntityImpl(const Position& position, const ColliderDef& colliderDef, Entity parent)
+{
+    Entity e = this->world.entities().create();
+    auto& comp = this->world.components();
+
+    if (parent != Entity::null())
+    {
+        comp.add<ParentComponent>(e, ParentComponent{parent});
+        comp.add<LocalTransform>(e, LocalTransform{position.x, position.y});
+    }
+    else comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
+    
+    this->addColliderComponents(e, colliderDef);
+    using PType = PushboxComponent::PushboxType;
+    comp.add<PushboxComponent>(e, PushboxComponent{PType::Static});
+
+    ColliderDebugDef debug;
+    debug.color = {128, 128, 128, 128};
+    debug.enabled = true;
+    this->addDebugVisual(e, colliderDef, debug);
+
+    return e;
+}
+
+void EntityFactory::addColliderComponents(Entity entity, const ColliderDef& collider)
+{
+    auto& comp = this->world.components();
+    using CType = ColliderDef::ColliderType;
+    switch (collider.getType())
+    {
+        case CType::Rectangle:
+        {
+            auto& rect = static_cast<const RectangleDef&>(collider);
+            comp.add<RectangleColliderComponent>(entity, RectangleColliderComponent{rect.width, rect.height});
+            break;
+        }
+        case CType::Circle:
+        {
+            auto& circ = static_cast<const CircleDef&>(collider);
+            comp.add<CircleColliderComponent>(entity, CircleColliderComponent{circ.radius});
+            break;
+        }
+    }
+}
+
+void EntityFactory::addDebugVisual(Entity entity, const ColliderDef& collider, const ColliderDebugDef& debug)
+{
+    if (!debug.enabled) return;
+    auto& comp = this->world.components();
+    ShapeRenderComponent shape;
+    shape.shape = collider.clone();
+    shape.color = {debug.color.r, debug.color.g, debug.color.b, debug.color.a};
+    shape.filled = false;
+    shape.layer = 10;
+    comp.add<ShapeRenderComponent>(entity, std::move(shape));
+}
+
+void EntityFactory::addSprite(Entity entity, const std::string& texturePath)
+{
+    auto texture = this->resourceManager.load<Texture>(this->textureLoader, texturePath);
     SpriteComponent sprite;
     sprite.texture = texture;
     sprite.size.width = static_cast<float>(texture->getWidth());
     sprite.size.height = static_cast<float>(texture->getHeight());
-    comp.add<SpriteComponent>(e, std::move(sprite));
+    sprite.useSourceRect = false;
+    this->world.components().add<SpriteComponent>(entity, std::move(sprite));
+}
 
-    comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
-    comp.add<LifetimeComponent>(e, LifetimeComponent{duration});
+void EntityFactory::addRender(Entity entity, int layer, int zIndex)
+{ this->world.components().add<RenderComponent>(entity, RenderComponent{layer, zIndex}); }
 
-    return e;
+void EntityFactory::addParallax(Entity entity, const Position& factor)
+{ this->world.components().add<ParallaxComponent>(entity, ParallaxComponent{factor}); }
+
+void EntityFactory::addParentAndLocal(Entity entity, Entity parent, const Position& localPos)
+{
+    auto& comp = this->world.components();
+    comp.add<ParentComponent>(entity, ParentComponent{parent});
+    comp.add<LocalTransform>(entity, LocalTransform{localPos});
 }

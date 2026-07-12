@@ -11,15 +11,15 @@
 
 void LocalToWorldSystem::update(UpdateContext& ctx)
 {
-    auto& components = ctx.world.components();
+    auto& comp = ctx.world.components();
 
-    auto view = View<TransformComponent, LocalTransform, ParentComponent>(components);
+    auto view = View<TransformComponent, LocalTransform, ParentComponent>(comp);
 
     for (auto [entity, transform, local, parent] : view)
     {
-        if (!components.has<TransformComponent>(parent.parent)) continue;
+        if (!comp.has<TransformComponent>(parent.parent)) continue;
 
-        const auto& parentTransform = components.get<TransformComponent>(parent.parent);
+        const auto& parentTransform = comp.get<TransformComponent>(parent.parent);
         LocalToWorldSystem::applyParentTransform(transform, local, parentTransform);
     }
 }
@@ -41,11 +41,13 @@ void LocalToWorldSystem::applyParentTransform(
     float rotatedX = LocalToWorldSystem::rotateLocalX(local, cosR, sinR);
     float rotatedY = LocalToWorldSystem::rotateLocalY(local, cosR, sinR);
 
-    transform.position.x = parentTransform.position.x + rotatedX * parentTransform.scale.x;
-    transform.position.y = parentTransform.position.y + rotatedY * parentTransform.scale.y;
-
+    transform.position = {
+        parentTransform.position.x + rotatedX * parentTransform.scale.x,
+        parentTransform.position.y + rotatedY * parentTransform.scale.y
+    };
     transform.rotation = parentTransform.rotation + local.rotation;
-
-    transform.scale.x = parentTransform.scale.x * local.scale.x;
-    transform.scale.y = parentTransform.scale.y * local.scale.y;
+    transform.scale = {
+        parentTransform.scale.x * local.scale.x,
+        parentTransform.scale.y * local.scale.y
+    };
 }
