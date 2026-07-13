@@ -42,7 +42,7 @@ public:
 
     struct Config : public Scene::Config
     {
-        IPlatformFactory *platformFactory = nullptr;
+        IPlatformFactory* platformFactory = nullptr;
         std::vector<PlayerSlot> playerSlots;
         std::string mapPath, inputBindingsPath, combosPath, triggersPath;
     };
@@ -55,18 +55,18 @@ public:
     Scene::UpdatePolicy getUpdatePolicy() const override { return Scene::UpdatePolicy::WhenTop; }
 
 private:
-    EventBus &eventBus;
-    SceneManager &sceneManager;
-    Renderer &renderer;
-    Window &window;
-    DataParser &parser;
-    ResourceManager &resourceManager;
-    TextureLoader &textureLoader;
-    GameSettings &settings;
-    Engine &engine;
-    IFontFactory &fontFactory;
-    ITextureFactory &textureFactory;
-    IPlatformFactory &platformFactory;
+    EventBus& eventBus;
+    SceneManager& sceneManager;
+    Renderer& renderer;
+    Window& window;
+    DataParser& parser;
+    ResourceManager& resourceManager;
+    TextureLoader& textureLoader;
+    GameSettings& settings;
+    Engine& engine;
+    IFontFactory& fontFactory;
+    ITextureFactory& textureFactory;
+    IPlatformFactory& platformFactory;
 
     std::vector<PlayerSlot> playerSlots;
     std::vector<Combo> combos;
@@ -85,17 +85,17 @@ private:
 
     Entity mapRoot;
 
-    void loadInputContext(const std::string &path);
+    void loadInputContext(const std::string& path);
     void setupInputAdapters();
-    void loadMap(const std::string &path);
-    void loadCombos(const std::string &path);
-    void loadTriggerBindings(const std::string &path);
+    void loadMap(const std::string& path);
+    void loadCombos(const std::string& path);
+    void loadTriggerBindings(const std::string& path);
     void createCharacterLoader();
 
     void prepareScene();
     void prepareComponents();
     void preparePlayers();
-    void preparePlayer(const PlayerSlot &slot);
+    void preparePlayer(const PlayerSlot& slot);
 };
 
 #endif // game_scene_h
