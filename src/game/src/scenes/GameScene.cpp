@@ -89,6 +89,7 @@ void GameScene::init()
     this->prepareScene();
 
     auto& systems = this->systemManager;
+    auto& entities = this->world().entities();
     auto& events = this->eventBus;
 
     systems.addSystem<InputSystem>(events, *this->inputContext);
@@ -109,7 +110,7 @@ void GameScene::init()
     systems.addSystem<JumpSystem>(events, -500.f);
     systems.addSystem<FaceOffSystem>(events);
 
-    if (!this->world().entities().isAlive(this->mapRoot)) throw std::runtime_error("GameScene::init() - mapRoot is not alive");
+    if (!entities.isAlive(this->mapRoot)) throw std::runtime_error("GameScene::init() - mapRoot is not alive");
 
     auto& mapComp = this->world().components().get<MapComponent>(this->mapRoot);
 
@@ -129,13 +130,8 @@ void GameScene::init()
 
     systems.addSystem<DamageSystem>(events);
     systems.addSystem<CollisionClipPlayerSystem>(events, *this->entityFactory);
-
-    CameraControllerSystem::Config camCfg{
-        .camera = *this->camera,
-        .window = this->window,
-        .bounds = mapComp.worldBounds
-    };
-    systems.addSystem<CameraControllerSystem>(std::move(camCfg));
+    systems.addSystem<CameraControllerSystem>(CameraControllerSystem::Config{
+        .camera = *this->camera, .window = this->window, .bounds = mapComp.worldBounds });
 
     this->worldDrawer = std::make_unique<WorldDrawer>(events, this->renderer, *this->camera, this->settings);
 }

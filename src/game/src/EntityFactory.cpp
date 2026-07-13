@@ -101,10 +101,14 @@ Entity EntityFactory::createBackgroundChild(
     Entity parent
 ) {
     Entity e = this->world.entities().create();
+    auto& comp = this->world.components();
+
     this->addSprite(e, texturePath);
     this->addRender(e, 0, zIndex);
     this->addParallax(e, parallax);
     this->addParentAndLocal(e, parent, {0.f, 0.f});
+    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
+    
     return e;
 }
 
@@ -127,6 +131,8 @@ Entity EntityFactory::createFloorChild(
         this->addRender(e, 0, 0);
     }
 
+    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
+
     return e;
 }
 
@@ -137,6 +143,7 @@ Entity EntityFactory::createWallChild(const Position& position, const Dimension2
 
     this->addParentAndLocal(e, parent, position);
     comp.add<RectangleColliderComponent>(e, RectangleColliderComponent{size.width, size.height});
+    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
 
     return e;
 }
@@ -148,15 +155,13 @@ Entity EntityFactory::createStaticEntityImpl(const Position& position, const Col
 
     Entity e = entities.create();
 
-    if (parent.has_value())
+    if (parent.has_value() && entities.isAlive(parent.value()))
     {
         Entity p = parent.value();
-        if (entities.isAlive(p))
-        {
-            comp.add<ParentComponent>(e, ParentComponent{p});
-            comp.add<LocalTransform>(e, LocalTransform{position.x, position.y});
-        }
-        else comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
+
+        comp.add<ParentComponent>(e, ParentComponent{p});
+        comp.add<LocalTransform>(e, LocalTransform{position.x, position.y});
+        comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
     }
     else comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
 

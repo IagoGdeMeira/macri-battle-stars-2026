@@ -107,7 +107,7 @@ TEST_CASE_METHOD(EntityFactoryFixture,
     REQUIRE(comp.has<LocalTransform>(child));
     REQUIRE(comp.has<RectangleColliderComponent>(child));
     REQUIRE(comp.has<PushboxComponent>(child));
-    REQUIRE_FALSE(comp.has<TransformComponent>(child));
+    REQUIRE(comp.has<TransformComponent>(child));
 
     const auto& parentComp = comp.get<ParentComponent>(child);
     REQUIRE(parentComp.parent == parent);
@@ -135,7 +135,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createBackgroundChild() a
     REQUIRE(comp.has<ParallaxComponent>(bg));
     REQUIRE(comp.has<ParentComponent>(bg));
     REQUIRE(comp.has<LocalTransform>(bg));
-    REQUIRE_FALSE(comp.has<TransformComponent>(bg));
+    REQUIRE(comp.has<TransformComponent>(bg));
     REQUIRE_FALSE(comp.has<RectangleColliderComponent>(bg));
 
     const auto& sprite = comp.get<SpriteComponent>(bg);
@@ -175,7 +175,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createFloorChild() with t
     REQUIRE(comp.has<LocalTransform>(floor));
     REQUIRE(comp.has<SpriteComponent>(floor));
     REQUIRE(comp.has<RenderComponent>(floor));
-    REQUIRE_FALSE(comp.has<TransformComponent>(floor));
+    REQUIRE(comp.has<TransformComponent>(floor));
 
     const auto& collider = comp.get<RectangleColliderComponent>(floor);
     REQUIRE(collider.size.width == 800.f);
@@ -223,7 +223,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createWallChild() adds Re
     REQUIRE(comp.has<RectangleColliderComponent>(wall));
     REQUIRE(comp.has<ParentComponent>(wall));
     REQUIRE(comp.has<LocalTransform>(wall));
-    REQUIRE_FALSE(comp.has<TransformComponent>(wall));
+    REQUIRE(comp.has<TransformComponent>(wall));
     REQUIRE_FALSE(comp.has<SpriteComponent>(wall));
     REQUIRE_FALSE(comp.has<RenderComponent>(wall));
 
