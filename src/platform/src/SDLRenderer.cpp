@@ -9,8 +9,9 @@
 
 SDLRenderer::SDLRenderer(SDL_Window* window)
 {
-    this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
+    this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!this->renderer) this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    
     this->registerHandler<DrawTextureCommand>([this](const DrawTextureCommand& cmd) { this->drawTextureImpl(cmd); });
     this->registerHandler<DrawFontCommand>([this](const DrawFontCommand& cmd) { this->drawFontImpl(cmd); });
     this->registerHandler<DrawRectangleCommand>([this](const DrawRectangleCommand& cmd) { this->drawRectangleImpl(cmd); });
