@@ -14,7 +14,6 @@
 #include "../../domain/components/LifetimeComponent.h"
 #include "../../domain/components/PushboxComponent.h"
 #include "../../domain/components/ShapeRenderComponent.h"
-#include "../../domain/utils/Logger/Logger.h"
 #include "../../domain/value_objects/CollisionFrame/ColliderDef.h"
 #include "../../domain/value_objects/CollisionFrame/CollisionFrame.h"
 

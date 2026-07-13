@@ -4,8 +4,6 @@
 
 #include "../../domain/components/StateComponent.h"
 #include "../../domain/components/StateMachineComponent.h"
-#include "../../domain/utils/Logger/Logger.h"
-
 #include "../../engine/include/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
@@ -15,10 +13,7 @@
 StateSystem::StateSystem(EventBus& eventBus) : bus(eventBus)
 {
     this->bus.subscribe<TriggerEvent>([this](const TriggerEvent& event)
-    {
-        this->events.push_back(event);
-        LOG_DEBUG("StateSystem: received trigger {}", static_cast<int>(event.trigger));
-    });
+    { this->events.push_back(event); });
 }
 
 void StateSystem::update(UpdateContext& ctx)
@@ -35,8 +30,6 @@ void StateSystem::update(UpdateContext& ctx)
     {
         Entity entity = entry.first;
         const auto& triggers = entry.second;
-
-        LOG_DEBUG("StateSystem: entity {} has {} triggers", entity.id, triggers.size());
 
         if (!comp.has<StateComponent>(entity)) continue;
         if (!comp.has<StateMachineComponent>(entity)) continue;
@@ -75,8 +68,6 @@ void StateSystem::update(UpdateContext& ctx)
             StateId previous = state.current;
             state.current = best->to;
             state.timeInState = 0.f;
-
-            LOG_DEBUG("StateSystem: applying transition from {} to {}", previous.value(), state.current.value());
 
             this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, previous, state.current });
         }

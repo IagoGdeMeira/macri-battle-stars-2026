@@ -12,9 +12,6 @@ void AnimationSystem::update(UpdateContext& ctx)
     auto view = View<AnimationComponent, SpriteComponent>(ctx.world.components());
     for (auto [entity, anim, sprite] : view)
     {
-        LOG_DEBUG("AnimationSystem: entity {}, frames size = {}, currentFrame = {}, loop = {}",
-            entity.id, anim.animation.frames.size(), anim.currentFrame, anim.animation.loop);
-
         if (anim.animation.frames.empty()) continue;
 
         anim.elapsedTime += ctx.deltaTime;
@@ -41,8 +38,5 @@ void AnimationSystem::update(UpdateContext& ctx)
         size.width = static_cast<float>(frame.width);
         size.height = static_cast<float>(frame.height);
         sprite.useSourceRect = true;
-
-        LOG_DEBUG("AnimationSystem: entity {} updated source to ({}, {}) size {}x{}",
-            entity.id, pos.x, pos.y, size.width, size.height);
     }
 }

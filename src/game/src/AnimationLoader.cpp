@@ -43,8 +43,5 @@ AnimationSet AnimationLoader::load(const std::string& path, const StateIdMapper&
         }
         else set.right[state] = std::move(anim);
     }
-
-    LOG_DEBUG("AnimationLoader: loaded {} animations for state Idle (contains: {})",
-        set.right.size(), set.right.contains(StateId::Idle));
     return set;
 }

@@ -25,8 +25,6 @@ void AnimationStateSystem::update(UpdateContext& ctx)
     {
         if (!comp.has<AnimationControllerComponent>(change.entity)) continue;
         comp.get<AnimationControllerComponent>(change.entity).currentState = change.current;
-        LOG_DEBUG("AnimationStateSystem: StateChangedEvent for entity {} -> state {}",
-            change.entity.id, change.current.value());
     }
     this->stateChanges.clear();
 
@@ -35,19 +33,12 @@ void AnimationStateSystem::update(UpdateContext& ctx)
         if (!comp.has<AnimationComponent>(change.entity)) continue;
         if (!comp.has<AnimationControllerComponent>(change.entity)) continue; 
         comp.get<AnimationComponent>(change.entity).currentState = StateId::Unknown;
-        LOG_DEBUG("AnimationStateSystem: OrientationChangedEvent for entity {}, resetting animation state",
-            change.entity.id);
     }
     this->orientationChanges.clear();
 
     auto view = View<AnimationComponent, AnimationControllerComponent>(comp);
     for (auto [entity, anim, controller] : view)
     {
-        auto& animState = anim.currentState;
-        auto& controllerState = controller.currentState;
-        LOG_DEBUG("AnimationStateSystem: entity {} controller state = {} (value {}), anim state = {} (value {})",
-            entity.id, controllerState.value(), controllerState.value(), animState.value(), animState.value());
-
         if (anim.currentState == controller.currentState) continue;
 
         auto itRight = controller.animations.right.find(controller.currentState);
@@ -63,15 +54,7 @@ void AnimationStateSystem::update(UpdateContext& ctx)
                 if (itLeft != leftAnim.end()) chosen = &itLeft->second;
             }
         }
-        
-        if (!chosen)
-        {
-            LOG_DEBUG("AnimationStateSystem: no animation found for state {}", controller.currentState.value());
-            continue;
-        }
-
-        LOG_DEBUG("AnimationStateSystem: entity {} switching to animation with {} frames",
-            entity.id, chosen->frames.size());
+        if (!chosen) continue;
         
         anim.animation      = *chosen;
         anim.currentFrame   = 0;

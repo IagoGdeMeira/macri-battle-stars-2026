@@ -12,11 +12,6 @@
 void LocalToWorldSystem::update(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();
-
-    auto childView = View<LocalTransform, ParentComponent>(comp);
-    for (auto [entity, local, parent] : childView) if (!comp.has<TransformComponent>(entity))
-    { comp.add<TransformComponent>(entity, TransformComponent{0.f, 0.f}); }
-
     auto view = View<TransformComponent, LocalTransform, ParentComponent>(comp);
     for (auto [entity, transform, local, parent] : view)
     {

@@ -10,13 +10,13 @@
 		{
 			"texture": "assets/sprites/test_stage_background_1.png",
 			"parallaxFactor": { "x": 0.5, "y": 0.2 },
-			"zIndex": 1,
+			"zIndex": -2,
 			"repeatX": true
 		},
 		{
 			"texture": "assets/sprites/test_stage_background_2.png",
 			"parallaxFactor": { "x": 0.3, "y": 0.1 },
-			"zIndex": 0,
+			"zIndex": -3,
 			"repeatX": true
 		}
   	]

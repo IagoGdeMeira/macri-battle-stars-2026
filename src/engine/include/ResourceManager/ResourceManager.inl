@@ -6,10 +6,8 @@
 #include <typeinfo>
 
 template<typename T>
-std::shared_ptr<T> ResourceManager::load(
-    ResourceLoader<T>& loader,
-    const std::string& path
-) {
+std::shared_ptr<T> ResourceManager::load(ResourceLoader<T>& loader, const std::string& path)
+{
     auto key = this->makeKey<T>(path);
 
     auto it = this->resources.find(key);
@@ -23,10 +21,8 @@ std::shared_ptr<T> ResourceManager::load(
 }
 
 template<typename T>
-std::future<std::shared_ptr<T>> ResourceManager::loadAsync(
-    ResourceLoader<T>& loader,
-    const std::string& path
-) {
+std::future<std::shared_ptr<T>> ResourceManager::loadAsync(ResourceLoader<T>& loader, const std::string& path)
+{
     auto key = this->makeKey<T>(path);
 
     {

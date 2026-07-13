@@ -32,9 +32,6 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     sprite.useSourceRect = false;
     comp.add<SpriteComponent>(entity, std::move(sprite));
 
-    LOG_DEBUG("CharacterLoader: created entity {} with sprite texture {} size {}x{}",
-        entity.id, def.texturePath, def.spriteSize.width, def.spriteSize.height);
-
     auto mapper = std::make_shared<StateIdMapper>();
     for (const auto& customStateName : def.customStates) mapper->addCustomMapping(customStateName);
 
@@ -45,14 +42,8 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 
     AnimationControllerComponent controller;
     controller.animations = this->animLoader.load(def.animationsPath, *mapper);
-    LOG_DEBUG("CharacterLoader: animations loaded, contains Idle = {}",
-        controller.animations.right.contains(StateId::Idle));
-
     controller.currentState = StateId::Idle;
     comp.add<AnimationControllerComponent>(entity, std::move(controller));
-
-    LOG_DEBUG("CharacterLoader: entity {} has {} animations",
-        entity.id, comp.get<AnimationControllerComponent>(entity).animations.right.size());
 
     if (!def.collisionsPath.empty())
     {
@@ -71,12 +62,7 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 
     const auto& controllerRef = comp.get<AnimationControllerComponent>(entity);
     auto it = controllerRef.animations.right.find(StateId::Idle);
-    if (it != controllerRef.animations.right.end())
-    {
-        anim.animation = it->second;
-        LOG_DEBUG("CharacterLoader: initialized entity {} with Idle animation ({} frames)",
-            entity.id, anim.animation.frames.size());
-    }
+    if (it != controllerRef.animations.right.end()) anim.animation = it->second;
     else LOG_WARN("CharacterLoader: Idle animation not found for entity {}", entity.id);
     
     comp.add<AnimationComponent>(entity, std::move(anim));

@@ -186,7 +186,6 @@ void GameScene::render()
 {
     RenderContext ctx{ this->world(), this->eventBus };
     this->worldDrawer->draw(ctx);
-    LOG_DEBUG("GameScene::render called");
 }
 
 void GameScene::prepareScene()
@@ -216,7 +215,7 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     comp.add<GravityComponent>(entity, GravityComponent{});
     comp.add<AirFrictionComponent>(entity, AirFrictionComponent{});
     comp.add<GroundedComponent>(entity, GroundedComponent{});
-    comp.add<RenderComponent>(entity, RenderComponent{ 0, 0 });
+    comp.add<RenderComponent>(entity, RenderComponent{ 0, 10 });
 
     LOG_DEBUG("GameScene: player entity {} state.current = {}",
         entity.id, comp.get<StateComponent>(entity).current.value());
