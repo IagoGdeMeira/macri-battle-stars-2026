@@ -22,7 +22,7 @@ public:
 
     Scene* currentScene() const { return this->sceneStack.empty() ? nullptr : this->sceneStack.back().get(); }
 
-    void update(float deltaTime);
+    virtual void update(float deltaTime);
     void render() { for (auto& scene : this->sceneStack) scene->render(); }
 
     Engine& getEngine() { return this->engine; }

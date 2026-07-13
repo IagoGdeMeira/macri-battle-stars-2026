@@ -1,6 +1,7 @@
 #ifndef game_settings_h
 #define game_settings_h
 
+#include "../GameConstants/GameConstants.h"
 #include "../Viewport/Viewport.h"
 
 #include "../../domain/value_objects/Geometry/Geometry.h"
@@ -15,6 +16,8 @@ public:
     Screen screen;
     
     Viewport viewport {0, 0, 800, 600};
+
+    int targetFPS = GameConstants::TARGET_FPS;
 };
 
 #endif // game_settings_h

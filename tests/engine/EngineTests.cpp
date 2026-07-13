@@ -8,12 +8,14 @@
 #include "../stubs/StubTextureFactory.h"
 #include "../stubs/StubTextureLoader.h"
 #include "../stubs/StubWindow.h"
+#include "../stubs/StubSceneManager.h"
 
 #include "../../src/engine/events/QuitEvent.h"
 #include "../../src/engine/include/SceneFactory/SceneFactory.h"
 #include "../../src/engine/include/SceneManager/SceneManager.h"
 
 #include <atomic>
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <thread>
@@ -27,11 +29,11 @@ public:
     StubDataParser parser;
     StubResourceManager resourceManager;
     std::unique_ptr<StubEngine> engine;
-    std::unique_ptr<SceneFactory> factory;
-    std::unique_ptr<SceneManager> sceneManager;
+    std::unique_ptr<StubSceneManager> sceneManager;
     std::unique_ptr<StubTextureFactory> textureFactory;
     std::unique_ptr<StubFontFactory> fontFactory;
     std::unique_ptr<StubTextureLoader> textureLoader;
+    std::unique_ptr<SceneFactory> factory;
 
     void setupEngineWithSceneManager()
     {
@@ -55,7 +57,7 @@ public:
             .textureFactory     = *this->textureFactory
         });
 
-        this->sceneManager = std::make_unique<SceneManager>(*this->factory, *this->engine);
+        this->sceneManager = std::make_unique<StubSceneManager>(*this->factory, *this->engine);
         this->engine->setSceneManager(*this->sceneManager);
     }
 };
@@ -75,17 +77,54 @@ TEST_CASE_METHOD(EngineFixture, "Engine run and stop via QuitEvent", "[unit][eng
     REQUIRE(stopped);
 }
 
-TEST_CASE_METHOD(EngineFixture, "Engine stops when QuitEvent emitted during loop", "[unit][engine]")
+TEST_CASE_METHOD(EngineFixture, "Engine uses targetFPS from GameSettings", "[unit][engine]")
+{
+    this->settings.targetFPS = 30;
+    this->setupEngineWithSceneManager();
+
+    auto t = std::thread([this]() { this->engine->run(); });
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    this->engine->stop();
+    t.join();
+
+    int expectedUpdates = 3;
+    int actualUpdates = this->sceneManager->updateCalls;
+    REQUIRE(actualUpdates >= expectedUpdates - 1);
+    REQUIRE(actualUpdates <= expectedUpdates + 2);
+
+    for (float delta : this->sceneManager->deltas) REQUIRE(delta == Catch::Approx(1.f / 30.f).margin(0.005f));
+}
+
+TEST_CASE_METHOD(EngineFixture, "Engine handles different FPS configurations without crashing", "[unit][engine]")
+{
+    std::vector<int> fpsValues = { 30, 60, 120, 144 };
+
+    for (int fps : fpsValues)
+    {
+        this->settings.targetFPS = fps;
+        this->setupEngineWithSceneManager();
+
+        auto t = std::thread([this]() { this->engine->run(); });
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        this->engine->stop();
+        t.join();
+
+        REQUIRE(this->sceneManager->updateCalls > 0);
+    }
+}
+
+TEST_CASE_METHOD(EngineFixture, "Engine uses default FPS from GameConstants when not overridden", "[unit][engine]")
 {
     this->setupEngineWithSceneManager();
 
-    std::atomic<bool> stopped{false};
-    this->engine->events().subscribe<QuitEvent>([&](const QuitEvent&) { stopped = true; });
-
     auto t = std::thread([this]() { this->engine->run(); });
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    this->engine->events().emit<QuitEvent>();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    this->engine->stop();
     t.join();
 
-    REQUIRE(stopped);
+    REQUIRE(this->sceneManager->updateCalls > 0);
+    for (float delta : this->sceneManager->deltas) REQUIRE(delta == Catch::Approx(1.f / 60.f).margin(0.005f));    
 }

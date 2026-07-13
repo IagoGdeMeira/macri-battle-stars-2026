@@ -13,6 +13,8 @@ struct GameConstants
     static constexpr const char* DEFAULT_COMBOS_PATH = "assets/combos/default_combos.json";
     static constexpr const char* DEFAULT_TRIGGERS_PATH = "assets/triggers/default_triggers.json";
     static constexpr const char* DEFAULT_CHARACTER_DEF_PATH = "assets/characters/reddie_beta.json";
+
+    static constexpr int TARGET_FPS = 60;
 };
 
 #endif // game_constants_h

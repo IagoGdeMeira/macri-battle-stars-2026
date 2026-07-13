@@ -8,10 +8,23 @@
 #include "../../src/engine/include/GameSettings/GameSettings.h"
 #include "../../src/engine/include/SceneManager/SceneManager.h"
 
+#include <vector>
+
 class StubSceneManager : public SceneManager
 {
 public:
+    int updateCalls = 0;
+    std::vector<float> deltas;
+    
     StubSceneManager() : SceneManager(this->factory, this->engine) {}
+    StubSceneManager(SceneFactory& factory, Engine& engine) : SceneManager(factory, engine) {}
+
+    void update(float deltaTime) override
+    {
+        this->updateCalls++;
+        this->deltas.push_back(deltaTime);
+        SceneManager::update(deltaTime);
+    }
 
 private:
     StubSceneFactory factory;
