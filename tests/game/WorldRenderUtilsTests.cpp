@@ -74,7 +74,7 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform applies scaled dimensions an
     spriteConfig.size = Dimension2D { 16.f, 8.f };
 
     DrawTextureCommand cmd;
-    WorldRenderUtils::computeSpriteTransform(camera, spriteConfig, cmd);
+    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
 
     REQUIRE(cmd.dest.size.width == Catch::Approx(48.f));
     REQUIRE(cmd.dest.size.height == Catch::Approx(36.f));

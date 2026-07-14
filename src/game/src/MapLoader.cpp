@@ -1,9 +1,12 @@
 #include "../include/MapLoader/MapLoader.h"
+
 #include "../include/EntityFactory/EntityFactory.h"
+
 #include "../../domain/components/MapComponent.h"
-#include "../../domain/components/TransformComponent.h"
 #include "../../domain/components/RectangleColliderComponent.h"
+#include "../../domain/components/TransformComponent.h"
 #include "../../domain/include/World/World.h"
+#include "../../domain/utils/Logger/Logger.h"
 
 #include <cstdint>
 
@@ -25,8 +28,7 @@ Entity MapLoader::load(World& world, const std::string& path)
     if (root->has("worldBounds"))
     {
         auto boundsNode = root->getObject("worldBounds");
-        mapComp.worldBounds =
-        {
+        mapComp.worldBounds = {
             boundsNode->getFloat("left"), boundsNode->getFloat("right"),
             boundsNode->getFloat("top"), boundsNode->getFloat("bottom")
         };
@@ -37,6 +39,9 @@ Entity MapLoader::load(World& world, const std::string& path)
         float floorW = floorNode->getFloat("width", 800.f);
         mapComp.worldBounds = { 0.f, floorW, -200.f, mapComp.floorY + floorH + 50.f };
     }
+    LOG_DEBUG("MapLoader: worldBounds = [{}, {}, {}, {}]",
+        mapComp.worldBounds.left, mapComp.worldBounds.right,
+        mapComp.worldBounds.top, mapComp.worldBounds.bottom);
 
     if (root->has("spawnPoints")) for (auto& sp : root->getArray("spawnPoints"))
     {

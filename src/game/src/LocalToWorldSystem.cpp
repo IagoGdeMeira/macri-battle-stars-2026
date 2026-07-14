@@ -38,13 +38,9 @@ void LocalToWorldSystem::applyParentTransform(
     float rotatedX = LocalToWorldSystem::rotateLocalX(local, cosR, sinR);
     float rotatedY = LocalToWorldSystem::rotateLocalY(local, cosR, sinR);
 
-    transform.position = {
-        parentTransform.position.x + rotatedX * parentTransform.scale.x,
-        parentTransform.position.y + rotatedY * parentTransform.scale.y
-    };
+    auto& parentPos = parentTransform.position;
+    auto& parentScale = parentTransform.scale;
+    transform.position = { parentPos.x + rotatedX * parentScale.x, parentPos.y + rotatedY * parentScale.y };
     transform.rotation = parentTransform.rotation + local.rotation;
-    transform.scale = {
-        parentTransform.scale.x * local.scale.x,
-        parentTransform.scale.y * local.scale.y
-    };
+    transform.scale = { parentScale.x * local.scale.x, parentScale.y * local.scale.y };
 }

@@ -13,6 +13,7 @@
 
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
+    LOG_DEBUG("CameraControllerSystem::update called");
     auto view = View<TransformComponent, PlayerComponent>(ctx.world.components());
 
     auto it = view.begin();
@@ -59,6 +60,10 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     this->camera.setPosition(clampedX, clampedY);
     this->camera.setZoom(targetZoom);
 
-    LOG_DEBUG("CameraControllerSystem: camera set to ({}, {}) with zoom {}", 
-        this->camera.getPosition().x, this->camera.getPosition().y, this->camera.getZoom());
+    LOG_DEBUG("CameraControllerSystem: center=({}, {}), targetZoom={}, halfScreen=({}, {}), bounds=[{}, {}], clamped=({}, {})",
+        center.x, center.y, targetZoom, halfScreen.width, halfScreen.height,
+        map.left, map.right, map.top, map.bottom,
+        clampedX, clampedY);
+    LOG_DEBUG("CameraControllerSystem: camera set to ({}, {})", 
+        this->camera.getPosition().x, this->camera.getPosition().y);
 }

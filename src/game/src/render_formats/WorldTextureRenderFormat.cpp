@@ -14,10 +14,14 @@
 
 void WorldTextureRenderFormat::render(RenderContext& ctx)
 {
-    auto start = std::chrono::high_resolution_clock::now();
+    using hrclock = std::chrono::high_resolution_clock;
+    using milliseconds = std::chrono::milliseconds;
+    auto& comp = ctx.world.components();
+    
+    auto start = hrclock::now();
 
     this->batch.clear();
-    auto view = View<SpriteComponent, TransformComponent, RenderComponent>(ctx.world.components());
+    auto view = View<SpriteComponent, TransformComponent, RenderComponent>(comp);
     size_t order = 0;
     size_t entityCount = 0;
 
@@ -38,7 +42,6 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
         LOG_DEBUG("Rendering entity {}: source=({}, {}) size=({}x{}) dest=({}, {}) size=({}x{})",
             entity.id, srcPos.x, srcPos.y, srcSize.width, srcSize.height, destPos.x, destPos.y, destSize.width, destSize.height);
 
-        auto& comp = ctx.world.components();
         if (comp.has<VisualEffectsComponent>(entity))
         {
             const auto& fx = comp.get<VisualEffectsComponent>(entity);
@@ -48,8 +51,8 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
     }
     this->batch.submit(this->renderer);
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    auto end = hrclock::now();
+    auto duration = std::chrono::duration_cast<milliseconds>(end - start).count();
     if (duration > 10) LOG_DEBUG("WorldTextureRenderFormat::render took {} ms for {} entities", duration, entityCount);
 }
 
@@ -71,7 +74,7 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(Entity& entity,
     cmd.texture = sprite.texture.get();
     cmd.dest.position = screenPos;
     cmd.rotation = transform.rotation;
-    WorldRenderUtils::computeSpriteTransform(this->camera, spriteConfig, cmd);
+    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
 
     if (comp.has<OrientationComponent>(entity))
     {

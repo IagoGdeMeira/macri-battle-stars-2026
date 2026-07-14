@@ -130,8 +130,11 @@ void GameScene::init()
 
     systems.addSystem<DamageSystem>(events);
     systems.addSystem<CollisionClipPlayerSystem>(events, *this->entityFactory);
+    LOG_DEBUG("GameScene: adding CameraControllerSystem");
     systems.addSystem<CameraControllerSystem>(CameraControllerSystem::Config{
         .camera = *this->camera, .window = this->window, .bounds = mapComp.worldBounds });
+    LOG_DEBUG("GameScene: CameraControllerSystem added");
+    LOG_DEBUG("GameScene: total systems = {}", this->systems().size());
 
     this->worldDrawer = std::make_unique<WorldDrawer>(events, this->renderer, *this->camera, this->settings);
 }

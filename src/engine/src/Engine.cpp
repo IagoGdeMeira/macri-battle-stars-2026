@@ -45,12 +45,22 @@ void Engine::run()
         this->inputManager.poll();
         auto t1 = hrclock::now();
 
+        auto currentTime = hrclock::now();
+        float deltaTime = duration(currentTime - previousTime).count();
+        previousTime = currentTime;
+
+        if (deltaTime > 0.1f) deltaTime = 0.1f;
+
+        accumulator += deltaTime;
         auto t2 = hrclock::now();
 
+        int updateCount = 0;
         while (accumulator >= fixedDelta)
         {
+            LOG_DEBUG("Engine: update step {}, accumulator={}", updateCount, accumulator);
             this->sceneManager->update(fixedDelta);
             accumulator -= fixedDelta;
+            ++updateCount;
         }
         auto t3 = hrclock::now();
 
@@ -75,6 +85,9 @@ void Engine::run()
         log_duration(t3, t4, "render");
         log_duration(t4, t5, "present");
         log_duration(t5, t6, "yield");
+
+        if (updateCount == 0 && deltaTime > 0.001f)
+        { LOG_DEBUG("Engine: no update executed (accumulator={}, deltaTime={})", accumulator, deltaTime); }
 
         LOG_DEBUG("Engine: loop end");
     }

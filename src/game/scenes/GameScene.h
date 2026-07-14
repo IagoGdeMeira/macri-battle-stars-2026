@@ -34,11 +34,7 @@
 class GameScene : public Scene
 {
 public:
-    struct PlayerSlot
-    {
-        std::uint32_t playerId;
-        std::string characterDefPath;
-    };
+    struct PlayerSlot { std::uint32_t playerId; std::string characterDefPath; };
 
     struct Config : public Scene::Config
     {
@@ -47,7 +43,7 @@ public:
         std::string mapPath, inputBindingsPath, combosPath, triggersPath;
     };
 
-    explicit GameScene(Config &&cfg);
+    explicit GameScene(Config&& cfg);
 
     void init() override;
     void render() override;
