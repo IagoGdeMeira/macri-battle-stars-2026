@@ -15,9 +15,10 @@ Position WorldRenderUtils::worldToScreen(Camera2D& camera, Position worldPos, Vi
 
 Position WorldRenderUtils::resolveParallax(World& world, Entity& entity)
 {
-    if (world.components().has<ParallaxComponent>(entity))
+    auto& comp = world.components();
+    if (comp.has<ParallaxComponent>(entity))
     {
-        const auto& parallax = world.components().get<ParallaxComponent>(entity);
+        const auto& parallax = comp.get<ParallaxComponent>(entity);
         return parallax.factor;
     }
     return Position{1.f, 1.f};

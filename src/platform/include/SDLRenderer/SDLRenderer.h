@@ -16,7 +16,7 @@ public:
     ~SDLRenderer() { if (this->renderer) SDL_DestroyRenderer(this->renderer); }
 
     void clear() override { SDL_RenderClear(this->renderer); }
-    void present() override { SDL_RenderPresent(this->renderer); }
+    void present() override;
     void setViewport(const Viewport& viewport) override;
 
     SDL_Renderer* get() const { return this->renderer; }

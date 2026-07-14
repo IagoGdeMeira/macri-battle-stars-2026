@@ -14,17 +14,22 @@
 
 void WorldTextureRenderFormat::render(RenderContext& ctx)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     this->batch.clear();
     auto view = View<SpriteComponent, TransformComponent, RenderComponent>(ctx.world.components());
     size_t order = 0;
-    
+    size_t entityCount = 0;
+
     for (auto [entity, sprite, transform, render] : view)
     {
         if (!sprite.texture) continue;
+        ++entityCount;
+
         DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++);
 
         LOG_DEBUG("WorldTextureRenderFormat: entity {}, has texture: {}", entity.id, sprite.texture ? "yes" : "no");
-        
+
         auto& srcPos = cmd.source.position;
         auto& srcSize = cmd.source.size;
         auto& destPos = cmd.dest.position;
@@ -42,6 +47,10 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
         this->batch.add(cmd);
     }
     this->batch.submit(this->renderer);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    if (duration > 10) LOG_DEBUG("WorldTextureRenderFormat::render took {} ms for {} entities", duration, entityCount);
 }
 
 DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(Entity& entity, World& world, size_t order) const

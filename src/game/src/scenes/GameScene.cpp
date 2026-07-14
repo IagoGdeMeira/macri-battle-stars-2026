@@ -90,6 +90,7 @@ void GameScene::init()
 
     auto& systems = this->systemManager;
     auto& entities = this->world().entities();
+    auto& comp = this->world().components();
     auto& events = this->eventBus;
 
     systems.addSystem<InputSystem>(events, *this->inputContext);
@@ -111,10 +112,9 @@ void GameScene::init()
     systems.addSystem<FaceOffSystem>(events);
 
     if (!entities.isAlive(this->mapRoot)) throw std::runtime_error("GameScene::init() - mapRoot is not alive");
+    auto& mapComp = comp.get<MapComponent>(this->mapRoot);
 
-    auto& mapComp = this->world().components().get<MapComponent>(this->mapRoot);
-
-    systems.addSystem<GravitySystem>(mapComp.gravity);
+    // systems.addSystem<GravitySystem>(mapComp.gravity);
     systems.addSystem<AirFrictionSystem>(mapComp.airFriction);
     systems.addSystem<MovementSystem>();
     systems.addSystem<LocalToWorldSystem>();
@@ -236,4 +236,5 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     else transform.position.y = mapComp.floorY - 32.f;
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
+    LOG_DEBUG("preparePlayer: entity {} final position = ({}, {})", entity.id, transform.position.x, transform.position.y);
 }

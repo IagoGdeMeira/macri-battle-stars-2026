@@ -28,16 +28,13 @@ void SDLGamepadAdapter::processEvents(const std::vector<std::unique_ptr<Platform
             auto src = InputSource::gamepad(static_cast<GamepadButton>(btnEvent->button));
             this->eventBus.emit<DigitalInputEvent>(src, this->playerId, btnEvent->pressed);
         }
-        else if (auto* axisEvent = dynamic_cast<const GamepadAxisEvent*>(e.get()))
+        else if (auto* axisEvent = dynamic_cast<const GamepadAxisEvent*>(e.get())) switch (axisEvent->axis)
         {
-            switch (axisEvent->axis)
+            case 0: case 1:
             {
-                case 0: case 1:
-                {
-                    auto src = InputSource::gamepad(GamepadButton::LeftStick);
-                    this->eventBus.emit<AnalogInputEvent>(src, this->playerId, axisEvent->value);
-                    break;
-                }
+                auto src = InputSource::gamepad(GamepadButton::LeftStick);
+                this->eventBus.emit<AnalogInputEvent>(src, this->playerId, axisEvent->value);
+                break;
             }
         }
     }

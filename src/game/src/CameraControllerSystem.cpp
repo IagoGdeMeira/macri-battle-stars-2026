@@ -3,6 +3,7 @@
 #include "../../domain/components/PlayerComponent.h"
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/include/View/View.h"
+#include "../../domain/utils/Logger/Logger.h"
 #include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/UpdateContext/UpdateContext.h"
@@ -57,4 +58,7 @@ void CameraControllerSystem::update(UpdateContext& ctx)
 
     this->camera.setPosition(clampedX, clampedY);
     this->camera.setZoom(targetZoom);
+
+    LOG_DEBUG("CameraControllerSystem: camera set to ({}, {}) with zoom {}", 
+        this->camera.getPosition().x, this->camera.getPosition().y, this->camera.getZoom());
 }

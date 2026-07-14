@@ -2,7 +2,6 @@
 
 SDLTexture::~SDLTexture() { if (this->texture) SDL_DestroyTexture(this->texture); }
 
-
 int SDLTexture::getWidth() const
 {
     if (!this->texture) return 0;

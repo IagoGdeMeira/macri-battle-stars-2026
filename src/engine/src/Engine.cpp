@@ -27,7 +27,6 @@ void Engine::run()
 
     const int targetFPS = this->gameSettings.targetFPS;
     const float fixedDelta = 1.f / static_cast<float>(targetFPS);
-    const float targetFrameTime = fixedDelta;
 
     using hrclock = std::chrono::high_resolution_clock;
     using duration = std::chrono::duration<float>;
@@ -39,31 +38,44 @@ void Engine::run()
 
     while (this->running)
     {
-        auto frameStart = hrclock::now();
+        LOG_DEBUG("Engine: loop start");
+
+        auto t0 = hrclock::now();
 
         this->inputManager.poll();
+        auto t1 = hrclock::now();
 
-        auto currentTime = hrclock::now();
-        float deltaTime = duration(currentTime - previousTime).count();
-        if (deltaTime > 0.1f) deltaTime = 0.1f;
-        previousTime = currentTime;
+        auto t2 = hrclock::now();
 
-        accumulator += deltaTime;
         while (accumulator >= fixedDelta)
         {
             this->sceneManager->update(fixedDelta);
             accumulator -= fixedDelta;
         }
+        auto t3 = hrclock::now();
 
         this->sceneManager->render();
+        auto t4 = hrclock::now();
+
         if (this->renderer) this->renderer->present();
+        auto t5 = hrclock::now();
 
-        auto frameEnd = hrclock::now();
-        float elapsed = duration(frameEnd - frameStart).count();
-        float sleepTime = targetFrameTime - elapsed;
+        std::this_thread::yield();
+        auto t6 = hrclock::now();
 
-        if (sleepTime > 0.001f) std::this_thread::sleep_for(std::chrono::milliseconds(
-            static_cast<int>(sleepTime * 1000)));
-        else std::this_thread::yield();
+        auto log_duration = [](auto start, auto end, const char* label)
+        {
+            auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            if (ms > 5) LOG_DEBUG("{} took {} ms", label, ms);
+        };
+
+        log_duration(t0, t1, "input.poll");
+        log_duration(t1, t2, "delta calc");
+        log_duration(t2, t3, "update");
+        log_duration(t3, t4, "render");
+        log_duration(t4, t5, "present");
+        log_duration(t5, t6, "yield");
+
+        LOG_DEBUG("Engine: loop end");
     }
 }

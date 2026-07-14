@@ -8,18 +8,15 @@
 void SDLSystemAdapter::processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events)
 {
     auto& bus = this->eventBus;
-    for (const auto& e : events)
+    for (const auto& e : events) switch(e->type())
     {
-        switch(e->type())
+        case PlatformEvent::Type::Quit: bus.emit<QuitEvent>(); break;
+        case PlatformEvent::Type::WindowResized:
         {
-            case PlatformEvent::Type::Quit: bus.emit<QuitEvent>(); break;
-            case PlatformEvent::Type::WindowResized:
-            {
-                auto* resizeEvent = dynamic_cast<const WindowResizedPlatformEvent*>(e.get());
-                if (resizeEvent) bus.emit<WindowResizedEvent>(resizeEvent->size);
-                break;
-            }
-            default: break;
+            auto* resizeEvent = dynamic_cast<const WindowResizedPlatformEvent*>(e.get());
+            if (resizeEvent) bus.emit<WindowResizedEvent>(resizeEvent->size);
+            break;
         }
+        default: break;
     }
 }

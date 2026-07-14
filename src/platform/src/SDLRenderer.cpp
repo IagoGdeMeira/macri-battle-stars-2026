@@ -3,6 +3,9 @@
 #include "../include/SDLFont/SDLFont.h"
 #include "../include/SDLTexture/SDLTexture.h"
 
+#include "../../domain/utils/Logger/Logger.h"
+
+#include <chrono>
 #include <cmath>
 #include <SDL_image.h>
 #include <stdexcept>
@@ -10,12 +13,29 @@
 SDLRenderer::SDLRenderer(SDL_Window* window)
 {
     this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!this->renderer) this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    
+    if (!this->renderer)
+    {
+        LOG_WARN("SDL_CreateRenderer with ACCELERATED failed, falling back to SOFTWARE");
+        this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    }
+
+    SDL_RendererInfo info;
+    SDL_GetRendererInfo(this->renderer, &info);
+    LOG_DEBUG("SDLRenderer: using driver '{}'", info.name);
+
     this->registerHandler<DrawTextureCommand>([this](const DrawTextureCommand& cmd) { this->drawTextureImpl(cmd); });
     this->registerHandler<DrawFontCommand>([this](const DrawFontCommand& cmd) { this->drawFontImpl(cmd); });
     this->registerHandler<DrawRectangleCommand>([this](const DrawRectangleCommand& cmd) { this->drawRectangleImpl(cmd); });
     this->registerHandler<DrawCircleCommand>([this](const DrawCircleCommand& cmd) { this->drawCircleImpl(cmd); });
+}
+
+void SDLRenderer::present()
+{
+    auto start = std::chrono::high_resolution_clock::now();
+    SDL_RenderPresent(this->renderer);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    if (duration > 5) LOG_DEBUG("SDLRenderer::present took {} ms", duration);
 }
 
 void SDLRenderer::setViewport(const Viewport& viewport)
@@ -26,6 +46,8 @@ void SDLRenderer::setViewport(const Viewport& viewport)
 
 void SDLRenderer::drawTextureImpl(const DrawTextureCommand& cmd)
 {
+    auto startTotal = std::chrono::high_resolution_clock::now();
+
     if (!cmd.texture) return;
     const SDLTexture& sdlTex = static_cast<const SDLTexture&>(*cmd.texture);
 
@@ -37,7 +59,7 @@ void SDLRenderer::drawTextureImpl(const DrawTextureCommand& cmd)
         static_cast<int>(std::lround(dest.size.width)),
         static_cast<int>(std::lround(dest.size.height))
     };
-    
+
     SDL_Rect* srcPtr = nullptr;
     SDL_Rect src;
     if (cmd.useSourceRect)
@@ -75,6 +97,8 @@ void SDLRenderer::drawTextureImpl(const DrawTextureCommand& cmd)
     SDL_GetTextureBlendMode(sdlTex.get(), &oldBlend);
     SDL_SetTextureBlendMode(sdlTex.get(), sdlBlend);
 
+    auto copyStart = std::chrono::high_resolution_clock::now();
+
     if (cmd.tint != Color::WHITE())
     {
         Uint8 oldR, oldG, oldB;
@@ -87,6 +111,17 @@ void SDLRenderer::drawTextureImpl(const DrawTextureCommand& cmd)
     else SDL_RenderCopyEx(this->renderer, sdlTex.get(), srcPtr, &dst, cmd.rotation, &pivot, flip);
 
     SDL_SetTextureBlendMode(sdlTex.get(), oldBlend);
+
+    auto copyEnd = std::chrono::high_resolution_clock::now();
+    auto copyDuration = std::chrono::duration_cast<std::chrono::milliseconds>(copyEnd - copyStart).count();
+    if (copyDuration > 5)
+    {
+        LOG_DEBUG("SDL_RenderCopyEx took {} ms", copyDuration);
+    }
+
+    auto endTotal = std::chrono::high_resolution_clock::now();
+    auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(endTotal - startTotal).count();
+    if (totalDuration > 10) LOG_DEBUG("drawTextureImpl total took {} ms", totalDuration);
 }
 
 void SDLRenderer::drawFontImpl(const DrawFontCommand& cmd)

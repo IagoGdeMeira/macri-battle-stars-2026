@@ -30,13 +30,12 @@ void WorldDrawer::draw(RenderContext& ctx)
 {
     this->renderer.setViewport(this->worldViewport);
     for (auto& format : this->formats) format->render(ctx);
-    LOG_DEBUG("WorldDrawer::draw called");
 }
 
 void WorldDrawer::recalculateViewport()
 {
     const Dimension2D& winSize = this->settings.screen.size;
-   
+
     const auto& vWidth = GameConstants::VIRTUAL_SIZE.width;
     const auto& vHeight = GameConstants::VIRTUAL_SIZE.height;
     const float scale = std::min(winSize.width / vWidth, winSize.height / vHeight);
