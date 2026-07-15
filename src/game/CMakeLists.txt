@@ -2,6 +2,9 @@ add_library(game STATIC)
 
 target_sources(game
     PRIVATE
+        src/collision_detections/CircleCircleCollisionDetection.cpp
+        src/collision_detections/RectCircleCollisionDetection.cpp
+        src/collision_detections/RectRectCollisionDetection.cpp
         src/render_formats/WorldCircleRenderFormat.cpp
         src/render_formats/WorldRectangleRenderFormat.cpp
         src/render_formats/WorldTextureRenderFormat.cpp

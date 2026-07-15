@@ -1,5 +1,8 @@
 #include "../scenes/GameScene.h"
 
+#include "../collision_detections/CircleCircleCollisionDetection.h"
+#include "../collision_detections/RectCircleCollisionDetection.h"
+#include "../collision_detections/RectRectCollisionDetection.h"
 #include "../include/AirFrictionSystem/AirFrictionSystem.h"
 #include "../include/AnimationLoader/AnimationLoader.h"
 #include "../include/AnimationStateSystem/AnimationStateSystem.h"
@@ -39,6 +42,7 @@
 #include "../../domain/components/GroundedComponent.h"
 #include "../../domain/components/InputBufferComponent.h"
 #include "../../domain/components/InputComponent.h"
+#include "../../domain/components/OrientationComponent.h"
 #include "../../domain/components/PlayerComponent.h"
 #include "../../domain/components/RenderComponent.h"
 #include "../../domain/components/SpriteComponent.h"
@@ -122,7 +126,11 @@ void GameScene::init()
     systems.addSystem<AnimationStateSystem>(events);
     systems.addSystem<AnimationSystem>();
 
-    systems.addSystem<CollisionDetectionSystem>();
+    auto& collisionDetectionSystem = systems.addSystem<CollisionDetectionSystem>(1000.f);
+    collisionDetectionSystem.addDetector(std::make_unique<RectRectCollisionDetection>());
+    collisionDetectionSystem.addDetector(std::make_unique<RectCircleCollisionDetection>());
+    collisionDetectionSystem.addDetector(std::make_unique<CircleCircleCollisionDetection>());
+
     systems.addSystem<GroundDetectionSystem>(events);
     systems.addSystem<StaticPushboxResolutionSystem>(events);
     systems.addSystem<DynamicPushboxResolutionSystem>(events);
@@ -219,6 +227,7 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     comp.add<AirFrictionComponent>(entity, AirFrictionComponent{});
     comp.add<GroundedComponent>(entity, GroundedComponent{});
     comp.add<RenderComponent>(entity, RenderComponent{ 0, 10 });
+    comp.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Right });
 
     LOG_DEBUG("GameScene: player entity {} state.current = {}",
         entity.id, comp.get<StateComponent>(entity).current.value());
