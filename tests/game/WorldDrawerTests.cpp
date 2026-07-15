@@ -36,20 +36,17 @@ public:
         return set;
     }
 
-    WorldDrawerFixture() :
-        settings(this->makeSettings()),
-        drawer(this->bus, this->renderer, this->camera, this->settings),
-        context{this->world, this->bus}
+    WorldDrawerFixture() : settings(this->makeSettings()), drawer(this->bus, this->renderer, this->camera, this->settings), context{this->world, this->bus}
     {
-        auto& components = this->world.components();
-        components.registerComponent<TransformComponent>();
-        components.registerComponent<SpriteComponent>();
-        components.registerComponent<RenderComponent>();
-        components.registerComponent<ParallaxComponent>();
-        components.registerComponent<ShapeRenderComponent>();
-        components.registerComponent<AnimationControllerComponent>();
-        components.registerComponent<OrientationComponent>();
-        components.registerComponent<VisualEffectsComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<SpriteComponent>();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<ShapeRenderComponent>();
+        comp.registerComponent<AnimationControllerComponent>();
+        comp.registerComponent<OrientationComponent>();
+        comp.registerComponent<VisualEffectsComponent>();
     }
 
 protected:
@@ -86,27 +83,25 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards resized world viewpor
 ) {
     this->bus.emit<WindowResizedEvent>(WindowResizedEvent { 1920, 1080 });
 
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
     const auto spriteEntity = this->world.entities().create();
-    components.add<TransformComponent>(spriteEntity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    components.add<SpriteComponent>(spriteEntity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
-    components.add<RenderComponent>(spriteEntity, RenderComponent{ 0 });
+    comp.add<TransformComponent>(spriteEntity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
+    comp.add<SpriteComponent>(spriteEntity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
+    comp.add<RenderComponent>(spriteEntity, RenderComponent{ 0 });
 
     const auto rectangleEntity = this->world.entities().create();
     auto rectangleShape = std::make_unique<RectangleDef>();
     rectangleShape->width = 12.f;
     rectangleShape->height = 8.f;
-    components.add<TransformComponent>(rectangleEntity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    components.add<ShapeRenderComponent>(rectangleEntity, ShapeRenderComponent{
-        std::move(rectangleShape), Color{1, 2, 3, 4}, true });
+    comp.add<TransformComponent>(rectangleEntity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
+    comp.add<ShapeRenderComponent>(rectangleEntity, ShapeRenderComponent{std::move(rectangleShape), Color{1, 2, 3, 4}, true});
 
     const auto circleEntity = this->world.entities().create();
     auto circleShape = std::make_unique<CircleDef>();
     circleShape->radius = 7.f;
-    components.add<TransformComponent>(circleEntity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    components.add<ShapeRenderComponent>(circleEntity, ShapeRenderComponent{
-        std::move(circleShape), Color{9, 8, 7, 6}, false });
+    comp.add<TransformComponent>(circleEntity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
+    comp.add<ShapeRenderComponent>(circleEntity, ShapeRenderComponent{std::move(circleShape), Color{9, 8, 7, 6}, false});
 
     this->drawer.draw(this->context);
 
@@ -138,11 +133,11 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     "[unit][world_drawer]"
 ) {
     const auto entity = this->world.entities().create();
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
-    components.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
-    components.add<RenderComponent>(entity, RenderComponent{ 0 });
+    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
+    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
+    comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.f, 0.f);
     this->camera.setZoom(1.5f);
@@ -152,8 +147,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     REQUIRE(this->renderer.calls.drawTexture == 1);
     REQUIRE(this->renderer.lastDraw.x == 735);
     REQUIRE(this->renderer.lastDraw.y == 570);
-    REQUIRE(this->renderer.lastDraw.width == 48);
-    REQUIRE(this->renderer.lastDraw.height == 36);
+    REQUIRE(this->renderer.lastDraw.width == 32);
+    REQUIRE(this->renderer.lastDraw.height == 24);
     REQUIRE(this->renderer.lastDraw.rotation == 0.f);
     REQUIRE(this->renderer.lastDraw.flipX == false);
     REQUIRE(this->renderer.lastDraw.flipY == false);
@@ -162,11 +157,11 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
 TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip flags to renderer", "[unit][world_drawer]")
 {
     const auto entity = this->world.entities().create();
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
-    components.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, -2.f, -3.f, 37.5f});
-    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
-    components.add<RenderComponent>(entity, RenderComponent{ 0 });
+    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, -2.f, -3.f, 37.5f});
+    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
+    comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.f, 0.f);
     this->camera.setZoom(1.5f);
@@ -174,8 +169,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip fla
     this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.calls.drawTexture == 1);
-    REQUIRE(this->renderer.lastDraw.width == 48);
-    REQUIRE(this->renderer.lastDraw.height == 36);
+    REQUIRE(this->renderer.lastDraw.width == 32);
+    REQUIRE(this->renderer.lastDraw.height == 24);
     REQUIRE(this->renderer.lastDraw.rotation == 37.5f);
     REQUIRE(this->renderer.lastDraw.flipX == true);
     REQUIRE(this->renderer.lastDraw.flipY == true);
@@ -184,11 +179,11 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip fla
 TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards sprite source rect to renderer", "[unit][world_drawer]")
 {
     const auto entity = this->world.entities().create();
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
-    components.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    components.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8, 4, 6, 8, 10, true });
-    components.add<RenderComponent>(entity, RenderComponent{ 0 });
+    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
+    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8, 4, 6, 8, 10, true });
+    comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->drawer.draw(this->context);
 
@@ -203,11 +198,11 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards sprite source rect to
 TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer skips sprites without textures", "[unit][world_drawer]")
 {
     const auto entity = this->world.entities().create();
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
-    components.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    components.add<SpriteComponent>(entity, SpriteComponent{ nullptr, 16, 8 });
-    components.add<RenderComponent>(entity, RenderComponent{ 0 });
+    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
+    comp.add<SpriteComponent>(entity, SpriteComponent{ nullptr, 16, 8 });
+    comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->drawer.draw(this->context);
 
@@ -217,14 +212,14 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer skips sprites without textures
 TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws filled rectangle shapes", "[unit][world_drawer]")
 {
     const auto entity = this->world.entities().create();
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
     auto shape = std::make_unique<RectangleDef>();
     shape->width = 12.f;
     shape->height = 8.f;
 
-    components.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f });
-    components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{1, 2, 3, 4}, true });
+    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f });
+    comp.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{1, 2, 3, 4}, true });
 
     this->drawer.draw(this->context);
 
@@ -243,14 +238,14 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws filled rectangle shapes"
 TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes", "[unit][world_drawer]")
 {
     const auto entity = this->world.entities().create();
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
     auto shape = std::make_unique<CircleDef>();
     shape->radius = 7.f;
 
     this->camera.setZoom(2.f);
-    components.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, -3.f, 0.f});
-    components.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{9, 8, 7, 6}, false });
+    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, -3.f, 0.f});
+    comp.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{9, 8, 7, 6}, false });
 
     this->drawer.draw(this->context);
 

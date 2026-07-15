@@ -6,6 +6,7 @@
 #include "../../domain/components/RectangleColliderComponent.h"
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/include/View/View.h"
+#include "../../domain/utils/Logger/Logger.h"
 #include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/EventBus/EventBus.h"
@@ -24,12 +25,13 @@ void RectCircleCollisionDetection::detect(const std::vector<CollisionPair>& pair
         const auto& b = pair.b;
 
         bool aRect = comp.has<RectangleColliderComponent>(a) && comp.has<TransformComponent>(a);
-        bool bRect = comp.has<RectangleColliderComponent>(b) && comp.has<TransformComponent>(b);
         bool aCircle = comp.has<CircleColliderComponent>(a) && comp.has<TransformComponent>(a);
+
+        bool bRect = comp.has<RectangleColliderComponent>(b) && comp.has<TransformComponent>(b);
         bool bCircle = comp.has<CircleColliderComponent>(b) && comp.has<TransformComponent>(b);
 
-        if (aRect && bCircle) if (this->rectToCircle(a, b, ctx)) ctx.eventBus.emit<CollisionEvent>(CollisionEvent{a, b});
-        else if (aCircle && bRect) if (this->rectToCircle(b, a, ctx)) ctx.eventBus.emit<CollisionEvent>(CollisionEvent{a, b});
+        if (aRect && bCircle && this->rectToCircle(a, b, ctx)) ctx.eventBus.emit<CollisionEvent>(CollisionEvent{a, b});
+        else if (aCircle && bRect && this->rectToCircle(b, a, ctx)) ctx.eventBus.emit<CollisionEvent>(CollisionEvent{a, b});
     }
 }
 

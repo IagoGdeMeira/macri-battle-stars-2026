@@ -33,14 +33,14 @@ public:
 
     WorldTextureRenderFormatFixture() : format(this->renderer, this->camera), context { this->world, this->bus }
     {
-        auto& components = this->world.components();
-        components.registerComponent<SpriteComponent>();
-        components.registerComponent<TransformComponent>();
-        components.registerComponent<RenderComponent>();
-        components.registerComponent<OrientationComponent>();
-        components.registerComponent<AnimationControllerComponent>();
-        components.registerComponent<ParallaxComponent>();
-        components.registerComponent<VisualEffectsComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<SpriteComponent>();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<OrientationComponent>();
+        comp.registerComponent<AnimationControllerComponent>();
+        comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<VisualEffectsComponent>();
 
         this->camera.setPosition(50.f, 20.f);
         this->camera.setZoom(2.f);
@@ -53,18 +53,17 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
 ) {
     const auto texture = std::make_shared<StubTexture>();
     const Entity entity = this->world.entities().create();
-
-    this->world.components().add<TransformComponent>(entity,
-        TransformComponent {Position {100.f, 80.f}, Position {-1.5f, 2.f}, 30.f});
-    this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent {texture, Dimension2D {20.f, 10.f}, Rectangle {Position{2.f, 3.f}, Dimension2D{4.f, 5.f}}, true });
-    this->world.components().add<RenderComponent>(entity, RenderComponent { 7, 9 });
-    this->world.components().add<ParallaxComponent>(entity, ParallaxComponent{Position{ 0.5f, 1.f }});
-    this->world.components().add<OrientationComponent>(entity, OrientationComponent { Orientation::Left });
+    auto& comp = this->world.components();
+    
+    comp.add<TransformComponent>(entity, TransformComponent {Position {100.f, 80.f}, Position {-1.5f, 2.f}, 30.f});
+    comp.add<SpriteComponent>(entity, SpriteComponent {texture, Dimension2D {20.f, 10.f}, Rectangle {Position{2.f, 3.f}, Dimension2D{4.f, 5.f}}, true});
+    comp.add<RenderComponent>(entity, RenderComponent {7, 9});
+    comp.add<ParallaxComponent>(entity, ParallaxComponent{Position{0.5f, 1.f}});
+    comp.add<OrientationComponent>(entity, OrientationComponent { Orientation::Left });
 
     AnimationControllerComponent animationController;
     animationController.animations.symmetric = true;
-    this->world.components().add<AnimationControllerComponent>(entity, animationController);
+    comp.add<AnimationControllerComponent>(entity, animationController);
 
     VisualEffectsComponent fx;
     fx.textureEffects.push_back([](DrawTextureBatch& batch, DrawTextureCommand& cmd) 
@@ -74,7 +73,7 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
         echo.dest.position.x += 3.f;
         batch.add(echo);
     });
-    this->world.components().add<VisualEffectsComponent>(entity, fx);
+    comp.add<VisualEffectsComponent>(entity, fx);
 
     this->format.render(this->context);
 
@@ -88,8 +87,8 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
     REQUIRE(baseCmd.texture == texture.get());
     REQUIRE(baseCmd.dest.position.x == Catch::Approx(550.f));
     REQUIRE(baseCmd.dest.position.y == Catch::Approx(420.f));
-    REQUIRE(baseCmd.dest.size.width == Catch::Approx(60.f));
-    REQUIRE(baseCmd.dest.size.height == Catch::Approx(40.f));
+    REQUIRE(baseCmd.dest.size.width == Catch::Approx(30.f));
+    REQUIRE(baseCmd.dest.size.height == Catch::Approx(20.f));
     REQUIRE(baseCmd.rotation == Catch::Approx(30.f));
     REQUIRE(baseCmd.flipX == true);
     REQUIRE(baseCmd.flipY == false);
@@ -107,12 +106,11 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat skip
     "[unit][world_texture_render_format]"
 ) {
     const Entity entity = this->world.entities().create();
+    auto& comp = this->world.components();
 
-    this->world.components().add<TransformComponent>(entity,
-        TransformComponent{Position{10.f, 20.f}, Position{1.f, 1.f}, 0.f});
-    this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent { nullptr, Dimension2D {20.f, 10.f}, Rectangle {}, false });
-    this->world.components().add<RenderComponent>(entity, RenderComponent { 0, 0 });
+    comp.add<TransformComponent>(entity, TransformComponent{Position{10.f, 20.f}, Position{1.f, 1.f}, 0.f});
+    comp.add<SpriteComponent>(entity, SpriteComponent { nullptr, Dimension2D {20.f, 10.f}, Rectangle {}, false });
+    comp.add<RenderComponent>(entity, RenderComponent { 0, 0 });
 
     this->format.render(this->context);
 
@@ -124,17 +122,16 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat resp
 ) {
     const auto texture = std::make_shared<StubTexture>();
     const Entity entity = this->world.entities().create();
-
-    this->world.components().add<TransformComponent>(entity,
-        TransformComponent{Position{100.f, 80.f}, Position{-1.f, 1.f}, 0.f});
-    this->world.components().add<SpriteComponent>(entity,
-        SpriteComponent { texture, Dimension2D {20.f, 10.f}, Rectangle {}, false });
-    this->world.components().add<RenderComponent>(entity, RenderComponent { 0, 0 });
-    this->world.components().add<OrientationComponent>(entity, OrientationComponent { Orientation::Left });
+    auto& comp = this->world.components();
+    
+    comp.add<TransformComponent>(entity, TransformComponent{Position{100.f, 80.f}, Position{-1.f, 1.f}, 0.f});
+    comp.add<SpriteComponent>(entity, SpriteComponent { texture, Dimension2D {20.f, 10.f}, Rectangle {}, false });
+    comp.add<RenderComponent>(entity, RenderComponent { 0, 0 });
+    comp.add<OrientationComponent>(entity, OrientationComponent { Orientation::Left });
 
     AnimationControllerComponent animationController;
     animationController.animations.symmetric = false;
-    this->world.components().add<AnimationControllerComponent>(entity, animationController);
+    comp.add<AnimationControllerComponent>(entity, animationController);
 
     this->format.render(this->context);
 

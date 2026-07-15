@@ -54,7 +54,6 @@ Entity MapLoader::load(World& world, const std::string& path)
 
     comp.add<TransformComponent>(mapEntity, TransformComponent{0.f, 0.f});
 
-    /* COMENTADO PARA TESTES, POIS O BACKGROUND NÃO ESTÁ FUNCIONANDO CORRETAMENTE
     if (root->has("backgroundLayers")) for (auto& layer : root->getArray("backgroundLayers"))
     {
         std::string tex = layer->getString("texture");
@@ -66,7 +65,6 @@ Entity MapLoader::load(World& world, const std::string& path)
         int zIndex = layer->getInt("zIndex", 0);
         this->factory.createBackgroundChild(tex, parallax, zIndex, mapEntity);
     }
-    */
 
     float floorW = floorNode->getFloat("width");
     float floorH = floorNode->getFloat("height", 50.f);

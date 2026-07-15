@@ -1,4 +1,7 @@
 add_executable(game_tests
+    collision_detection/CircleCircleCollisionDetectionTests.cpp
+    collision_detection/RectCircleCollisionDetectionTests.cpp
+    collision_detection/RectRectCollisionDetectionTests.cpp
     render_formats/UICircleRenderFormatTests.cpp
     render_formats/UIFontRenderFormatTests.cpp
     render_formats/UIRectangleRenderFormatTests.cpp

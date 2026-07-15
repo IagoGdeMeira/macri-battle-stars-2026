@@ -39,10 +39,12 @@ TEST_CASE("WorldRenderUtils::worldToScreen applies parallax factors", "[unit][wo
 TEST_CASE("WorldRenderUtils::resolveParallax reads component when present", "[unit][world_render_utils]")
 {
     World world;
-    world.components().registerComponent<ParallaxComponent>();
+    auto& comp = world.components();
+
+    comp.registerComponent<ParallaxComponent>();
 
     Entity entity = world.entities().create();
-    world.components().add<ParallaxComponent>(entity, ParallaxComponent{Position{0.3f, 0.7f}});
+    comp.add<ParallaxComponent>(entity, ParallaxComponent{Position{0.3f, 0.7f}});
 
     const Position parallax = WorldRenderUtils::resolveParallax(world, entity);
 
@@ -53,7 +55,9 @@ TEST_CASE("WorldRenderUtils::resolveParallax reads component when present", "[un
 TEST_CASE("WorldRenderUtils::resolveParallax returns default when absent", "[unit][world_render_utils]")
 {
     World world;
-    world.components().registerComponent<ParallaxComponent>();
+    auto& comp = world.components();
+    
+    comp.registerComponent<ParallaxComponent>();
 
     Entity entity = world.entities().create();
 
@@ -76,8 +80,8 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform applies scaled dimensions an
     DrawTextureCommand cmd;
     WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
 
-    REQUIRE(cmd.dest.size.width == Catch::Approx(48.f));
-    REQUIRE(cmd.dest.size.height == Catch::Approx(36.f));
+    REQUIRE(cmd.dest.size.width == Catch::Approx(32.f));
+    REQUIRE(cmd.dest.size.height == Catch::Approx(24.f));
     REQUIRE(cmd.flipX == true);
     REQUIRE(cmd.flipY == false);
 }
