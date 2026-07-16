@@ -83,6 +83,8 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(Entity& entity,
         cmd.flipX = symmetric ? (comp.get<OrientationComponent>(entity).direction == Orientation::Left) : false;
     }
 
+    LOG_DEBUG("buildTextureCommand: entity {} worldPos=({},{})", entity.id, worldPos.x, worldPos.y);
+
     cmd.layer = render.layer;
     cmd.zIndex = render.zIndex;
     cmd.order = order;

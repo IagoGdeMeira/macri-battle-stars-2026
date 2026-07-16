@@ -14,6 +14,7 @@
 #include "../../domain/components/LifetimeComponent.h"
 #include "../../domain/components/PushboxComponent.h"
 #include "../../domain/components/ShapeRenderComponent.h"
+#include "../../domain/utils/Logger/Logger.h"
 #include "../../domain/value_objects/CollisionFrame/ColliderDef.h"
 #include "../../domain/value_objects/CollisionFrame/CollisionFrame.h"
 
@@ -107,7 +108,8 @@ Entity EntityFactory::createBackgroundChild(
     this->addParallax(e, parallax);
     this->addParentAndLocal(e, parent, {0.f, 0.f});
     comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
-    
+
+    LOG_INFO("Background entity {} created with parallax ({}, {})", e.id, parallax.x, parallax.y);
     return e;
 }
 

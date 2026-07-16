@@ -23,8 +23,10 @@ Position WorldRenderUtils::resolveParallax(World& world, Entity& entity)
     if (comp.has<ParallaxComponent>(entity))
     {
         const auto& parallax = comp.get<ParallaxComponent>(entity);
+        LOG_DEBUG("resolveParallax: entity {} has parallax ({}, {})", entity.id, parallax.factor.x, parallax.factor.y);
         return parallax.factor;
     }
+    LOG_WARN("resolveParallax: entity {} has NO parallax component, using default (1,1)", entity.id);
     return Position{1.f, 1.f};
 }
 

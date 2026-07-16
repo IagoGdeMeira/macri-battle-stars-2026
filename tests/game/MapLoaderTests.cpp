@@ -28,6 +28,7 @@
 
 #include "../../src/game/include/EntityFactory/EntityFactory.h"
 
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <string>
@@ -173,4 +174,27 @@ TEST_CASE_METHOD(MapLoaderFixture, "MapLoader parses map data and creates map en
     REQUIRE(rectColliderCount >= 2);
     REQUIRE(foundBackground);
     REQUIRE(foundFloor);
+}
+
+TEST_CASE_METHOD(MapLoaderFixture, "MapLoader applies parallax factors from JSON correctly",
+    "[unit][map_loader]"
+) {
+    this->parser.registerNode("assets/maps/dojo.json", this->makeMapRoot());
+
+    MapLoader loader(this->parser, this->entityFactory);
+    Entity mapEntity = loader.load(this->world, "assets/maps/dojo.json");
+
+    auto& comp = this->world.components();
+
+    bool foundCorrectParallax = false;
+    for (auto [entity, parent] : View<ParentComponent>(comp))
+    {
+        if (parent.parent != mapEntity || !comp.has<ParallaxComponent>(entity)) continue;
+
+        const auto& parallax = comp.get<ParallaxComponent>(entity);
+        if (parallax.factor.x == Catch::Approx(0.5f) && parallax.factor.y == Catch::Approx(0.25f))
+        { foundCorrectParallax = true; break; }
+    }
+
+    REQUIRE(foundCorrectParallax);
 }
