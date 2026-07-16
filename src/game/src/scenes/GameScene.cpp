@@ -142,6 +142,8 @@ void GameScene::init()
     systems.addSystem<CameraControllerSystem>(CameraControllerSystem::Config{
         .camera         = *this->camera,
         .window         = this->window,
+        .minZoom        = 1.f,
+        .maxZoom        = 10.f,
         .verticalOffset = -70.f,
         .bounds         = mapComp.worldBounds
     });

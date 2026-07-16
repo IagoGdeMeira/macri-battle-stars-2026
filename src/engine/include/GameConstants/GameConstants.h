@@ -15,6 +15,7 @@ struct GameConstants
     static constexpr const char* DEFAULT_CHARACTER_DEF_PATH = "assets/characters/reddie_beta.json";
 
     static constexpr int TARGET_FPS = 60;
+    static constexpr bool APPLY_ZOOM_TO_SIZE = false;
 };
 
 #endif // game_constants_h
