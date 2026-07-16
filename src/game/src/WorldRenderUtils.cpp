@@ -33,6 +33,10 @@ void WorldRenderUtils::computeSpriteTransform(const Rectangle& spriteConfig, Dra
     const float width = spriteConfig.size.width * std::abs(spriteConfig.position.x);
     const float height = spriteConfig.size.height * std::abs(spriteConfig.position.y);
     cmd.dest.size = { width, height };
+
+    cmd.dest.position.x -= width * 0.5f;
+    cmd.dest.position.y -= height * 0.5f;
+
     cmd.flipX = spriteConfig.position.x < 0.f;
     cmd.flipY = spriteConfig.position.y < 0.f;
 }

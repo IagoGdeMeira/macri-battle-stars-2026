@@ -140,7 +140,11 @@ void GameScene::init()
     systems.addSystem<CollisionClipPlayerSystem>(events, *this->entityFactory);
     LOG_DEBUG("GameScene: adding CameraControllerSystem");
     systems.addSystem<CameraControllerSystem>(CameraControllerSystem::Config{
-        .camera = *this->camera, .window = this->window, .bounds = mapComp.worldBounds });
+        .camera         = *this->camera,
+        .window         = this->window,
+        .verticalOffset = -70.f,
+        .bounds         = mapComp.worldBounds
+    });
     LOG_DEBUG("GameScene: CameraControllerSystem added");
     LOG_DEBUG("GameScene: total systems = {}", this->systems().size());
 

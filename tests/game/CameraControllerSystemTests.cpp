@@ -3,6 +3,7 @@
 #include "../stubs/StubWindow.h"
 
 #include "../../src/domain/components/PlayerComponent.h"
+#include "../../src/domain/components/SpriteComponent.h"
 #include "../../src/domain/components/TransformComponent.h"
 #include "../../src/domain/include/World/World.h"
 #include "../../src/domain/value_objects/Geometry/Geometry.h"
@@ -11,6 +12,7 @@
 #include "../../src/engine/include/EventBus/EventBus.h"
 #include "../../src/engine/include/UpdateContext/UpdateContext.h"
 
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 class CameraControllerSystemFixture
@@ -21,6 +23,7 @@ public:
         auto& comp = this->world.components();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<PlayerComponent>();
+        comp.registerComponent<SpriteComponent>();
     }
 
     World world;
@@ -29,6 +32,25 @@ public:
     StubWindow window;
     Camera2D camera;
     UpdateContext ctx;
+
+    Entity createPlayer(float x, float y, float width = 32.f, float height = 64.f)
+    {
+        Entity entity = this->world.entities().create();
+        auto& comp = this->world.components();
+        comp.add<TransformComponent>(entity, TransformComponent{x, y, 1.f, 1.f, 0.f});
+        comp.add<PlayerComponent>(entity, PlayerComponent{1});
+        comp.add<SpriteComponent>(entity, SpriteComponent{nullptr, Dimension2D{width, height}, Rectangle{}, false});
+        return entity;
+    }
+
+    Entity createPlayerNoSprite(float x, float y)
+    {
+        Entity entity = this->world.entities().create();
+        auto& comp = this->world.components();
+        comp.add<TransformComponent>(entity, TransformComponent{x, y, 1.f, 1.f, 0.f});
+        comp.add<PlayerComponent>(entity, PlayerComponent{1});
+        return entity;
+    }
 };
 
 TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem keeps camera unchanged when no players exist",
@@ -46,7 +68,6 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem keeps ca
     this->camera.setZoom(1.25f);
 
     system.update(this->ctx);
-
     REQUIRE(this->camera.getPosition().x == 12.f);
     REQUIRE(this->camera.getPosition().y == -8.f);
     REQUIRE(this->camera.getZoom() == 1.25f);
@@ -55,10 +76,7 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem keeps ca
 TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem centers on player and clamps zoom",
     "[unit][camera_controller_system]"
 ) {
-    const auto entity = this->world.entities().create();
-    auto& comp = this->world.components();
-    comp.add<TransformComponent>(entity, TransformComponent { 100.f, 200.f, 1.f, 1.f, 0.f });
-    comp.add<PlayerComponent>(entity, PlayerComponent { 1 });
+    this->createPlayer(100.f, 200.f, 32.f, 64.f);
 
     AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
     CameraControllerSystem system(CameraControllerSystem::Config{
@@ -71,23 +89,16 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem centers 
     });
 
     system.update(this->ctx);
-
-    REQUIRE(this->camera.getPosition().x == 100.f);
-    REQUIRE(this->camera.getPosition().y == 200.f);
-    REQUIRE(this->camera.getZoom() == 1.5f);
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(100.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(200.f));
+    REQUIRE(this->camera.getZoom() == Catch::Approx(1.5f));
 }
 
 TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps camera position to map bounds",
     "[unit][camera_controller_system]"
 ) {
-    const auto entityA = this->world.entities().create();
-    auto& comp = this->world.components();
-    comp.add<TransformComponent>(entityA, TransformComponent { 100.f, 100.f, 1.f, 1.f, 0.f });
-    comp.add<PlayerComponent>(entityA, PlayerComponent { 1 });
-
-    const auto entityB = this->world.entities().create();
-    comp.add<TransformComponent>(entityB, TransformComponent { 250.f, 200.f, 1.f, 1.f, 0.f });
-    comp.add<PlayerComponent>(entityB, PlayerComponent { 2 });
+    this->createPlayer(100.f, 100.f, 32.f, 64.f);
+    this->createPlayer(250.f, 200.f, 32.f, 64.f);
 
     AABB bounds { 0.f, 300.f, 0.f, 220.f };
     CameraControllerSystem system(CameraControllerSystem::Config{
@@ -100,8 +111,254 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps c
     });
 
     system.update(this->ctx);
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(175.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(150.f));
+    REQUIRE(this->camera.getZoom() == Catch::Approx(1.5f));
+}
 
-    REQUIRE(this->camera.getPosition().x == 150.f);
-    REQUIRE(this->camera.getPosition().y == 110.f);
-    REQUIRE(this->camera.getZoom() == 1.5f);
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem uses SpriteComponent size for bounding box",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(0.f, 0.f, 100.f, 100.f);
+
+    AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera     = this->camera,
+        .window     = this->window,
+        .minZoom    = 0.8f,
+        .maxZoom    = 2.0f,
+        .padding    = 0.f,
+        .bounds     = bounds
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getZoom() == Catch::Approx(2.0f));
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(0.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(0.f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem applies padding correctly",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(0.f, 0.f, 32.f, 64.f);
+
+    AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
+    float padding = 100.f;
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera     = this->camera,
+        .window     = this->window,
+        .minZoom    = 0.8f,
+        .maxZoom    = 2.0f,
+        .padding    = padding,
+        .bounds     = bounds
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getZoom() == Catch::Approx(2.0f));
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(0.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(0.f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem handles multiple players with different positions",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(100.f, 100.f, 32.f, 64.f);
+    this->createPlayer(300.f, 200.f, 32.f, 64.f);
+
+    AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera     = this->camera,
+        .window     = this->window,
+        .minZoom    = 0.8f,
+        .maxZoom    = 2.0f,
+        .padding    = 50.f,
+        .bounds     = bounds
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getZoom() == Catch::Approx(2.0f));
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(200.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(150.f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem uses fallback size when SpriteComponent is absent",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayerNoSprite(0.f, 0.f);
+
+    AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera     = this->camera,
+        .window     = this->window,
+        .minZoom    = 0.8f,
+        .maxZoom    = 2.0f,
+        .padding    = 0.f,
+        .bounds     = bounds
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getZoom() == Catch::Approx(2.0f));
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(0.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(0.f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem handles infinite bounds (no clamping)",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(1000.f, 1000.f, 32.f, 64.f);
+
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera     = this->camera,
+        .window     = this->window,
+        .minZoom    = 0.8f,
+        .maxZoom    = 2.0f,
+        .padding    = 50.f,
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(1000.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(1000.f));
+    REQUIRE(this->camera.getZoom() == Catch::Approx(2.0f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps when bounds are finite",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(1000.f, 1000.f, 32.f, 64.f);
+
+    AABB bounds { 0.f, 200.f, 0.f, 200.f };
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera     = this->camera,
+        .window     = this->window,
+        .minZoom    = 0.8f,
+        .maxZoom    = 2.0f,
+        .padding    = 50.f,
+        .bounds     = bounds
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(1000.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(1000.f));
+    REQUIRE(this->camera.getZoom() == Catch::Approx(2.0f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem verticalOffset shifts camera down preserving padding",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(0.f, 0.f, 32.f, 64.f);
+
+    AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
+    float padding = 50.f, offset = 30.f;
+
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.f,
+        .padding        = padding,
+        .verticalOffset = offset,
+        .bounds         = bounds
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(0.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(offset));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem verticalOffset works with multiple players",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(100.f, 100.f, 32.f, 64.f);
+    this->createPlayer(200.f, 200.f, 32.f, 64.f);
+
+    AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
+    float padding = 50.f, offset = 30.f;
+
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.f,
+        .padding        = padding,
+        .verticalOffset = offset,
+        .bounds         = bounds
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(150.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(180.f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem verticalOffset preserves padding when players near top",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(0.f, -100.f, 32.f, 64.f);
+
+    AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
+    float padding = 50.f, offset = 100.f;
+
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.f,
+        .padding        = padding,
+        .verticalOffset = offset,
+        .bounds         = bounds
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(0.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(0.f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem verticalOffset is clamped by bounds",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(0.f, 0.f, 32.f, 64.f);
+
+    AABB bounds { -1000.f, 1000.f, 100.f, 400.f };
+    float padding = 50.f, offset = -200.f;
+
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.f,
+        .padding        = padding,
+        .verticalOffset = offset,
+        .bounds         = bounds
+    });
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(250.f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem verticalOffset keeps padding consistent with zoom",
+    "[unit][camera_controller_system]"
+) {
+    this->createPlayer(100.f, 100.f, 32.f, 64.f);
+    this->createPlayer(200.f, 200.f, 32.f, 64.f);
+
+    AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
+    float padding = 50.f, offset = 30.f;
+
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.f,
+        .padding        = padding,
+        .verticalOffset = offset,
+        .bounds         = bounds
+    });
+
+    system.update(this->ctx);
+    auto posY1 = this->camera.getPosition().y;
+
+    system.update(this->ctx);
+    auto posY2 = this->camera.getPosition().y;
+
+    REQUIRE(posY1 == Catch::Approx(posY2));
+    REQUIRE(posY1 == Catch::Approx(180.f));
 }

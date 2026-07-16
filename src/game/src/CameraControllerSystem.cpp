@@ -1,6 +1,7 @@
 #include "../include/CameraControllerSystem/CameraControllerSystem.h"
 
 #include "../../domain/components/PlayerComponent.h"
+#include "../../domain/components/SpriteComponent.h"
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/include/View/View.h"
 #include "../../domain/utils/Logger/Logger.h"
@@ -13,57 +14,87 @@
 
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
-    LOG_DEBUG("CameraControllerSystem::update called");
-    auto view = View<TransformComponent, PlayerComponent>(ctx.world.components());
+    auto playerBounds = this->computePlayerBounds(ctx);
+    if (playerBounds.left > playerBounds.right || playerBounds.top > playerBounds.bottom) return;
+    
+    int winW = 0, winH = 0;
+    this->window.getSize(winW, winH);
+    Dimension2D screenSize = {static_cast<float>(winW), static_cast<float>(winH)};
 
-    auto it = view.begin();
-    if (it == view.end()) return;
+    float targetZoom = this->computeTargetZoom(playerBounds, screenSize);
+
+    Position center = {
+        (playerBounds.left + playerBounds.right) * 0.5f,
+        (playerBounds.top + playerBounds.bottom) * 0.5f + this->verticalOffset
+    };
+    Position clampedPos = this->computeClampedCameraPosition(center, targetZoom, screenSize);
+
+    this->camera.setPosition(clampedPos.x, clampedPos.y);
+    this->camera.setZoom(targetZoom);
+
+    LOG_DEBUG("CameraControllerSystem: center=({}, {}), targetZoom={}, boxSize=({},{}), padding={}",
+        center.x, center.y, targetZoom, playerBounds.right - playerBounds.left, playerBounds.bottom - playerBounds.top, this->padding);
+}
+
+AABB CameraControllerSystem::computePlayerBounds(UpdateContext& ctx)
+{
+    auto& comp = ctx.world.components();
+
+    auto view = View<TransformComponent, PlayerComponent>(comp);
+    if (view.begin() == view.end()) return {limits::max(), limits::lowest(), limits::max(), limits::lowest()};
 
     AABB playerBounds = {limits::max(), limits::lowest(), limits::max(), limits::lowest()};
 
-    for (; it != view.end(); ++it)
+    for (auto [entity, transform, player] : view)
     {
-        auto [entity, transform, player] = *it;
-
         auto& pos = transform.position;
-        playerBounds.left   = std::min(playerBounds.left, pos.x);
-        playerBounds.top    = std::min(playerBounds.top, pos.y);
-        playerBounds.right  = std::max(playerBounds.right, pos.x);
-        playerBounds.bottom = std::max(playerBounds.bottom, pos.y);
+
+        Dimension2D halfSize {16.f, 16.f};
+        if (comp.has<SpriteComponent>(entity))
+        {
+            const auto& sprite = comp.get<SpriteComponent>(entity);
+            halfSize = {sprite.size.width * 0.5f, sprite.size.height * 0.5f};
+        }
+
+        playerBounds.left   = std::min(playerBounds.left, pos.x - halfSize.width);
+        playerBounds.top    = std::min(playerBounds.top, pos.y - halfSize.height);
+        playerBounds.right  = std::max(playerBounds.right, pos.x + halfSize.width);
+        playerBounds.bottom = std::max(playerBounds.bottom, pos.y + halfSize.height);
     }
 
-    Position center = {(playerBounds.left + playerBounds.right) * 0.5f, (playerBounds.top + playerBounds.bottom) * 0.5f};
-    Dimension2D size {playerBounds.right - playerBounds.left, playerBounds.bottom - playerBounds.top};
-    size = {std::max(size.width, 1.f), std::max(size.height, 1.f)};
+    playerBounds.left   -= this->padding;
+    playerBounds.top    -= this->padding;
+    playerBounds.right  += this->padding;
+    playerBounds.bottom += this->padding;
 
-    int screenW, screenH;
-    this->window.getSize(screenW, screenH);
+    return playerBounds;
+}
 
-    Position zoom = { screenW / size.width, screenH / size.height };
+float CameraControllerSystem::computeTargetZoom(const AABB& playerBounds, Dimension2D screenSize)
+{
+    float boxWidth = std::max(playerBounds.right - playerBounds.left, 1.f);
+    float boxHeight = std::max(playerBounds.bottom - playerBounds.top, 1.f);
 
-    float targetZoom = std::min(zoom.x, zoom.y);
-    targetZoom = std::clamp(targetZoom, minZoom, maxZoom);
+    float zoomX = screenSize.width / boxWidth;
+    float zoomY = screenSize.height / boxHeight;
+    float targetZoom = std::min(zoomX, zoomY);
 
-    AABB map = this->bounds;
-    Dimension2D halfScreen = {(screenW / targetZoom) * 0.5f, (screenH / targetZoom) * 0.5f};
-    
-    float clampedX  = (map.left + map.right) * 0.5f;
-    float minClampX = map.left + halfScreen.width;
-    float maxClampX = map.right - halfScreen.width;
+    return std::clamp(targetZoom, this->minZoom, this->maxZoom);
+}
+
+Position CameraControllerSystem::computeClampedCameraPosition(const Position& center, float targetZoom, Dimension2D screenSize)
+{
+    Dimension2D halfScreen = {(screenSize.width / targetZoom) * 0.5f, (screenSize.height / targetZoom) * 0.5f};
+
+    float clampedX = center.x;
+    float minClampX = this->bounds.left + halfScreen.width;
+    float maxClampX = this->bounds.right - halfScreen.width;
     if (minClampX <= maxClampX) clampedX = std::clamp(center.x, minClampX, maxClampX);
-
-    float clampedY = (map.top + map.bottom) * 0.5f;
-    float minClampY = map.top + halfScreen.height;
-    float maxClampY = map.bottom - halfScreen.height;
+    
+    float clampedY = center.y;
+    float minClampY = this->bounds.top + halfScreen.height;
+    float maxClampY = this->bounds.bottom - halfScreen.height;
     if (minClampY <= maxClampY) clampedY = std::clamp(center.y, minClampY, maxClampY);
 
-    this->camera.setPosition(clampedX, clampedY);
-    this->camera.setZoom(targetZoom);
-
-    LOG_DEBUG("CameraControllerSystem: center=({}, {}), targetZoom={}, halfScreen=({}, {}), bounds=[{}, {}], clamped=({}, {})",
-        center.x, center.y, targetZoom, halfScreen.width, halfScreen.height,
-        map.left, map.right, map.top, map.bottom,
-        clampedX, clampedY);
-    LOG_DEBUG("CameraControllerSystem: camera set to ({}, {})", 
-        this->camera.getPosition().x, this->camera.getPosition().y);
+    return {clampedX, clampedY};
 }

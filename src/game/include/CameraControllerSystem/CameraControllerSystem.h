@@ -3,7 +3,6 @@
 
 #include "../Camera2D/Camera2D.h"
 
-#include "../../domain/utils/Logger/Logger.h"
 #include "../../domain/value_objects/Geometry/Geometry.h"
 
 #include "../../engine/include/System/System.h"
@@ -20,14 +19,18 @@ public:
     {
         Camera2D& camera;
         Window& window;
-        float minZoom = 0.8f, maxZoom = 1.f, padding = 50.f;
+        float minZoom = 0.8f, maxZoom = 2.f, padding = 50.f, verticalOffset = -30.f;
         AABB bounds = AABB{limits::lowest(), limits::max(), limits::lowest(), limits::max()};
     };
 
     CameraControllerSystem(Config&& cfg) :
-        camera(cfg.camera), window(cfg.window), minZoom(cfg.minZoom),
-        maxZoom(cfg.maxZoom), padding(cfg.padding), bounds(cfg.bounds)
-    { LOG_DEBUG("CameraControllerSystem constructed"); }
+        camera(cfg.camera),
+        window(cfg.window),
+        minZoom(cfg.minZoom),
+        maxZoom(cfg.maxZoom),
+        padding(cfg.padding),
+        verticalOffset(cfg.verticalOffset),
+        bounds(cfg.bounds) {}
 
     void update(UpdateContext& ctx) override;
 
@@ -35,8 +38,12 @@ private:
     Camera2D& camera;
     Window& window;
 
-    float minZoom, maxZoom, padding;
+    float minZoom, maxZoom, padding, verticalOffset;
     AABB bounds;
+
+    AABB computePlayerBounds(UpdateContext& ctx);
+    float computeTargetZoom(const AABB& playerBounds, Dimension2D screenSize);
+    Position computeClampedCameraPosition(const Position& center, float targetZoom, Dimension2D screenSize);
 };
 
 #endif // camera_controller_system_h

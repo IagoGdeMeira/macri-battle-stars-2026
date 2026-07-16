@@ -36,7 +36,10 @@ public:
         return set;
     }
 
-    WorldDrawerFixture() : settings(this->makeSettings()), drawer(this->bus, this->renderer, this->camera, this->settings), context{this->world, this->bus}
+    WorldDrawerFixture() :
+        settings(this->makeSettings()),
+        drawer(this->bus, this->renderer, this->camera, this->settings),
+        context{this->world, this->bus}
     {
         auto& comp = this->world.components();
         comp.registerComponent<TransformComponent>();
@@ -112,8 +115,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards resized world viewpor
     REQUIRE(this->renderer.viewportHistory[0].height == 1080);
 
     REQUIRE(this->renderer.textureCalls.size() == 1);
-    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.x - 730.f) < 0.001f);
-    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.y - 560.f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.x - 714.f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.y - 548.f) < 0.001f);
     REQUIRE(std::abs(this->renderer.textureCalls[0].dest.size.width - 32.f) < 0.001f);
     REQUIRE(std::abs(this->renderer.textureCalls[0].dest.size.height - 24.f) < 0.001f);
 
@@ -145,8 +148,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.calls.drawTexture == 1);
-    REQUIRE(this->renderer.lastDraw.x == 735);
-    REQUIRE(this->renderer.lastDraw.y == 570);
+    REQUIRE(this->renderer.lastDraw.x == 719);
+    REQUIRE(this->renderer.lastDraw.y == 558);
     REQUIRE(this->renderer.lastDraw.width == 32);
     REQUIRE(this->renderer.lastDraw.height == 24);
     REQUIRE(this->renderer.lastDraw.rotation == 0.f);
