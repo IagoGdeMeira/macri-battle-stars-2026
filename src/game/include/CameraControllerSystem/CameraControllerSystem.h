@@ -19,7 +19,7 @@ public:
     {
         Camera2D& camera;
         Window& window;
-        float minZoom = 0.8f, maxZoom = 2.f, padding = 50.f, verticalOffset = -30.f;
+        float minZoom = 0.8f, maxZoom = 2.f, padding = 50.f, verticalOffset = -0.f;
         AABB bounds = AABB{limits::lowest(), limits::max(), limits::lowest(), limits::max()};
     };
 

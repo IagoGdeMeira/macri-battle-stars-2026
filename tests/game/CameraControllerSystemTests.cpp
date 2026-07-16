@@ -57,11 +57,12 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem keeps ca
     "[unit][camera_controller_system]"
 ) {
     CameraControllerSystem system(CameraControllerSystem::Config{
-        .camera     = this->camera,
-        .window     = this->window,
-        .minZoom    = 0.8f,
-        .maxZoom    = 1.5f,
-        .padding    = 50.f
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 1.5f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
     });
 
     this->camera.setPosition(12.f, -8.f);
@@ -80,12 +81,13 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem centers 
 
     AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
     CameraControllerSystem system(CameraControllerSystem::Config{
-        .camera     = this->camera,
-        .window     = this->window,
-        .minZoom    = 0.8f,
-        .maxZoom    = 1.5f,
-        .padding    = 50.f,
-        .bounds     = bounds
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 1.5f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .bounds         = bounds
     });
 
     system.update(this->ctx);
@@ -102,12 +104,13 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps c
 
     AABB bounds { 0.f, 300.f, 0.f, 220.f };
     CameraControllerSystem system(CameraControllerSystem::Config{
-        .camera     = this->camera,
-        .window     = this->window,
-        .minZoom    = 0.8f,
-        .maxZoom    = 1.5f,
-        .padding    = 50.f,
-        .bounds     = bounds
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 1.5f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .bounds         = bounds
     });
 
     system.update(this->ctx);
@@ -123,12 +126,13 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem uses Spr
 
     AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
     CameraControllerSystem system(CameraControllerSystem::Config{
-        .camera     = this->camera,
-        .window     = this->window,
-        .minZoom    = 0.8f,
-        .maxZoom    = 2.0f,
-        .padding    = 0.f,
-        .bounds     = bounds
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.0f,
+        .padding        = 0.f,
+        .verticalOffset = 0.f,
+        .bounds         = bounds
     });
 
     system.update(this->ctx);
@@ -145,12 +149,13 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem applies 
     AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
     float padding = 100.f;
     CameraControllerSystem system(CameraControllerSystem::Config{
-        .camera     = this->camera,
-        .window     = this->window,
-        .minZoom    = 0.8f,
-        .maxZoom    = 2.0f,
-        .padding    = padding,
-        .bounds     = bounds
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.0f,
+        .padding        = padding,
+        .verticalOffset = 0.f,
+        .bounds         = bounds
     });
 
     system.update(this->ctx);
@@ -167,12 +172,13 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem handles 
 
     AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
     CameraControllerSystem system(CameraControllerSystem::Config{
-        .camera     = this->camera,
-        .window     = this->window,
-        .minZoom    = 0.8f,
-        .maxZoom    = 2.0f,
-        .padding    = 50.f,
-        .bounds     = bounds
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.0f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .bounds         = bounds
     });
 
     system.update(this->ctx);
@@ -188,12 +194,13 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem uses fal
 
     AABB bounds { -1000.f, 1000.f, -1000.f, 1000.f };
     CameraControllerSystem system(CameraControllerSystem::Config{
-        .camera     = this->camera,
-        .window     = this->window,
-        .minZoom    = 0.8f,
-        .maxZoom    = 2.0f,
-        .padding    = 0.f,
-        .bounds     = bounds
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.0f,
+        .padding        = 0.f,
+        .verticalOffset = 0.f,
+        .bounds         = bounds
     });
 
     system.update(this->ctx);
@@ -208,11 +215,12 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem handles 
     this->createPlayer(1000.f, 1000.f, 32.f, 64.f);
 
     CameraControllerSystem system(CameraControllerSystem::Config{
-        .camera     = this->camera,
-        .window     = this->window,
-        .minZoom    = 0.8f,
-        .maxZoom    = 2.0f,
-        .padding    = 50.f,
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.0f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
     });
 
     system.update(this->ctx);
@@ -228,12 +236,13 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps w
 
     AABB bounds { 0.f, 200.f, 0.f, 200.f };
     CameraControllerSystem system(CameraControllerSystem::Config{
-        .camera     = this->camera,
-        .window     = this->window,
-        .minZoom    = 0.8f,
-        .maxZoom    = 2.0f,
-        .padding    = 50.f,
-        .bounds     = bounds
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.0f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .bounds         = bounds
     });
 
     system.update(this->ctx);
