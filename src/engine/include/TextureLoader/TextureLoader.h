@@ -1,9 +1,10 @@
 #ifndef texture_loader_h
 #define texture_loader_h
 
-#include "../ITextureFactory/ITextureFactory.h"
-#include "../ResourceLoader/ResourceLoader.h"
-#include "../Texture/Texture.h"
+#include "ITextureFactory/ITextureFactory.h"
+#include "ResourceLoader/ResourceLoader.h"
+
+#include "../resources/Texture/Texture.h"
 
 class TextureLoader : public ResourceLoader<Texture>
 {

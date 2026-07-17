@@ -8,13 +8,13 @@
 #include "../../engine/include/DataParser/DataParser.h"
 #include "../../engine/include/Engine/Engine.h"
 #include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/GameSettings/GameSettings.h"
 #include "../../engine/include/IFontFactory/IFontFactory.h"
 #include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
 #include "../../engine/include/ITextureFactory/ITextureFactory.h"
 #include "../../engine/include/Renderer/Renderer.h"
 #include "../../engine/include/ResourceManager/ResourceManager.h"
 #include "../../engine/include/Scene/Scene.h"
+#include "../../engine/value_objects/GameSettings/GameSettings.h"
 
 #include <memory>
 

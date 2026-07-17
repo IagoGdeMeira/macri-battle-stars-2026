@@ -2,7 +2,8 @@
 #define renderer_h
 
 #include "../DrawCommands/DrawCommands.h"
-#include "../Viewport/Viewport.h"
+
+#include "../../value_objects/Viewport/Viewport.h"
 
 #include "../../domain/value_objects/Color/Color.h"
 #include "../../domain/value_objects/Geometry/Geometry.h"

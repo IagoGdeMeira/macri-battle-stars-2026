@@ -21,10 +21,8 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     Entity entity = world.entities().create();
     auto& comp = world.components();
 
-    auto texture = this->resourceManager.load<Texture>(this->textureLoader, def.texturePath);
-
     SpriteComponent sprite;
-    sprite.texture = texture;
+    sprite.texturePath = def.texturePath;
     sprite.size.width = static_cast<float>(def.spriteSize.width);
     sprite.size.height = static_cast<float>(def.spriteSize.height);
     sprite.source.position = { 0.f, 0.f };
@@ -66,5 +64,7 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     else LOG_WARN("CharacterLoader: Idle animation not found for entity {}", entity.id);
     
     comp.add<AnimationComponent>(entity, std::move(anim));
+
+    LOG_DEBUG("CharacterLoader: created entity {} with sprite texture {}", entity.id, def.texturePath);
     return entity;
 }

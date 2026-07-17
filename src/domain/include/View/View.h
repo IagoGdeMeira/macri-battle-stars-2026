@@ -1,8 +1,8 @@
 #ifndef view_h
 #define view_h
 
-#include "../ComponentManager/ComponentManager.h"
-#include "../ComponentStorage/ComponentStorage.h"
+#include "ComponentManager/ComponentManager.h"
+#include "ComponentStorage/ComponentStorage.h"
 
 #include <tuple>
 #include <utility>

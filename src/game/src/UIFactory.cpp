@@ -11,9 +11,9 @@
 #include "../../domain/components/UITransform.h"
 #include "../../domain/include/World/World.h"
 
-#include "../../engine/include/Font/Font.h"
 #include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
-#include "../../engine/include/Texture/Texture.h"
+#include "../../engine/resources/Font/Font.h"
+#include "../../engine/resources/Texture/Texture.h"
 
 #include "../../game/include/IUIAction/IUIAction.h"
 #include "../../game/include/UIElement/TextElement.h"

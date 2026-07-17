@@ -11,10 +11,10 @@
 
 #include "../../engine/include/Drawer/Drawer.h"
 #include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/GameConstants/GameConstants.h"
-#include "../../engine/include/GameSettings/GameSettings.h"
 #include "../../engine/include/Renderer/Renderer.h"
-#include "../../engine/include/Viewport/Viewport.h"
+#include "../../engine/value_objects/GameConstants/GameConstants.h"
+#include "../../engine/value_objects/GameSettings/GameSettings.h"
+#include "../../engine/value_objects/Viewport/Viewport.h"
 
 #include <cstddef>
 #include <memory>

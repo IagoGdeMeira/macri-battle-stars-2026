@@ -2,8 +2,8 @@
 #define sdl_renderer_h
 
 #include "../../engine/include/Renderer/Renderer.h"
-#include "../../engine/include/Texture/Texture.h"
-#include "../../engine/include/Viewport/Viewport.h"
+#include "../../engine/resources/Texture/Texture.h"
+#include "../../engine/value_objects/Viewport/Viewport.h"
 
 #include <memory>
 #include <SDL.h>

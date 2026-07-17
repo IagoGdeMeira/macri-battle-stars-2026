@@ -5,7 +5,7 @@
 
 #include "../../domain/components/RectangleColliderComponent.h"
 #include "../../domain/components/CircleColliderComponent.h"
-#include "../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
 
 std::unique_ptr<ICollisionHandler> CollisionHandlerFactory::createForEntity(
     UpdateContext& ctx,

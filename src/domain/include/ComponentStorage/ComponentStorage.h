@@ -1,7 +1,7 @@
 #ifndef component_storage_h
 #define component_storage_h
 
-#include "../Entity/Entity.h"
+#include "Entity/Entity.h"
 
 #include <vector>
 

@@ -1,8 +1,8 @@
 #ifndef component_manager_h
 #define component_manager_h
 
-#include "../ComponentStorage/ComponentStorage.h"
-#include "../Entity/Entity.h"
+#include "ComponentStorage/ComponentStorage.h"
+#include "Entity/Entity.h"
 
 #include <cstdint>
 #include <memory>

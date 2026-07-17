@@ -9,7 +9,7 @@
 #include "../../domain/include/View/View.h"
 #include "../../domain/value_objects/StateId/StateId.h"
 
-#include "../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
 
 void AttackSystem::update(UpdateContext& ctx)
 {

@@ -9,7 +9,7 @@
 #include "../../domain/include/Entity/Entity.h"
 
 #include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
 
 DamageSystem::DamageSystem(EventBus& bus) : bus(bus)
 {

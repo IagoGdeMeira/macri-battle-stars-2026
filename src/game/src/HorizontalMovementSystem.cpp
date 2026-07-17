@@ -10,7 +10,7 @@
 #include "../../domain/value_objects/InputAction/InputAction.h"
 #include "../../domain/value_objects/StateId/StateId.h"
 
-#include "../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
 
 void HorizontalMovementSystem::update(UpdateContext& ctx)
 {

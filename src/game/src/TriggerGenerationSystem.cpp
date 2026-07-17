@@ -6,7 +6,7 @@
 #include "../../domain/components/PlayerComponent.h"
 #include "../../domain/include/View/View.h"
 
-#include "../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
 
 void TriggerGenerationSystem::update(UpdateContext& ctx) { this->processInputTriggers(ctx); }
 

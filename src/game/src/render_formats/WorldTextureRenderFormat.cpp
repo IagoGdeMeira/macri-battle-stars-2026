@@ -11,6 +11,7 @@
 #include "../../domain/utils/Logger/Logger.h"
 
 #include "../../engine/include/RenderContext/RenderContext.h"
+#include "../../engine/resources/Texture/Texture.h"
 
 void WorldTextureRenderFormat::render(RenderContext& ctx)
 {
@@ -27,12 +28,13 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
 
     for (auto [entity, sprite, transform, render] : view)
     {
-        if (!sprite.texture) continue;
+        auto texture = this->resourceManager.load<Texture>(this->textureLoader, sprite.texturePath);
+        if (!texture) continue;
         ++entityCount;
 
-        DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++);
+        DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++, texture);
 
-        LOG_DEBUG("WorldTextureRenderFormat: entity {}, has texture: {}", entity.id, sprite.texture ? "yes" : "no");
+        LOG_DEBUG("WorldTextureRenderFormat: entity {}, has texture: {}", entity.id, texture ? "yes" : "no");
 
         auto& srcPos = cmd.source.position;
         auto& srcSize = cmd.source.size;
@@ -56,8 +58,9 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
     if (duration > 10) LOG_DEBUG("WorldTextureRenderFormat::render took {} ms for {} entities", duration, entityCount);
 }
 
-DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(Entity& entity, World& world, size_t order) const
-{
+DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
+    Entity& entity, World& world, size_t order, std::shared_ptr<Texture> texture
+) const {
     auto& comp = world.components();
     const auto& sprite = comp.get<SpriteComponent>(entity);
     const auto& transform = comp.get<TransformComponent>(entity);
@@ -71,11 +74,11 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(Entity& entity,
     Rectangle spriteConfig = {{transform.scale.x, transform.scale.y}, sprite.size};
 
     DrawTextureCommand cmd;
-    cmd.texture = sprite.texture.get();
+    cmd.texture = texture.get();
     cmd.dest.position = screenPos;
     cmd.rotation = transform.rotation;
-    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
-
+    WorldRenderUtils::computeSpriteTransform(this->camera, spriteConfig, cmd);
+    
     if (comp.has<OrientationComponent>(entity))
     {
         bool symmetric = comp.has<AnimationControllerComponent>(entity)

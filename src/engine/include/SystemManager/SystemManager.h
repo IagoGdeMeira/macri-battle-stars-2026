@@ -1,8 +1,9 @@
 #ifndef system_manager_h
 #define system_manager_h
 
-#include "../System/System.h"
-#include "../UpdateContext/UpdateContext.h"
+#include "System/System.h"
+
+#include "../value_objects/UpdateContext/UpdateContext.h"
 
 #include "../../domain/utils/Logger/Logger.h"
 

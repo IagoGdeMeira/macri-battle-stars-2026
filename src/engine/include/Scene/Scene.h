@@ -2,7 +2,8 @@
 #define scene_h
 
 #include "../SystemManager/SystemManager.h"
-#include "../UpdateContext/UpdateContext.h"
+
+#include "../value_objects/UpdateContext/UpdateContext.h"
 
 #include "../../domain/include/World/World.h"
 

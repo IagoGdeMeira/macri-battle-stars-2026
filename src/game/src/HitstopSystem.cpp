@@ -2,11 +2,11 @@
 
 #include "../../domain/components/HitstopComponent.h"
 #include "../../domain/events/DamageEvent.h"
-#include "../../engine/include/UpdateContext/UpdateContext.h"
 #include "../../domain/include/View/View.h"
 
-HitstopSystem::HitstopSystem(EventBus& bus, float duration) :
-    bus(bus), hitstopDuration(duration)
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+
+HitstopSystem::HitstopSystem(EventBus& bus, float duration) : bus(bus), hitstopDuration(duration)
 {
     bus.subscribe<DamageEvent>([this](const DamageEvent& e)
     { this->damageEvents.push_back(e); });

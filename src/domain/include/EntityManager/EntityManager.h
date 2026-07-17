@@ -1,7 +1,7 @@
 #ifndef entity_manager_h
 #define entity_manager_h
 
-#include "../Entity/Entity.h"
+#include "Entity/Entity.h"
 
 #include <cstdint>
 #include <queue>

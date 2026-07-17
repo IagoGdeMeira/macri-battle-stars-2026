@@ -8,7 +8,7 @@
 #include "../../domain/components/OrientationComponent.h"
 #include "../../domain/include/View/View.h"
 
-#include "../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
 
 CollisionClipPlayerSystem::CollisionClipPlayerSystem(EventBus& bus, EntityFactory& factory) :
     bus(bus), factory(factory)

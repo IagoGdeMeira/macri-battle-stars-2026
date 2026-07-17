@@ -6,7 +6,7 @@
 #include "../../domain/components/TransformComponent.h"
 #include "../../domain/components/CircleColliderComponent.h"
 
-#include "../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <stdexcept>
 

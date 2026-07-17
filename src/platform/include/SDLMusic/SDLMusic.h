@@ -1,7 +1,7 @@
 #ifndef sdl_music_h
 #define sdl_music_h
 
-#include "../../engine/include/Music/Music.h"
+#include "../../engine/resources/Music/Music.h"
 
 #include <SDL_mixer.h>
 

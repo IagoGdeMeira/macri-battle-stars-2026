@@ -3,14 +3,11 @@
 
 #include "../../domain/value_objects/Geometry/Geometry.h"
 
-#include "../../engine/include/Texture/Texture.h"
-
-#include <memory>
+#include <string>
 
 struct SpriteComponent
 {
-    std::shared_ptr<Texture> texture;
-
+    std::string texturePath;
     Dimension2D size {0.f, 0.f};
     Rectangle source {{ 0.f, 0.f }, { 0.f, 0.f }};
     bool useSourceRect = false;

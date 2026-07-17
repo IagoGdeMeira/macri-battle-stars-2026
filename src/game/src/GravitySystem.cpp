@@ -5,7 +5,7 @@
 #include "../../domain/components/VelocityComponent.h"
 #include "../../domain/include/View/View.h"
 
-#include "../../engine/include/UpdateContext/UpdateContext.h"
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
 
 void GravitySystem::update(UpdateContext& ctx)
 {

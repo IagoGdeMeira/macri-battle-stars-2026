@@ -2,10 +2,11 @@
 #define engine_h
 
 #include "../EventBus/EventBus.h"
-#include "../GameSettings/GameSettings.h"
 #include "../InputManager/InputManager.h"
 #include "../Renderer/Renderer.h"
 #include "../Window/Window.h"
+
+#include "../../value_objects/GameSettings/GameSettings.h"
 
 class SceneManager;
 

@@ -2,7 +2,7 @@
 
 #include "../../src/domain/value_objects/Color/Color.h"
 
-#include "../../src/engine/include/Viewport/Viewport.h"
+#include "../../src/engine/value_objects/Viewport/Viewport.h"
 
 #include "../../src/platform/include/SDLTexture/SDLTexture.h"
 #include "../../src/platform/include/SDLWindow/SDLWindow.h"

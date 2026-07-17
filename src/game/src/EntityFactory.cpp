@@ -19,7 +19,6 @@
 #include "../../domain/value_objects/CollisionFrame/CollisionFrame.h"
 
 #include "../../engine/include/ResourceManager/ResourceManager.h"
-#include "../../engine/include/Texture/Texture.h"
 #include "../../engine/include/TextureLoader/TextureLoader.h"
 
 Entity EntityFactory::createStaticEntity(const Position& position, const Rectangle& rect, std::optional<Entity> parent)
@@ -214,11 +213,9 @@ void EntityFactory::addDebugVisual(Entity entity, const ColliderDef& collider, c
 
 void EntityFactory::addSprite(Entity entity, const std::string& texturePath)
 {
-    auto texture = this->resourceManager.load<Texture>(this->textureLoader, texturePath);
     SpriteComponent sprite;
-    sprite.texture = texture;
-    sprite.size.width = static_cast<float>(texture->getWidth());
-    sprite.size.height = static_cast<float>(texture->getHeight());
+    sprite.texturePath = texturePath;
+    sprite.size = {0.f, 0.f};
     sprite.useSourceRect = false;
     this->world.components().add<SpriteComponent>(entity, std::move(sprite));
 }

@@ -1,9 +1,9 @@
 #ifndef world_h
 #define world_h
 
-#include "../ComponentManager/ComponentManager.h"
-#include "../EntityManager/EntityManager.h"
-#include "../View/View.h"
+#include "ComponentManager/ComponentManager.h"
+#include "EntityManager/EntityManager.h"
+#include "View/View.h"
 
 class World
 {

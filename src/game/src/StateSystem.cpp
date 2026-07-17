@@ -4,7 +4,8 @@
 
 #include "../../domain/components/StateComponent.h"
 #include "../../domain/components/StateMachineComponent.h"
-#include "../../engine/include/UpdateContext/UpdateContext.h"
+
+#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
 #include <limits>
