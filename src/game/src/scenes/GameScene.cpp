@@ -150,7 +150,14 @@ void GameScene::init()
     LOG_DEBUG("GameScene: CameraControllerSystem added");
     LOG_DEBUG("GameScene: total systems = {}", this->systems().size());
 
-    this->worldDrawer = std::make_unique<WorldDrawer>(events, this->renderer, *this->camera, this->settings);
+    this->worldDrawer = std::make_unique<WorldDrawer>(WorldDrawer::Config{
+        .bus                = events,
+        .renderer           = this->renderer,
+        .camera             = *this->camera,
+        .settings           = this->settings,
+        .resourceManager    = this->resourceManager,
+        .textureLoader      = this->textureLoader
+    });
 }
 
 void GameScene::loadInputContext(const std::string& path)

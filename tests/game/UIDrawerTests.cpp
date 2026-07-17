@@ -8,8 +8,8 @@
 #include "../../src/domain/include/World/World.h"
 
 #include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/GameSettings/GameSettings.h"
 #include "../../src/engine/include/RenderContext/RenderContext.h"
+#include "../../src/engine/value_objects/GameSettings/GameSettings.h"
 
 #include "../stubs/StubRenderer.h"
 #include "../stubs/StubTexture.h"

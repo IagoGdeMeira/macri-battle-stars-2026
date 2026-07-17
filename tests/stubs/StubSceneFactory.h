@@ -10,9 +10,9 @@
 #include "StubWindow.h"
 
 #include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/GameSettings/GameSettings.h"
 #include "../../src/engine/include/SceneFactory/SceneFactory.h"
 #include "../../src/engine/include/TextureLoader/TextureLoader.h"
+#include "../../src/engine/value_objects/GameSettings/GameSettings.h"
 
 class StubSceneFactory : public SceneFactory
 {

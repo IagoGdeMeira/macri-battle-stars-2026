@@ -6,7 +6,7 @@
 #include "../../../src/engine/include/CommandBuffer/CommandBuffer.h"
 #include "../../../src/engine/include/EventBus/EventBus.h"
 #include "../../../src/engine/include/Scene/Scene.h"
-#include "../../../src/engine/include/UpdateContext/UpdateContext.h"
+#include "../../../src/engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include "../../../src/game/events/CollisionEvent.h"
 

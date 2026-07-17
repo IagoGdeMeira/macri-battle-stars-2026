@@ -13,8 +13,8 @@
 
 #include "../../src/engine/events/WindowResizedEvent.h"
 #include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/GameSettings/GameSettings.h"
 #include "../../src/engine/include/RenderContext/RenderContext.h"
+#include "../../src/engine/value_objects/GameSettings/GameSettings.h"
 
 #include "../../src/game/include/Camera2D/Camera2D.h"
 

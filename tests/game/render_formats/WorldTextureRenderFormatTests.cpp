@@ -1,7 +1,8 @@
 #include "../../../src/game/render_formats/WorldTextureRenderFormat.h"
 
 #include "../../stubs/StubRenderer.h"
-#include "../../stubs/StubTexture.h"
+#include "../../stubs/StubTextureFactory.h"
+#include "../../stubs/StubTextureLoader.h"
 
 #include "../../../src/domain/components/AnimationControllerComponent.h"
 #include "../../../src/domain/components/OrientationComponent.h"
@@ -14,7 +15,8 @@
 
 #include "../../../src/engine/include/EventBus/EventBus.h"
 #include "../../../src/engine/include/RenderContext/RenderContext.h"
-#include "../../../src/engine/include/Renderer/Renderer.h"
+#include "../../../src/engine/include/ResourceManager/ResourceManager.h"
+#include "../../../src/engine/include/ThreadPool/ThreadPool.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -28,10 +30,21 @@ public:
     EventBus bus;
     StubRenderer renderer;
     Camera2D camera;
+    ThreadPool threadPool{1};
+    StubTextureFactory textureFactory;
+    StubTextureLoader textureLoader{textureFactory};
+    ResourceManager resourceManager{threadPool};
     WorldTextureRenderFormat format;
     RenderContext context;
 
-    WorldTextureRenderFormatFixture() : format(this->renderer, this->camera), context { this->world, this->bus }
+    WorldTextureRenderFormatFixture() :
+        format(WorldTextureRenderFormat::Config{
+            .renderer           = this->renderer,
+            .camera             = this->camera,
+            .resourceManager    = this->resourceManager,
+            .textureLoader      = this->textureLoader
+        }),
+        context{ this->world, this->bus }
     {
         auto& comp = this->world.components();
         comp.registerComponent<SpriteComponent>();
@@ -51,12 +64,16 @@ public:
 TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat submits base and visual effect commands",
     "[unit][world_texture_render_format]"
 ) {
-    const auto texture = std::make_shared<StubTexture>();
     const Entity entity = this->world.entities().create();
     auto& comp = this->world.components();
     
-    comp.add<TransformComponent>(entity, TransformComponent {Position {100.f, 80.f}, Position {-1.5f, 2.f}, 30.f});
-    comp.add<SpriteComponent>(entity, SpriteComponent {texture, Dimension2D {20.f, 10.f}, Rectangle {Position{2.f, 3.f}, Dimension2D{4.f, 5.f}}, true});
+    comp.add<TransformComponent>(entity, TransformComponent{Position{100.f, 80.f}, Position{-1.5f, 2.f}, 30.f});
+    comp.add<SpriteComponent>(entity, SpriteComponent{
+        .texturePath    = "assets/sprites/fighter.png",
+        .size           = Dimension2D {20.f, 10.f},
+        .source         = Rectangle {Position{2.f, 3.f}, Dimension2D{4.f, 5.f}},
+        .useSourceRect  = true
+    });
     comp.add<RenderComponent>(entity, RenderComponent {7, 9});
     comp.add<ParallaxComponent>(entity, ParallaxComponent{Position{0.5f, 1.f}});
     comp.add<OrientationComponent>(entity, OrientationComponent { Orientation::Left });
@@ -84,7 +101,7 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
     REQUIRE(effectCmd.dest.position.x == Catch::Approx(538.f));
 
     const auto& baseCmd = this->renderer.textureCalls[1];
-    REQUIRE(baseCmd.texture == texture.get());
+    REQUIRE(baseCmd.texture != nullptr);
     REQUIRE(baseCmd.dest.position.x == Catch::Approx(535.f));
     REQUIRE(baseCmd.dest.position.y == Catch::Approx(410.f));
     REQUIRE(baseCmd.dest.size.width == Catch::Approx(30.f));
@@ -109,7 +126,12 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat skip
     auto& comp = this->world.components();
 
     comp.add<TransformComponent>(entity, TransformComponent{Position{10.f, 20.f}, Position{1.f, 1.f}, 0.f});
-    comp.add<SpriteComponent>(entity, SpriteComponent { nullptr, Dimension2D {20.f, 10.f}, Rectangle {}, false });
+    comp.add<SpriteComponent>(entity, SpriteComponent{
+        .texturePath = "",
+        .size = Dimension2D {20.f, 10.f},
+        .source = Rectangle{},
+        .useSourceRect = false
+    });
     comp.add<RenderComponent>(entity, RenderComponent { 0, 0 });
 
     this->format.render(this->context);
@@ -120,12 +142,16 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat skip
 TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat respects non-symmetric animation orientation",
     "[unit][world_texture_render_format]"
 ) {
-    const auto texture = std::make_shared<StubTexture>();
     const Entity entity = this->world.entities().create();
     auto& comp = this->world.components();
     
     comp.add<TransformComponent>(entity, TransformComponent{Position{100.f, 80.f}, Position{-1.f, 1.f}, 0.f});
-    comp.add<SpriteComponent>(entity, SpriteComponent { texture, Dimension2D {20.f, 10.f}, Rectangle {}, false });
+    comp.add<SpriteComponent>(entity, SpriteComponent{
+        .texturePath = "assets/sprites/fighter.png",
+        .size = Dimension2D {20.f, 10.f},
+        .source = Rectangle{},
+        .useSourceRect = false
+    });
     comp.add<RenderComponent>(entity, RenderComponent { 0, 0 });
     comp.add<OrientationComponent>(entity, OrientationComponent { Orientation::Left });
 

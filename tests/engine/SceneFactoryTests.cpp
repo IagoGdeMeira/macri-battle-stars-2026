@@ -5,9 +5,9 @@
 
 #include "../../src/engine/events/QuitEvent.h"
 #include "../../src/engine/include/Engine/Engine.h"
-#include "../../src/engine/include/GameSettings/GameSettings.h"
 #include "../../src/engine/include/Scene/Scene.h"
 #include "../../src/engine/include/SceneManager/SceneManager.h"
+#include "../../src/engine/value_objects/GameSettings/GameSettings.h"
 
 #include "../stubs/StubDataParser.h"
 #include "../stubs/StubEngine.h"

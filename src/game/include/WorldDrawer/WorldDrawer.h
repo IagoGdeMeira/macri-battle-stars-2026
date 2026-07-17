@@ -16,24 +16,38 @@
 #include <memory>
 #include <vector>
 
+class ResourceManager;
+class TextureLoader;
+
 class WorldDrawer : public Drawer
 {
 public:
-    WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera, GameSettings& settings);
+    struct Config
+    {
+        EventBus& bus;
+        Renderer& renderer;
+        Camera2D& camera;
+        GameSettings& settings;
+        ResourceManager& resourceManager;
+        TextureLoader& textureLoader;
+    };
+
+    explicit WorldDrawer(Config&& cfg);
     void draw(RenderContext& ctx) override;
 
 private:
     Renderer& renderer;
     Camera2D& camera;
     GameSettings& settings;
+    ResourceManager& resourceManager;
+    TextureLoader& textureLoader;
+
+    const Dimension2D vSize = GameConstants::VIRTUAL_SIZE;
 
     std::vector<std::unique_ptr<IRenderFormat>> formats;
-    Viewport worldViewport {0, 0,
-        static_cast<int>(GameConstants::VIRTUAL_SIZE.width),
-        static_cast<int>(GameConstants::VIRTUAL_SIZE.height)};
+    Viewport worldViewport {0, 0, static_cast<int>(vSize.width), static_cast<int>(vSize.height)};
 
-    void addFormat(std::unique_ptr<IRenderFormat> format) { this->formats.push_back(std::move(format)); }
-
+    void addFormat(std::unique_ptr<IRenderFormat> format);
     void recalculateViewport();
     void propagateViewport();
 };

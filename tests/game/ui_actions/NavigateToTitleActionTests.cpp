@@ -15,10 +15,10 @@
 
 #include "../../../src/engine/include/Engine/Engine.h"
 #include "../../../src/engine/include/EventBus/EventBus.h"
-#include "../../../src/engine/include/GameSettings/GameSettings.h"
 #include "../../../src/engine/include/Scene/Scene.h"
 #include "../../../src/engine/include/SceneFactory/SceneFactory.h"
 #include "../../../src/engine/include/SceneManager/SceneManager.h"
+#include "../../../src/engine/value_objects/GameSettings/GameSettings.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

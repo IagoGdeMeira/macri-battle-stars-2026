@@ -7,24 +7,38 @@
 #include "../../domain/utils/Logger/Logger.h"
 
 #include "../../engine/events/WindowResizedEvent.h"
+#include "../../engine/include/ResourceManager/ResourceManager.h"
+#include "../../engine/include/TextureLoader/TextureLoader.h"
 
-WorldDrawer::WorldDrawer(EventBus& bus, Renderer& renderer, Camera2D& camera, GameSettings& settings) :
-    renderer(renderer), camera(camera), settings(settings)
+WorldDrawer::WorldDrawer(Config&& cfg) :
+    renderer(cfg.renderer),
+    camera(cfg.camera),
+    settings(cfg.settings),
+    resourceManager(cfg.resourceManager),
+    textureLoader(cfg.textureLoader)
 {
     this->recalculateViewport();
 
-    bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent&)
+    cfg.bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent&)
     {
         this->recalculateViewport();
         this->propagateViewport();
     });
 
-    this->addFormat(std::make_unique<WorldTextureRenderFormat>(renderer, camera));
+    this->addFormat(std::make_unique<WorldTextureRenderFormat>(WorldTextureRenderFormat::Config{
+        .renderer           = this->renderer,
+        .camera             = this->camera,
+        .resourceManager    = this->resourceManager,
+        .textureLoader      = this->textureLoader
+    }));
+
     this->addFormat(std::make_unique<WorldRectangleRenderFormat>(renderer, camera));
     this->addFormat(std::make_unique<WorldCircleRenderFormat>(renderer, camera));
 
     this->propagateViewport();
 }
+
+void WorldDrawer::addFormat(std::unique_ptr<IRenderFormat> format) { this->formats.push_back(std::move(format)); }
 
 void WorldDrawer::draw(RenderContext& ctx)
 {
@@ -36,8 +50,8 @@ void WorldDrawer::recalculateViewport()
 {
     const Dimension2D& winSize = this->settings.screen.size;
 
-    const auto& vWidth = GameConstants::VIRTUAL_SIZE.width;
-    const auto& vHeight = GameConstants::VIRTUAL_SIZE.height;
+    const auto& vWidth = this->vSize.width;
+    const auto& vHeight = this->vSize.height;
     const float scale = std::min(winSize.width / vWidth, winSize.height / vHeight);
 
     const Dimension2D& viewSize = {vWidth * scale, vHeight * scale};
@@ -50,5 +64,4 @@ void WorldDrawer::recalculateViewport()
     };
 }
 
-void WorldDrawer::propagateViewport()
-{ for (auto& format : this->formats) format->setViewport(this->worldViewport); }
+void WorldDrawer::propagateViewport() { for (auto& format : this->formats) format->setViewport(this->worldViewport); }

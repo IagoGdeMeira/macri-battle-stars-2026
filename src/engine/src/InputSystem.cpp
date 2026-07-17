@@ -1,6 +1,6 @@
 #include "../include/InputSystem/InputSystem.h"
 
-#include "../include/UpdateContext/UpdateContext.h"
+#include "../value_objects/UpdateContext/UpdateContext.h"
 
 #include "../../domain/components/AnalogInputComponent.h"
 #include "../../domain/components/InputComponent.h"
