@@ -1,11 +1,11 @@
 #ifndef state_machine_loader_h
 #define state_machine_loader_h
 
-#include "../StateMachine/StateMachine.h"
+#include "StateMachine/StateMachine.h"
 
-#include "../../domain/value_objects/StateId/StateId.h"
+#include "domain/value_objects/StateId/StateId.h"
 
-#include "../../engine/include/DataParser/DataParser.h"
+#include "engine/include/DataParser/DataParser.h"
 
 #include <functional>
 #include <string>

@@ -1,12 +1,12 @@
-#include "../include/LocalToWorldSystem/LocalToWorldSystem.h"
+#include "LocalToWorldSystem/LocalToWorldSystem.h"
 
-#include "../../domain/components/LocalTransform.h"
-#include "../../domain/components/ParentComponent.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/components/LocalTransform.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <cmath>
 
@@ -34,9 +34,7 @@ float LocalToWorldSystem::rotateLocalY(const LocalTransform& local, float cosR, 
 { return local.position.x * sinR + local.position.y * cosR; }
 
 void LocalToWorldSystem::applyParentTransform(
-    TransformComponent& transform,
-    const LocalTransform& local,
-    const TransformComponent& parentTransform
+    TransformComponent& transform, const LocalTransform& local, const TransformComponent& parentTransform
 ) {
     float cosR = std::cos(parentTransform.rotation);
     float sinR = std::sin(parentTransform.rotation);

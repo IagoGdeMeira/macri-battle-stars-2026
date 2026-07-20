@@ -1,9 +1,9 @@
-#include "../../src/game/include/CollisionClipLoader/CollisionClipLoader.h"
+#include "game/include/CollisionClipLoader/CollisionClipLoader.h"
 
-#include "../stubs/StubDataNode.h"
-#include "../stubs/StubDataParser.h"
+#include "StubDataNode.h"
+#include "StubDataParser.h"
 
-#include "../../src/game/include/StateIdMapper/StateIdMapper.h"
+#include "game/include/StateIdMapper/StateIdMapper.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

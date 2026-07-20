@@ -1,16 +1,16 @@
-#include "../../src/game/include/DynamicPushboxResolutionSystem/DynamicPushboxResolutionSystem.h"
+#include "game/include/DynamicPushboxResolutionSystem/DynamicPushboxResolutionSystem.h"
 
-#include "../../src/domain/components/PushboxComponent.h"
-#include "../../src/domain/components/RectangleColliderComponent.h"
-#include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/components/VelocityComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/PushboxComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/VelocityComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
-#include "../../src/game/events/CollisionEvent.h"
+#include "game/events/CollisionEvent.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -18,14 +18,13 @@
 class DynamicPushboxResolutionSystemFixture
 {
 public:
-    DynamicPushboxResolutionSystemFixture() :
-        system(this->bus), context { this->world, this->bus, this->commandBuffer, 0.f }
+    DynamicPushboxResolutionSystemFixture() : system(this->bus), context { this->world, this->bus, this->commandBuffer, 0.f }
     {
-        auto& components = this->world.components();
-        components.registerComponent<TransformComponent>();
-        components.registerComponent<RectangleColliderComponent>();
-        components.registerComponent<PushboxComponent>();
-        components.registerComponent<VelocityComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<PushboxComponent>();
+        comp.registerComponent<VelocityComponent>();
     }
 
 protected:
@@ -38,11 +37,11 @@ protected:
     Entity createDynamicRect(float x, float y, float vx, float vy)
     {
         const Entity entity = this->world.entities().create();
-        auto& components = this->world.components();
-        components.add<TransformComponent>(entity, TransformComponent{x, y, 1.f, 1.f, 0.f});
-        components.add<RectangleColliderComponent>(entity, RectangleColliderComponent{4.f, 4.f});
-        components.add<PushboxComponent>(entity, PushboxComponent{PushboxComponent::PushboxType::Dynamic, 1.f, 1.f});
-        components.add<VelocityComponent>(entity, VelocityComponent{vx, vy});
+        auto& comp = this->world.components();
+        comp.add<TransformComponent>(entity, TransformComponent{x, y, 1.f, 1.f, 0.f});
+        comp.add<RectangleColliderComponent>(entity, RectangleColliderComponent{4.f, 4.f});
+        comp.add<PushboxComponent>(entity, PushboxComponent{PushboxComponent::Type::Dynamic, 1.f, 1.f});
+        comp.add<VelocityComponent>(entity, VelocityComponent{vx, vy});
         return entity;
     }
 };
@@ -57,11 +56,11 @@ TEST_CASE_METHOD(DynamicPushboxResolutionSystemFixture,
     this->bus.emit<CollisionEvent>(CollisionEvent{ left, right });
     this->system.update(this->context);
 
-    auto& components = this->world.components();
-    const auto& leftTransform = components.get<TransformComponent>(left);
-    const auto& rightTransform = components.get<TransformComponent>(right);
-    const auto& leftVelocity = components.get<VelocityComponent>(left);
-    const auto& rightVelocity = components.get<VelocityComponent>(right);
+    auto& comp = this->world.components();
+    const auto& leftTransform = comp.get<TransformComponent>(left);
+    const auto& rightTransform = comp.get<TransformComponent>(right);
+    const auto& leftVelocity = comp.get<VelocityComponent>(left);
+    const auto& rightVelocity = comp.get<VelocityComponent>(right);
 
     REQUIRE(leftTransform.position.x == Catch::Approx(-1.5f));
     REQUIRE(rightTransform.position.x == Catch::Approx(2.5f));
@@ -79,11 +78,11 @@ TEST_CASE_METHOD(DynamicPushboxResolutionSystemFixture,
     this->bus.emit<CollisionEvent>(CollisionEvent{ top, bottom });
     this->system.update(this->context);
 
-    auto& components = this->world.components();
-    const auto& topTransform = components.get<TransformComponent>(top);
-    const auto& bottomTransform = components.get<TransformComponent>(bottom);
-    const auto& topVelocity = components.get<VelocityComponent>(top);
-    const auto& bottomVelocity = components.get<VelocityComponent>(bottom);
+    auto& comp = this->world.components();
+    const auto& topTransform = comp.get<TransformComponent>(top);
+    const auto& bottomTransform = comp.get<TransformComponent>(bottom);
+    const auto& topVelocity = comp.get<VelocityComponent>(top);
+    const auto& bottomVelocity = comp.get<VelocityComponent>(bottom);
 
     REQUIRE(topTransform.position.y == Catch::Approx(-1.5f));
     REQUIRE(bottomTransform.position.y == Catch::Approx(2.5f));

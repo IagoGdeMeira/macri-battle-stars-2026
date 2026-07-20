@@ -1,15 +1,15 @@
-#include "../../../src/game/render_formats/UICircleRenderFormat.h"
+#include "game/render_formats/UICircleRenderFormat.h"
 
-#include "../../stubs/StubRenderer.h"
+#include "StubRenderer.h"
 
-#include "../../../src/domain/components/RenderComponent.h"
-#include "../../../src/domain/components/UITransform.h"
-#include "../../../src/domain/components/VisualEffectsComponent.h"
-#include "../../../src/domain/include/World/World.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/UITransform.h"
+#include "domain/components/VisualEffectsComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../../src/engine/include/EventBus/EventBus.h"
-#include "../../../src/engine/include/RenderContext/RenderContext.h"
-#include "../../../src/engine/include/Renderer/Renderer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Renderer/Renderer.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

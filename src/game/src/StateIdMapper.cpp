@@ -1,4 +1,4 @@
-#include "../include/StateIdMapper/StateIdMapper.h"
+#include "StateIdMapper/StateIdMapper.h"
 
 #include <stdexcept>
 

@@ -1,7 +1,7 @@
 #ifndef not_condition_h
 #define not_condition_h
 
-#include "../include/ITriggerCondition/ITriggerCondition.h"
+#include "ITriggerCondition/ITriggerCondition.h"
 
 #include <memory>
 

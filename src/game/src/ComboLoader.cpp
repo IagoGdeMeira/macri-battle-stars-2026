@@ -1,8 +1,8 @@
-#include "../include/ComboLoader/ComboLoader.h"
+#include "ComboLoader/ComboLoader.h"
 
-#include "../include/TriggerMapper/TriggerMapper.h"
+#include "TriggerMapper/TriggerMapper.h"
 
-#include "../../engine/include/InputMapper/InputMapper.h"
+#include "engine/include/InputMapper/InputMapper.h"
 
 #include <stdexcept>
 
@@ -24,15 +24,14 @@ std::vector<Combo> ComboLoader::load(const std::string& path)
 
         for (auto& snode : cnode->getArray("steps"))
         {
-            ComboStep step;
+            Combo::Step step;
 
             step.action = InputMapper::stringToAction(snode->getString("action"));
             step.maxDelay = snode->getFloat("maxDelay");
 
             combo.steps.push_back(step);
         }
-        if (combo.steps.empty())
-        { throw std::runtime_error("Combo '" + combo.name + "' must have at least one step"); }
+        if (combo.steps.empty()) throw std::runtime_error("Combo '" + combo.name + "' must have at least one step");
 
         combos.push_back(combo);
     }

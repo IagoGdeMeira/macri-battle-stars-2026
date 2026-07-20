@@ -1,6 +1,6 @@
-#include "../include/SDLFont/SDLFont.h"
+#include "SDLFont/SDLFont.h"
 
-#include "../../engine/include/PathResolver/PathResolver.h"
+#include "engine/include/PathResolver/PathResolver.h"
 
 #include <stdexcept>
 #include <cmath>

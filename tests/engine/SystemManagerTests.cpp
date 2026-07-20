@@ -1,11 +1,11 @@
-#include "../../src/engine/include/SystemManager/SystemManager.h"
+#include "engine/include/SystemManager/SystemManager.h"
 
-#include "../../src/domain/include/World/World.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/System/System.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/System/System.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_test_macros.hpp>
 

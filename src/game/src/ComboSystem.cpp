@@ -1,10 +1,10 @@
-#include "../include/ComboSystem/ComboSystem.h"
+#include "ComboSystem/ComboSystem.h"
 
-#include "../events/ComboExecutedEvent.h"
-#include "../events/TriggerEvent.h"
-#include "../include/TriggerMapper/TriggerMapper.h"
+#include "ComboExecutedEvent.h"
+#include "TriggerEvent.h"
+#include "TriggerMapper/TriggerMapper.h"
 
-#include "../../domain/include/View/View.h"
+#include "domain/include/View/View.h"
 
 void ComboSystem::update(UpdateContext& ctx)
 {

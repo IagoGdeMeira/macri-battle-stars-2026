@@ -1,12 +1,12 @@
-#include "../../src/game/include/HitstopSystem/HitstopSystem.h"
+#include "game/include/HitstopSystem/HitstopSystem.h"
 
-#include "../../src/domain/components/HitstopComponent.h"
-#include "../../src/domain/events/DamageEvent.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/events/DamageEvent.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -28,14 +28,14 @@ protected:
 TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem freezes attacker and target on damage",
     "[unit][hitstop_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     auto& entities = this->world.entities();
 
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<HitstopComponent>(attacker, HitstopComponent{});
-    components.add<HitstopComponent>(target, HitstopComponent{});
+    comp.add<HitstopComponent>(attacker, HitstopComponent{});
+    comp.add<HitstopComponent>(target, HitstopComponent{});
 
     DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
     this->bus.emit<DamageEvent>(damage);
@@ -43,8 +43,8 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem freezes attacker and targe
     this->context.deltaTime = 0.016f;
     this->system.update(this->context);
 
-    const auto& attackerHitstop = components.get<HitstopComponent>(attacker);
-    const auto& targetHitstop = components.get<HitstopComponent>(target);
+    const auto& attackerHitstop = comp.get<HitstopComponent>(attacker);
+    const auto& targetHitstop = comp.get<HitstopComponent>(target);
 
     REQUIRE(attackerHitstop.frozen);
     REQUIRE(targetHitstop.frozen);
@@ -55,15 +55,15 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem freezes attacker and targe
 TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem ignores entities without HitstopComponent",
     "[unit][hitstop_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     auto& entities = this->world.entities();
 
     auto attacker = entities.create();
     auto target = entities.create();
     auto spectator = entities.create();
 
-    components.add<HitstopComponent>(target, HitstopComponent{});
-    components.add<HitstopComponent>(spectator, HitstopComponent{ .remaining = 0.25f, .frozen = false });
+    comp.add<HitstopComponent>(target, HitstopComponent{});
+    comp.add<HitstopComponent>(spectator, HitstopComponent{ .remaining = 0.25f, .frozen = false });
 
     DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
     this->bus.emit<DamageEvent>(damage);
@@ -71,8 +71,8 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem ignores entities without H
     this->context.deltaTime = 0.016f;
     this->system.update(this->context);
 
-    const auto& targetHitstop = components.get<HitstopComponent>(target);
-    const auto& spectatorHitstop = components.get<HitstopComponent>(spectator);
+    const auto& targetHitstop = comp.get<HitstopComponent>(target);
+    const auto& spectatorHitstop = comp.get<HitstopComponent>(spectator);
 
     REQUIRE(targetHitstop.frozen);
     REQUIRE(targetHitstop.remaining == Catch::Approx(0.084f));
@@ -83,14 +83,14 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem ignores entities without H
 TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem releases freeze when remaining time expires",
     "[unit][hitstop_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     auto& entities = this->world.entities();
 
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<HitstopComponent>(attacker, HitstopComponent{});
-    components.add<HitstopComponent>(target, HitstopComponent{});
+    comp.add<HitstopComponent>(attacker, HitstopComponent{});
+    comp.add<HitstopComponent>(target, HitstopComponent{});
 
     DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
     this->bus.emit<DamageEvent>(damage);
@@ -98,8 +98,8 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem releases freeze when remai
     this->context.deltaTime = 0.2f;
     this->system.update(this->context);
 
-    const auto& attackerHitstop = components.get<HitstopComponent>(attacker);
-    const auto& targetHitstop = components.get<HitstopComponent>(target);
+    const auto& attackerHitstop = comp.get<HitstopComponent>(attacker);
+    const auto& targetHitstop = comp.get<HitstopComponent>(target);
 
     REQUIRE(attackerHitstop.frozen == false);
     REQUIRE(targetHitstop.frozen == false);
@@ -110,14 +110,14 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem releases freeze when remai
 TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem keeps frozen entities frozen across partial updates",
     "[unit][hitstop_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     auto& entities = this->world.entities();
 
     auto attacker = entities.create();
     auto target = entities.create();
 
-    components.add<HitstopComponent>(attacker, HitstopComponent{});
-    components.add<HitstopComponent>(target, HitstopComponent{});
+    comp.add<HitstopComponent>(attacker, HitstopComponent{});
+    comp.add<HitstopComponent>(target, HitstopComponent{});
 
     DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
     this->bus.emit<DamageEvent>(damage);
@@ -126,8 +126,8 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem keeps frozen entities froz
     this->system.update(this->context);
     this->system.update(this->context);
 
-    const auto& attackerHitstop = components.get<HitstopComponent>(attacker);
-    const auto& targetHitstop = components.get<HitstopComponent>(target);
+    const auto& attackerHitstop = comp.get<HitstopComponent>(attacker);
+    const auto& targetHitstop = comp.get<HitstopComponent>(target);
 
     REQUIRE(attackerHitstop.frozen);
     REQUIRE(targetHitstop.frozen);

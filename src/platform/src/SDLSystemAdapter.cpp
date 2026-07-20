@@ -1,9 +1,9 @@
-#include "../include/SDLSystemAdapter/SDLSystemAdapter.h"
+#include "SDLSystemAdapter/SDLSystemAdapter.h"
 
-#include "../../engine/events/PlatformEvent.h"
-#include "../../engine/events/QuitEvent.h"
-#include "../../engine/events/WindowResizedEvent.h"
-#include "../../engine/include/EventBus/EventBus.h"
+#include "engine/events/PlatformEvent.h"
+#include "engine/events/QuitEvent.h"
+#include "engine/events/WindowResizedEvent.h"
+#include "engine/include/EventBus/EventBus.h"
 
 void SDLSystemAdapter::processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events)
 {

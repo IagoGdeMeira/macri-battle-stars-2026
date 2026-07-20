@@ -1,11 +1,11 @@
 #ifndef outline_texture_effect_h
 #define outline_texture_effect_h
 
-#include "../include/IVisualEffect/IVisualEffect.h"
+#include "IVisualEffect/IVisualEffect.h"
 
-#include "../../domain/components/OutlineComponent.h"
+#include "domain/components/OutlineComponent.h"
 
-#include "../../engine/include/DrawBatch/DrawTextureBatch.h"
+#include "engine/include/DrawBatch/DrawTextureBatch.h"
 
 class OutlineTextureEffect : public IVisualEffect<DrawTextureBatch, DrawTextureCommand>
 {

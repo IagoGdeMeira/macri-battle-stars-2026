@@ -2,10 +2,8 @@
 #define collision_frame_h
 
 #include "ColliderDef.h"
-
-#include "../Color/Color.h"
-
-#include "../components/PushboxComponent.h"
+#include "Color/Color.h"
+#include "PushboxComponent.h"
 
 #include <memory>
 #include <vector>
@@ -28,7 +26,7 @@ struct HurtboxDef
 
 struct PushboxDef
 {
-    using Type = PushboxComponent::PushboxType;
+    using Type = PushboxComponent::Type;
 
     std::unique_ptr<ColliderDef> collider;
     Type type = Type::Dynamic;

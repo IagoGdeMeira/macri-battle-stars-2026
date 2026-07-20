@@ -1,16 +1,16 @@
-#include "../../src/game/include/JumpSystem/JumpSystem.h"
+#include "game/include/JumpSystem/JumpSystem.h"
 
-#include "../../src/domain/components/GroundedComponent.h"
-#include "../../src/domain/components/HitstopComponent.h"
-#include "../../src/domain/components/InputComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/components/VelocityComponent.h"
-#include "../../src/domain/value_objects/InputAction/InputAction.h"
+#include "domain/components/GroundedComponent.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/components/VelocityComponent.h"
+#include "domain/value_objects/InputAction/InputAction.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
 
-#include "../../src/game/events/TriggerEvent.h"
+#include "game/events/TriggerEvent.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -42,7 +42,7 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem applies jump impulse and emits t
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Jump] = InputState{true, 0.f};
+    input.actions[InputAction::Jump] = InputComponent::State{true, 0.f};
 
     GroundedComponent grounded;
     grounded.onGround = true;
@@ -75,7 +75,7 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem ignores jump input when entity i
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Jump] = InputState{true, 0.f};
+    input.actions[InputAction::Jump] = InputComponent::State{true, 0.f};
 
     GroundedComponent grounded;
     grounded.onGround = false;
@@ -83,11 +83,11 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem ignores jump input when entity i
     VelocityComponent velocity;
     velocity.velocity.y = 25.f;
 
-    auto& components = this->scene.world().components();
-    components.add<InputComponent>(entity, input);
-    components.add<GroundedComponent>(entity, grounded);
-    components.add<VelocityComponent>(entity, velocity);
-    components.add<PlayerComponent>(entity, PlayerComponent{2});
+    auto& comp = this->scene.world().components();
+    comp.add<InputComponent>(entity, input);
+    comp.add<GroundedComponent>(entity, grounded);
+    comp.add<VelocityComponent>(entity, velocity);
+    comp.add<PlayerComponent>(entity, PlayerComponent{2});
 
     int eventCount = 0;
     this->bus.subscribe<TriggerEvent>([&](const TriggerEvent&) { ++eventCount; });
@@ -95,7 +95,7 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem ignores jump input when entity i
     this->scene.systems().addSystem<JumpSystem>(this->bus, -420.f);
     this->scene.update(updateDelay);
 
-    const auto& updatedVelocity = components.get<VelocityComponent>(entity);
+    const auto& updatedVelocity = comp.get<VelocityComponent>(entity);
     REQUIRE(updatedVelocity.velocity.y == Catch::Approx(25.f));
     REQUIRE(eventCount == 0);
 }
@@ -107,7 +107,7 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem ignores jump input when entity i
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Jump] = InputState{true, 0.f};
+    input.actions[InputAction::Jump] = InputComponent::State{true, 0.f};
 
     GroundedComponent grounded;
     grounded.onGround = true;

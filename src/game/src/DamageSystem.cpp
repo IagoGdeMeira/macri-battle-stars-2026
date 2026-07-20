@@ -1,15 +1,15 @@
-#include "../include/DamageSystem/DamageSystem.h"
+#include "DamageSystem/DamageSystem.h"
 
-#include "../events/CollisionEvent.h"
+#include "CollisionEvent.h"
 
-#include "../../domain/components/HealthComponent.h"
-#include "../../domain/components/HitboxComponent.h"
-#include "../../domain/components/HurtboxComponent.h"
-#include "../../domain/events/DamageEvent.h"
-#include "../../domain/include/Entity/Entity.h"
+#include "domain/components/HealthComponent.h"
+#include "domain/components/HitboxComponent.h"
+#include "domain/components/HurtboxComponent.h"
+#include "domain/events/DamageEvent.h"
+#include "domain/include/Entity/Entity.h"
 
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 DamageSystem::DamageSystem(EventBus& bus) : bus(bus)
 {
@@ -19,26 +19,26 @@ DamageSystem::DamageSystem(EventBus& bus) : bus(bus)
 
 void DamageSystem::update(UpdateContext& ctx)
 {
-    auto& components = ctx.world.components();
+    auto& comp = ctx.world.components();
 
     for (const auto& [a, b] : this->collisions)
     {
         Entity attacker = a;
         Entity target = b;
 
-        if (components.has<HitboxComponent>(b) && components.has<HurtboxComponent>(a))
+        if (comp.has<HitboxComponent>(b) && comp.has<HurtboxComponent>(a))
         { attacker = b; target = a; }
 
-        if (!components.has<HitboxComponent>(attacker)) continue;
-        if (!components.has<HurtboxComponent>(target)) continue;
-        if (!components.has<HealthComponent>(target)) continue;
+        if (!comp.has<HitboxComponent>(attacker)) continue;
+        if (!comp.has<HurtboxComponent>(target)) continue;
+        if (!comp.has<HealthComponent>(target)) continue;
 
-        const auto& hitbox = components.get<HitboxComponent>(attacker);
-        const auto& hurtbox = components.get<HurtboxComponent>(target);
+        const auto& hitbox = comp.get<HitboxComponent>(attacker);
+        const auto& hurtbox = comp.get<HurtboxComponent>(target);
 
         int damage = static_cast<int>(hitbox.damage * hurtbox.damageMultiplier);
 
-        auto& health = components.get<HealthComponent>(target);
+        auto& health = comp.get<HealthComponent>(target);
         health.current -= damage;
 
         this->bus.emit<DamageEvent>(DamageEvent{ attacker, target, damage });

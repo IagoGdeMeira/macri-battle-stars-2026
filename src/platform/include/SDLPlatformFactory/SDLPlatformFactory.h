@@ -1,7 +1,7 @@
 #ifndef sdl_platform_factory_h
 #define sdl_platform_factory_h
 
-#include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
+#include "engine/include/IPlatformFactory/IPlatformFactory.h"
 
 class SDLPlatformFactory : public IPlatformFactory
 {

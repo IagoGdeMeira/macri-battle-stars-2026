@@ -1,15 +1,15 @@
-#include "../../../src/game/render_formats/UIRectangleRenderFormat.h"
+#include "game/render_formats/UIRectangleRenderFormat.h"
 
-#include "../../stubs/StubRenderer.h"
+#include "StubRenderer.h"
 
-#include "../../../src/domain/components/RenderComponent.h"
-#include "../../../src/domain/components/UITransform.h"
-#include "../../../src/domain/components/VisualEffectsComponent.h"
-#include "../../../src/domain/include/World/World.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/UITransform.h"
+#include "domain/components/VisualEffectsComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../../src/engine/include/EventBus/EventBus.h"
-#include "../../../src/engine/include/RenderContext/RenderContext.h"
-#include "../../../src/engine/include/Renderer/Renderer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Renderer/Renderer.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -26,10 +26,10 @@ public:
 
     UIRectangleRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
-        auto& components = this->world.components();
-        components.registerComponent<UITransform>();
-        components.registerComponent<RenderComponent>();
-        components.registerComponent<VisualEffectsComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<UITransform>();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<VisualEffectsComponent>();
     }
 };
 
@@ -41,8 +41,9 @@ TEST_CASE_METHOD(UIRectangleRenderFormatFixture, "UIRectangleRenderFormat submit
     UITransform transform;
     transform.rect = Rectangle{Position{15.f, 25.f}, Dimension2D{40.f, 12.f}};
 
-    this->world.components().add<UITransform>(entity, transform);
-    this->world.components().add<RenderComponent>(entity, RenderComponent { 3, 9 });
+    auto& comp = this->world.components();
+    comp.add<UITransform>(entity, transform);
+    comp.add<RenderComponent>(entity, RenderComponent { 3, 9 });
 
     VisualEffectsComponent fx;
     fx.rectangleEffects.push_back([](DrawRectangleBatch& batch, DrawRectangleCommand& cmd) {
@@ -51,7 +52,7 @@ TEST_CASE_METHOD(UIRectangleRenderFormatFixture, "UIRectangleRenderFormat submit
         glow.color = Color {9, 9, 9, 255};
         batch.add(glow);
     });
-    this->world.components().add<VisualEffectsComponent>(entity, fx);
+    comp.add<VisualEffectsComponent>(entity, fx);
 
     this->format.render(this->context);
 

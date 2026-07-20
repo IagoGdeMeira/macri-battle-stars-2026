@@ -4,7 +4,7 @@
 #include "../GameConstants/GameConstants.h"
 #include "../Viewport/Viewport.h"
 
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
 class GameSettings
 {

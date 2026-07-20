@@ -9,10 +9,10 @@
 #include "StubTextureFactory.h"
 #include "StubWindow.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/SceneFactory/SceneFactory.h"
-#include "../../src/engine/include/TextureLoader/TextureLoader.h"
-#include "../../src/engine/value_objects/GameSettings/GameSettings.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/SceneFactory/SceneFactory.h"
+#include "engine/include/TextureLoader/TextureLoader.h"
+#include "engine/value_objects/GameSettings/GameSettings.h"
 
 class StubSceneFactory : public SceneFactory
 {

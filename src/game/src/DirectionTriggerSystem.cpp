@@ -1,13 +1,13 @@
-#include "../include/DirectionTriggerSystem/DirectionTriggerSystem.h"
+#include "DirectionTriggerSystem/DirectionTriggerSystem.h"
 
-#include "../events/TriggerEvent.h"
+#include "TriggerEvent.h"
 
-#include "../../domain/components/PlayerComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/value_objects/InputAction/InputAction.h"
-#include "../../domain/value_objects/TriggerId/TriggerId.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/value_objects/InputAction/InputAction.h"
+#include "domain/value_objects/TriggerId/TriggerId.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void DirectionTriggerSystem::update(UpdateContext& ctx)
 {

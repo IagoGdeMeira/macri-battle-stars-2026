@@ -1,10 +1,10 @@
 #ifndef trigger_generation_system_h
 #define trigger_generation_system_h
 
-#include "../TriggerContext/TriggerContext.h"
+#include "TriggerContext/TriggerContext.h"
 
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/System/System.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/System/System.h"
 
 class TriggerGenerationSystem : public System
 {

@@ -1,7 +1,7 @@
 #ifndef game_constants_h
 #define game_constants_h
 
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
 struct GameConstants
 {
@@ -14,8 +14,10 @@ struct GameConstants
     static constexpr const char* DEFAULT_TRIGGERS_PATH = "assets/triggers/default_triggers.json";
     static constexpr const char* DEFAULT_CHARACTER_DEF_PATH = "assets/characters/reddie_beta.json";
 
+    static constexpr const char* DEFAULT_TITLE_MENU_PATH = "assets/menus/title.json";
+
+    static constexpr bool APPLY_ZOOM_TO_SIZE = true;
     static constexpr int TARGET_FPS = 60;
-    static constexpr bool APPLY_ZOOM_TO_SIZE = false;
 };
 
 #endif // game_constants_h

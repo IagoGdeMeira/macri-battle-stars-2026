@@ -1,17 +1,17 @@
-#include "../../../src/game/render_formats/UIFontRenderFormat.h"
+#include "game/render_formats/UIFontRenderFormat.h"
 
-#include "../../stubs/StubFont.h"
-#include "../../stubs/StubRenderer.h"
+#include "StubFont.h"
+#include "StubRenderer.h"
 
-#include "../../../src/domain/components/RenderComponent.h"
-#include "../../../src/domain/components/UITextComponent.h"
-#include "../../../src/domain/components/UITransform.h"
-#include "../../../src/domain/components/VisualEffectsComponent.h"
-#include "../../../src/domain/include/World/World.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/UITextComponent.h"
+#include "domain/components/UITransform.h"
+#include "domain/components/VisualEffectsComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../../src/engine/include/EventBus/EventBus.h"
-#include "../../../src/engine/include/RenderContext/RenderContext.h"
-#include "../../../src/engine/include/Renderer/Renderer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Renderer/Renderer.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -29,11 +29,11 @@ public:
 
     UIFontRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
-        auto& components = this->world.components();
-        components.registerComponent<RenderComponent>();
-        components.registerComponent<UITextComponent>();
-        components.registerComponent<UITransform>();
-        components.registerComponent<VisualEffectsComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<UITextComponent>();
+        comp.registerComponent<UITransform>();
+        comp.registerComponent<VisualEffectsComponent>();
     }
 };
 
@@ -53,9 +53,10 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
     text.color = Color { 5, 6, 7, 8 };
     text.fontSize = 0.f;
 
-    this->world.components().add<UITransform>(entity, transform);
-    this->world.components().add<UITextComponent>(entity, text);
-    this->world.components().add<RenderComponent>(entity, RenderComponent { 4, 1 });
+    auto& comp = this->world.components();
+    comp.add<UITransform>(entity, transform);
+    comp.add<UITextComponent>(entity, text);
+    comp.add<RenderComponent>(entity, RenderComponent { 4, 1 });
 
     VisualEffectsComponent fx;
     fx.fontEffects.push_back([](DrawFontBatch& batch, DrawFontCommand& cmd) {
@@ -64,7 +65,7 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
         outline.dest.position.y += 2.f;
         batch.add(outline);
     });
-    this->world.components().add<VisualEffectsComponent>(entity, fx);
+    comp.add<VisualEffectsComponent>(entity, fx);
 
     this->format.render(this->context);
 

@@ -1,7 +1,7 @@
 #ifndef sdl_window
 #define sdl_window
 
-#include "../../engine/include/Window/Window.h"
+#include "engine/include/Window/Window.h"
 
 #include <SDL.h>
 

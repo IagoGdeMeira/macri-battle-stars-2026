@@ -1,11 +1,11 @@
-#include "../../src/game/include/MovementSystem/MovementSystem.h"
+#include "game/include/MovementSystem/MovementSystem.h"
 
-#include "../../src/domain/components/HitstopComponent.h"
-#include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/components/VelocityComponent.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/VelocityComponent.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -14,10 +14,10 @@ class MovementSystemFixture
 public:
     MovementSystemFixture() : bus(), scene(this->bus)
     {
-        auto& components = this->scene.world().components();
-        components.registerComponent<TransformComponent>();
-        components.registerComponent<VelocityComponent>();
-        components.registerComponent<HitstopComponent>();
+        auto& comp = this->scene.world().components();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<VelocityComponent>();
+        comp.registerComponent<HitstopComponent>();
 
         this->scene.systems().addSystem<MovementSystem>();
     }
@@ -25,10 +25,10 @@ public:
     Entity createMovingEntity(float x, float y, float vx, float vy)
     {
         auto entity = this->scene.world().entities().create();
-        auto& components = this->scene.world().components();
+        auto& comp = this->scene.world().components();
 
-        components.add<TransformComponent>(entity, TransformComponent{x, y});
-        components.add<VelocityComponent>(entity, VelocityComponent{vx, vy});
+        comp.add<TransformComponent>(entity, TransformComponent{x, y});
+        comp.add<VelocityComponent>(entity, VelocityComponent{vx, vy});
 
         return entity;
     }
@@ -37,8 +37,8 @@ public:
     {
         auto entity = this->scene.world().entities().create();
 
-        auto& components = this->scene.world().components();
-        components.add<TransformComponent>(entity, TransformComponent{x, y});
+        auto& comp = this->scene.world().components();
+        comp.add<TransformComponent>(entity, TransformComponent{x, y});
 
         return entity;
     }
@@ -47,8 +47,8 @@ public:
     {
         auto entity = this->createMovingEntity(x, y, vx, vy);
 
-        auto& components = this->scene.world().components();
-        components.add<HitstopComponent>(entity, HitstopComponent{ .remaining = 1.f, .frozen = true });
+        auto& comp = this->scene.world().components();
+        comp.add<HitstopComponent>(entity, HitstopComponent{ .remaining = 1.f, .frozen = true });
 
         return entity;
     }

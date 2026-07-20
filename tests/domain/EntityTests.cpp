@@ -1,4 +1,4 @@
-#include "../../src/domain/include/Entity/Entity.h"
+#include "domain/include/Entity/Entity.h"
 
 #include <catch2/catch_test_macros.hpp>
 

@@ -1,7 +1,7 @@
 #ifndef rect_circle_collision_detection_h
 #define rect_circle_collision_detection_h
 
-#include "../include/ICollisionDetection/ICollisionDetection.h"
+#include "ICollisionDetection/ICollisionDetection.h"
 
 class RectCircleCollisionDetection : public ICollisionDetection
 {

@@ -1,6 +1,6 @@
-#include "../include/SceneManager/SceneManager.h"
+#include "SceneManager/SceneManager.h"
 
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/utils/Logger/Logger.h"
 
 void SceneManager::pushScene(std::unique_ptr<Scene> scene)
 {

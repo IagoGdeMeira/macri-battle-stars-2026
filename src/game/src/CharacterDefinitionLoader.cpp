@@ -1,8 +1,8 @@
-#include "../include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
+#include "CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 
-#include "../../domain/value_objects/StateId/StateId.h"
+#include "domain/value_objects/StateId/StateId.h"
 
-#include "../../engine/include/DataUtils/DataUtils.h"
+#include "engine/include/DataUtils/DataUtils.h"
 
 #include <stdexcept>
 
@@ -23,16 +23,13 @@ CharacterDefinition CharacterDefinitionLoader::load(const std::string& path) con
     def.combosPath = root->getString("combos", "");
     def.collisionsPath = root->getString("collisions", "");
 
-    if (root->has("customStates"))
+    if (root->has("customStates")) for (auto& node : root->getArray("customStates"))
     {
-        for (auto& node : root->getArray("customStates"))
-        {
-            const std::string customState = node->getString("");
-            if (StateId::isBaseName(customState))
-            { throw std::runtime_error("CharacterDefinition custom state collides with base state: " + customState); }
+        const std::string customState = node->getString("");
+        if (StateId::isBaseName(customState))
+        { throw std::runtime_error("CharacterDefinition custom state collides with base state: " + customState); }
 
-            def.customStates.push_back(customState);
-        }
+        def.customStates.push_back(customState);
     }
 
     if (def.id.empty()) throw std::runtime_error("CharacterDefinition missing id");

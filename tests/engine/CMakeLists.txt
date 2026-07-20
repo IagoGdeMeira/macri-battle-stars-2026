@@ -19,9 +19,9 @@ add_executable(engine_tests
 
 target_link_libraries(engine_tests
     PRIVATE
-        engine
-        game
         Catch2::Catch2WithMain
+        engine
+        tests_common
 )
 
 add_test(NAME engine_tests COMMAND engine_tests)

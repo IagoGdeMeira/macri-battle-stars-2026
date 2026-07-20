@@ -1,11 +1,11 @@
 #ifndef draw_commands_h
 #define draw_commands_h
 
-#include "../resources/Font/Font.h"
-#include "../resources/Texture/Texture.h"
+#include "Font/Font.h"
+#include "Texture/Texture.h"
 
-#include "../../domain/value_objects/Color/Color.h"
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/Color/Color.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
 #include <string>
 

@@ -1,9 +1,9 @@
 #ifndef health_below_condition_h
 #define health_below_condition_h
 
-#include "../include/ITriggerCondition/ITriggerCondition.h"
+#include "ITriggerCondition/ITriggerCondition.h"
 
-#include "../../domain/components/HealthComponent.h"
+#include "domain/components/HealthComponent.h"
 
 class HealthBelowCondition : public ITriggerCondition
 {
@@ -12,10 +12,10 @@ public:
 
     bool evaluate(const TriggerConditionContext& ctx) const override
     {
-        auto& components = ctx.world.components();
+        auto& comp = ctx.world.components();
 
-        if (!components.has<HealthComponent>(ctx.entity)) return false;
-        const auto& health = components.get<HealthComponent>(ctx.entity);
+        if (!comp.has<HealthComponent>(ctx.entity)) return false;
+        const auto& health = comp.get<HealthComponent>(ctx.entity);
 
         return health.current <= this->threshold;
     }

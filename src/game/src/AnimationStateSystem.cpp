@@ -1,12 +1,12 @@
 #include "../include/AnimationStateSystem/AnimationStateSystem.h"
 
-#include "../../domain/components/AnimationComponent.h"
-#include "../../domain/components/AnimationControllerComponent.h"
-#include "../../domain/components/OrientationComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/components/AnimationComponent.h"
+#include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/OrientationComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 AnimationStateSystem::AnimationStateSystem(EventBus& bus) : bus(bus)
 {
@@ -47,12 +47,11 @@ void AnimationStateSystem::update(UpdateContext& ctx)
         if (chosen && comp.has<OrientationComponent>(entity))
         {
             const auto& orientation = comp.get<OrientationComponent>(entity);
-            if (orientation.direction == Orientation::Left)
-            {
-                auto& leftAnim = controller.animations.left;
-                auto itLeft = leftAnim.find(controller.currentState);
-                if (itLeft != leftAnim.end()) chosen = &itLeft->second;
-            }
+            if (orientation.direction != Orientation::Left) continue;
+            
+            auto& leftAnim = controller.animations.left;
+            auto itLeft = leftAnim.find(controller.currentState);
+            if (itLeft != leftAnim.end()) chosen = &itLeft->second;
         }
         if (!chosen) continue;
         

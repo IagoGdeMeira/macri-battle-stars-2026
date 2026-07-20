@@ -1,9 +1,9 @@
-#include "../include/InputBufferSystem/InputBufferSystem.h"
+#include "InputBufferSystem/InputBufferSystem.h"
 
-#include "../value_objects/UpdateContext/UpdateContext.h"
+#include "UpdateContext/UpdateContext.h"
 
-#include "../../domain/components/InputBufferComponent.h"
-#include "../../domain/components/PlayerComponent.h"
+#include "domain/components/InputBufferComponent.h"
+#include "domain/components/PlayerComponent.h"
 
 InputBufferSystem::InputBufferSystem(EventBus& bus, InputContext& context) : context(context)
 {

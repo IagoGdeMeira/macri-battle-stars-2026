@@ -1,13 +1,13 @@
-#include "../include/CameraControllerSystem/CameraControllerSystem.h"
+#include "CameraControllerSystem/CameraControllerSystem.h"
 
-#include "../../domain/components/PlayerComponent.h"
-#include "../../domain/components/SpriteComponent.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/utils/Logger/Logger.h"
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
 #include <cmath>

@@ -1,7 +1,7 @@
 #ifndef collision_clip_player_component_h
 #define collision_clip_player_component_h
 
-#include "../value_objects/CollisionFrame/CollisionFrame.h"
+#include "CollisionFrame/CollisionFrame.h"
 
 #include <memory>
 

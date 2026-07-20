@@ -1,7 +1,7 @@
-#include "../../src/platform/include/SDLTexture/SDLTexture.h"
+#include "platform/include/SDLTexture/SDLTexture.h"
 
-#include "../../src/platform/include/SDLRenderer/SDLRenderer.h"
-#include "../../src/platform/include/SDLWindow/SDLWindow.h"
+#include "platform/include/SDLRenderer/SDLRenderer.h"
+#include "platform/include/SDLWindow/SDLWindow.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <SDL.h>

@@ -1,9 +1,9 @@
-#include "../include/SDLMouseAdapter/SDLMouseAdapter.h"
+#include "SDLMouseAdapter/SDLMouseAdapter.h"
 
-#include "../../engine/events/InputEvent.h"
-#include "../../engine/events/MousePositionEvent.h"
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/InputSource/InputSource.h"
+#include "engine/events/InputEvent.h"
+#include "engine/events/MousePositionEvent.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/InputSource/InputSource.h"
 
 #include <SDL.h>
 

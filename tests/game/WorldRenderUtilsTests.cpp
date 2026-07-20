@@ -1,7 +1,7 @@
-#include "../../src/game/include/WorldRenderUtils/WorldRenderUtils.h"
+#include "game/include/WorldRenderUtils/WorldRenderUtils.h"
 
-#include "../../src/domain/components/ParallaxComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/ParallaxComponent.h"
+#include "domain/include/World/World.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -77,7 +77,7 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform applies scaled dimensions an
     spriteConfig.size = Dimension2D { 16.f, 8.f };
 
     DrawTextureCommand cmd;
-    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
+    WorldRenderUtils::computeSpriteTransform(camera, spriteConfig, cmd);
 
     REQUIRE(cmd.dest.size.width == Catch::Approx(32.f));
     REQUIRE(cmd.dest.size.height == Catch::Approx(24.f));
@@ -87,6 +87,7 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform applies scaled dimensions an
 
 TEST_CASE("WorldRenderUtils::computeSpriteTransform centers sprite on dest.position", "[unit][world_render_utils]")
 {
+    Camera2D camera;
     Rectangle spriteConfig;
     spriteConfig.position = Position { 2.f, 3.f };
     spriteConfig.size = Dimension2D { 16.f, 8.f };
@@ -94,7 +95,7 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform centers sprite on dest.posit
     DrawTextureCommand cmd;
     cmd.dest.position = { 100.f, 200.f };
 
-    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
+    WorldRenderUtils::computeSpriteTransform(camera, spriteConfig, cmd);
 
     REQUIRE(cmd.dest.size.width == Catch::Approx(32.f));
     REQUIRE(cmd.dest.size.height == Catch::Approx(24.f));
@@ -108,6 +109,7 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform centers sprite on dest.posit
 
 TEST_CASE("WorldRenderUtils::computeSpriteTransform handles zero scale", "[unit][world_render_utils]")
 {
+    Camera2D camera;
     Rectangle spriteConfig;
     spriteConfig.position = Position { 0.f, 0.f };
     spriteConfig.size = Dimension2D { 16.f, 8.f };
@@ -115,7 +117,7 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform handles zero scale", "[unit]
     DrawTextureCommand cmd;
     cmd.dest.position = { 10.f, 20.f };
 
-    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
+    WorldRenderUtils::computeSpriteTransform(camera, spriteConfig, cmd);
 
     REQUIRE(cmd.dest.size.width == Catch::Approx(0.f));
     REQUIRE(cmd.dest.size.height == Catch::Approx(0.f));

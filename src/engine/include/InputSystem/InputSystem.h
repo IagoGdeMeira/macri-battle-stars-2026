@@ -1,11 +1,10 @@
 #ifndef input_system_h
 #define input_system_h
 
-#include "../EventBus/EventBus.h"
-#include "../InputContext/InputContext.h"
-#include "../System/System.h"
-
-#include "../events/InputEvent.h"
+#include "EventBus/EventBus.h"
+#include "InputContext/InputContext.h"
+#include "InputEvent.h"
+#include "System/System.h"
 
 #include <cstdint>
 #include <unordered_map>

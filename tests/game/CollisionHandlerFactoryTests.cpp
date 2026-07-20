@@ -1,13 +1,13 @@
-#include "../../src/game/include/CollisionHandler/CollisionHandlerFactory.h"
+#include "game/include/CollisionHandlerFactory/CollisionHandlerFactory.h"
 
-#include "../../src/domain/components/CircleColliderComponent.h"
-#include "../../src/domain/components/RectangleColliderComponent.h"
-#include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/CircleColliderComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -17,10 +17,10 @@ class CollisionHandlerFactoryFixture
 public:
     CollisionHandlerFactoryFixture() : context { this->world, this->bus, this->commandBuffer, 0.f }
     {
-        auto& components = this->world.components();
-        components.registerComponent<TransformComponent>();
-        components.registerComponent<RectangleColliderComponent>();
-        components.registerComponent<CircleColliderComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<CircleColliderComponent>();
     }
 
 protected:
@@ -42,9 +42,9 @@ TEST_CASE_METHOD(CollisionHandlerFactoryFixture,
     "[unit][collision_handler_factory]"
 ) {
     const Entity entity = this->createEntity(5.f, 7.f);
-    auto& components = this->world.components();
-    components.add<RectangleColliderComponent>(entity, RectangleColliderComponent{10.f, 6.f});
-    components.add<CircleColliderComponent>(entity, CircleColliderComponent{1.f});
+    auto& comp = this->world.components();
+    comp.add<RectangleColliderComponent>(entity, RectangleColliderComponent{10.f, 6.f});
+    comp.add<CircleColliderComponent>(entity, CircleColliderComponent{1.f});
 
     auto handler = CollisionHandlerFactory::createForEntity(this->context, { entity, std::nullopt });
     REQUIRE(handler);

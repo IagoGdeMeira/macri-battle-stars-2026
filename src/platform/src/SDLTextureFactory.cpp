@@ -1,8 +1,8 @@
-#include "../include/SDLTextureFactory/SDLTextureFactory.h"
+#include "SDLTextureFactory/SDLTextureFactory.h"
 
-#include "../include/SDLTexture/SDLTexture.h"
+#include "SDLTexture/SDLTexture.h"
 
-#include "../../engine/include/PathResolver/PathResolver.h"
+#include "engine/include/PathResolver/PathResolver.h"
 
 #include <iostream>
 #include <SDL_image.h>

@@ -1,7 +1,7 @@
 #ifndef ui_transform_h
 #define ui_transform_h
 
-#include "../value_objects/Geometry/Geometry.h"
+#include "Geometry/Geometry.h"
 
 struct UITransform
 {

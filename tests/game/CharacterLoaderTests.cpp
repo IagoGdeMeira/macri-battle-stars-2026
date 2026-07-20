@@ -1,32 +1,31 @@
-#include "../../src/game/include/CharacterLoader/CharacterLoader.h"
+#include "game/include/CharacterLoader/CharacterLoader.h"
 
-#include "../stubs/StubDataNode.h"
-#include "../stubs/StubDataParser.h"
-#include "../stubs/StubRenderer.h"
-#include "../stubs/StubResourceManager.h"
-#include "../stubs/StubTextureFactory.h"
+#include "StubDataNode.h"
+#include "StubDataParser.h"
+#include "StubRenderer.h"
+#include "StubResourceManager.h"
+#include "StubTextureFactory.h"
 
-#include "../../src/domain/components/AnimationComponent.h"
-#include "../../src/domain/components/AnimationControllerComponent.h"
-#include "../../src/domain/components/CollisionClipDefinitionsComponent.h"
-#include "../../src/domain/components/CollisionClipPlayerComponent.h"
-#include "../../src/domain/components/SpriteComponent.h"
-#include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/components/StateMachineComponent.h"
-#include "../../src/domain/components/StateMappingComponent.h"
-#include "../../src/domain/include/World/World.h"
-#include "../../src/domain/value_objects/StateId/StateId.h"
-#include "../../src/domain/value_objects/TriggerId/TriggerId.h"
+#include "domain/components/AnimationComponent.h"
+#include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/CollisionClipDefinitionsComponent.h"
+#include "domain/components/CollisionClipPlayerComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/components/StateComponent.h"
+#include "domain/components/StateMachineComponent.h"
+#include "domain/include/World/World.h"
+#include "domain/value_objects/StateId/StateId.h"
+#include "domain/value_objects/TriggerId/TriggerId.h"
 
-#include "../../src/engine/include/DataParser/DataParser.h"
-#include "../../src/engine/include/ResourceManager/ResourceManager.h"
-#include "../../src/engine/include/TextureLoader/TextureLoader.h"
+#include "engine/include/DataParser/DataParser.h"
+#include "engine/include/ResourceManager/ResourceManager.h"
+#include "engine/include/TextureLoader/TextureLoader.h"
 
-#include "../../src/game/include/AnimationLoader/AnimationLoader.h"
-#include "../../src/game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
-#include "../../src/game/include/CollisionClipLoader/CollisionClipLoader.h"
-#include "../../src/game/include/StateIdMapper/StateIdMapper.h"
-#include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
+#include "game/include/AnimationLoader/AnimationLoader.h"
+#include "game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
+#include "game/include/CollisionClipLoader/CollisionClipLoader.h"
+#include "game/include/StateIdMapper/StateIdMapper.h"
+#include "game/include/StateMachineLoader/StateMachineLoader.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
@@ -117,21 +116,22 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     StubResourceManager resourceManager;
     StubTextureFactory textureFactory;
     TextureLoader textureLoader(textureFactory);
+    StateMachineRegistry registry;
 
     CharacterLoader loader(CharacterLoader::Config{
-        .defLoader          = defLoader,
-        .animLoader         = animLoader,
-        .fsmLoader          = fsmLoader,
-        .resourceManager    = resourceManager,
-        .textureLoader      = textureLoader,
-        .clipLoader         = clipLoader
+        .defLoader              = defLoader,
+        .animLoader             = animLoader,
+        .fsmLoader              = fsmLoader,
+        .resourceManager        = resourceManager,
+        .textureLoader          = textureLoader,
+        .clipLoader             = clipLoader,
+        .stateMachineRegistry   = registry
     });
 
     World world;
     auto& comp = world.components();
     comp.registerComponent<SpriteComponent>();
     comp.registerComponent<StateComponent>();
-    comp.registerComponent<StateMappingComponent>();
     comp.registerComponent<StateMachineComponent>();
     comp.registerComponent<AnimationControllerComponent>();
     comp.registerComponent<AnimationComponent>();
@@ -142,13 +142,12 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 
     REQUIRE(comp.has<SpriteComponent>(entity));
     REQUIRE(comp.has<StateComponent>(entity));
-    REQUIRE(comp.has<StateMappingComponent>(entity));
     REQUIRE(comp.has<StateMachineComponent>(entity));
     REQUIRE(comp.has<AnimationControllerComponent>(entity));
     REQUIRE(comp.has<AnimationComponent>(entity));
 
     const auto& sprite = comp.get<SpriteComponent>(entity);
-    REQUIRE(sprite.texture == textureFactory.textureToReturn);
+    REQUIRE(sprite.texturePath == "assets/sprites/fighter.png");
     REQUIRE(sprite.source.size.width == 64);
     REQUIRE(sprite.source.size.height == 96);
     REQUIRE(sprite.useSourceRect == false);
@@ -157,10 +156,12 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(state.current == StateId::Idle);
     REQUIRE(state.timeInState == 0.f);
 
-    const auto& stateMachine = comp.get<StateMachineComponent>(entity);
-    REQUIRE(stateMachine.machine.transitions.size() == 1);
-    REQUIRE(stateMachine.machine.transitions[0].from == StateId::Idle);
-    REQUIRE(stateMachine.machine.transitions[0].to == StateId::Punching);
+    uint32_t machineId = comp.get<StateMachineComponent>(entity).machineId;
+    const StateMachine* machine = registry.getMachine(machineId);
+    REQUIRE(machine != nullptr);
+    REQUIRE(machine->transitions.size() == 1);
+    REQUIRE(machine->transitions[0].from == StateId::Idle);
+    REQUIRE(machine->transitions[0].to == StateId::Punching);
 
     const auto& controller = comp.get<AnimationControllerComponent>(entity);
     REQUIRE(controller.animations.right.size() == 1);
@@ -231,21 +232,22 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     StubResourceManager resourceManager;
     StubTextureFactory textureFactory;
     TextureLoader textureLoader(textureFactory);
+    StateMachineRegistry registry;
 
     CharacterLoader loader(CharacterLoader::Config{
-        .defLoader          = defLoader,
-        .animLoader         = animLoader,
-        .fsmLoader          = fsmLoader,
-        .resourceManager    = resourceManager,
-        .textureLoader      = textureLoader,
-        .clipLoader         = clipLoader
+        .defLoader              = defLoader,
+        .animLoader             = animLoader,
+        .fsmLoader              = fsmLoader,
+        .resourceManager        = resourceManager,
+        .textureLoader          = textureLoader,
+        .clipLoader             = clipLoader,
+        .stateMachineRegistry   = registry
     });
 
     World world;
     auto& comp = world.components();
     comp.registerComponent<SpriteComponent>();
     comp.registerComponent<StateComponent>();
-    comp.registerComponent<StateMappingComponent>();
     comp.registerComponent<StateMachineComponent>();
     comp.registerComponent<AnimationControllerComponent>();
     comp.registerComponent<AnimationComponent>();
@@ -254,14 +256,13 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
 
     const auto entity = loader.create(world, "def.json");
 
-    const auto& mapping = comp.get<StateMappingComponent>(entity);
-    REQUIRE(mapping.mapper != nullptr);
-    const auto customStateId = mapping.mapper->fromString("PowerCharge");
-    REQUIRE(customStateId.isCustom());
+    uint32_t machineId = comp.get<StateMachineComponent>(entity).machineId;
+    const StateMachine* machine = registry.getMachine(machineId);
+    REQUIRE(machine != nullptr);
+    REQUIRE(machine->transitions.size() == 1);
 
-    const auto& stateMachine = comp.get<StateMachineComponent>(entity);
-    REQUIRE(stateMachine.machine.transitions.size() == 1);
-    REQUIRE(stateMachine.machine.transitions[0].to == customStateId);
+    StateId customStateId = machine->transitions[0].to;
+    REQUIRE(customStateId.isCustom());
 
     const auto& controller = comp.get<AnimationControllerComponent>(entity);
     REQUIRE(controller.animations.right.contains(customStateId));

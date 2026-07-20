@@ -1,14 +1,14 @@
-#include "../../src/game/include/StateMachineLoader/StateMachineLoader.h"
+#include "game/include/StateMachineLoader/StateMachineLoader.h"
 
-#include "../stubs/StubDataNode.h"
-#include "../stubs/StubDataParser.h"
+#include "StubDataNode.h"
+#include "StubDataParser.h"
 
-#include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/include/Entity/Entity.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/StateComponent.h"
+#include "domain/include/Entity/Entity.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/game/include/StateIdMapper/StateIdMapper.h"
-#include "../../src/game/include/TriggerConditionContext/TriggerConditionContext.h"
+#include "game/include/StateIdMapper/StateIdMapper.h"
+#include "game/value_objects/TriggerConditionContext/TriggerConditionContext.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

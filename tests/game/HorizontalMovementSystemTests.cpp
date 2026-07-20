@@ -1,14 +1,14 @@
-#include "../../src/game/include/HorizontalMovementSystem/HorizontalMovementSystem.h"
+#include "game/include/HorizontalMovementSystem/HorizontalMovementSystem.h"
 
-#include "../../src/domain/components/AnalogInputComponent.h"
-#include "../../src/domain/components/HitstopComponent.h"
-#include "../../src/domain/components/InputComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/components/VelocityComponent.h"
+#include "domain/components/AnalogInputComponent.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/components/StateComponent.h"
+#include "domain/components/VelocityComponent.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -38,9 +38,9 @@ TEST_CASE_METHOD(HorizontalMovementSystemFixture, "HorizontalMovementSystem move
 ) {
     const auto& updateDelay = HorizontalMovementSystemFixture::UPDATE_DELAY;
     const auto entity = this->scene.world().entities().create();
-
+    
     InputComponent input;
-    input.actions[InputAction::MoveLeft] = InputState{true, 0.f};
+    input.actions[InputAction::MoveLeft] = InputComponent::State{true, 0.f};
 
     AnalogInputComponent analog;
     StateComponent state;
@@ -63,7 +63,7 @@ TEST_CASE_METHOD(HorizontalMovementSystemFixture, "HorizontalMovementSystem move
 
     auto& storedInput = comp.get<InputComponent>(entity);
     storedInput.actions.clear();
-    storedInput.actions[InputAction::MoveRight] = InputState{true, 0.f};
+    storedInput.actions[InputAction::MoveRight] = InputComponent::State{true, 0.f};
     this->scene.update(updateDelay);
 
     REQUIRE(updatedVelocity.velocity.x == Catch::Approx(300.f));
@@ -76,7 +76,7 @@ TEST_CASE_METHOD(HorizontalMovementSystemFixture, "HorizontalMovementSystem pref
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::MoveLeft] = InputState{true, 0.f};
+    input.actions[InputAction::MoveLeft] = InputComponent::State{true, 0.f};
 
     AnalogInputComponent analog;
     analog.move.x = 0.5f;
@@ -107,7 +107,7 @@ TEST_CASE_METHOD(HorizontalMovementSystemFixture, "HorizontalMovementSystem bloc
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::MoveRight] = InputState{true, 0.f};
+    input.actions[InputAction::MoveRight] = InputComponent::State{true, 0.f};
 
     AnalogInputComponent analog;
     analog.move.x = 1.f;
@@ -139,7 +139,7 @@ TEST_CASE_METHOD(HorizontalMovementSystemFixture, "HorizontalMovementSystem keep
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::MoveLeft] = InputState{true, 0.f};
+    input.actions[InputAction::MoveLeft] = InputComponent::State{true, 0.f};
 
     AnalogInputComponent analog;
     analog.move.x = -1.f;

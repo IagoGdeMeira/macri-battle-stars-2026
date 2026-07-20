@@ -1,9 +1,9 @@
-#include "../include/Engine/Engine.h"
+#include "Engine/Engine.h"
 
-#include "../events/QuitEvent.h"
-#include "../include/SceneManager/SceneManager.h"
+#include "QuitEvent.h"
+#include "SceneManager/SceneManager.h"
 
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include <chrono>
 #include <stdexcept>

@@ -1,4 +1,4 @@
-#include "../include/InputMapper/InputMapper.h"
+#include "InputMapper/InputMapper.h"
 
 #include <stdexcept>
 

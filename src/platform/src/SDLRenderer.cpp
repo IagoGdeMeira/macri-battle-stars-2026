@@ -1,9 +1,9 @@
-#include "../include/SDLRenderer/SDLRenderer.h"
+#include "SDLRenderer/SDLRenderer.h"
 
-#include "../include/SDLFont/SDLFont.h"
-#include "../include/SDLTexture/SDLTexture.h"
+#include "SDLFont/SDLFont.h"
+#include "SDLTexture/SDLTexture.h"
 
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include <chrono>
 #include <cmath>

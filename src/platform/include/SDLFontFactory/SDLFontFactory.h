@@ -1,7 +1,7 @@
 #ifndef sdl_font_factory_h
 #define sdl_font_factory_h
 
-#include "../include/IFontFactory/IFontFactory.h"
+#include "IFontFactory/IFontFactory.h"
 
 class SDLFontFactory : public IFontFactory
 {

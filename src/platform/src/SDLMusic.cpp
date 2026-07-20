@@ -1,4 +1,4 @@
-#include "../include/SDLMusic/SDLMusic.h"
+#include "SDLMusic/SDLMusic.h"
 
 #include <algorithm>
 

@@ -1,13 +1,13 @@
-#include "../../src/game/include/LocalToWorldSystem/LocalToWorldSystem.h"
+#include "game/include/LocalToWorldSystem/LocalToWorldSystem.h"
 
-#include "../../src/domain/components/LocalTransform.h"
-#include "../../src/domain/components/ParentComponent.h"
-#include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/LocalTransform.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_test_macros.hpp>
 

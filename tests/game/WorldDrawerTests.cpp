@@ -1,25 +1,29 @@
-#include "../../src/game/include/WorldDrawer/WorldDrawer.h"
+#include "game/drawers/WorldDrawer/WorldDrawer.h"
 
-#include "../../src/domain/components/AnimationControllerComponent.h"
-#include "../../src/domain/components/OrientationComponent.h"
-#include "../../src/domain/components/ParallaxComponent.h"
-#include "../../src/domain/components/RenderComponent.h"
-#include "../../src/domain/components/ShapeRenderComponent.h"
-#include "../../src/domain/components/SpriteComponent.h"
-#include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/components/VisualEffectsComponent.h"
-#include "../../src/domain/include/World/World.h"
-#include "../../src/domain/value_objects/Color/Color.h"
+#include "StubRenderer.h"
+#include "StubTexture.h"
+#include "StubTextureFactory.h"
+#include "StubTextureLoader.h"
 
-#include "../../src/engine/events/WindowResizedEvent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/RenderContext/RenderContext.h"
-#include "../../src/engine/value_objects/GameSettings/GameSettings.h"
+#include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/OrientationComponent.h"
+#include "domain/components/ParallaxComponent.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/ShapeRenderComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/VisualEffectsComponent.h"
+#include "domain/include/World/World.h"
+#include "domain/value_objects/Color/Color.h"
 
-#include "../../src/game/include/Camera2D/Camera2D.h"
+#include "engine/events/WindowResizedEvent.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/ResourceManager/ResourceManager.h"
+#include "engine/include/ThreadPool/ThreadPool.h"
+#include "engine/value_objects/GameSettings/GameSettings.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
-#include "../stubs/StubRenderer.h"
-#include "../stubs/StubTexture.h"
+#include "game/include/Camera2D/Camera2D.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
@@ -37,8 +41,19 @@ public:
     }
 
     WorldDrawerFixture() :
+        threadPool(1),
+        textureFactory(),
+        textureLoader(this->textureFactory),
+        resourceManager(this->threadPool),
         settings(this->makeSettings()),
-        drawer(this->bus, this->renderer, this->camera, this->settings),
+        drawer(WorldDrawer::Config{
+            this->bus,
+            this->renderer,
+            this->camera,
+            this->settings,
+            this->resourceManager,
+            this->textureLoader
+        }),
         context{this->world, this->bus}
     {
         auto& comp = this->world.components();
@@ -60,6 +75,11 @@ protected:
     GameSettings settings;
     WorldDrawer drawer;
     RenderContext context;
+
+    ThreadPool threadPool;
+    StubTextureFactory textureFactory;
+    StubTextureLoader textureLoader;
+    ResourceManager resourceManager;
 };
 
 TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer configures viewports on draw", "[unit][world_drawer]")
@@ -90,7 +110,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards resized world viewpor
 
     const auto spriteEntity = this->world.entities().create();
     comp.add<TransformComponent>(spriteEntity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    comp.add<SpriteComponent>(spriteEntity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
+    comp.add<SpriteComponent>(spriteEntity, SpriteComponent{ "dummy.png", 16, 8 });
     comp.add<RenderComponent>(spriteEntity, RenderComponent{ 0 });
 
     const auto rectangleEntity = this->world.entities().create();
@@ -139,7 +159,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     auto& comp = this->world.components();
 
     comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", 16, 8 });
     comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.f, 0.f);
@@ -163,7 +183,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip fla
     auto& comp = this->world.components();
 
     comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, -2.f, -3.f, 37.5f});
-    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", 16, 8 });
     comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.f, 0.f);
@@ -185,7 +205,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards sprite source rect to
     auto& comp = this->world.components();
 
     comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 8, 4, 6, 8, 10, true });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", 16, 8, 4, 6, 8, 10, true });
     comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->drawer.draw(this->context);

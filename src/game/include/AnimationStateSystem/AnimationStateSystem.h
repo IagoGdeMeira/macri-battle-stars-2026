@@ -1,14 +1,14 @@
 #ifndef animation_state_system_h
 #define animation_state_system_h
 
-#include "../events/StateChangedEvent.h"
+#include "StateChangedEvent.h"
 
-#include "../../domain/events/OrientationChangedEvent.h"
-#include "../../domain/include/Entity/Entity.h"
-#include "../../domain/value_objects/StateId/StateId.h"
+#include "domain/events/OrientationChangedEvent.h"
+#include "domain/include/Entity/Entity.h"
+#include "domain/value_objects/StateId/StateId.h"
 
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/System/System.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/System/System.h"
 
 #include <vector>
 
@@ -16,7 +16,6 @@ class AnimationStateSystem : public System
 {
 public:
     AnimationStateSystem(EventBus& bus);
-
     void update(UpdateContext& ctx) override;
 
 private:

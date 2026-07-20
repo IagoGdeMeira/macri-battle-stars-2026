@@ -1,7 +1,7 @@
 #ifndef trigger_mapper_h
 #define trigger_mapper_h
 
-#include "../../domain/value_objects/TriggerId/TriggerId.h"
+#include "domain/value_objects/TriggerId/TriggerId.h"
 
 #include <string>
 

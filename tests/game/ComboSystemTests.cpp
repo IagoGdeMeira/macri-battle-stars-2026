@@ -1,11 +1,11 @@
-#include "../../src/game/include/ComboSystem/ComboSystem.h"
+#include "game/include/ComboSystem/ComboSystem.h"
 
-#include "../../src/domain/components/InputBufferComponent.h"
+#include "domain/components/InputBufferComponent.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
 
-#include "../../src/game/events/ComboExecutedEvent.h"
+#include "game/events/ComboExecutedEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -14,7 +14,9 @@ TEST_CASE("ComboSystem emits best matching combo by priority", "[integration][co
     EventBus bus;
     Scene scene(bus);
 
-    scene.world().components().registerComponent<InputBufferComponent>();
+    auto& comp = scene.world().components();
+
+    comp.registerComponent<InputBufferComponent>();
 
     const auto entity = scene.world().entities().create();
 
@@ -53,14 +55,16 @@ TEST_CASE("ComboSystem clears buffer when combo consumes input", "[integration][
     EventBus bus;
     Scene scene(bus);
 
-    scene.world().components().registerComponent<InputBufferComponent>();
+    auto& comp = scene.world().components();
+
+    comp.registerComponent<InputBufferComponent>();
 
     const auto entity = scene.world().entities().create();
 
     InputBufferComponent buffer;
     buffer.buffer.push_back({ InputAction::Punch, 0.01f });
 
-    scene.world().components().add<InputBufferComponent>(entity, buffer);
+    comp.add<InputBufferComponent>(entity, buffer);
 
     Combo combo;
     combo.name = "single";
@@ -71,7 +75,7 @@ TEST_CASE("ComboSystem clears buffer when combo consumes input", "[integration][
 
     scene.update(0.016f);
 
-    const auto& updated = scene.world().components().get<InputBufferComponent>(entity);
+    const auto& updated = comp.get<InputBufferComponent>(entity);
     REQUIRE(updated.buffer.empty());
 }
 
@@ -80,14 +84,16 @@ TEST_CASE("ComboSystem keeps buffer when combo does not consume input", "[integr
     EventBus bus;
     Scene scene(bus);
 
-    scene.world().components().registerComponent<InputBufferComponent>();
+    auto& comp = scene.world().components();
+
+    comp.registerComponent<InputBufferComponent>();
 
     const auto entity = scene.world().entities().create();
 
     InputBufferComponent buffer;
     buffer.buffer.push_back({ InputAction::Defend, 0.01f });
 
-    scene.world().components().add<InputBufferComponent>(entity, buffer);
+    comp.add<InputBufferComponent>(entity, buffer);
 
     Combo combo;
     combo.name = "hold";
@@ -99,7 +105,7 @@ TEST_CASE("ComboSystem keeps buffer when combo does not consume input", "[integr
 
     scene.update(0.016f);
 
-    const auto& updated = scene.world().components().get<InputBufferComponent>(entity);
+    const auto& updated = comp.get<InputBufferComponent>(entity);
     REQUIRE(updated.buffer.size() == 1);
     REQUIRE(updated.buffer.front().action == InputAction::Defend);
 }

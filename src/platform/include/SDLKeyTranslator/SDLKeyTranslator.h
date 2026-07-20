@@ -1,9 +1,9 @@
 #ifndef sdl_key_translator
 #define sdl_key_translator
 
-#include "../../engine/include/GamepadButton/GamepadButton.h" 
-#include "../../engine/include/KeyCode/KeyCode.h"
-#include "../../engine/include/MouseButton/MouseButton.h"
+#include "engine/value_objects/GamepadButton/GamepadButton.h" 
+#include "engine/value_objects/KeyCode/KeyCode.h"
+#include "engine/value_objects/MouseButton/MouseButton.h"
 
 class SDLKeyTranslator
 {

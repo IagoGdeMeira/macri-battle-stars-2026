@@ -2,7 +2,7 @@
 #define async_loader_h
 
 #include "ResourceLoader.h"
-#include "../ThreadPool/ThreadPool.h"
+#include "ThreadPool/ThreadPool.h"
 
 class AsyncLoader
 {

@@ -1,27 +1,27 @@
-#include "../../src/game/include/EntityFactory/EntityFactory.h"
+#include "game/include/EntityFactory/EntityFactory.h"
 
-#include "../stubs/StubTextureFactory.h"
-#include "../stubs/StubTextureLoader.h"
+#include "StubTextureFactory.h"
+#include "StubTextureLoader.h"
 
-#include "../../src/domain/include/World/World.h"
-#include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/components/ParentComponent.h"
-#include "../../src/domain/components/LocalTransform.h"
-#include "../../src/domain/components/SpriteComponent.h"
-#include "../../src/domain/components/RenderComponent.h"
-#include "../../src/domain/components/ParallaxComponent.h"
-#include "../../src/domain/components/RectangleColliderComponent.h"
-#include "../../src/domain/components/CircleColliderComponent.h"
-#include "../../src/domain/components/PushboxComponent.h"
-#include "../../src/domain/components/HitboxComponent.h"
-#include "../../src/domain/components/HurtboxComponent.h"
-#include "../../src/domain/components/LifetimeComponent.h"
-#include "../../src/domain/components/ShapeRenderComponent.h"
+#include "domain/include/World/World.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/LocalTransform.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/ParallaxComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/CircleColliderComponent.h"
+#include "domain/components/PushboxComponent.h"
+#include "domain/components/HitboxComponent.h"
+#include "domain/components/HurtboxComponent.h"
+#include "domain/components/LifetimeComponent.h"
+#include "domain/components/ShapeRenderComponent.h"
 
-#include "../../src/engine/include/ResourceManager/ResourceManager.h"
-#include "../../src/engine/include/ThreadPool/ThreadPool.h"
+#include "engine/include/ResourceManager/ResourceManager.h"
+#include "engine/include/ThreadPool/ThreadPool.h"
 
-#include "../../src/game/include/ComponentRegistry/ComponentRegistry.h"
+#include "game/include/ComponentRegistry/ComponentRegistry.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -73,8 +73,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createStaticEntity() with
     REQUIRE(collider.size.height == 30.f);
 }
 
-TEST_CASE_METHOD(EntityFactoryFixture,
-    "EntityFactory::createStaticEntity() with circle creates root entity with CircleColliderComponent",
+TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createStaticEntity() with circle creates root entity with CircleColliderComponent",
     "[unit][entity_factory]"
 ) {
     Position pos{100.f, 200.f};
@@ -92,8 +91,7 @@ TEST_CASE_METHOD(EntityFactoryFixture,
     REQUIRE(collider.radius == 25.f);
 }
 
-TEST_CASE_METHOD(EntityFactoryFixture,
-    "EntityFactory::createStaticEntity() with parent creates child entity with ParentComponent and LocalTransform",
+TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createStaticEntity() with parent creates child entity with ParentComponent and LocalTransform",
     "[unit][entity_factory]"
 ) {
     Entity parent = this->world.entities().create();
@@ -139,7 +137,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createBackgroundChild() a
     REQUIRE_FALSE(comp.has<RectangleColliderComponent>(bg));
 
     const auto& sprite = comp.get<SpriteComponent>(bg);
-    REQUIRE(sprite.texture != nullptr);
+    REQUIRE(sprite.texturePath == "assets/sprites/bg.png");
     REQUIRE(sprite.size.width == 64.f);
     REQUIRE(sprite.size.height == 96.f);
     REQUIRE_FALSE(sprite.useSourceRect);
@@ -186,14 +184,13 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createFloorChild() with t
     REQUIRE(local.position.y == 400.f);
 
     const auto& sprite = comp.get<SpriteComponent>(floor);
-    REQUIRE(sprite.texture != nullptr);
+    REQUIRE(sprite.texturePath == "assets/sprites/floor.png");
     REQUIRE(sprite.size.width == 800.f);
     REQUIRE(sprite.size.height == 50.f);
     REQUIRE_FALSE(sprite.useSourceRect);
 }
 
-TEST_CASE_METHOD(EntityFactoryFixture,
-    "EntityFactory::createFloorChild() without texture does not add Sprite or RenderComponent",
+TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createFloorChild() without texture does not add Sprite or RenderComponent",
     "[unit][entity_factory]"
 ) {
     Entity parent = this->world.entities().create();
@@ -236,8 +233,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createWallChild() adds Re
     REQUIRE(local.position.y == 300.f);
 }
 
-TEST_CASE_METHOD(EntityFactoryFixture,
-    "EntityFactory::createHitbox() facingRight adds LocalTransform with positive offset",
+TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createHitbox() facingRight adds LocalTransform with positive offset",
     "[unit][entity_factory]"
 ) {
     Entity parent = this->world.entities().create();
@@ -322,7 +318,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createPushbox() adds Push
     def.collider->offset = {0.f, 0.f};
     static_cast<RectangleDef*>(def.collider.get())->width = 40.f;
     static_cast<RectangleDef*>(def.collider.get())->height = 30.f;
-    def.type = PushboxComponent::PushboxType::Static;
+    def.type = PushboxComponent::Type::Static;
     def.mass = 100.f;
     def.pushResistance = 0.8f;
 
@@ -335,7 +331,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createPushbox() adds Push
     REQUIRE(comp.has<PushboxComponent>(pushbox));
 
     const auto& push = comp.get<PushboxComponent>(pushbox);
-    REQUIRE(push.type == PushboxComponent::PushboxType::Static);
+    REQUIRE(push.type == PushboxComponent::Type::Static);
     REQUIRE(push.mass == 100.f);
     REQUIRE(push.pushResistance == 0.8f);
 }
@@ -356,7 +352,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createSpriteEffect() adds
     REQUIRE_FALSE(comp.has<LocalTransform>(effect));
 
     const auto& sprite = comp.get<SpriteComponent>(effect);
-    REQUIRE(sprite.texture != nullptr);
+    REQUIRE(sprite.texturePath == "assets/effects/explosion.png");
     REQUIRE(sprite.size.width == 64.f);
     REQUIRE(sprite.size.height == 96.f);
 

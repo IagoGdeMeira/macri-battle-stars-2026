@@ -1,9 +1,9 @@
 #ifndef font_loader_h
 #define font_loader_h
 
-#include "../ResourceLoader/ResourceLoader.h"
-#include "../Font/Font.h"
-#include "../IFontFactory/IFontFactory.h"
+#include "Font/Font.h"
+#include "IFontFactory/IFontFactory.h"
+#include "ResourceLoader/ResourceLoader.h"
 
 class FontLoader : public ResourceLoader<Font>
 {

@@ -1,4 +1,4 @@
-#include "../include/SDLKeyTranslator/SDLKeyTranslator.h"
+#include "SDLKeyTranslator/SDLKeyTranslator.h"
 
 #include <SDL.h>
 

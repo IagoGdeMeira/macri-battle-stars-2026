@@ -1,8 +1,8 @@
-#include "../../src/platform/include/SDLSystemAdapter/SDLSystemAdapter.h"
+#include "platform/include/SDLSystemAdapter/SDLSystemAdapter.h"
 
-#include "../../src/engine/events/PlatformEvent.h"
-#include "../../src/engine/events/QuitEvent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
+#include "engine/events/PlatformEvent.h"
+#include "engine/events/QuitEvent.h"
+#include "engine/include/EventBus/EventBus.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

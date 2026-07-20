@@ -1,16 +1,16 @@
-#include "../../src/game/include/CameraControllerSystem/CameraControllerSystem.h"
+#include "game/include/CameraControllerSystem/CameraControllerSystem.h"
 
-#include "../stubs/StubWindow.h"
+#include "StubWindow.h"
 
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/components/SpriteComponent.h"
-#include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/include/World/World.h"
-#include "../../src/domain/value_objects/Geometry/Geometry.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/include/World/World.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -39,7 +39,7 @@ public:
         auto& comp = this->world.components();
         comp.add<TransformComponent>(entity, TransformComponent{x, y, 1.f, 1.f, 0.f});
         comp.add<PlayerComponent>(entity, PlayerComponent{1});
-        comp.add<SpriteComponent>(entity, SpriteComponent{nullptr, Dimension2D{width, height}, Rectangle{}, false});
+        comp.add<SpriteComponent>(entity, SpriteComponent{"dummy.png", Dimension2D{width, height}, Rectangle{}, false});
         return entity;
     }
 

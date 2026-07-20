@@ -1,10 +1,10 @@
 #ifndef ui_action_factory_h
 #define ui_action_factory_h
 
-#include "../include/IUIAction/IUIAction.h"
+#include "IUIAction/IUIAction.h"
 
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/SceneManager/SceneManager.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/SceneManager/SceneManager.h"
 
 class UIActionFactory
 {

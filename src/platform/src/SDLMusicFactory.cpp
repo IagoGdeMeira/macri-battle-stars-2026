@@ -1,4 +1,4 @@
-#include "../include/SDLMusicFactory/SDLMusicFactory.h"
+#include "SDLMusicFactory/SDLMusicFactory.h"
 
 #include <iostream>
 #include <SDL_mixer.h>

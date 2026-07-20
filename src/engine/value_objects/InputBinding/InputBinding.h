@@ -1,0 +1,13 @@
+#ifndef input_binding_h
+#define input_binding_h
+
+#include "../include/InputSource/InputSource.h"
+
+#include "domain/value_objects/InputAction/InputAction.h"
+
+#include <unordered_map>
+
+struct InputBinding
+{ std::unordered_map<InputSource, InputAction, InputSource::Hash> keyMap; };
+
+#endif // input_binding_h

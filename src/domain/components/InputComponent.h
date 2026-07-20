@@ -1,12 +1,15 @@
 #ifndef input_component_h
 #define input_component_h
 
-#include "../value_objects/InputAction/InputAction.h"
+#include "InputAction/InputAction.h"
 
 #include <unordered_map>
 
-struct InputState { bool pressed = false; float heldTime = 0.f; };
+struct InputComponent
+{
+    struct State { bool pressed = false; float heldTime = 0.f; };
 
-struct InputComponent { std::unordered_map<InputAction, InputState> actions; };
+    std::unordered_map<InputAction, State> actions;
+};
 
 #endif // input_component_h

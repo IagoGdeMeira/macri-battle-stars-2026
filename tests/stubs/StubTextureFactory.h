@@ -3,7 +3,7 @@
 
 #include "StubTexture.h"
 
-#include "../../src/engine/include/ITextureFactory/ITextureFactory.h"
+#include "engine/include/ITextureFactory/ITextureFactory.h"
 
 class StubTextureFactory : public ITextureFactory
 {

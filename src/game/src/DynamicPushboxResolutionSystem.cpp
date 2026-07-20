@@ -1,20 +1,23 @@
 #include "../include/DynamicPushboxResolutionSystem/DynamicPushboxResolutionSystem.h"
 
-#include "../events/CollisionEvent.h"
-#include "../include/CollisionHandler/CollisionHandlerFactory.h"
-#include "../include/CollisionHandler/ICollisionHandler.h"
+#include "CollisionEvent.h"
+#include "CollisionHandlerFactory/CollisionHandlerFactory.h"
+#include "ICollisionHandler/ICollisionHandler.h"
 
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/components/RectangleColliderComponent.h"
-#include "../../domain/components/PushboxComponent.h"
-#include "../../domain/components/VelocityComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/PushboxComponent.h"
+#include "domain/components/VelocityComponent.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
 
 DynamicPushboxResolutionSystem::DynamicPushboxResolutionSystem(EventBus& bus)
-{ bus.subscribe<CollisionEvent>([this](const CollisionEvent& e) { this->collisions.push_back(e); }); }
+{
+    bus.subscribe<CollisionEvent>([this](const CollisionEvent& e)
+    { this->collisions.push_back(e); });
+}
 
 void DynamicPushboxResolutionSystem::update(UpdateContext& ctx)
 {
@@ -27,7 +30,7 @@ void DynamicPushboxResolutionSystem::update(UpdateContext& ctx)
         auto& pushA = comp.get<PushboxComponent>(a);
         auto& pushB = comp.get<PushboxComponent>(b);
 
-        using PushType = PushboxComponent::PushboxType;
+        using PushType = PushboxComponent::Type;
         if (pushA.type != PushType::Dynamic || pushB.type != PushType::Dynamic) continue;
 
         this->resolveDynamicCollision(ctx, a, b);
@@ -43,8 +46,7 @@ void DynamicPushboxResolutionSystem::resolveDynamicCollision(UpdateContext& ctx,
 
     AABB boundsA = handlerA->getAABB(ctx, {a, std::nullopt});
     AABB boundsB = handlerB->getAABB(ctx, {b, std::nullopt});
-    AABB overlap
-    {
+    AABB overlap {
         boundsA.right - boundsB.left, boundsB.right - boundsA.left,
         boundsA.bottom - boundsB.top, boundsB.bottom - boundsA.top
     };

@@ -1,10 +1,10 @@
-#include "../../src/engine/include/InputManager/InputManager.h"
+#include "engine/include/InputManager/InputManager.h"
 
-#include "../stubs/StubInputAdapter.h"
-#include "../stubs/StubPlatformEventProvider.h"
+#include "StubInputAdapter.h"
+#include "StubPlatformEventProvider.h"
 
-#include "../../src/engine/events/PlatformEvent.h"
-#include "../../src/engine/include/KeyCode/KeyCode.h"
+#include "engine/events/PlatformEvent.h"
+#include "engine/value_objects/KeyCode/KeyCode.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>

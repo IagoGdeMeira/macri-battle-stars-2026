@@ -1,4 +1,4 @@
-#include "../../src/platform/include/JsonNode/JsonNode.h"
+#include "platform/include/JsonNode/JsonNode.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <stdexcept>

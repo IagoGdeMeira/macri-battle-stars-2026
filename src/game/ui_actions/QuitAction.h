@@ -1,10 +1,10 @@
 #ifndef quit_action_h
 #define quit_action_h
 
-#include "../include/IUIAction/IUIAction.h"
+#include "IUIAction/IUIAction.h"
 
-#include "../../engine/events/QuitEvent.h"
-#include "../../engine/include/EventBus/EventBus.h"
+#include "engine/events/QuitEvent.h"
+#include "engine/include/EventBus/EventBus.h"
 
 class QuitAction : public IUIAction
 {

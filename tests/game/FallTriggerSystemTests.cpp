@@ -1,10 +1,12 @@
-#include "../../src/game/include/FallTriggerSystem/FallTriggerSystem.h"
+#include "game/include/FallTriggerSystem/FallTriggerSystem.h"
 
-#include "../../src/domain/components/GroundedComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/game/events/TriggerEvent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "domain/components/GroundedComponent.h"
+#include "domain/components/PlayerComponent.h"
+
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
+
+#include "game/events/TriggerEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>

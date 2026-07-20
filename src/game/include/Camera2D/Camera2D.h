@@ -1,7 +1,7 @@
 #ifndef camera_2d_h
 #define camera_2d_h
 
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
 class Camera2D
 {
@@ -15,7 +15,7 @@ public:
     void move(float dx, float dy) { this->pos += { dx, dy }; }
 
 private:
-    Position pos = { 0.f, 0.f };
+    Position pos = {0.f, 0.f};
     float zoom = 1.f;
 };
 

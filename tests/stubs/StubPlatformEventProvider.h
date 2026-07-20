@@ -1,7 +1,7 @@
 #ifndef stub_platform_event_provider_h
 #define stub_platform_event_provider_h
 
-#include "../../src/engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
+#include "engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
 
 #include <vector>
 #include <memory>

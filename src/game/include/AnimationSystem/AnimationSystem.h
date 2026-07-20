@@ -1,7 +1,7 @@
 #ifndef animation_system_h
 #define animation_system_h
 
-#include "../../engine/include/System/System.h"
+#include "engine/include/System/System.h"
 
 class AnimationSystem : public System
 {

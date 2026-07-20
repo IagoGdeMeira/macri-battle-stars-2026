@@ -3,7 +3,7 @@
 
 #include "StubDataNode.h"
 
-#include "../../src/engine/include/DataParser/DataParser.h"
+#include "engine/include/DataParser/DataParser.h"
 
 #include <unordered_map>
 

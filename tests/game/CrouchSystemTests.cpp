@@ -1,15 +1,15 @@
-#include "../../src/game/include/CrouchSystem/CrouchSystem.h"
+#include "game/include/CrouchSystem/CrouchSystem.h"
 
-#include "../../src/domain/components/GroundedComponent.h"
-#include "../../src/domain/components/HitstopComponent.h"
-#include "../../src/domain/components/InputComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/value_objects/InputAction/InputAction.h"
+#include "domain/components/GroundedComponent.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/value_objects/InputAction/InputAction.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
 
-#include "../../src/game/events/TriggerEvent.h"
+#include "game/events/TriggerEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
@@ -53,10 +53,10 @@ TEST_CASE_METHOD(CrouchSystemFixture, "CrouchSystem emits crouch and crouch rele
     this->scene.systems().addSystem<CrouchSystem>(this->bus);
 
     auto& storedInput = comp.get<InputComponent>(entity);
-    storedInput.actions[InputAction::Crouch] = InputState{true, 0.f};
+    storedInput.actions[InputAction::Crouch] = InputComponent::State{true, 0.f};
     this->scene.update(updateDelay);
 
-    storedInput.actions[InputAction::Crouch] = InputState{false, 0.f};
+    storedInput.actions[InputAction::Crouch] = InputComponent::State{false, 0.f};
     this->scene.update(updateDelay);
 
     REQUIRE(events.size() == 2);
@@ -73,7 +73,7 @@ TEST_CASE_METHOD(CrouchSystemFixture, "CrouchSystem ignores crouch press when en
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Crouch] = InputState{true, 0.f};
+    input.actions[InputAction::Crouch] = InputComponent::State{true, 0.f};
 
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
@@ -95,7 +95,7 @@ TEST_CASE_METHOD(CrouchSystemFixture, "CrouchSystem does not repeat crouch trigg
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Crouch] = InputState{true, 0.f};
+    input.actions[InputAction::Crouch] = InputComponent::State{true, 0.f};
 
     GroundedComponent grounded;
     grounded.onGround = true;

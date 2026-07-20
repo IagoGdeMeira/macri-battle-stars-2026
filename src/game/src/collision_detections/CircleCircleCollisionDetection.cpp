@@ -1,14 +1,14 @@
-#include "../collision_detections/CircleCircleCollisionDetection.h"
+#include "CircleCircleCollisionDetection.h"
 
-#include "../events/CollisionEvent.h"
+#include "CollisionEvent.h"
 
-#include "../../domain/components/CircleColliderComponent.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/components/CircleColliderComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void CircleCircleCollisionDetection::detect(const std::vector<CollisionPair>& pairs, UpdateContext& ctx)
 {

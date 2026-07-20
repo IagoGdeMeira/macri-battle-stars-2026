@@ -1,7 +1,7 @@
 #ifndef i_platform_event_provider_h
 #define i_platform_event_provider_h
 
-#include "../events/PlatformEvent.h"
+#include "PlatformEvent.h"
 
 #include <memory>
 #include <vector>
@@ -9,8 +9,7 @@
 class IPlatformEventProvider
 {
 public:
-    virtual ~IPlatformEventProvider() = default;
-    
+    virtual ~IPlatformEventProvider() = default;  
     virtual std::vector<std::unique_ptr<PlatformEvent>> pollEvents() = 0;
 };
 

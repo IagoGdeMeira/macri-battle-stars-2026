@@ -1,12 +1,12 @@
 #ifndef camera_controller_system_h
 #define camera_controller_system_h
 
-#include "../Camera2D/Camera2D.h"
+#include "Camera2D/Camera2D.h"
 
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../engine/include/System/System.h"
-#include "../../engine/include/Window/Window.h"
+#include "engine/include/System/System.h"
+#include "engine/include/Window/Window.h"
 
 #include <limits>
 

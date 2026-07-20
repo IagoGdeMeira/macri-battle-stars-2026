@@ -1,7 +1,7 @@
 #ifndef box_model_h
 #define box_model_h
 
-#include "../value_objects/Geometry/Geometry.h"
+#include "Geometry/Geometry.h"
 
 struct BoxModel
 {

@@ -1,8 +1,8 @@
-#include "../../src/domain/include/View/View.h"
+#include "domain/include/View/View.h"
 
-#include "../../src/domain/include/ComponentManager/ComponentManager.h"
-#include "../../src/domain/include/ComponentStorage/ComponentStorage.h"
-#include "../../src/domain/include/Entity/Entity.h"
+#include "domain/include/ComponentManager/ComponentManager.h"
+#include "domain/include/ComponentStorage/ComponentStorage.h"
+#include "domain/include/Entity/Entity.h"
 
 #include <catch2/catch_test_macros.hpp>
 

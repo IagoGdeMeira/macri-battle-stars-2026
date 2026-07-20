@@ -26,7 +26,9 @@ target_sources(platform
 
 target_include_directories(platform
     PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/events
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/src
         ${PROJECT_SOURCE_DIR}/external/nlohmann/include
 )
 
@@ -60,7 +62,6 @@ endif()
 target_link_libraries(platform
     PUBLIC
         engine
-        domain
 )
 
 target_compile_features(platform PUBLIC cxx_std_20)

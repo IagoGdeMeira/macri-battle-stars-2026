@@ -1,8 +1,8 @@
 #ifndef state_machine_component_h
 #define state_machine_component_h
 
-#include "../../game/include/StateMachine/StateMachine.h"
+#include <cstdint>
 
-struct StateMachineComponent { StateMachine machine; };
+struct StateMachineComponent { std::uint32_t machineId = 0; };
 
 #endif // state_machine_component_h

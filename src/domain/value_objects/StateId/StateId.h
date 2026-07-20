@@ -29,11 +29,7 @@ public:
         CustomStart = 1000
     };
 
-    struct Hash
-    {
-        std::size_t operator()(const StateId& stateId) const
-        { return std::hash<std::int32_t>{}(stateId.value()); }
-    };
+    struct Hash { std::size_t operator()(const StateId& stateId) const { return std::hash<std::int32_t>{}(stateId.value()); } };
 
     StateId() : id(static_cast<std::int32_t>(BaseState::Unknown)) {}
     explicit StateId(BaseState base) : id(static_cast<std::int32_t>(base)) {}

@@ -1,25 +1,25 @@
-#include "../include/EntityFactory/EntityFactory.h"
+#include "EntityFactory/EntityFactory.h"
 
-#include "../../domain/include/World/World.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/components/RectangleColliderComponent.h"
-#include "../../domain/components/CircleColliderComponent.h"
-#include "../../domain/components/SpriteComponent.h"
-#include "../../domain/components/ParallaxComponent.h"
-#include "../../domain/components/RenderComponent.h"
-#include "../../domain/components/ParentComponent.h"
-#include "../../domain/components/LocalTransform.h"
-#include "../../domain/components/HitboxComponent.h"
-#include "../../domain/components/HurtboxComponent.h"
-#include "../../domain/components/LifetimeComponent.h"
-#include "../../domain/components/PushboxComponent.h"
-#include "../../domain/components/ShapeRenderComponent.h"
-#include "../../domain/utils/Logger/Logger.h"
-#include "../../domain/value_objects/CollisionFrame/ColliderDef.h"
-#include "../../domain/value_objects/CollisionFrame/CollisionFrame.h"
+#include "domain/include/World/World.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/CircleColliderComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/components/ParallaxComponent.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/LocalTransform.h"
+#include "domain/components/HitboxComponent.h"
+#include "domain/components/HurtboxComponent.h"
+#include "domain/components/LifetimeComponent.h"
+#include "domain/components/PushboxComponent.h"
+#include "domain/components/ShapeRenderComponent.h"
+#include "domain/utils/Logger/Logger.h"
+#include "domain/value_objects/CollisionFrame/ColliderDef.h"
+#include "domain/value_objects/CollisionFrame/CollisionFrame.h"
 
-#include "../../engine/include/ResourceManager/ResourceManager.h"
-#include "../../engine/include/TextureLoader/TextureLoader.h"
+#include "engine/include/ResourceManager/ResourceManager.h"
+#include "engine/include/TextureLoader/TextureLoader.h"
 
 Entity EntityFactory::createStaticEntity(const Position& position, const Rectangle& rect, std::optional<Entity> parent)
 {
@@ -166,7 +166,7 @@ Entity EntityFactory::createStaticEntityImpl(const Position& position, const Col
     else comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
 
     this->addColliderComponents(e, colliderDef);
-    comp.add<PushboxComponent>(e, PushboxComponent{PushboxComponent::PushboxType::Static});
+    comp.add<PushboxComponent>(e, PushboxComponent{PushboxComponent::Type::Static});
 
     ColliderDebugDef debug;
     debug.color = {128, 128, 128, 128};

@@ -1,15 +1,15 @@
 #ifndef i_platform_factory_h
 #define i_platform_factory_h
 
-#include "../IFontFactory/IFontFactory.h"
-#include "../IMusicFactory/IMusicFactory.h"
-#include "../InputAdapter/InputAdapter.h"
-#include "../InputContext/InputContext.h"
-#include "../IPlatformEventProvider/IPlatformEventProvider.h"
-#include "../ISoundFactory/ISoundFactory.h"
-#include "../ITextureFactory/ITextureFactory.h"
-#include "../Window/Window.h"
-#include "../Renderer/Renderer.h"
+#include "IFontFactory/IFontFactory.h"
+#include "IMusicFactory/IMusicFactory.h"
+#include "InputAdapter/InputAdapter.h"
+#include "InputContext/InputContext.h"
+#include "IPlatformEventProvider/IPlatformEventProvider.h"
+#include "ISoundFactory/ISoundFactory.h"
+#include "ITextureFactory/ITextureFactory.h"
+#include "Window/Window.h"
+#include "Renderer/Renderer.h"
 
 #include <memory>
 #include <string>

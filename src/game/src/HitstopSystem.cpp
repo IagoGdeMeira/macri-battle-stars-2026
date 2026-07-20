@@ -1,10 +1,10 @@
-#include "../include/HitstopSystem/HitstopSystem.h"
+#include "HitstopSystem/HitstopSystem.h"
 
-#include "../../domain/components/HitstopComponent.h"
-#include "../../domain/events/DamageEvent.h"
-#include "../../domain/include/View/View.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/events/DamageEvent.h"
+#include "domain/include/View/View.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 HitstopSystem::HitstopSystem(EventBus& bus, float duration) : bus(bus), hitstopDuration(duration)
 {

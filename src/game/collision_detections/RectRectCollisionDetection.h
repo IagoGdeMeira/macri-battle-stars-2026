@@ -1,10 +1,10 @@
 #ifndef rect_rect_collision_detection_h
 #define rect_rect_collision_detection_h
 
-#include "../include/ICollisionDetection/ICollisionDetection.h"
+#include "ICollisionDetection/ICollisionDetection.h"
 
-#include "../../domain/components/RectangleColliderComponent.h"
-#include "../../domain/components/TransformComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/TransformComponent.h"
 
 #include <vector>
 

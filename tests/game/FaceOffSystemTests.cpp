@@ -1,12 +1,12 @@
-#include "../../src/game/include/FaceOffSystem/FaceOffSystem.h"
+#include "game/include/FaceOffSystem/FaceOffSystem.h"
 
-#include "../../src/domain/components/OrientationComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/components/TransformComponent.h"
-#include "../../src/domain/events/OrientationChangedEvent.h"
+#include "domain/components/OrientationComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/events/OrientationChangedEvent.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
@@ -19,10 +19,10 @@ public:
 
     FaceOffSystemFixture()
     {
-        auto& components = this->scene.world().components();
-        components.registerComponent<TransformComponent>();
-        components.registerComponent<OrientationComponent>();
-        components.registerComponent<PlayerComponent>();
+        auto& comp = this->scene.world().components();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<OrientationComponent>();
+        comp.registerComponent<PlayerComponent>();
     }
 };
 
@@ -45,10 +45,10 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem with one player does nothi
 ) {
     const auto entity = this->scene.world().entities().create();
     
-    auto& components = this->scene.world().components();
-    components.add<TransformComponent>(entity, TransformComponent{0.f, 0.f});
-    components.add<OrientationComponent>(entity, OrientationComponent{Orientation::Right});
-    components.add<PlayerComponent>(entity, PlayerComponent{1});
+    auto& comp = this->scene.world().components();
+    comp.add<TransformComponent>(entity, TransformComponent{0.f, 0.f});
+    comp.add<OrientationComponent>(entity, OrientationComponent{Orientation::Right});
+    comp.add<PlayerComponent>(entity, PlayerComponent{1});
 
     this->scene.systems().addSystem<FaceOffSystem>(this->bus);
     
@@ -68,14 +68,14 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem sets correct orientations 
     const auto player1 = entities.create();
     const auto player2 = entities.create();
 
-    auto& components = this->scene.world().components();
-    components.add<TransformComponent>(player1, TransformComponent{50.f, 0.f});
-    components.add<OrientationComponent>(player1, OrientationComponent{Orientation::Left});
-    components.add<PlayerComponent>(player1, PlayerComponent{1});
+    auto& comp = this->scene.world().components();
+    comp.add<TransformComponent>(player1, TransformComponent{50.f, 0.f});
+    comp.add<OrientationComponent>(player1, OrientationComponent{Orientation::Left});
+    comp.add<PlayerComponent>(player1, PlayerComponent{1});
 
-    components.add<TransformComponent>(player2, TransformComponent{100.f, 0.f});
-    components.add<OrientationComponent>(player2, OrientationComponent{Orientation::Right});
-    components.add<PlayerComponent>(player2, PlayerComponent{2});
+    comp.add<TransformComponent>(player2, TransformComponent{100.f, 0.f});
+    comp.add<OrientationComponent>(player2, OrientationComponent{Orientation::Right});
+    comp.add<PlayerComponent>(player2, PlayerComponent{2});
 
     std::vector<OrientationChangedEvent> events;
     this->bus.subscribe<OrientationChangedEvent>([&](const OrientationChangedEvent& event)
@@ -86,8 +86,8 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem sets correct orientations 
 
     REQUIRE(events.size() == 2);
     
-    const auto& orientation1 = components.get<OrientationComponent>(player1);
-    const auto& orientation2 = components.get<OrientationComponent>(player2);
+    const auto& orientation1 = comp.get<OrientationComponent>(player1);
+    const auto& orientation2 = comp.get<OrientationComponent>(player2);
     
     REQUIRE(orientation1.direction == Orientation::Right);
     REQUIRE(orientation2.direction == Orientation::Left);
@@ -100,14 +100,14 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem emits events when orientat
     const auto player1 = entities.create();
     const auto player2 = entities.create();
 
-    auto& components = this->scene.world().components();
-    components.add<TransformComponent>(player1, TransformComponent{50.f, 0.f});
-    components.add<OrientationComponent>(player1, OrientationComponent{Orientation::Left});
-    components.add<PlayerComponent>(player1, PlayerComponent{1});
+    auto& comp = this->scene.world().components();
+    comp.add<TransformComponent>(player1, TransformComponent{50.f, 0.f});
+    comp.add<OrientationComponent>(player1, OrientationComponent{Orientation::Left});
+    comp.add<PlayerComponent>(player1, PlayerComponent{1});
 
-    components.add<TransformComponent>(player2, TransformComponent{100.f, 0.f});
-    components.add<OrientationComponent>(player2, OrientationComponent{Orientation::Right});
-    components.add<PlayerComponent>(player2, PlayerComponent{2});
+    comp.add<TransformComponent>(player2, TransformComponent{100.f, 0.f});
+    comp.add<OrientationComponent>(player2, OrientationComponent{Orientation::Right});
+    comp.add<PlayerComponent>(player2, PlayerComponent{2});
 
     std::vector<OrientationChangedEvent> events;
     this->bus.subscribe<OrientationChangedEvent>([&](const OrientationChangedEvent& event)
@@ -133,14 +133,14 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem does not emit events when 
     const auto player1 = entities.create();
     const auto player2 = entities.create();
     
-    auto& components = this->scene.world().components();
-    components.add<TransformComponent>(player1, TransformComponent{50.f, 0.f});
-    components.add<OrientationComponent>(player1, OrientationComponent{Orientation::Right});
-    components.add<PlayerComponent>(player1, PlayerComponent{1});
+    auto& comp = this->scene.world().components();
+    comp.add<TransformComponent>(player1, TransformComponent{50.f, 0.f});
+    comp.add<OrientationComponent>(player1, OrientationComponent{Orientation::Right});
+    comp.add<PlayerComponent>(player1, PlayerComponent{1});
 
-    components.add<TransformComponent>(player2, TransformComponent{100.f, 0.f});
-    components.add<OrientationComponent>(player2, OrientationComponent{Orientation::Left});
-    components.add<PlayerComponent>(player2, PlayerComponent{2});
+    comp.add<TransformComponent>(player2, TransformComponent{100.f, 0.f});
+    comp.add<OrientationComponent>(player2, OrientationComponent{Orientation::Left});
+    comp.add<PlayerComponent>(player2, PlayerComponent{2});
 
     this->scene.systems().addSystem<FaceOffSystem>(this->bus);
     
@@ -163,18 +163,18 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem correctly orders and orien
     const auto player2 = entities.create();
     const auto player3 = entities.create();
 
-    auto& components = this->scene.world().components();
-    components.add<TransformComponent>(player1, TransformComponent{200.f, 0.f});
-    components.add<OrientationComponent>(player1, OrientationComponent{Orientation::Right});
-    components.add<PlayerComponent>(player1, PlayerComponent{1});
+    auto& comp = this->scene.world().components();
+    comp.add<TransformComponent>(player1, TransformComponent{200.f, 0.f});
+    comp.add<OrientationComponent>(player1, OrientationComponent{Orientation::Right});
+    comp.add<PlayerComponent>(player1, PlayerComponent{1});
 
-    components.add<TransformComponent>(player2, TransformComponent{50.f, 0.f});
-    components.add<OrientationComponent>(player2, OrientationComponent{Orientation::Left});
-    components.add<PlayerComponent>(player2, PlayerComponent{2});
+    comp.add<TransformComponent>(player2, TransformComponent{50.f, 0.f});
+    comp.add<OrientationComponent>(player2, OrientationComponent{Orientation::Left});
+    comp.add<PlayerComponent>(player2, PlayerComponent{2});
 
-    components.add<TransformComponent>(player3, TransformComponent{125.f, 0.f});
-    components.add<OrientationComponent>(player3, OrientationComponent{Orientation::Right});
-    components.add<PlayerComponent>(player3, PlayerComponent{3});
+    comp.add<TransformComponent>(player3, TransformComponent{125.f, 0.f});
+    comp.add<OrientationComponent>(player3, OrientationComponent{Orientation::Right});
+    comp.add<PlayerComponent>(player3, PlayerComponent{3});
 
     std::vector<OrientationChangedEvent> events;
     this->bus.subscribe<OrientationChangedEvent>([&](const OrientationChangedEvent& event)
@@ -185,12 +185,12 @@ TEST_CASE_METHOD(FaceOffSystemFixture, "FaceOffSystem correctly orders and orien
 
     REQUIRE(events.size() == 3);
 
-    const auto& orientation2 = components.get<OrientationComponent>(player2);
+    const auto& orientation2 = comp.get<OrientationComponent>(player2);
     REQUIRE(orientation2.direction == Orientation::Right);
 
-    const auto& orientation3 = components.get<OrientationComponent>(player3);
+    const auto& orientation3 = comp.get<OrientationComponent>(player3);
     REQUIRE(orientation3.direction == Orientation::Left);
 
-    const auto& orientation1 = components.get<OrientationComponent>(player1);
+    const auto& orientation1 = comp.get<OrientationComponent>(player1);
     REQUIRE(orientation1.direction == Orientation::Left);
 }

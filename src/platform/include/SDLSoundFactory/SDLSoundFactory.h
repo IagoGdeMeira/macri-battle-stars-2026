@@ -1,9 +1,9 @@
 #ifndef sdl_sound_factory_h
 #define sdl_sound_factory_h
 
-#include "../SDLSound/SDLSound.h"
+#include "SDLSound/SDLSound.h"
 
-#include "../../engine/include/ISoundFactory/ISoundFactory.h"
+#include "engine/include/ISoundFactory/ISoundFactory.h"
 
 #include <memory>
 #include <string>

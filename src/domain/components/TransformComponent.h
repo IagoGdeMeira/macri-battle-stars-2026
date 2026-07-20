@@ -1,7 +1,7 @@
 #ifndef transform_component_h
 #define transform_component_h
 
-#include "../value_objects/Geometry/Geometry.h"
+#include "Geometry/Geometry.h"
 
 struct TransformComponent
 {

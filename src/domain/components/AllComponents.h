@@ -35,7 +35,6 @@
 #include "ShapeRenderComponent.h"
 #include "SpriteComponent.h"
 #include "StateComponent.h"
-#include "StateMappingComponent.h"
 #include "StateMachineComponent.h"
 #include "TransformComponent.h"
 #include "UIActionComponent.h"

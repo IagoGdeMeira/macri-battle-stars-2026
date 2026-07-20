@@ -1,18 +1,18 @@
 #ifndef world_texture_render_format_h
 #define world_texture_render_format_h
 
-#include "../include/Camera2D/Camera2D.h"
-#include "../include/IRenderFormat/IRenderFormat.h"
+#include "Camera2D/Camera2D.h"
+#include "IRenderFormat/IRenderFormat.h"
 
-#include "../../domain/include/Entity/Entity.h"
-#include "../../domain/include/World/World.h"
+#include "domain/include/Entity/Entity.h"
+#include "domain/include/World/World.h"
 
-#include "../../engine/include/DrawBatch/DrawTextureBatch.h"
-#include "../../engine/include/DrawCommands/DrawCommands.h"
-#include "../../engine/include/Renderer/Renderer.h"
-#include "../../engine/include/ResourceManager/ResourceManager.h"
-#include "../../engine/include/TextureLoader/TextureLoader.h"
-#include "../../engine/value_objects/Viewport/Viewport.h"
+#include "engine/include/DrawBatch/DrawTextureBatch.h"
+#include "engine/include/DrawCommands/DrawCommands.h"
+#include "engine/include/Renderer/Renderer.h"
+#include "engine/include/ResourceManager/ResourceManager.h"
+#include "engine/include/TextureLoader/TextureLoader.h"
+#include "engine/value_objects/Viewport/Viewport.h"
 
 class WorldTextureRenderFormat : public IRenderFormat
 {

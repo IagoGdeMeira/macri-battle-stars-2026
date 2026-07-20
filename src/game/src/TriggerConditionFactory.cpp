@@ -1,19 +1,19 @@
-#include "../include/TriggerConditionFactory/TriggerConditionFactory.h"
+#include "TriggerConditionFactory/TriggerConditionFactory.h"
 
-#include "../trigger_conditions/CompositeCondition.h"
-#include "../trigger_conditions/HealthBelowCondition.h"
-#include "../trigger_conditions/InputPressedCondition.h"
-#include "../trigger_conditions/MinTimeCondition.h"
-#include "../trigger_conditions/NotCondition.h"
-#include "../trigger_conditions/VelocityAboveCondition.h"
+#include "CompositeCondition.h"
+#include "HealthBelowCondition.h"
+#include "InputPressedCondition.h"
+#include "MinTimeCondition.h"
+#include "NotCondition.h"
+#include "VelocityAboveCondition.h"
 
-#include "../../engine/include/InputMapper/InputMapper.h"
+#include "engine/include/InputMapper/InputMapper.h"
 
 #include <stdexcept>
 
 std::unique_ptr<ITriggerCondition> TriggerConditionFactory::create(const DataNode& node)
 {
-    using CType = CompositeCondition::CompositeType;
+    using CType = CompositeCondition::Type;
 
     std::string type = node.getString("type");
 

@@ -1,7 +1,7 @@
 #ifndef input_adapter_h
 #define input_adapter_h
 
-#include "../events/PlatformEvent.h"
+#include "PlatformEvent.h"
 
 #include <memory>
 #include <vector>

@@ -1,8 +1,8 @@
-#include "../include/StateMachineLoader/StateMachineLoader.h"
+#include "StateMachineLoader/StateMachineLoader.h"
 
-#include "../include/StateIdMapper/StateIdMapper.h"
-#include "../include/TriggerConditionFactory/TriggerConditionFactory.h"
-#include "../include/TriggerMapper/TriggerMapper.h"
+#include "StateIdMapper/StateIdMapper.h"
+#include "TriggerConditionFactory/TriggerConditionFactory.h"
+#include "TriggerMapper/TriggerMapper.h"
 
 #include <stdexcept>
 #include <unordered_set>

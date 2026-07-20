@@ -1,13 +1,13 @@
-#include "../../../src/game/trigger_conditions/CompositeCondition.h"
+#include "game/trigger_conditions/CompositeCondition.h"
 
-#include "../../../src/domain/components/HealthComponent.h"
-#include "../../../src/domain/components/StateComponent.h"
-#include "../../../src/domain/components/VelocityComponent.h"
-#include "../../../src/domain/include/World/World.h"
+#include "domain/components/HealthComponent.h"
+#include "domain/components/StateComponent.h"
+#include "domain/components/VelocityComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../../src/game/trigger_conditions/HealthBelowCondition.h"
-#include "../../../src/game/trigger_conditions/MinTimeCondition.h"
-#include "../../../src/game/trigger_conditions/VelocityAboveCondition.h"
+#include "game/trigger_conditions/HealthBelowCondition.h"
+#include "game/trigger_conditions/MinTimeCondition.h"
+#include "game/trigger_conditions/VelocityAboveCondition.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -20,9 +20,9 @@ public:
     
     CompositeConditionFixture()
     {
-        auto& components = this->world.components();
-        components.registerComponent<HealthComponent>();
-        components.registerComponent<VelocityComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<HealthComponent>();
+        comp.registerComponent<VelocityComponent>();
     }
 
     TriggerConditionContext makeContext()

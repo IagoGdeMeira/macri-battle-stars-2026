@@ -1,6 +1,6 @@
-#include "../../src/domain/include/ComponentStorage/ComponentStorage.h"
+#include "domain/include/ComponentStorage/ComponentStorage.h"
 
-#include "../../src/domain/include/Entity/Entity.h"
+#include "domain/include/Entity/Entity.h"
 
 #include <catch2/catch_test_macros.hpp>
 

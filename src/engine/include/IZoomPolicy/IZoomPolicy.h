@@ -5,7 +5,6 @@ class IZoomPolicy
 {
 public:
     virtual ~IZoomPolicy() = default;
-    
     virtual bool applyZoom() const = 0;
 };
 

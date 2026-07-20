@@ -1,17 +1,17 @@
 #ifndef ui_circle_render_format_h
 #define ui_circle_render_format_h
 
-#include "../include/IRenderFormat/IRenderFormat.h"
+#include "IRenderFormat/IRenderFormat.h"
 
-#include "../../domain/components/RenderComponent.h"
-#include "../../domain/components/UITransform.h"
-#include "../../domain/components/VisualEffectsComponent.h"
-#include "../../domain/include/View/View.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/UITransform.h"
+#include "domain/components/VisualEffectsComponent.h"
+#include "domain/include/View/View.h"
 
-#include "../../engine/include/DrawBatch/DrawCircleBatch.h"
-#include "../../engine/include/DrawCommands/DrawCommands.h"
-#include "../../engine/include/Renderer/Renderer.h"
-#include "../../engine/include/RenderContext/RenderContext.h"
+#include "engine/include/DrawBatch/DrawCircleBatch.h"
+#include "engine/include/DrawCommands/DrawCommands.h"
+#include "engine/include/Renderer/Renderer.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
 class UICircleRenderFormat : public IRenderFormat
 {
@@ -21,7 +21,8 @@ public:
     void render(RenderContext& ctx) override
     {
         this->batch.clear();
-        auto view = View<UITransform, RenderComponent>(ctx.world.components());
+        auto& comp = ctx.world.components();
+        auto view = View<UITransform, RenderComponent>(comp);
         size_t order = 0;
 
         for (auto [entity, transform, render] : view)
@@ -39,9 +40,9 @@ public:
             cmd.zIndex = render.zIndex;
             cmd.order = order++;
 
-            if (ctx.world.components().has<VisualEffectsComponent>(entity))
+            if (comp.has<VisualEffectsComponent>(entity))
             {
-                const auto& fx = ctx.world.components().get<VisualEffectsComponent>(entity);
+                const auto& fx = comp.get<VisualEffectsComponent>(entity);
                 for (auto& effect : fx.circleEffects) effect(this->batch, cmd);
             }
             this->batch.add(cmd);

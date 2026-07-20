@@ -1,7 +1,7 @@
 #ifndef stub_texture_h
 #define stub_texture_h
 
-#include "../../src/engine/resources/Texture/Texture.h"
+#include "engine/resources/Texture/Texture.h"
 
 class StubTexture : public Texture
 {

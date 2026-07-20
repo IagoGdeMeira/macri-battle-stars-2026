@@ -1,4 +1,4 @@
-#include "../include/ComponentManager/ComponentManager.h"
+#include "ComponentManager/ComponentManager.h"
 
 uint32_t ComponentManager::nextComponentTypeId = 0;
 

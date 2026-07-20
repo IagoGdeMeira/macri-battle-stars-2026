@@ -1,7 +1,7 @@
 #ifndef ui_sprite_component_h
 #define ui_sprite_component_h
 
-#include "../value_objects/Color/Color.h"
+#include "Color/Color.h"
 
 #include <memory>
 

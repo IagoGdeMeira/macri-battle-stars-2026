@@ -1,22 +1,22 @@
-#include "../../src/engine/include/SceneFactory/SceneFactory.h"
+#include "engine/include/SceneFactory/SceneFactory.h"
 
-#include "../../src/domain/value_objects/Color/Color.h"
-#include "../../src/domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/Color/Color.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../src/engine/events/QuitEvent.h"
-#include "../../src/engine/include/Engine/Engine.h"
-#include "../../src/engine/include/Scene/Scene.h"
-#include "../../src/engine/include/SceneManager/SceneManager.h"
-#include "../../src/engine/value_objects/GameSettings/GameSettings.h"
+#include "engine/events/QuitEvent.h"
+#include "engine/include/Engine/Engine.h"
+#include "engine/include/Scene/Scene.h"
+#include "engine/include/SceneManager/SceneManager.h"
+#include "engine/value_objects/GameSettings/GameSettings.h"
 
-#include "../stubs/StubDataParser.h"
-#include "../stubs/StubEngine.h"
-#include "../stubs/StubFontFactory.h"
-#include "../stubs/StubRenderer.h"
-#include "../stubs/StubResourceManager.h"
-#include "../stubs/StubTextureFactory.h"
-#include "../stubs/StubTextureLoader.h"
-#include "../stubs/StubWindow.h"
+#include "StubDataParser.h"
+#include "StubEngine.h"
+#include "StubFontFactory.h"
+#include "StubRenderer.h"
+#include "StubResourceManager.h"
+#include "StubTextureFactory.h"
+#include "StubTextureLoader.h"
+#include "StubWindow.h"
 
 #include <atomic>
 #include <catch2/catch_test_macros.hpp>

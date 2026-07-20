@@ -1,11 +1,11 @@
-#include "../include/InputSystem/InputSystem.h"
+#include "InputSystem/InputSystem.h"
 
-#include "../value_objects/UpdateContext/UpdateContext.h"
+#include "UpdateContext/UpdateContext.h"
 
-#include "../../domain/components/AnalogInputComponent.h"
-#include "../../domain/components/InputComponent.h"
-#include "../../domain/components/PlayerComponent.h"
-#include "../../domain/include/View/View.h"
+#include "domain/components/AnalogInputComponent.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/include/View/View.h"
 
 InputSystem::InputSystem(EventBus& bus, InputContext& inputContext) : context(inputContext)
 {

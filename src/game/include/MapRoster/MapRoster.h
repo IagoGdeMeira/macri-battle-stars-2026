@@ -5,18 +5,18 @@
 #include <unordered_map>
 #include <vector>
 
-struct MapEntry { std::string id, name, definitionPath; };
-
 class MapRoster
 {
 public:
-    void addEntry(const MapEntry& entry);
+    struct Entry { std::string id, name, definitionPath; };
 
-    const MapEntry* findById(const std::string& id) const;
-    const std::vector<MapEntry>& getAll() const { return this->entries; }
+    void addEntry(const Entry& entry);
+
+    const Entry* findById(const std::string& id) const;
+    const std::vector<Entry>& getAll() const { return this->entries; }
 
 private:
-    std::vector<MapEntry> entries;
+    std::vector<Entry> entries;
     std::unordered_map<std::string, size_t> idMap;
 };
 

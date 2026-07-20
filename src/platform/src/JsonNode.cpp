@@ -1,4 +1,4 @@
-#include "../include/JsonNode/JsonNode.h"
+#include "JsonNode/JsonNode.h"
 
 #include <stdexcept>
 

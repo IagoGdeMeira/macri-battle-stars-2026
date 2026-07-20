@@ -1,18 +1,18 @@
-#include "../../src/engine/include/Engine/Engine.h"
+#include "engine/include/Engine/Engine.h"
 
-#include "../stubs/StubDataParser.h"
-#include "../stubs/StubEngine.h"
-#include "../stubs/StubFontFactory.h"
-#include "../stubs/StubRenderer.h"
-#include "../stubs/StubResourceManager.h"
-#include "../stubs/StubTextureFactory.h"
-#include "../stubs/StubTextureLoader.h"
-#include "../stubs/StubWindow.h"
-#include "../stubs/StubSceneManager.h"
+#include "StubDataParser.h"
+#include "StubEngine.h"
+#include "StubFontFactory.h"
+#include "StubRenderer.h"
+#include "StubResourceManager.h"
+#include "StubTextureFactory.h"
+#include "StubTextureLoader.h"
+#include "StubWindow.h"
+#include "StubSceneManager.h"
 
-#include "../../src/engine/events/QuitEvent.h"
-#include "../../src/engine/include/SceneFactory/SceneFactory.h"
-#include "../../src/engine/include/SceneManager/SceneManager.h"
+#include "engine/events/QuitEvent.h"
+#include "engine/include/SceneFactory/SceneFactory.h"
+#include "engine/include/SceneManager/SceneManager.h"
 
 #include <atomic>
 #include <catch2/catch_approx.hpp>

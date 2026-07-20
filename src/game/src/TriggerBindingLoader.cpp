@@ -1,8 +1,8 @@
-#include "../include/TriggerBindingLoader/TriggerBindingLoader.h"
+#include "TriggerBindingLoader/TriggerBindingLoader.h"
 
-#include "../include/TriggerMapper/TriggerMapper.h"
+#include "TriggerMapper/TriggerMapper.h"
 
-#include "../../engine/include/InputMapper/InputMapper.h"
+#include "engine/include/InputMapper/InputMapper.h"
 
 TriggerContext TriggerBindingLoader::load(const std::string& path)
 {

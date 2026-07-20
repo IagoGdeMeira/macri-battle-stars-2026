@@ -1,9 +1,9 @@
 #ifndef character_definition_loader_h
 #define character_definition_loader_h
 
-#include "../CharacterDefinition/CharacterDefinition.h"
+#include "CharacterDefinition/CharacterDefinition.h"
 
-#include "../../engine/include/DataParser/DataParser.h"
+#include "engine/include/DataParser/DataParser.h"
 
 class CharacterDefinitionLoader
 {

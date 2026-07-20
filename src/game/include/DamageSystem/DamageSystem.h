@@ -1,9 +1,9 @@
 #ifndef damage_system_h
 #define damage_system_h
 
-#include "../events/CollisionEvent.h"
+#include "CollisionEvent.h"
 
-#include "../../engine/include/System/System.h"
+#include "engine/include/System/System.h"
 
 #include <vector>
 
@@ -13,7 +13,6 @@ class DamageSystem : public System
 {
 public:
     DamageSystem(EventBus& bus);
-
     void update(UpdateContext& ctx) override;
 
 private:

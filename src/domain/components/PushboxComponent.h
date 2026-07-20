@@ -3,9 +3,9 @@
 
 struct PushboxComponent
 {
-    enum class PushboxType { Static, Dynamic };
+    enum class Type { Static, Dynamic };
 
-    PushboxType type = PushboxType::Dynamic;
+    Type type = Type::Dynamic;
     float mass = 1.f, pushResistance = 1.f;
 };
 

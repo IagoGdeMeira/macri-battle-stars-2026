@@ -1,10 +1,10 @@
-#include "../../src/engine/include/ResourceLoader/ResourceLoader.h"
+#include "engine/include/ResourceLoader/ResourceLoader.h"
 
-#include "../stubs/StubResourceLoader.h"
+#include "StubResourceLoader.h"
 
-#include "../../src/engine/include/ResourceLoader/AsyncLoader.h"
-#include "../../src/engine/include/ResourceLoader/SyncLoader.h"
-#include "../../src/engine/include/ThreadPool/ThreadPool.h"
+#include "engine/include/ResourceLoader/AsyncLoader.h"
+#include "engine/include/ResourceLoader/SyncLoader.h"
+#include "engine/include/ThreadPool/ThreadPool.h"
 
 #include <catch2/catch_test_macros.hpp>
 

@@ -1,7 +1,7 @@
-#include "../../src/game/include/CharacterRosterLoader/CharacterRosterLoader.h"
+#include "game/include/CharacterRosterLoader/CharacterRosterLoader.h"
 
-#include "../stubs/StubDataNode.h"
-#include "../stubs/StubDataParser.h"
+#include "StubDataNode.h"
+#include "StubDataParser.h"
 
 #include <catch2/catch_test_macros.hpp>
 

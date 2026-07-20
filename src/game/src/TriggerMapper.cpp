@@ -1,4 +1,4 @@
-#include "../include/TriggerMapper/TriggerMapper.h"
+#include "TriggerMapper/TriggerMapper.h"
 
 #include <stdexcept>
 

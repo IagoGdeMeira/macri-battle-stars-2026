@@ -3,7 +3,7 @@
 
 #include "StubTextureFactory.h"
 
-#include "../../src/engine/include/TextureLoader/TextureLoader.h"
+#include "engine/include/TextureLoader/TextureLoader.h"
 
 class StubTextureLoader : public TextureLoader
 {

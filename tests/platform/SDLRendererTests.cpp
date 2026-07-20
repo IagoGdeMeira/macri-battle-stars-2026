@@ -1,12 +1,12 @@
-#include "../../src/platform/include/SDLRenderer/SDLRenderer.h"
+#include "platform/include/SDLRenderer/SDLRenderer.h"
 
-#include "../../src/domain/value_objects/Color/Color.h"
+#include "domain/value_objects/Color/Color.h"
 
-#include "../../src/engine/value_objects/Viewport/Viewport.h"
+#include "engine/value_objects/Viewport/Viewport.h"
 
-#include "../../src/platform/include/SDLTexture/SDLTexture.h"
-#include "../../src/platform/include/SDLWindow/SDLWindow.h"
-#include "../../src/platform/include/SDLFont/SDLFont.h"
+#include "platform/include/SDLTexture/SDLTexture.h"
+#include "platform/include/SDLWindow/SDLWindow.h"
+#include "platform/include/SDLFont/SDLFont.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <SDL.h>

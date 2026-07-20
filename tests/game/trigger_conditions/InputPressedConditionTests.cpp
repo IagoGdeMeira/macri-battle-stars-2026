@@ -1,8 +1,8 @@
-#include "../../../src/game/trigger_conditions/InputPressedCondition.h"
+#include "game/trigger_conditions/InputPressedCondition.h"
 
-#include "../../../src/domain/components/InputComponent.h"
-#include "../../../src/domain/components/StateComponent.h"
-#include "../../../src/domain/include/World/World.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/StateComponent.h"
+#include "domain/include/World/World.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -22,7 +22,7 @@ public:
     void addInputComponent(InputAction action, bool pressed = false)
     {
         InputComponent input;
-        input.actions[action] = InputState { pressed, 0.f };
+        input.actions[action] = InputComponent::State { pressed, 0.f };
         this->world.components().add<InputComponent>(this->entity, input);
     }
 };

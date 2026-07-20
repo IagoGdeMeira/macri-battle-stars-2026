@@ -5,8 +5,8 @@
 #include "StubSceneFactory.h"
 #include "StubWindow.h"
 
-#include "../../src/engine/include/SceneManager/SceneManager.h"
-#include "../../src/engine/value_objects/GameSettings/GameSettings.h"
+#include "engine/include/SceneManager/SceneManager.h"
+#include "engine/value_objects/GameSettings/GameSettings.h"
 
 #include <vector>
 

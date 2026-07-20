@@ -1,7 +1,7 @@
 #ifndef stub_input_adapter_h
 #define stub_input_adapter_h
 
-#include "../../src/engine/include/InputAdapter/InputAdapter.h"
+#include "engine/include/InputAdapter/InputAdapter.h"
 
 class StubInputAdapter : public InputAdapter
 {

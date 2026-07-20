@@ -1,9 +1,9 @@
 #ifndef trigger_condition_factory_h
 #define trigger_condition_factory_h
 
-#include "../ITriggerCondition/ITriggerCondition.h"
+#include "ITriggerCondition/ITriggerCondition.h"
 
-#include "../../engine/include/DataNode/DataNode.h"
+#include "engine/include/DataNode/DataNode.h"
 
 #include <memory>
 

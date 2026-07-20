@@ -1,20 +1,23 @@
-#include "../include/StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
+#include "StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
 
-#include "../include/CollisionHandler/CollisionHandlerFactory.h"
-#include "../include/CollisionHandler/ICollisionHandler.h"
-#include "../events/CollisionEvent.h"
+#include "CollisionEvent.h"
+#include "CollisionHandlerFactory/CollisionHandlerFactory.h"
+#include "ICollisionHandler/ICollisionHandler.h"
 
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/components/RectangleColliderComponent.h"
-#include "../../domain/components/PushboxComponent.h"
-#include "../../domain/components/VelocityComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/PushboxComponent.h"
+#include "domain/components/VelocityComponent.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
 
 StaticPushboxResolutionSystem::StaticPushboxResolutionSystem(EventBus& bus)
-{ bus.subscribe<CollisionEvent>([this](const CollisionEvent& e) { this->collisions.push_back(e); }); }
+{
+    bus.subscribe<CollisionEvent>([this](const CollisionEvent& e)
+    { this->collisions.push_back(e); });
+}
 
 void StaticPushboxResolutionSystem::update(UpdateContext& ctx)
 {
@@ -27,9 +30,9 @@ void StaticPushboxResolutionSystem::update(UpdateContext& ctx)
         auto& pushA = comp.get<PushboxComponent>(a);
         auto& pushB = comp.get<PushboxComponent>(b);
 
-        using PushType = PushboxComponent::PushboxType;
-        if (pushA.type == PushType::Dynamic && pushB.type == PushType::Static) this->resolveStaticCollision(ctx, a, b);
-        else if (pushB.type == PushType::Dynamic && pushA.type == PushType::Static) this->resolveStaticCollision(ctx, b, a);
+        using Type = PushboxComponent::Type;
+        if (pushA.type == Type::Dynamic && pushB.type == Type::Static) this->resolveStaticCollision(ctx, a, b);
+        else if (pushB.type == Type::Dynamic && pushA.type == Type::Static) this->resolveStaticCollision(ctx, b, a);
     }
     
     this->collisions.clear();
@@ -72,11 +75,10 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
         if (dynCenter.y < staCenter.y)
         {
             dynTrans.position.y -= sep;
-            if (comp.has<VelocityComponent>(dyn))
-            {
-                auto& vel = comp.get<VelocityComponent>(dyn);
-                if (vel.velocity.y > 0.f) vel.velocity.y = 0.f;
-            }
+            if (!comp.has<VelocityComponent>(dyn)) return;
+            
+            auto& vel = comp.get<VelocityComponent>(dyn);
+            if (vel.velocity.y > 0.f) vel.velocity.y = 0.f;
         }
         else
         {

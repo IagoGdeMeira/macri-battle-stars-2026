@@ -1,14 +1,14 @@
-#include "../include/CollisionDetectionSystem/CollisionDetectionSystem.h"
+#include "CollisionDetectionSystem/CollisionDetectionSystem.h"
 
-#include "../events/CollisionEvent.h"
+#include "CollisionEvent.h"
 
-#include "../../domain/components/CircleColliderComponent.h"
-#include "../../domain/components/RectangleColliderComponent.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/components/CircleColliderComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
 #include <cmath>
@@ -63,8 +63,8 @@ void CollisionDetectionSystem::buildGrid(UpdateContext& ctx, Grid& grid)
     for (auto [e, t, c] : circles)
     {
         auto& pos = t.position;
-        const AABB circleBounds{pos.x - c.radius, pos.x + c.radius, pos.y - c.radius, pos.y + c.radius};
-        const AABB cellBounds{
+        const AABB circleBounds {pos.x - c.radius, pos.x + c.radius, pos.y - c.radius, pos.y + c.radius};
+        const AABB cellBounds {
             std::floor(circleBounds.left / this->cellSize) * this->cellSize,
             std::floor(circleBounds.right / this->cellSize) * this->cellSize,
             std::floor(circleBounds.top / this->cellSize) * this->cellSize,

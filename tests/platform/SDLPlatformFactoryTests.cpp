@@ -1,11 +1,11 @@
-#include "../../src/platform/include/SDLPlatformFactory/SDLPlatformFactory.h"
+#include "platform/include/SDLPlatformFactory/SDLPlatformFactory.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/platform/include/SDLRenderer/SDLRenderer.h"
-#include "../../src/platform/include/SDLWindow/SDLWindow.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "platform/include/SDLRenderer/SDLRenderer.h"
+#include "platform/include/SDLWindow/SDLWindow.h"
 
-#include "../stubs/StubWindow.h"
-#include "../stubs/StubRenderer.h"
+#include "StubWindow.h"
+#include "StubRenderer.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <SDL.h>

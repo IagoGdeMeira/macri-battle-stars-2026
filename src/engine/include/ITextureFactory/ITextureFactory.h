@@ -1,7 +1,7 @@
 #ifndef i_texture_factory_h
 #define i_texture_factory_h
 
-#include "../resources/Texture/Texture.h"
+#include "Texture/Texture.h"
 
 #include <memory>
 #include <string>

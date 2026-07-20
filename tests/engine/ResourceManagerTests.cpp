@@ -1,9 +1,9 @@
-#include "../../src/engine/include/ResourceManager/ResourceManager.h"
+#include "engine/include/ResourceManager/ResourceManager.h"
 
-#include "../stubs/StubLoader.h"
+#include "StubLoader.h"
 
-#include "../../src/engine/include/ResourceLoader/ResourceLoader.h"
-#include "../../src/engine/include/ThreadPool/ThreadPool.h"
+#include "engine/include/ResourceLoader/ResourceLoader.h"
+#include "engine/include/ThreadPool/ThreadPool.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <future>

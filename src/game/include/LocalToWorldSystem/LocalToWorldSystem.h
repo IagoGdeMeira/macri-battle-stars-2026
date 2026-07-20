@@ -1,7 +1,7 @@
 #ifndef local_to_world_system_h
 #define local_to_world_system_h
 
-#include "../../engine/include/System/System.h"
+#include "engine/include/System/System.h"
 
 struct LocalTransform;
 struct TransformComponent;

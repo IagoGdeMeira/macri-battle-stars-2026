@@ -1,13 +1,13 @@
-#include "../include/Application/Application.h"
+#include "Application/Application.h"
 
-#include "../../engine/include/ResourceManager/ResourceManager.h"
-#include "../../engine/include/TextureLoader/TextureLoader.h"
+#include "engine/include/ResourceManager/ResourceManager.h"
+#include "engine/include/TextureLoader/TextureLoader.h"
 
-#include "../../game/scenes/GameScene.h"
+#include "game/scenes/GameScene.h"
 
-#include "../../platform/include/JsonParser/JsonParser.h"
-#include "../../platform/include/SDLPlatformFactory/SDLPlatformFactory.h"
-#include "../../platform/include/SDLSystemInitializer/SDLSystemInitializer.h"
+#include "platform/include/JsonParser/JsonParser.h"
+#include "platform/include/SDLPlatformFactory/SDLPlatformFactory.h"
+#include "platform/include/SDLSystemInitializer/SDLSystemInitializer.h"
 
 Application& Application::setWindowTitle(const std::string& title)
 {

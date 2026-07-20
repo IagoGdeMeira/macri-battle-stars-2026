@@ -1,7 +1,7 @@
 #ifndef json_parser_h
 #define json_parser_h
 
-#include "../../engine/include/DataParser/DataParser.h"
+#include "engine/include/DataParser/DataParser.h"
 
 class JsonParser : public DataParser
 {

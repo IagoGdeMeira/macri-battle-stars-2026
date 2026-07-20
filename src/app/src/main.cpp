@@ -1,8 +1,8 @@
 #define SDL_MAIN_HANDLED
 
-#include "../include/Application/Application.h"
+#include "Application/Application.h"
 
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include <exception>
 #include <iostream>

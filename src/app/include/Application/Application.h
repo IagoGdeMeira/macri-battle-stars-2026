@@ -1,17 +1,17 @@
 #ifndef application_h
 #define application_h
 
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../engine/include/DataParser/DataParser.h"
-#include "../../engine/include/Engine/Engine.h"
-#include "../../engine/include/IFontFactory/IFontFactory.h"
-#include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
-#include "../../engine/include/ISystemInitializer/ISystemInitializer.h"
-#include "../../engine/include/ITextureFactory/ITextureFactory.h"
-#include "../../engine/include/SceneFactory/SceneFactory.h"
-#include "../../engine/include/SceneManager/SceneManager.h"
-#include "../../engine/value_objects/GameSettings/GameSettings.h"
+#include "engine/include/DataParser/DataParser.h"
+#include "engine/include/Engine/Engine.h"
+#include "engine/include/IFontFactory/IFontFactory.h"
+#include "engine/include/IPlatformFactory/IPlatformFactory.h"
+#include "engine/include/ISystemInitializer/ISystemInitializer.h"
+#include "engine/include/ITextureFactory/ITextureFactory.h"
+#include "engine/include/SceneFactory/SceneFactory.h"
+#include "engine/include/SceneManager/SceneManager.h"
+#include "engine/value_objects/GameSettings/GameSettings.h"
 
 #include <memory>
 #include <string>

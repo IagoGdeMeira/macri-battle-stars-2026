@@ -1,17 +1,14 @@
-#include "../../src/game/include/AnimationSystem/AnimationSystem.h"
+#include "game/include/AnimationSystem/AnimationSystem.h"
 
-#include "../stubs/StubTexture.h"
+#include "domain/components/AnimationComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/domain/components/AnimationComponent.h"
-#include "../../src/domain/components/SpriteComponent.h"
-#include "../../src/domain/include/World/World.h"
-
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_test_macros.hpp>
-#include <memory>
 #include <vector>
 
 class AnimationSystemFixture
@@ -30,7 +27,6 @@ protected:
     CommandBuffer commandBuffer;
     AnimationSystem system;
     UpdateContext context;
-    StubTexture stubTexture;
 };
 
 TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem advances sprite source rect by frame duration",
@@ -40,7 +36,7 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem advances sprite source
 
     auto& comp = this->world.components();
     comp.add<AnimationComponent>(entity, AnimationComponent{ Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 0 });
-    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", Dimension2D{16, 16}, Rectangle{}, false });
 
     this->context.deltaTime = 0.1f;
     this->system.update(this->context);
@@ -64,7 +60,7 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem loops back to the firs
 
     auto& comp = this->world.components();
     comp.add<AnimationComponent>(entity, AnimationComponent { Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 1 });
-    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", Dimension2D{16, 16}, Rectangle{}, false });
 
     this->context.deltaTime = 0.1f;
     this->system.update(this->context);
@@ -85,8 +81,8 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem holds the last frame w
     const auto entity = this->world.entities().create();
 
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, AnimationComponent{ Animation {{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, false}, 0.f, 1 });
-    comp.add<SpriteComponent>(entity, SpriteComponent{ std::make_shared<StubTexture>(), 16, 16 });
+    comp.add<AnimationComponent>(entity, AnimationComponent{ Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, false}, 0.f, 1 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", Dimension2D{16, 16}, Rectangle{}, false });
 
     this->context.deltaTime = 0.3f;
     this->system.update(this->context);

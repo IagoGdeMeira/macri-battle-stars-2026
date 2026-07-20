@@ -1,9 +1,9 @@
 #ifndef sdl_music_factory_h
 #define sdl_music_factory_h
 
-#include "../SDLMusic/SDLMusic.h"
+#include "SDLMusic/SDLMusic.h"
 
-#include "../../engine/include/IMusicFactory/IMusicFactory.h"
+#include "engine/include/IMusicFactory/IMusicFactory.h"
 
 #include <memory>
 #include <string>

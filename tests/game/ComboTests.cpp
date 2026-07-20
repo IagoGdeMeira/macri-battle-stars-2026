@@ -1,4 +1,4 @@
-#include "../../src/game/include/Combo/Combo.h"
+#include "game/value_objects/Combo/Combo.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -15,7 +15,7 @@ TEST_CASE("Combo uses expected defaults", "[unit][combo]")
 
 TEST_CASE("ComboStep stores action and maxDelay", "[unit][combo]")
 {
-    ComboStep step { InputAction::Punch, 120 };
+    Combo::Step step { InputAction::Punch, 120 };
 
     REQUIRE(step.action == InputAction::Punch);
     REQUIRE(step.maxDelay == 120);

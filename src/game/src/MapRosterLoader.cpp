@@ -1,4 +1,4 @@
-#include "../include/MapRosterLoader/MapRosterLoader.h"
+#include "MapRosterLoader/MapRosterLoader.h"
 
 #include <stdexcept>
 
@@ -9,7 +9,7 @@ MapRoster MapRosterLoader::load(const std::string& path) const
 
     for (auto& item : root->getArray("maps"))
     {
-        MapEntry entry;
+        MapRoster::Entry entry;
         entry.id = item->getString("id");
         entry.name = item->getString("name");
         entry.definitionPath = item->getString("definition");

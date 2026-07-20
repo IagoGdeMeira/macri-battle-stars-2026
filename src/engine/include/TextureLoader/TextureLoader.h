@@ -3,8 +3,7 @@
 
 #include "ITextureFactory/ITextureFactory.h"
 #include "ResourceLoader/ResourceLoader.h"
-
-#include "../resources/Texture/Texture.h"
+#include "Texture/Texture.h"
 
 class TextureLoader : public ResourceLoader<Texture>
 {

@@ -1,9 +1,9 @@
-#include "../../src/platform/include/SDLPlatformEventProvider/SDLPlatformEventProvider.h"
+#include "platform/include/SDLPlatformEventProvider/SDLPlatformEventProvider.h"
 
-#include "../../src/engine/events/PlatformEvent.h"
-#include "../../src/engine/include/GamepadButton/GamepadButton.h"
-#include "../../src/engine/include/KeyCode/KeyCode.h"
-#include "../../src/engine/include/MouseButton/MouseButton.h"
+#include "engine/events/PlatformEvent.h"
+#include "engine/value_objects/GamepadButton/GamepadButton.h"
+#include "engine/value_objects/KeyCode/KeyCode.h"
+#include "engine/value_objects/MouseButton/MouseButton.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

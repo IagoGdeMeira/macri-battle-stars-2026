@@ -1,7 +1,7 @@
 #ifndef json_node_h
 #define json_node_h
 
-#include "../../engine/include/DataNode/DataNode.h"
+#include "engine/include/DataNode/DataNode.h"
 
 #include <nlohmann/json.hpp>
 #include <string>

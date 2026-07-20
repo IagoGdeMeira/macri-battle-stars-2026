@@ -1,7 +1,8 @@
-#include "../include/AnimationLoader/AnimationLoader.h"
+#include "AnimationLoader/AnimationLoader.h"
 
-#include "../include/StateIdMapper/StateIdMapper.h"
-#include "../../domain/utils/Logger/Logger.h"
+#include "StateIdMapper/StateIdMapper.h"
+
+#include "domain/utils/Logger/Logger.h"
 
 #include <stdexcept>
 

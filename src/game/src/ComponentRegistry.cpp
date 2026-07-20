@@ -1,7 +1,7 @@
-#include "../include/ComponentRegistry/ComponentRegistry.h"
+#include "ComponentRegistry/ComponentRegistry.h"
 
-#include "../../domain/components/AllComponents.h"
-#include "../../domain/include/ComponentManager/ComponentManager.h"
+#include "domain/components/AllComponents.h"
+#include "domain/include/ComponentManager/ComponentManager.h"
 
 void ComponentRegistry::registerAll(ComponentManager& components)
 {
@@ -40,7 +40,6 @@ void ComponentRegistry::registerAll(ComponentManager& components)
     components.registerComponent<SpriteComponent>();
     components.registerComponent<StateComponent>();
     components.registerComponent<StateMachineComponent>();
-    components.registerComponent<StateMappingComponent>();
     components.registerComponent<TransformComponent>();
     components.registerComponent<UIActionComponent>();
     components.registerComponent<UIFocusable>();

@@ -1,7 +1,7 @@
 #ifndef min_time_condition_h
 #define min_time_condition_h
 
-#include "../include/ITriggerCondition/ITriggerCondition.h"
+#include "ITriggerCondition/ITriggerCondition.h"
 
 class MinTimeCondition : public ITriggerCondition
 {

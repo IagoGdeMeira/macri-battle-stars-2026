@@ -1,14 +1,14 @@
-#include "../include/CollisionClipPlayerSystem/CollisionClipPlayerSystem.h"
+#include "CollisionClipPlayerSystem/CollisionClipPlayerSystem.h"
 
-#include "../events/StateChangedEvent.h"
+#include "StateChangedEvent.h"
 
-#include "../../domain/events/OrientationChangedEvent.h"
-#include "../../domain/components/CollisionClipPlayerComponent.h"
-#include "../../domain/components/CollisionClipDefinitionsComponent.h"
-#include "../../domain/components/OrientationComponent.h"
-#include "../../domain/include/View/View.h"
+#include "domain/events/OrientationChangedEvent.h"
+#include "domain/components/CollisionClipPlayerComponent.h"
+#include "domain/components/CollisionClipDefinitionsComponent.h"
+#include "domain/components/OrientationComponent.h"
+#include "domain/include/View/View.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 CollisionClipPlayerSystem::CollisionClipPlayerSystem(EventBus& bus, EntityFactory& factory) :
     bus(bus), factory(factory)
@@ -22,15 +22,15 @@ CollisionClipPlayerSystem::CollisionClipPlayerSystem(EventBus& bus, EntityFactor
 
 void CollisionClipPlayerSystem::update(UpdateContext& ctx)
 {
-    auto& components = ctx.world.components();
+    auto& comp = ctx.world.components();
 
     for (const auto& sc : this->stateChanges)
     {
-        if (!components.has<CollisionClipPlayerComponent>(sc.entity)) continue;
-        if (!components.has<CollisionClipDefinitionsComponent>(sc.entity)) continue;
+        if (!comp.has<CollisionClipPlayerComponent>(sc.entity)) continue;
+        if (!comp.has<CollisionClipDefinitionsComponent>(sc.entity)) continue;
 
-        auto& player = components.get<CollisionClipPlayerComponent>(sc.entity);
-        auto& defs = components.get<CollisionClipDefinitionsComponent>(sc.entity);
+        auto& player = comp.get<CollisionClipPlayerComponent>(sc.entity);
+        auto& defs = comp.get<CollisionClipDefinitionsComponent>(sc.entity);
 
         auto it = defs.clips.find(sc.current);
         if (it != defs.clips.end() && it->second)
@@ -46,7 +46,7 @@ void CollisionClipPlayerSystem::update(UpdateContext& ctx)
     }
     this->stateChanges.clear();
 
-    auto view = View<CollisionClipPlayerComponent>(components);
+    auto view = View<CollisionClipPlayerComponent>(comp);
     for (auto [entity, player] : view)
     {
         if (!player.playing || !player.currentClip) continue;
@@ -74,10 +74,10 @@ void CollisionClipPlayerSystem::update(UpdateContext& ctx)
 
     for (const auto& oc : this->orientationChanges)
     {
-        if (!components.has<CollisionClipPlayerComponent>(oc.entity)) continue; 
-        if (!components.has<CollisionClipDefinitionsComponent>(oc.entity)) continue;
+        if (!comp.has<CollisionClipPlayerComponent>(oc.entity)) continue; 
+        if (!comp.has<CollisionClipDefinitionsComponent>(oc.entity)) continue;
 
-        auto& player = components.get<CollisionClipPlayerComponent>(oc.entity);
+        auto& player = comp.get<CollisionClipPlayerComponent>(oc.entity);
         if (player.playing) this->refreshColliders(ctx, oc.entity);
     }
     this->orientationChanges.clear();
@@ -85,8 +85,8 @@ void CollisionClipPlayerSystem::update(UpdateContext& ctx)
 
 void CollisionClipPlayerSystem::refreshColliders(UpdateContext& ctx, Entity owner)
 {
-    auto& components = ctx.world.components();
-    auto& player = components.get<CollisionClipPlayerComponent>(owner);
+    auto& comp = ctx.world.components();
+    auto& player = comp.get<CollisionClipPlayerComponent>(owner);
 
     auto it = this->activeColliders.find(owner);
     if (it != this->activeColliders.end())
@@ -96,9 +96,8 @@ void CollisionClipPlayerSystem::refreshColliders(UpdateContext& ctx, Entity owne
     }
     if (!player.playing || !player.currentClip) return;
 
-    bool facingLeft = components.has<OrientationComponent>(owner)
-        ? (components.get<OrientationComponent>(owner).direction == Orientation::Left)
-        : false;
+    bool facingLeft = comp.has<OrientationComponent>(owner)
+        ? (comp.get<OrientationComponent>(owner).direction == Orientation::Left) : false;
 
     const auto& frame = player.currentClip->frames[player.currentFrame];
     std::vector<Entity> newChildren;

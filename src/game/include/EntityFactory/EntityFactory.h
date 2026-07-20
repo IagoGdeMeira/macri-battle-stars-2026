@@ -1,9 +1,9 @@
 #ifndef entity_factory_h
 #define entity_factory_h
 
-#include "../../domain/include/Entity/Entity.h"
-#include "../../domain/value_objects/CollisionFrame/CollisionFrame.h"
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/include/Entity/Entity.h"
+#include "domain/value_objects/CollisionFrame/CollisionFrame.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
 #include <memory>
 #include <optional>

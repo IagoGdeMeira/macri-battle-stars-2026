@@ -1,11 +1,11 @@
 #ifndef stub_platform_factory_h
 #define stub_platform_factory_h
 
-#include "../../src/engine/include/IMusicFactory/IMusicFactory.h"
-#include "../../src/engine/include/InputAdapter/InputAdapter.h"
-#include "../../src/engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
-#include "../../src/engine/include/IPlatformFactory/IPlatformFactory.h"
-#include "../../src/engine/include/ISoundFactory/ISoundFactory.h"
+#include "engine/include/IMusicFactory/IMusicFactory.h"
+#include "engine/include/InputAdapter/InputAdapter.h"
+#include "engine/include/IPlatformEventProvider/IPlatformEventProvider.h"
+#include "engine/include/IPlatformFactory/IPlatformFactory.h"
+#include "engine/include/ISoundFactory/ISoundFactory.h"
 
 #include "StubFontFactory.h"
 #include "StubRenderer.h"

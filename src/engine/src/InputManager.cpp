@@ -1,4 +1,4 @@
-#include "../include/InputManager/InputManager.h"
+#include "InputManager/InputManager.h"
 
 void InputManager::setProvider(std::unique_ptr<IPlatformEventProvider> newProvider)
 { this->provider = std::move(newProvider); }

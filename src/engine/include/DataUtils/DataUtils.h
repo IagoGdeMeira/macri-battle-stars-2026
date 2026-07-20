@@ -1,10 +1,10 @@
 #ifndef data_utils_h
 #define data_utils_h
 
-#include "../DataNode/DataNode.h"
+#include "DataNode/DataNode.h"
 
-#include "../../domain/value_objects/Color/Color.h"
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/Color/Color.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
 class DataUtils
 {

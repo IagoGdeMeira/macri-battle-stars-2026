@@ -1,12 +1,12 @@
-#include "../include/MapLoader/MapLoader.h"
+#include "MapLoader/MapLoader.h"
 
-#include "../include/EntityFactory/EntityFactory.h"
+#include "EntityFactory/EntityFactory.h"
 
-#include "../../domain/components/ParentComponent.h"
-#include "../../domain/components/RectangleColliderComponent.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/include/World/World.h"
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/include/World/World.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include <cstdint>
 
@@ -56,15 +56,12 @@ MapComponent MapLoader::parseMapComponent(const std::unique_ptr<DataNode>& root)
         mapComp.worldBounds.left, mapComp.worldBounds.right,
         mapComp.worldBounds.top, mapComp.worldBounds.bottom);
 
-    if (root->has("spawnPoints"))
+    if (root->has("spawnPoints")) for (auto& sp : root->getArray("spawnPoints"))
     {
-        for (auto& sp : root->getArray("spawnPoints"))
-        {
-            MapComponent::SpawnPoint s;
-            s.playerId = static_cast<uint32_t>(sp->getInt("playerId"));
-            s.x = sp->getFloat("x");
-            mapComp.spawnPoints.push_back(s);
-        }
+        MapComponent::SpawnPoint s;
+        s.playerId = static_cast<uint32_t>(sp->getInt("playerId"));
+        s.x = sp->getFloat("x");
+        mapComp.spawnPoints.push_back(s);
     }
 
     return mapComp;
@@ -72,9 +69,7 @@ MapComponent MapLoader::parseMapComponent(const std::unique_ptr<DataNode>& root)
 
 void MapLoader::createBackgrounds(const std::unique_ptr<DataNode>& root, Entity mapEntity)
 {
-    if (!root->has("backgroundLayers")) return;
-
-    for (auto& layer : root->getArray("backgroundLayers"))
+    if (root->has("backgroundLayers")) for (auto& layer : root->getArray("backgroundLayers"))
     {
         std::string tex = layer->getString("texture");
         auto parallaxNode = layer->getObject("parallaxFactor");
@@ -113,14 +108,12 @@ void MapLoader::createFloor(const std::unique_ptr<DataNode>& root, Entity mapEnt
 
 void MapLoader::createWalls(const std::unique_ptr<DataNode>& root, Entity mapEntity)
 {
-    if (!root->has("walls")) return;
-
-    for (auto& wall : root->getArray("walls"))
+    if (root->has("walls")) for (auto& wall : root->getArray("walls"))
     {
         float x = wall->getFloat("x");
         float y = wall->getFloat("y");
         float w = wall->getFloat("width");
         float h = wall->getFloat("height");
-        this->factory.createWallChild({ x + w * 0.5f, y + h * 0.5f }, { w, h }, mapEntity);
+        this->factory.createWallChild({x + w * 0.5f, y + h * 0.5f}, {w, h}, mapEntity);
     }
 }

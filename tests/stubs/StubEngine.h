@@ -1,7 +1,7 @@
 #ifndef stub_engine_h
 #define stub_engine_h
 
-#include "../../src/engine/include/Engine/Engine.h"
+#include "engine/include/Engine/Engine.h"
 
 class StubEngine : public Engine
 {

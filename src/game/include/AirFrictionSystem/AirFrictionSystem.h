@@ -1,9 +1,9 @@
 #ifndef air_friction_system_h
 #define air_friction_system_h
 
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../engine/include/System/System.h"
+#include "engine/include/System/System.h"
 
 class AirFrictionSystem : public System
 {

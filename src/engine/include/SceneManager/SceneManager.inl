@@ -3,7 +3,7 @@
 
 #include "SceneManager.h"
 
-#include "../SceneFactory/SceneFactory.h"
+#include "SceneFactory/SceneFactory.h"
 
 template <typename SceneType>
 void SceneManager::changeScene(typename SceneType::Config config)

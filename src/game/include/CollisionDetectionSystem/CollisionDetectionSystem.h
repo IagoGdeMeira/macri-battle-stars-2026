@@ -1,9 +1,9 @@
 #ifndef collision_detection_system_h
 #define collision_detection_system_h
 
-#include "../ICollisionDetection/ICollisionDetection.h"
+#include "ICollisionDetection/ICollisionDetection.h"
 
-#include "../../engine/include/System/System.h"
+#include "engine/include/System/System.h"
 
 #include <memory>
 #include <unordered_map>
@@ -15,8 +15,8 @@ class CollisionDetectionSystem : public System
 public:
     explicit CollisionDetectionSystem(float cellSize = 500.f) : cellSize(cellSize) {}
 
-    void addDetector(std::unique_ptr<ICollisionDetection> detector) { this->detectors.push_back(std::move(detector)); }
     void update(UpdateContext& ctx) override;
+    void addDetector(std::unique_ptr<ICollisionDetection> detector) { this->detectors.push_back(std::move(detector)); }
 
 private:
     struct Cell { std::vector<Entity> entities; };

@@ -1,7 +1,7 @@
 #ifndef data_parser_h
 #define data_parser_h
 
-#include "../DataNode/DataNode.h"
+#include "DataNode/DataNode.h"
 
 #include <memory>
 #include <string>

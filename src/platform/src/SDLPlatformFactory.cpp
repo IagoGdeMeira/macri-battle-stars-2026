@@ -1,16 +1,16 @@
-#include "../include/SDLPlatformFactory/SDLPlatformFactory.h"
+#include "SDLPlatformFactory/SDLPlatformFactory.h"
 
-#include "../include/SDLFontFactory/SDLFontFactory.h"
-#include "../include/SDLGamepadAdapter/SDLGamepadAdapter.h"
-#include "../include/SDLKeyboardAdapter/SDLKeyboardAdapter.h"
-#include "../include/SDLMouseAdapter/SDLMouseAdapter.h"
-#include "../include/SDLMusicFactory/SDLMusicFactory.h"
-#include "../include/SDLPlatformEventProvider/SDLPlatformEventProvider.h"
-#include "../include/SDLRenderer/SDLRenderer.h"
-#include "../include/SDLSoundFactory/SDLSoundFactory.h"
-#include "../include/SDLSystemAdapter/SDLSystemAdapter.h"
-#include "../include/SDLTextureFactory/SDLTextureFactory.h"
-#include "../include/SDLWindow/SDLWindow.h"
+#include "SDLFontFactory/SDLFontFactory.h"
+#include "SDLGamepadAdapter/SDLGamepadAdapter.h"
+#include "SDLKeyboardAdapter/SDLKeyboardAdapter.h"
+#include "SDLMouseAdapter/SDLMouseAdapter.h"
+#include "SDLMusicFactory/SDLMusicFactory.h"
+#include "SDLPlatformEventProvider/SDLPlatformEventProvider.h"
+#include "SDLRenderer/SDLRenderer.h"
+#include "SDLSoundFactory/SDLSoundFactory.h"
+#include "SDLSystemAdapter/SDLSystemAdapter.h"
+#include "SDLTextureFactory/SDLTextureFactory.h"
+#include "SDLWindow/SDLWindow.h"
 
 #include <SDL.h>
 
@@ -60,11 +60,8 @@ std::unique_ptr<ITextureFactory> SDLPlatformFactory::createTextureFactory(Render
     return std::make_unique<SDLTextureFactory>(sdlRenderer->get());
 }
 
-std::unique_ptr<ISoundFactory> SDLPlatformFactory::createSoundFactory()
-{ return std::make_unique<SDLSoundFactory>(); }
+std::unique_ptr<ISoundFactory> SDLPlatformFactory::createSoundFactory() { return std::make_unique<SDLSoundFactory>(); }
 
-std::unique_ptr<IMusicFactory> SDLPlatformFactory::createMusicFactory()
-{ return std::make_unique<SDLMusicFactory>(); }
+std::unique_ptr<IMusicFactory> SDLPlatformFactory::createMusicFactory() { return std::make_unique<SDLMusicFactory>(); }
 
-std::unique_ptr<IFontFactory> SDLPlatformFactory::createFontFactory()
-{ return std::make_unique<SDLFontFactory>(); }
+std::unique_ptr<IFontFactory> SDLPlatformFactory::createFontFactory() { return std::make_unique<SDLFontFactory>(); }

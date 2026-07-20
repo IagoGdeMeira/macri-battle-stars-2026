@@ -1,7 +1,7 @@
 #ifndef outline_component_h
 #define outline_component_h
 
-#include "../value_objects/Color/Color.h"
+#include "Color/Color.h"
 
 struct OutlineComponent
 {

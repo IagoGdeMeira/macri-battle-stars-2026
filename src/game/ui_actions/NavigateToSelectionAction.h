@@ -1,10 +1,10 @@
 #ifndef navigate_to_selection_action_h
 #define navigate_to_selection_action_h
 
-#include "../include/IUIAction/IUIAction.h"
-#include "../scenes/SelectionScene.h"
+#include "IUIAction/IUIAction.h"
+#include "SelectionScene.h"
 
-#include "../../engine/include/SceneManager/SceneManager.h"
+#include "engine/include/SceneManager/SceneManager.h"
 
 class NavigateToSelectionAction : public IUIAction
 {

@@ -1,7 +1,7 @@
 #ifndef scene_manager_h
 #define scene_manager_h
 
-#include "../Scene/Scene.h"
+#include "Scene/Scene.h"
 
 #include <memory>
 #include <vector>

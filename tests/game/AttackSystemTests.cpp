@@ -1,15 +1,15 @@
-#include "../../src/game/include/AttackSystem/AttackSystem.h"
+#include "game/include/AttackSystem/AttackSystem.h"
 
-#include "../../src/domain/components/HitstopComponent.h"
-#include "../../src/domain/components/InputComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/domain/components/StateComponent.h"
-#include "../../src/domain/value_objects/InputAction/InputAction.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/components/StateComponent.h"
+#include "domain/value_objects/InputAction/InputAction.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
 
-#include "../../src/game/events/TriggerEvent.h"
+#include "game/events/TriggerEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
@@ -39,9 +39,9 @@ TEST_CASE_METHOD(AttackSystemFixture, "AttackSystem emits the configured trigger
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Punch] = InputState{true, 0.f};
-    input.actions[InputAction::Kick] = InputState{true, 0.f};
-    input.actions[InputAction::Defend] = InputState{true, 0.f};
+    input.actions[InputAction::Punch] = InputComponent::State{true, 0.f};
+    input.actions[InputAction::Kick] = InputComponent::State{true, 0.f};
+    input.actions[InputAction::Defend] = InputComponent::State{true, 0.f};
 
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
@@ -72,7 +72,7 @@ TEST_CASE_METHOD(AttackSystemFixture, "AttackSystem blocks attacks in non-attack
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Punch] = InputState{true, 0.f};
+    input.actions[InputAction::Punch] = InputComponent::State{true, 0.f};
 
     StateComponent state;
     state.current = StateId::BeingHit;
@@ -98,7 +98,7 @@ TEST_CASE_METHOD(AttackSystemFixture, "AttackSystem blocks attacks while frozen 
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Kick] = InputState{true, 0.f};
+    input.actions[InputAction::Kick] = InputComponent::State{true, 0.f};
 
     HitstopComponent hitstop{ .remaining = 1.f, .frozen = true };
 

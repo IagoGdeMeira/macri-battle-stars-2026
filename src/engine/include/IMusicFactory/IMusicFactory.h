@@ -1,7 +1,7 @@
 #ifndef i_music_factory_h
 #define i_music_factory_h
 
-#include "../resources/Music/Music.h"
+#include "Music/Music.h"
 
 #include <memory>
 #include <string>

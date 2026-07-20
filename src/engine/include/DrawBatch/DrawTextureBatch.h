@@ -2,9 +2,8 @@
 #define draw_texture_batch_h
 
 #include "DrawBatch.h"
-
-#include "../DrawCommands/DrawCommands.h"
-#include "../Renderer/Renderer.h"
+#include "DrawCommands/DrawCommands.h"
+#include "Renderer/Renderer.h"
 
 class DrawTextureBatch : public DrawBatch<DrawTextureCommand>
 {

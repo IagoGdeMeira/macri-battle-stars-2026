@@ -1,10 +1,10 @@
 #ifndef resource_manager_h
 #define resource_manager_h
 
-#include "../ResourceLoader/ResourceLoader.h"
-#include "../ResourceLoader/SyncLoader.h"
-#include "../ResourceLoader/AsyncLoader.h"
-#include "../ThreadPool/ThreadPool.h"
+#include "ResourceLoader/AsyncLoader.h"
+#include "ResourceLoader/ResourceLoader.h"
+#include "ResourceLoader/SyncLoader.h"
+#include "ThreadPool/ThreadPool.h"
 
 #include <future>
 #include <memory>

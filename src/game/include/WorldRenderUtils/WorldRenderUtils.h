@@ -1,14 +1,14 @@
 #ifndef world_render_utils_h
 #define world_render_utils_h
 
-#include "../Camera2D/Camera2D.h"
+#include "Camera2D/Camera2D.h"
 
-#include "../../domain/include/Entity/Entity.h"
-#include "../../domain/include/World/World.h"
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/include/Entity/Entity.h"
+#include "domain/include/World/World.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../engine/include/DrawCommands/DrawCommands.h"
-#include "../../engine/value_objects/Viewport/Viewport.h"
+#include "engine/include/DrawCommands/DrawCommands.h"
+#include "engine/value_objects/Viewport/Viewport.h"
 
 class WorldRenderUtils
 {

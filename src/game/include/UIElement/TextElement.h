@@ -1,9 +1,8 @@
 #ifndef text_element_h
 #define text_element_h
 
+#include "IUIAction/IUIAction.h"
 #include "UIElement.h"
-
-#include "../IUIAction/IUIAction.h"
 
 #include <memory>
 

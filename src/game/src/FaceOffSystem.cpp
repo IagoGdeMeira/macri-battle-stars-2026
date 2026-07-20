@@ -1,12 +1,12 @@
-#include "../include/FaceOffSystem/FaceOffSystem.h"
+#include "FaceOffSystem/FaceOffSystem.h"
 
-#include "../../domain/components/OrientationComponent.h"
-#include "../../domain/components/PlayerComponent.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/events/OrientationChangedEvent.h"
-#include "../../domain/include/View/View.h"
+#include "domain/components/OrientationComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/events/OrientationChangedEvent.h"
+#include "domain/include/View/View.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
 #include <vector>
@@ -14,13 +14,11 @@
 void FaceOffSystem::update(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();
-    auto view = View<TransformComponent, OrientationComponent, PlayerComponent>(comp);
+    auto view = View<TransformComponent, PlayerComponent, OrientationComponent>(comp);
 
-    struct PlayerInfo { Entity entity; float x; };
     std::vector<PlayerInfo> players;
 
-    for (auto [entity, transform, orientation, player] : view)
-    { players.push_back({entity, transform.position.x}); }
+    for (auto [entity, transform, p_, o_] : view) players.push_back({entity, transform.position.x});
 
     if (players.size() < 2) return;
 
@@ -36,7 +34,6 @@ void FaceOffSystem::update(UpdateContext& ctx)
         
         Orientation previous = orientation.direction;
         orientation.direction = newOrientation;
-        this->bus.emit<OrientationChangedEvent>(OrientationChangedEvent{
-            players[i].entity, previous, newOrientation});
+        this->bus.emit<OrientationChangedEvent>(OrientationChangedEvent{players[i].entity, previous, newOrientation});
     }
 }

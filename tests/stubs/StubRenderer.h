@@ -1,7 +1,7 @@
 #ifndef stub_renderer_h
 #define stub_renderer_h
 
-#include "../../src/engine/include/Renderer/Renderer.h"
+#include "engine/include/Renderer/Renderer.h"
 #include <vector>
 
 class StubRenderer : public Renderer

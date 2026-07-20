@@ -1,10 +1,10 @@
-#include "../../src/game/include/DirectionTriggerSystem/DirectionTriggerSystem.h"
+#include "game/include/DirectionTriggerSystem/DirectionTriggerSystem.h"
 
-#include "../../src/domain/components/InputComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
-#include "../../src/game/events/TriggerEvent.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
+#include "game/events/TriggerEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
@@ -42,10 +42,10 @@ TEST_CASE_METHOD(DirectionTriggerSystemFixture, "DirectionTriggerSystem emits pr
     this->scene.systems().addSystem<DirectionTriggerSystem>(this->bus);
 
     InputComponent& storedInput = comp.get<InputComponent>(entity);
-    storedInput.actions[InputAction::MoveLeft] = InputState{true, 0.f};
+    storedInput.actions[InputAction::MoveLeft] = InputComponent::State{true, 0.f};
     this->scene.update(updateDelay);
 
-    storedInput.actions[InputAction::MoveLeft] = InputState{false, 0.f};
+    storedInput.actions[InputAction::MoveLeft] = InputComponent::State{false, 0.f};
     this->scene.update(updateDelay);
 
     REQUIRE(events.size() == 2);
@@ -72,10 +72,10 @@ TEST_CASE_METHOD(DirectionTriggerSystemFixture, "DirectionTriggerSystem emits pr
     this->scene.systems().addSystem<DirectionTriggerSystem>(this->bus);
 
     InputComponent& storedInput = comp.get<InputComponent>(entity);
-    storedInput.actions[InputAction::MoveRight] = InputState{true, 0.f};
+    storedInput.actions[InputAction::MoveRight] = InputComponent::State{true, 0.f};
     this->scene.update(updateDelay);
 
-    storedInput.actions[InputAction::MoveRight] = InputState{false, 0.f};
+    storedInput.actions[InputAction::MoveRight] = InputComponent::State{false, 0.f};
     this->scene.update(updateDelay);
 
     REQUIRE(events.size() == 2);
@@ -92,7 +92,7 @@ TEST_CASE_METHOD(DirectionTriggerSystemFixture, "DirectionTriggerSystem does not
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::MoveLeft] = InputState{true, 0.f};
+    input.actions[InputAction::MoveLeft] = InputComponent::State{true, 0.f};
 
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);

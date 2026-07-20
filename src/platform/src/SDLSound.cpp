@@ -1,4 +1,4 @@
-#include "../include/SDLSound/SDLSound.h"
+#include "SDLSound/SDLSound.h"
 
 #include <algorithm>
 #include <iostream>

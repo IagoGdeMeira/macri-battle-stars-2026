@@ -1,4 +1,4 @@
-#include "../../src/platform/include/SDLSystemInitializer/SDLSystemInitializer.h"
+#include "platform/include/SDLSystemInitializer/SDLSystemInitializer.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <SDL.h>

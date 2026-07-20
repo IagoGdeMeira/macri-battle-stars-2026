@@ -1,11 +1,11 @@
-#include "../../src/platform/include/SDLKeyboardAdapter/SDLKeyboardAdapter.h"
+#include "platform/include/SDLKeyboardAdapter/SDLKeyboardAdapter.h"
 
-#include "../../src/engine/events/InputEvent.h"
-#include "../../src/engine/events/PlatformEvent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/InputBinding/InputBinding.h"
-#include "../../src/engine/include/InputContext/InputContext.h"
-#include "../../src/engine/include/KeyCode/KeyCode.h"
+#include "engine/events/InputEvent.h"
+#include "engine/events/PlatformEvent.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/InputBinding/InputBinding.h"
+#include "engine/value_objects/InputContext/InputContext.h"
+#include "engine/value_objects/KeyCode/KeyCode.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

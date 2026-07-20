@@ -1,9 +1,9 @@
-#include "../../src/platform/include/SDLMouseAdapter/SDLMouseAdapter.h"
+#include "platform/include/SDLMouseAdapter/SDLMouseAdapter.h"
 
-#include "../../src/engine/events/InputEvent.h"
-#include "../../src/engine/events/PlatformEvent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/InputSource/InputSource.h"
+#include "engine/events/InputEvent.h"
+#include "engine/events/PlatformEvent.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/InputSource/InputSource.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

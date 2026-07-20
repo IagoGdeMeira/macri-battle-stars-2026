@@ -1,10 +1,12 @@
-#include "../../src/game/include/TriggerGenerationSystem/TriggerGenerationSystem.h"
+#include "game/include/TriggerGenerationSystem/TriggerGenerationSystem.h"
 
-#include "../../src/domain/components/InputComponent.h"
-#include "../../src/domain/components/PlayerComponent.h"
-#include "../../src/game/events/TriggerEvent.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/Scene/Scene.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
+
+#include "game/events/TriggerEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
@@ -17,9 +19,9 @@ public:
 
     TriggerGenerationSystemFixture()
     {
-        auto& components = this->scene.world().components();
-        components.registerComponent<InputComponent>();
-        components.registerComponent<PlayerComponent>();
+        auto& comp = this->scene.world().components();
+        comp.registerComponent<InputComponent>();
+        comp.registerComponent<PlayerComponent>();
     }
 };
 
@@ -29,11 +31,11 @@ TEST_CASE_METHOD(TriggerGenerationSystemFixture, "TriggerGenerationSystem emits 
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Punch] = InputState{true, 0.f};
+    input.actions[InputAction::Punch] = InputComponent::State{true, 0.f};
 
-    auto& components = this->scene.world().components();
-    components.add<InputComponent>(entity, input);
-    components.add<PlayerComponent>(entity, PlayerComponent{1});
+    auto& comp = this->scene.world().components();
+    comp.add<InputComponent>(entity, input);
+    comp.add<PlayerComponent>(entity, PlayerComponent{1});
 
     TriggerContext context;
     context.bindings[InputAction::Punch] = {TriggerId::Jumped, TriggerId::Punched};
@@ -56,11 +58,11 @@ TEST_CASE_METHOD(TriggerGenerationSystemFixture, "TriggerGenerationSystem emits 
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Kick] = InputState{true, 0.f};
+    input.actions[InputAction::Kick] = InputComponent::State{true, 0.f};
 
-    auto& components = this->scene.world().components();
-    components.add<InputComponent>(entity, input);
-    components.add<PlayerComponent>(entity, PlayerComponent{2});
+    auto& comp = this->scene.world().components();
+    comp.add<InputComponent>(entity, input);
+    comp.add<PlayerComponent>(entity, PlayerComponent{2});
 
     TriggerContext context;
     context.bindings[InputAction::Kick] = {TriggerId::Kicked};
@@ -82,12 +84,12 @@ TEST_CASE_METHOD(TriggerGenerationSystemFixture, "TriggerGenerationSystem ignore
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Kick] = InputState{false, 0.f};
-    input.actions[InputAction::Jump] = InputState{true, 0.f};
+    input.actions[InputAction::Kick] = InputComponent::State{false, 0.f};
+    input.actions[InputAction::Jump] = InputComponent::State{true, 0.f};
 
-    auto& components = this->scene.world().components();
-    components.add<InputComponent>(entity, input);
-    components.add<PlayerComponent>(entity, PlayerComponent{2});
+    auto& comp = this->scene.world().components();
+    comp.add<InputComponent>(entity, input);
+    comp.add<PlayerComponent>(entity, PlayerComponent{2});
 
     TriggerContext context;
     context.bindings[InputAction::Kick] = {TriggerId::Blocked};

@@ -1,25 +1,23 @@
-#include "../include/AirFrictionSystem/AirFrictionSystem.h"
+#include "AirFrictionSystem/AirFrictionSystem.h"
 
-#include "../../domain/components/AirFrictionComponent.h"
-#include "../../domain/components/GroundedComponent.h"
-#include "../../domain/components/HitstopComponent.h"
-#include "../../domain/components/VelocityComponent.h"
-#include "../../domain/include/View/View.h"
+#include "domain/components/AirFrictionComponent.h"
+#include "domain/components/GroundedComponent.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/components/VelocityComponent.h"
+#include "domain/include/View/View.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <cmath>
 
 void AirFrictionSystem::update(UpdateContext& ctx)
 {
-    auto& components = ctx.world.components();    
-    auto view = View<VelocityComponent, GroundedComponent, AirFrictionComponent>(components);
+    auto& comp = ctx.world.components();    
+    auto view = View<VelocityComponent, GroundedComponent, AirFrictionComponent>(comp);
     
     for (auto [entity, v, g, air] : view)
     {
-        if (components.has<HitstopComponent>(entity))
-        { if (components.get<HitstopComponent>(entity).frozen) continue; }
-
+        if (comp.has<HitstopComponent>(entity) && comp.get<HitstopComponent>(entity).frozen) continue;
         if (g.onGround) continue;
 
         auto& airF = this->airFriction;

@@ -1,13 +1,13 @@
-#include "../../src/game/include/FrictionSystem/FrictionSystem.h"
+#include "game/include/FrictionSystem/FrictionSystem.h"
 
-#include "../../src/domain/components/GroundedComponent.h"
-#include "../../src/domain/components/HitstopComponent.h"
-#include "../../src/domain/components/VelocityComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/GroundedComponent.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/components/VelocityComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -17,10 +17,10 @@ class FrictionSystemFixture
 public:
     FrictionSystemFixture() : system(10.f), context { this->world, this->bus, this->commandBuffer, 0.f }
     {
-        auto& components = this->world.components();
-        components.registerComponent<GroundedComponent>();
-        components.registerComponent<HitstopComponent>();
-        components.registerComponent<VelocityComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<GroundedComponent>();
+        comp.registerComponent<HitstopComponent>();
+        comp.registerComponent<VelocityComponent>();
     }
 
 protected:
@@ -34,16 +34,16 @@ protected:
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem reduces horizontal velocity when entity is grounded",
     "[unit][friction_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     const auto entity = this->world.entities().create();
 
-    components.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
-    components.add<GroundedComponent>(entity, GroundedComponent{ true, 0.f });
+    comp.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
+    comp.add<GroundedComponent>(entity, GroundedComponent{ true, 0.f });
 
     this->context.deltaTime = 1.f;
     this->system.update(this->context);
 
-    const auto& v = components.get<VelocityComponent>(entity);
+    const auto& v = comp.get<VelocityComponent>(entity);
     REQUIRE(v.velocity.x == Catch::Approx(9.f));
     REQUIRE(v.velocity.y == 0.f);
 }
@@ -51,16 +51,16 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem reduces horizontal veloc
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem does not affect entities that are not grounded",
     "[unit][friction_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     const auto entity = this->world.entities().create();
 
-    components.add<VelocityComponent>(entity, VelocityComponent{ 12.f, -3.f });
-    components.add<GroundedComponent>(entity, GroundedComponent{ false, 0.f });
+    comp.add<VelocityComponent>(entity, VelocityComponent{ 12.f, -3.f });
+    comp.add<GroundedComponent>(entity, GroundedComponent{ false, 0.f });
 
     this->context.deltaTime = 1.f;
     this->system.update(this->context);
 
-    const auto& v = components.get<VelocityComponent>(entity);
+    const auto& v = comp.get<VelocityComponent>(entity);
     REQUIRE(v.velocity.x == 12.f);
     REQUIRE(v.velocity.y == -3.f);
 }
@@ -68,82 +68,80 @@ TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem does not affect entities
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem applies friction reduction from GroundedComponent",
     "[unit][friction_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     const auto entity = this->world.entities().create();
 
-    components.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
-    components.add<GroundedComponent>(entity, GroundedComponent{ true, 0.5f });
+    comp.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
+    comp.add<GroundedComponent>(entity, GroundedComponent{ true, 0.5f });
 
     this->context.deltaTime = 1.f;
     this->system.update(this->context);
 
-    const auto& v = components.get<VelocityComponent>(entity);
+    const auto& v = comp.get<VelocityComponent>(entity);
     REQUIRE(v.velocity.x == Catch::Approx(9.5f));
 }
 
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem clamps friction reduction and snaps small velocity to zero",
     "[unit][friction_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     const auto entity = this->world.entities().create();
 
-    components.add<VelocityComponent>(entity, VelocityComponent{ 0.8f, 0.f });
-    components.add<GroundedComponent>(entity, GroundedComponent{ true, 2.f });
+    comp.add<VelocityComponent>(entity, VelocityComponent{ 0.8f, 0.f });
+    comp.add<GroundedComponent>(entity, GroundedComponent{ true, 2.f });
 
     this->context.deltaTime = 1.f;
     this->system.update(this->context);
 
-    const auto& v = components.get<VelocityComponent>(entity);
+    const auto& v = comp.get<VelocityComponent>(entity);
     REQUIRE(v.velocity.x == 0.f);
 }
 
-TEST_CASE_METHOD(FrictionSystemFixture,
-    "FrictionSystem handles frictionReduction above one by clamping effective friction to zero",
+TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem handles frictionReduction above one by clamping effective friction to zero",
     "[unit][friction_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     const auto entity = this->world.entities().create();
 
-    components.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
-    components.add<GroundedComponent>(entity, GroundedComponent{ true, 2.f });
+    comp.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
+    comp.add<GroundedComponent>(entity, GroundedComponent{ true, 2.f });
 
     this->context.deltaTime = 1.f;
     this->system.update(this->context);
 
-    const auto& v = components.get<VelocityComponent>(entity);
+    const auto& v = comp.get<VelocityComponent>(entity);
     REQUIRE(v.velocity.x == 10.f);
 }
 
-TEST_CASE_METHOD(FrictionSystemFixture,
-    "FrictionSystem allows stronger friction when frictionReduction is negative",
+TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem allows stronger friction when frictionReduction is negative",
     "[unit][friction_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     const auto entity = this->world.entities().create();
 
-    components.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
-    components.add<GroundedComponent>(entity, GroundedComponent{ true, -0.5f });
+    comp.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
+    comp.add<GroundedComponent>(entity, GroundedComponent{ true, -0.5f });
 
     this->context.deltaTime = 1.f;
     this->system.update(this->context);
 
-    const auto& v = components.get<VelocityComponent>(entity);
+    const auto& v = comp.get<VelocityComponent>(entity);
     REQUIRE(v.velocity.x == Catch::Approx(8.5f));
 }
 
 TEST_CASE_METHOD(FrictionSystemFixture, "FrictionSystem ignores entities frozen by hitstop",
     "[integration][friction_system]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     const auto entity = this->world.entities().create();
 
-    components.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
-    components.add<GroundedComponent>(entity, GroundedComponent{ true, 0.f });
-    components.add<HitstopComponent>(entity, HitstopComponent{ .remaining = 1.f, .frozen = true });
+    comp.add<VelocityComponent>(entity, VelocityComponent{ 10.f, 0.f });
+    comp.add<GroundedComponent>(entity, GroundedComponent{ true, 0.f });
+    comp.add<HitstopComponent>(entity, HitstopComponent{ .remaining = 1.f, .frozen = true });
 
     this->context.deltaTime = 1.f;
     this->system.update(this->context);
 
-    const auto& v = components.get<VelocityComponent>(entity);
+    const auto& v = comp.get<VelocityComponent>(entity);
     REQUIRE(v.velocity.x == Catch::Approx(10.f));
 }

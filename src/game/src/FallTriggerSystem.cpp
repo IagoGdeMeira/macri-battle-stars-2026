@@ -1,13 +1,13 @@
-#include "../include/FallTriggerSystem/FallTriggerSystem.h"
+#include "FallTriggerSystem/FallTriggerSystem.h"
 
-#include "../events/TriggerEvent.h"
+#include "TriggerEvent.h"
 
-#include "../../domain/components/GroundedComponent.h"
-#include "../../domain/components/PlayerComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/value_objects/TriggerId/TriggerId.h"
+#include "domain/components/GroundedComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/value_objects/TriggerId/TriggerId.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void FallTriggerSystem::update(UpdateContext& ctx)
 {

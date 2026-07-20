@@ -1,4 +1,4 @@
-#include "../../src/platform/include/SDLSoundFactory/SDLSoundFactory.h"
+#include "platform/include/SDLSoundFactory/SDLSoundFactory.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>

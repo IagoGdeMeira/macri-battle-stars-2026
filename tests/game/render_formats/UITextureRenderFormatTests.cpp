@@ -1,17 +1,17 @@
-#include "../../../src/game/render_formats/UITextureRenderFormat.h"
+#include "game/render_formats/UITextureRenderFormat.h"
 
-#include "../../stubs/StubRenderer.h"
-#include "../../stubs/StubTexture.h"
+#include "StubRenderer.h"
+#include "StubTexture.h"
 
-#include "../../../src/domain/components/RenderComponent.h"
-#include "../../../src/domain/components/UISpriteComponent.h"
-#include "../../../src/domain/components/UITransform.h"
-#include "../../../src/domain/components/VisualEffectsComponent.h"
-#include "../../../src/domain/include/World/World.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/UISpriteComponent.h"
+#include "domain/components/UITransform.h"
+#include "domain/components/VisualEffectsComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../../src/engine/include/EventBus/EventBus.h"
-#include "../../../src/engine/include/RenderContext/RenderContext.h"
-#include "../../../src/engine/include/Renderer/Renderer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Renderer/Renderer.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -29,11 +29,11 @@ public:
 
     UITextureRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
-        auto& components = this->world.components();
-        components.registerComponent<UITransform>();
-        components.registerComponent<UISpriteComponent>();
-        components.registerComponent<RenderComponent>();
-        components.registerComponent<VisualEffectsComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<UITransform>();
+        comp.registerComponent<UISpriteComponent>();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<VisualEffectsComponent>();
     }
 };
 
@@ -49,10 +49,10 @@ TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits ba
     transform.rotation = 45.f;
     transform.scale = Position {-1.f, 2.f};
 
-    this->world.components().add<UITransform>(entity, transform);
-    this->world.components().add<UISpriteComponent>(entity,
-        UISpriteComponent { texture, Color { 10, 20, 30, 40 } });
-    this->world.components().add<RenderComponent>(entity, RenderComponent { 2, 3 });
+    auto& comp = this->world.components();
+    comp.add<UITransform>(entity, transform);
+    comp.add<UISpriteComponent>(entity, UISpriteComponent { texture, Color { 10, 20, 30, 40 } });
+    comp.add<RenderComponent>(entity, RenderComponent { 2, 3 });
 
     VisualEffectsComponent fx;
     fx.textureEffects.push_back([](DrawTextureBatch& batch, DrawTextureCommand& cmd) {
@@ -61,7 +61,7 @@ TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits ba
         shadow.dest.position.x += 1.f;
         batch.add(shadow);
     });
-    this->world.components().add<VisualEffectsComponent>(entity, fx);
+    comp.add<VisualEffectsComponent>(entity, fx);
 
     this->format.render(this->context);
 

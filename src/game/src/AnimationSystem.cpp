@@ -1,11 +1,11 @@
-#include "../include/AnimationSystem/AnimationSystem.h"
+#include "AnimationSystem/AnimationSystem.h"
 
-#include "../../domain/components/AnimationComponent.h"
-#include "../../domain/components/SpriteComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/components/AnimationComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void AnimationSystem::update(UpdateContext& ctx)
 {

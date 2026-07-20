@@ -1,12 +1,12 @@
-#include "../include/TriggerGenerationSystem/TriggerGenerationSystem.h"
+#include "TriggerGenerationSystem/TriggerGenerationSystem.h"
 
-#include "../events/TriggerEvent.h"
+#include "TriggerEvent.h"
 
-#include "../../domain/components/InputComponent.h"
-#include "../../domain/components/PlayerComponent.h"
-#include "../../domain/include/View/View.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/include/View/View.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void TriggerGenerationSystem::update(UpdateContext& ctx) { this->processInputTriggers(ctx); }
 

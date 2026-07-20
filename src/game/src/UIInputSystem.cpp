@@ -1,13 +1,13 @@
-#include "../include/UIInputSystem/UIInputSystem.h"
+#include "UIInputSystem/UIInputSystem.h"
 
-#include "../events/UIActionEvent.h"
+#include "UIActionEvent.h"
 
-#include "../../domain/components/UIActionComponent.h"
-#include "../../domain/components/UIFocusable.h"
-#include "../../domain/components/UITransform.h"
-#include "../../domain/include/View/View.h"
+#include "domain/components/UIActionComponent.h"
+#include "domain/components/UIFocusable.h"
+#include "domain/components/UITransform.h"
+#include "domain/include/View/View.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <limits>
 
@@ -141,8 +141,7 @@ std::optional<Entity> UIInputSystem::findClosest(UpdateContext& ctx, Entity curr
     {
         if (entity == current || !focusable.canFocus) continue;
 
-        Position next =
-        {
+        Position next = {
             transform.rect.position.x + transform.rect.size.width * 0.5f,
             transform.rect.position.y + transform.rect.size.height * 0.5f
         };

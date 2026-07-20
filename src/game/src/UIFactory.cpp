@@ -1,23 +1,23 @@
-#include "../include/UIFactory/UIFactory.h"
+#include "UIFactory/UIFactory.h"
 
-#include "../../domain/components/BoxModel.h"
-#include "../../domain/components/FlexContainer.h"
-#include "../../domain/components/FlexItem.h"
-#include "../../domain/components/ParentComponent.h"
-#include "../../domain/components/UIActionComponent.h"
-#include "../../domain/components/UIFocusable.h"
-#include "../../domain/components/UISpriteComponent.h"
-#include "../../domain/components/UITextComponent.h"
-#include "../../domain/components/UITransform.h"
-#include "../../domain/include/World/World.h"
+#include "IUIAction/IUIAction.h"
+#include "UIElement/TextElement.h"
+#include "UIElement/UIElement.h"
 
-#include "../../engine/include/IPlatformFactory/IPlatformFactory.h"
-#include "../../engine/resources/Font/Font.h"
-#include "../../engine/resources/Texture/Texture.h"
+#include "domain/components/BoxModel.h"
+#include "domain/components/FlexContainer.h"
+#include "domain/components/FlexItem.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/UIActionComponent.h"
+#include "domain/components/UIFocusable.h"
+#include "domain/components/UISpriteComponent.h"
+#include "domain/components/UITextComponent.h"
+#include "domain/components/UITransform.h"
+#include "domain/include/World/World.h"
 
-#include "../../game/include/IUIAction/IUIAction.h"
-#include "../../game/include/UIElement/TextElement.h"
-#include "../../game/include/UIElement/UIElement.h"
+#include "engine/include/IPlatformFactory/IPlatformFactory.h"
+#include "engine/resources/Font/Font.h"
+#include "engine/resources/Texture/Texture.h"
 
 #include <stdexcept>
 
@@ -82,8 +82,7 @@ Entity UIFactory::createImage(const std::string& texturePath, const Rectangle& r
 
 Entity UIFactory::createFromElement(const UIElement& element)
 {
-    if (auto* panel = dynamic_cast<const PanelElement*>(&element))
-    { return this->createPanel(panel->rect); }
+    if (auto* panel = dynamic_cast<const PanelElement*>(&element)) return this->createPanel(panel->rect);
     if (auto* text = dynamic_cast<const TextElement*>(&element))
     { return this->createText(text->text, text->fontSize, text->color, text->rect.position); }
     if (auto* button = dynamic_cast<const ButtonElement*>(&element))

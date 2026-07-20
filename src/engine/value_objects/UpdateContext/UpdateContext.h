@@ -1,7 +1,7 @@
 #ifndef update_context_h
 #define update_context_h
 
-#include "../../domain/include/World/World.h"
+#include "domain/include/World/World.h"
 
 class CommandBuffer;
 class EventBus;

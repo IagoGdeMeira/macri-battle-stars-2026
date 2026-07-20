@@ -3,6 +3,7 @@
 
 #include "DataParser/DataParser.h"
 #include "EventBus/EventBus.h"
+#include "GameSettings/GameSettings.h"
 #include "IFontFactory/IFontFactory.h"
 #include "IPlatformFactory/IPlatformFactory.h"
 #include "ITextureFactory/ITextureFactory.h"
@@ -11,8 +12,6 @@
 #include "Scene/Scene.h"
 #include "TextureLoader/TextureLoader.h"
 #include "Window/Window.h"
-
-#include "../value_objects/GameSettings/GameSettings.h"
 
 #include <memory>
 

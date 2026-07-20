@@ -1,7 +1,7 @@
-#include "../include/SDLWindow/SDLWindow.h"
+#include "SDLWindow/SDLWindow.h"
 
-#include "../../engine/events/WindowResizedEvent.h"
-#include "../../engine/include/EventBus/EventBus.h"
+#include "engine/events/WindowResizedEvent.h"
+#include "engine/include/EventBus/EventBus.h"
 
 #include <stdexcept>
 

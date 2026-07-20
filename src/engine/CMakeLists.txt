@@ -16,7 +16,11 @@ target_sources(engine
 
 target_include_directories(engine
     PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/events
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources
+        ${CMAKE_CURRENT_SOURCE_DIR}/value_objects
+        ${CMAKE_SOURCE_DIR}/src
 )
 
 target_link_libraries(engine

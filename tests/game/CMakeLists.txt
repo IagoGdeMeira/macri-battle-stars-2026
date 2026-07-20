@@ -80,8 +80,9 @@ add_executable(game_tests
 
 target_link_libraries(game_tests
     PRIVATE
-        game
         Catch2::Catch2WithMain
+        game
+        tests_common
 )
 
 if(MSVC)

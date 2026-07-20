@@ -2,8 +2,7 @@
 #define animation_set_h
 
 #include "Animation.h"
-
-#include "../StateId/StateId.h"
+#include "StateId/StateId.h"
 
 #include <unordered_map>
 

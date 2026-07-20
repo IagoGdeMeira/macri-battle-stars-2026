@@ -1,15 +1,15 @@
-#include "../../../src/game/collision_detections/RectCircleCollisionDetection.h"
+#include "game/collision_detections/RectCircleCollisionDetection.h"
 
-#include "../../../src/domain/components/CircleColliderComponent.h"
-#include "../../../src/domain/components/RectangleColliderComponent.h"
-#include "../../../src/domain/components/TransformComponent.h"
+#include "domain/components/CircleColliderComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/TransformComponent.h"
 
-#include "../../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../../src/engine/include/EventBus/EventBus.h"
-#include "../../../src/engine/include/Scene/Scene.h"
-#include "../../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/Scene/Scene.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
-#include "../../../src/game/events/CollisionEvent.h"
+#include "game/events/CollisionEvent.h"
 
 #include <algorithm>
 #include <catch2/catch_test_macros.hpp>

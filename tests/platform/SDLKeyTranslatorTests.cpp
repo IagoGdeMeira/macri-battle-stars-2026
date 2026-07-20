@@ -1,4 +1,4 @@
-#include "../../src/platform/include/SDLKeyTranslator/SDLKeyTranslator.h"
+#include "platform/include/SDLKeyTranslator/SDLKeyTranslator.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <SDL.h>

@@ -1,8 +1,8 @@
-#include "../include/Scene/Scene.h"
+#include "Scene/Scene.h"
 
-#include "../include/CommandBuffer/CommandBuffer.h"
+#include "CommandBuffer/CommandBuffer.h"
 
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/utils/Logger/Logger.h"
 
 void Scene::update(float deltaTime)
 {

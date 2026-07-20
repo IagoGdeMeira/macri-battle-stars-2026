@@ -1,22 +1,22 @@
-#include "../../src/game/include/UIFactory/UIFactory.h"
+#include "game/include/UIFactory/UIFactory.h"
 
-#include "../stubs/StubFont.h"
-#include "../stubs/StubFontFactory.h"
-#include "../stubs/StubTexture.h"
-#include "../stubs/StubTextureFactory.h"
+#include "StubFont.h"
+#include "StubFontFactory.h"
+#include "StubTexture.h"
+#include "StubTextureFactory.h"
 
-#include "../../src/domain/components/BoxModel.h"
-#include "../../src/domain/components/FlexContainer.h"
-#include "../../src/domain/components/FlexItem.h"
-#include "../../src/domain/components/ParentComponent.h"
-#include "../../src/domain/components/UIActionComponent.h"
-#include "../../src/domain/components/UIFocusable.h"
-#include "../../src/domain/components/UISpriteComponent.h"
-#include "../../src/domain/components/UITextComponent.h"
-#include "../../src/domain/components/UITransform.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/BoxModel.h"
+#include "domain/components/FlexContainer.h"
+#include "domain/components/FlexItem.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/UIActionComponent.h"
+#include "domain/components/UIFocusable.h"
+#include "domain/components/UISpriteComponent.h"
+#include "domain/components/UITextComponent.h"
+#include "domain/components/UITransform.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/game/include/IUIAction/IUIAction.h"
+#include "game/include/IUIAction/IUIAction.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

@@ -1,8 +1,8 @@
 #ifndef sdl_input_adapter_h
 #define sdl_input_adapter_h
 
-#include "../../engine/include/InputAdapter/InputAdapter.h"
-#include "../../engine/include/InputSource/InputSource.h"
+#include "engine/include/InputAdapter/InputAdapter.h"
+#include "engine/include/InputSource/InputSource.h"
 
 #include <cstdint>
 #include <memory>

@@ -1,7 +1,7 @@
 #ifndef stub_font_h
 #define stub_font_h
 
-#include "../../src/engine/resources/Font/Font.h"
+#include "engine/resources/Font/Font.h"
 
 class StubFont : public Font
 {

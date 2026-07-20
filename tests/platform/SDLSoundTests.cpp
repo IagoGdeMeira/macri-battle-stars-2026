@@ -1,4 +1,4 @@
-#include "../../src/platform/include/SDLSound/SDLSound.h"
+#include "platform/include/SDLSound/SDLSound.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <SDL.h>

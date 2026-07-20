@@ -1,15 +1,15 @@
-#include "../include/AttackSystem/AttackSystem.h"
+#include "AttackSystem/AttackSystem.h"
 
-#include "../events/TriggerEvent.h"
+#include "TriggerEvent.h"
 
-#include "../../domain/components/HitstopComponent.h"
-#include "../../domain/components/InputComponent.h"
-#include "../../domain/components/PlayerComponent.h"
-#include "../../domain/components/StateComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/value_objects/StateId/StateId.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/components/StateComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/value_objects/StateId/StateId.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void AttackSystem::update(UpdateContext& ctx)
 {
@@ -30,7 +30,6 @@ bool AttackSystem::canAttack(UpdateContext& ctx, Entity entity) const
     auto& comp = ctx.world.components();
 
     if (comp.has<HitstopComponent>(entity) && comp.get<HitstopComponent>(entity).frozen) return false;
-
     if (comp.has<StateComponent>(entity))
     {
         StateId current = comp.get<StateComponent>(entity).current;

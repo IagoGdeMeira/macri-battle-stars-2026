@@ -1,8 +1,8 @@
-#include "../include/JsonParser/JsonParser.h"
+#include "JsonParser/JsonParser.h"
 
-#include "../include/JsonNode/JsonNode.h"
+#include "JsonNode/JsonNode.h"
 
-#include "../../engine/include/PathResolver/PathResolver.h"
+#include "engine/include/PathResolver/PathResolver.h"
 
 #include <fstream>
 #include <nlohmann/json.hpp>

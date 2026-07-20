@@ -1,15 +1,15 @@
-#include "../../src/game/include/UIInputSystem/UIInputSystem.h"
+#include "game/include/UIInputSystem/UIInputSystem.h"
 
-#include "../../src/domain/components/UIActionComponent.h"
-#include "../../src/domain/components/UIFocusable.h"
-#include "../../src/domain/components/UITransform.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/UIActionComponent.h"
+#include "domain/components/UIFocusable.h"
+#include "domain/components/UITransform.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
-#include "../../src/game/events/UIActionEvent.h"
+#include "game/events/UIActionEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 

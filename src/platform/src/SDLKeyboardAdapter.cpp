@@ -1,10 +1,10 @@
-#include "../include/SDLKeyboardAdapter/SDLKeyboardAdapter.h"
+#include "SDLKeyboardAdapter/SDLKeyboardAdapter.h"
 
-#include "../include/SDLKeyTranslator/SDLKeyTranslator.h"
+#include "SDLKeyTranslator/SDLKeyTranslator.h"
 
-#include "../../engine/events/InputEvent.h"
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/InputContext/InputContext.h"
+#include "engine/events/InputEvent.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/InputContext/InputContext.h"
 
 #include <SDL.h>
 

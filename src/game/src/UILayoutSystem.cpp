@@ -1,20 +1,20 @@
-#include "../include/UILayoutSystem/UILayoutSystem.h"
+#include "UILayoutSystem/UILayoutSystem.h"
 
-#include "../../domain/components/BoxModel.h"
-#include "../../domain/components/FlexContainer.h"
-#include "../../domain/components/FlexItem.h"
-#include "../../domain/components/ParentComponent.h"
-#include "../../domain/components/UITransform.h"
-#include "../../domain/include/View/View.h"
+#include "domain/components/BoxModel.h"
+#include "domain/components/FlexContainer.h"
+#include "domain/components/FlexItem.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/UITransform.h"
+#include "domain/include/View/View.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
 
 void UILayoutSystem::update(UpdateContext& ctx)
 {
     auto containers = View<FlexContainer, UITransform>(ctx.world.components());
-    for (auto [entity, flex, transform] : containers)
+    for (auto [entity, flex, uit_] : containers)
     {
         if (!flex.needsLayout) continue;
         
@@ -28,9 +28,7 @@ std::vector<Entity> UILayoutSystem::collectChildren(Item item)
     std::vector<Entity> children;
 
     auto view = View<ParentComponent>(item.ctx.world.components());
-
-    for (auto [entity, parentComp] : view)
-    { if (parentComp.parent == item.entity) children.push_back(entity); }
+    for (auto [entity, parentComp] : view) if (parentComp.parent == item.entity) children.push_back(entity);
 
     return children;
 }
@@ -39,17 +37,17 @@ void UILayoutSystem::applyPadding(Item item, Rectangle& innerRect) const
 {
     AABB padding {0.f, 0.f, 0.f, 0.f};
 
-    auto& components = item.ctx.world.components();
-    if (components.has<BoxModel>(item.entity))
+    auto& comp = item.ctx.world.components();
+    if (comp.has<BoxModel>(item.entity))
     {
-        auto& box = components.get<BoxModel>(item.entity);
+        auto& box = comp.get<BoxModel>(item.entity);
         padding.left = box.border.top + box.padding.top;
         padding.top = box.border.left + box.padding.left;
         padding.right = box.border.right + box.padding.right;
         padding.bottom = box.border.bottom + box.padding.bottom;
     }
 
-    auto& transform = components.get<UITransform>(item.entity);
+    auto& transform = comp.get<UITransform>(item.entity);
     innerRect.position.x = transform.rect.position.x + padding.left;
     innerRect.position.y = transform.rect.position.y + padding.top;
     innerRect.size.width = transform.rect.size.width - padding.left - padding.right;

@@ -1,9 +1,9 @@
 #ifndef music_loader_h
 #define music_loader_h
 
-#include "../IMusicFactory/IMusicFactory.h"
-#include "../Music/Music.h"
-#include "../ResourceLoader/ResourceLoader.h"
+#include "IMusicFactory/IMusicFactory.h"
+#include "Music/Music.h"
+#include "ResourceLoader/ResourceLoader.h"
 
 class MusicLoader : public ResourceLoader<Music>
 {

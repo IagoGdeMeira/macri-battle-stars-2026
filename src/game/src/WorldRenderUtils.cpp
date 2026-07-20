@@ -1,9 +1,9 @@
-#include "../include/WorldRenderUtils/WorldRenderUtils.h"
+#include "WorldRenderUtils/WorldRenderUtils.h"
 
-#include "../../domain/components/ParallaxComponent.h"
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/components/ParallaxComponent.h"
+#include "domain/utils/Logger/Logger.h"
 
-#include "../../engine/value_objects/GameConstants/GameConstants.h"
+#include "engine/value_objects/GameConstants/GameConstants.h"
 
 Position WorldRenderUtils::worldToScreen(Camera2D& camera, Position worldPos, Viewport& vp, const Position& parallax)
 {

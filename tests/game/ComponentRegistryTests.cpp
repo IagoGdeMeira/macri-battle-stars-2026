@@ -1,13 +1,12 @@
-#include "../../src/game/include/ComponentRegistry/ComponentRegistry.h"
+#include "game/include/ComponentRegistry/ComponentRegistry.h"
 
-#include "../../src/domain/components/AllComponents.h"
-#include "../../src/domain/include/ComponentManager/ComponentManager.h"
+#include "domain/components/AllComponents.h"
+#include "domain/include/ComponentManager/ComponentManager.h"
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("ComponentRegistry registers every game component",
-    "[unit][component_registry]"
-) {
+TEST_CASE("ComponentRegistry registers every game component", "[unit][component_registry]")
+{
     ComponentManager comp;
 
     ComponentRegistry::registerAll(comp);
@@ -46,7 +45,6 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(comp.storage<ShapeRenderComponent>() != nullptr);
     REQUIRE(comp.storage<SpriteComponent>() != nullptr);
     REQUIRE(comp.storage<StateComponent>() != nullptr);
-    REQUIRE(comp.storage<StateMappingComponent>() != nullptr);
     REQUIRE(comp.storage<StateMachineComponent>() != nullptr);
     REQUIRE(comp.storage<TransformComponent>() != nullptr);
     REQUIRE(comp.storage<UIActionComponent>() != nullptr);
@@ -58,9 +56,8 @@ TEST_CASE("ComponentRegistry registers every game component",
     REQUIRE(comp.storage<VisualEffectsComponent>() != nullptr);
 }
 
-TEST_CASE("ComponentRegistry can be invoked more than once safely",
-    "[unit][component_registry]"
-) {
+TEST_CASE("ComponentRegistry can be invoked more than once safely", "[unit][component_registry]")
+{
     ComponentManager comp;
 
     REQUIRE_NOTHROW(ComponentRegistry::registerAll(comp));

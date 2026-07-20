@@ -1,7 +1,7 @@
 #ifndef input_event_h
 #define input_event_h
 
-#include "../include/InputSource/InputSource.h"
+#include "InputSource/InputSource.h"
 
 #include <cstdint>
 

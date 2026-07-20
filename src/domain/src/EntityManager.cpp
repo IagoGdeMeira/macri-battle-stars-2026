@@ -1,4 +1,4 @@
-#include "../include/EntityManager/EntityManager.h"
+#include "EntityManager/EntityManager.h"
 
 Entity EntityManager::create()
 {

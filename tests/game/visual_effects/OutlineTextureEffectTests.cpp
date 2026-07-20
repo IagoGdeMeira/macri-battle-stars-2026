@@ -1,9 +1,9 @@
-#include "../../../src/game/visual_effects/OutlineTextureEffect.h"
+#include "game/visual_effects/OutlineTextureEffect.h"
 
-#include "../../stubs/StubRenderer.h"
+#include "StubRenderer.h"
 
-#include "../../../src/engine/include/DrawBatch/DrawTextureBatch.h"
-#include "../../../src/engine/include/Renderer/Renderer.h"
+#include "engine/include/DrawBatch/DrawTextureBatch.h"
+#include "engine/include/Renderer/Renderer.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>

@@ -1,16 +1,16 @@
-#include "../include/HorizontalMovementSystem/HorizontalMovementSystem.h"
+#include "HorizontalMovementSystem/HorizontalMovementSystem.h"
 
-#include "../../domain/components/AnalogInputComponent.h"
-#include "../../domain/components/HitstopComponent.h"
-#include "../../domain/components/InputComponent.h"
-#include "../../domain/components/PlayerComponent.h"
-#include "../../domain/components/StateComponent.h"
-#include "../../domain/components/VelocityComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/value_objects/InputAction/InputAction.h"
-#include "../../domain/value_objects/StateId/StateId.h"
+#include "domain/components/AnalogInputComponent.h"
+#include "domain/components/HitstopComponent.h"
+#include "domain/components/InputComponent.h"
+#include "domain/components/PlayerComponent.h"
+#include "domain/components/StateComponent.h"
+#include "domain/components/VelocityComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/value_objects/InputAction/InputAction.h"
+#include "domain/value_objects/StateId/StateId.h"
 
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void HorizontalMovementSystem::update(UpdateContext& ctx)
 {

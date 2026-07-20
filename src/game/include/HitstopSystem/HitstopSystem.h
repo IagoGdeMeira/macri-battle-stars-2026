@@ -1,8 +1,8 @@
 #ifndef hitstop_system_h
 #define hitstop_system_h
 
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/include/System/System.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/include/System/System.h"
 
 #include <vector>
 
@@ -12,7 +12,6 @@ class HitstopSystem : public System
 {
 public:
     explicit HitstopSystem(EventBus& bus, float duration = 0.1f);
-
     void update(UpdateContext& ctx) override;
 
 private:

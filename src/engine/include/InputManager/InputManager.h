@@ -1,8 +1,8 @@
 #ifndef input_manager_h
 #define input_manager_h
 
-#include "../InputAdapter/InputAdapter.h"
-#include "../IPlatformEventProvider/IPlatformEventProvider.h"
+#include "InputAdapter/InputAdapter.h"
+#include "IPlatformEventProvider/IPlatformEventProvider.h"
 
 #include <memory>
 #include <vector>

@@ -1,6 +1,6 @@
-#include "../include/InputBindingLoader/InputBindingLoader.h"
+#include "InputBindingLoader/InputBindingLoader.h"
 
-#include "../include/InputMapper/InputMapper.h"
+#include "InputMapper/InputMapper.h"
 
 InputContext InputBindingLoader::load(const std::string& path)
 {

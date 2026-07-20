@@ -1,7 +1,7 @@
-#include "../../src/engine/include/TextureLoader/TextureLoader.h"
+#include "engine/include/TextureLoader/TextureLoader.h"
 
-#include "../stubs/StubTextureFactory.h"
-#include "../stubs/StubTexture.h"
+#include "StubTexture.h"
+#include "StubTextureFactory.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

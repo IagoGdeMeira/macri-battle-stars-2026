@@ -1,7 +1,7 @@
 #ifndef stub_data_node_h
 #define stub_data_node_h
 
-#include "../../src/engine/include/DataNode/DataNode.h"
+#include "engine/include/DataNode/DataNode.h"
 
 #include <memory>
 #include <stdexcept>

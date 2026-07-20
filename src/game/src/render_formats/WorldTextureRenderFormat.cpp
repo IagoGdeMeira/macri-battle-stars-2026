@@ -1,17 +1,17 @@
-#include "../render_formats/WorldTextureRenderFormat.h"
+#include "WorldTextureRenderFormat.h"
 
-#include "../include/WorldRenderUtils/WorldRenderUtils.h"
+#include "WorldRenderUtils/WorldRenderUtils.h"
 
-#include "../../domain/components/AnimationControllerComponent.h"
-#include "../../domain/components/OrientationComponent.h"
-#include "../../domain/components/RenderComponent.h"
-#include "../../domain/components/SpriteComponent.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/components/VisualEffectsComponent.h"
-#include "../../domain/utils/Logger/Logger.h"
+#include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/OrientationComponent.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/VisualEffectsComponent.h"
+#include "domain/utils/Logger/Logger.h"
 
-#include "../../engine/include/RenderContext/RenderContext.h"
-#include "../../engine/resources/Texture/Texture.h"
+#include "engine/resources/Texture/Texture.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
 void WorldTextureRenderFormat::render(RenderContext& ctx)
 {

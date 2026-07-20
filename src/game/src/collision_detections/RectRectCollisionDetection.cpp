@@ -1,14 +1,14 @@
-#include "../collision_detections/RectRectCollisionDetection.h"
+#include "RectRectCollisionDetection.h"
 
-#include "../events/CollisionEvent.h"
+#include "CollisionEvent.h"
 
-#include "../../domain/components/RectangleColliderComponent.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/value_objects/Geometry/Geometry.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/value_objects/Geometry/Geometry.h"
 
-#include "../../engine/include/EventBus/EventBus.h"
-#include "../../engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void RectRectCollisionDetection::detect(const std::vector<ICollisionDetection::CollisionPair>& pairs, UpdateContext& ctx)
 {

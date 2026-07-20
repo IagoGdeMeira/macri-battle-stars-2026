@@ -22,8 +22,9 @@ add_executable(platform_tests
 
 target_link_libraries(platform_tests
     PRIVATE
-        platform
         Catch2::Catch2WithMain
+        platform
+        tests_common
 )
 
 if(WIN32)

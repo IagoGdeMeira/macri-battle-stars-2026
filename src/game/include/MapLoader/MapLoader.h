@@ -1,10 +1,10 @@
 #ifndef map_loader_h
 #define map_loader_h
 
-#include "../../domain/components/MapComponent.h"
-#include "../../domain/include/Entity/Entity.h"
+#include "domain/components/MapComponent.h"
+#include "domain/include/Entity/Entity.h"
 
-#include "../../engine/include/DataParser/DataParser.h"
+#include "engine/include/DataParser/DataParser.h"
 
 class EntityFactory;
 class World;

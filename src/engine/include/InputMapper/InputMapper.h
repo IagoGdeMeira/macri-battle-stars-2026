@@ -1,12 +1,12 @@
 #ifndef input_mapper_h
 #define input_mapper_h
 
-#include "../GamepadButton/GamepadButton.h"
-#include "../InputSource/InputSource.h"
-#include "../KeyCode/KeyCode.h"
-#include "../MouseButton/MouseButton.h"
+#include "GamepadButton/GamepadButton.h"
+#include "InputSource/InputSource.h"
+#include "KeyCode/KeyCode.h"
+#include "MouseButton/MouseButton.h"
 
-#include "../../domain/value_objects/InputAction/InputAction.h"
+#include "domain/value_objects/InputAction/InputAction.h"
 
 #include <string>
 

@@ -1,4 +1,4 @@
-#include "../include/CharacterRosterLoader/CharacterRosterLoader.h"
+#include "CharacterRosterLoader/CharacterRosterLoader.h"
 
 CharacterRoster CharacterRosterLoader::load(const std::string& path) const
 {
@@ -7,7 +7,7 @@ CharacterRoster CharacterRosterLoader::load(const std::string& path) const
 
     for (auto& item : root->getArray("characters"))
     {
-        CharacterEntry entry;
+        CharacterRoster::Entry entry;
         entry.id = item->getString("id");
         entry.name = item->getString("name");
         entry.definitionPath = item->getString("definition");

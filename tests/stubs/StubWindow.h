@@ -1,7 +1,7 @@
 #ifndef stub_window_h
 #define stub_window_h
 
-#include "../../src/engine/include/Window/Window.h"
+#include "engine/include/Window/Window.h"
 
 class StubWindow : public Window
 {

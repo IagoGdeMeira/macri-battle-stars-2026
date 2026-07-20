@@ -1,10 +1,10 @@
 #ifndef navigato_to_title_action_h
 #define navigato_to_title_action_h
 
-#include "../include/IUIAction/IUIAction.h"
-#include "../scenes/TitleScene.h"
+#include "IUIAction/IUIAction.h"
+#include "TitleScene.h"
 
-#include "../../engine/include/SceneManager/SceneManager.h"
+#include "engine/include/SceneManager/SceneManager.h"
 
 class NavigateToTitleAction : public IUIAction
 {

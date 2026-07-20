@@ -1,7 +1,7 @@
 #ifndef map_component_h
 #define map_component_h
 
-#include "../value_objects/Geometry/Geometry.h"
+#include "Geometry/Geometry.h"
 
 #include <string>
 #include <vector>

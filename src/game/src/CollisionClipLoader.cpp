@@ -1,7 +1,8 @@
-#include "../include/CollisionClipLoader/CollisionClipLoader.h"
-#include "../include/StateIdMapper/StateIdMapper.h"
-#include <stdexcept>
+#include "CollisionClipLoader/CollisionClipLoader.h"
 
+#include "StateIdMapper/StateIdMapper.h"
+
+#include <stdexcept>
 
 CollisionClipLoader::ClipMap CollisionClipLoader::load(const std::string& path) const
 {

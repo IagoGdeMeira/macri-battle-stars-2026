@@ -1,4 +1,4 @@
-#include "../../src/platform/include/SDLMusicFactory/SDLMusicFactory.h"
+#include "platform/include/SDLMusicFactory/SDLMusicFactory.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>

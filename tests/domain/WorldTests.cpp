@@ -1,4 +1,4 @@
-#include "../../src/domain/include/World/World.h"
+#include "domain/include/World/World.h"
 
 #include <catch2/catch_test_macros.hpp>
 

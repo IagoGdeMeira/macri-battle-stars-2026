@@ -1,17 +1,18 @@
-#include "../scenes/TitleScene.h"
+#include "TitleScene.h"
 
-#include "../../engine/include/InputBindingLoader/InputBindingLoader.h"
-#include "../../engine/include/InputContext/InputContext.h"
-#include "../../engine/include/InputManager/InputManager.h"
-#include "../../engine/include/TextureLoader/TextureLoader.h"
-#include "../../engine/include/RenderContext/RenderContext.h"
+#include "MenuLoader/MenuLoader.h"
+#include "UIActionFactory/UIActionFactory.h"
+#include "UIDrawer/UIDrawer.h"
+#include "UIFactory/UIFactory.h"
+#include "UIInputSystem/UIInputSystem.h"
+#include "UILayoutSystem/UILayoutSystem.h"
 
-#include "../../game/include/MenuLoader/MenuLoader.h"
-#include "../../game/include/UIActionFactory/UIActionFactory.h"
-#include "../../game/include/UIDrawer/UIDrawer.h"
-#include "../../game/include/UIFactory/UIFactory.h"
-#include "../../game/include/UIInputSystem/UIInputSystem.h"
-#include "../../game/include/UILayoutSystem/UILayoutSystem.h"
+#include "engine/include/InputBindingLoader/InputBindingLoader.h"
+#include "engine/include/InputManager/InputManager.h"
+#include "engine/include/TextureLoader/TextureLoader.h"
+#include "engine/value_objects/GameConstants/GameConstants.h"
+#include "engine/value_objects/InputContext/InputContext.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
 void TitleScene::init()
 {
@@ -34,7 +35,7 @@ void TitleScene::init()
 }
 
 void TitleScene::loadInputContext()
-{ this->inputContext = std::make_unique<InputContext>(InputBindingLoader(this->parser).load("assets/inputs/input_bindings.json")); }
+{ this->inputContext = std::make_unique<InputContext>(InputBindingLoader(this->parser).load(GameConstants::DEFAULT_INPUT_BINDINGS_PATH)); }
 
 void TitleScene::setupInputAdapters()
 {
@@ -51,7 +52,7 @@ void TitleScene::setupInputAdapters()
 
 void TitleScene::loadMenu()
 {
-    auto menuData = this->menuLoader->load("assets/menus/title.json");
+    auto menuData = this->menuLoader->load(GameConstants::DEFAULT_TITLE_MENU_PATH);
     for (auto& elem : menuData.elements) this->uiFactory->createFromElement(*elem);
 }
 

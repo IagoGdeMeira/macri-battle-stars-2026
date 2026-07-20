@@ -1,7 +1,7 @@
 #ifndef drawer_h
 #define drawer_h
 
-#include "../RenderContext/RenderContext.h"
+#include "RenderContext/RenderContext.h"
 
 class Drawer
 {

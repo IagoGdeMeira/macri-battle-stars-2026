@@ -1,7 +1,7 @@
 #ifndef stub_loader_h
 #define stub_loader_h
 
-#include "../../src/engine/include/ResourceLoader/ResourceLoader.h"
+#include "engine/include/ResourceLoader/ResourceLoader.h"
 
 #include <future>
 #include <memory>

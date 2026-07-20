@@ -2,12 +2,11 @@
 #define menu_loader_h
 
 #include "MenuData.h"
+#include "UIActionFactory/UIActionFactory.h"
+#include "UIElement/UIElement.h"
+#include "UIElement/TextElement.h"
 
-#include "../UIActionFactory/UIActionFactory.h"
-#include "../UIElement/UIElement.h"
-#include "../UIElement/TextElement.h"
-
-#include "../../engine/include/DataParser/DataParser.h"
+#include "engine/include/DataParser/DataParser.h"
 
 #include <memory>
 

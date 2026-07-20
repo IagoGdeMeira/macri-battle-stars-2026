@@ -1,8 +1,8 @@
 #ifndef trigger_event_h
 #define trigger_event_h
 
-#include "../../domain/include/Entity/Entity.h"
-#include "../../domain/value_objects/TriggerId/TriggerId.h"
+#include "domain/include/Entity/Entity.h"
+#include "domain/value_objects/TriggerId/TriggerId.h"
 
 struct TriggerEvent { Entity entity; TriggerId trigger; };
 

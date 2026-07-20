@@ -1,15 +1,15 @@
-#include "../render_formats/WorldCircleRenderFormat.h"
+#include "WorldCircleRenderFormat.h"
 
-#include "../include/WorldRenderUtils/WorldRenderUtils.h"
+#include "WorldRenderUtils/WorldRenderUtils.h"
 
-#include "../../domain/components/ShapeRenderComponent.h"
-#include "../../domain/components/TransformComponent.h"
-#include "../../domain/components/RenderComponent.h"
-#include "../../domain/components/VisualEffectsComponent.h"
-#include "../../domain/include/View/View.h"
-#include "../../domain/value_objects/CollisionFrame/ColliderDef.h"
+#include "domain/components/ShapeRenderComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/VisualEffectsComponent.h"
+#include "domain/include/View/View.h"
+#include "domain/value_objects/CollisionFrame/ColliderDef.h"
 
-#include "../../engine/include/RenderContext/RenderContext.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
 void WorldCircleRenderFormat::render(RenderContext& ctx)
 {

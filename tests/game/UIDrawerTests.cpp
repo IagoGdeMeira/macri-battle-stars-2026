@@ -1,19 +1,19 @@
-#include "../../src/game/include/UIDrawer/UIDrawer.h"
+#include "game/drawers/UIDrawer/UIDrawer.h"
 
-#include "../../src/domain/components/RenderComponent.h"
-#include "../../src/domain/components/UISpriteComponent.h"
-#include "../../src/domain/components/UITextComponent.h"
-#include "../../src/domain/components/UITransform.h"
-#include "../../src/domain/components/VisualEffectsComponent.h"
-#include "../../src/domain/include/World/World.h"
+#include "domain/components/RenderComponent.h"
+#include "domain/components/UISpriteComponent.h"
+#include "domain/components/UITextComponent.h"
+#include "domain/components/UITransform.h"
+#include "domain/components/VisualEffectsComponent.h"
+#include "domain/include/World/World.h"
 
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/include/RenderContext/RenderContext.h"
-#include "../../src/engine/value_objects/GameSettings/GameSettings.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/GameSettings/GameSettings.h"
+#include "engine/value_objects/RenderContext/RenderContext.h"
 
-#include "../stubs/StubRenderer.h"
-#include "../stubs/StubTexture.h"
-#include "../stubs/StubFont.h"
+#include "StubRenderer.h"
+#include "StubTexture.h"
+#include "StubFont.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -31,12 +31,12 @@ public:
 
     UIDrawerFixture() : drawer(this->bus, this->renderer, this->settings), context{ this->world, this->bus }
     {
-        auto& components = this->world.components();
-        components.registerComponent<RenderComponent>();
-        components.registerComponent<UISpriteComponent>();
-        components.registerComponent<UITextComponent>();
-        components.registerComponent<UITransform>();
-        components.registerComponent<VisualEffectsComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<UISpriteComponent>();
+        comp.registerComponent<UITextComponent>();
+        comp.registerComponent<UITransform>();
+        comp.registerComponent<VisualEffectsComponent>();
     }
 
     Entity createSpriteEntity(const Rectangle& rect, std::shared_ptr<Texture> texture)
@@ -48,10 +48,10 @@ public:
         transform.rotation = 37.5f;
         transform.scale = {-2.f, 3.f};
 
-        auto& components = this->world.components();
-        components.add<UITransform>(entity, transform);
-        components.add<UISpriteComponent>(entity, UISpriteComponent{texture, Color{10, 20, 30, 40}});
-        components.add<RenderComponent>(entity, RenderComponent{});
+        auto& comp = this->world.components();
+        comp.add<UITransform>(entity, transform);
+        comp.add<UISpriteComponent>(entity, UISpriteComponent{texture, Color{10, 20, 30, 40}});
+        comp.add<RenderComponent>(entity, RenderComponent{});
 
         return entity;
     }
@@ -69,10 +69,10 @@ public:
         text.color = Color{5, 6, 7, 8};
         text.fontSize = 24.f;
 
-        auto& components = this->world.components();
-        components.add<UITransform>(entity, transform);
-        components.add<UITextComponent>(entity, text);
-        components.add<RenderComponent>(entity, RenderComponent{});
+        auto& comp = this->world.components();
+        comp.add<UITransform>(entity, transform);
+        comp.add<UITextComponent>(entity, text);
+        comp.add<RenderComponent>(entity, RenderComponent{});
 
         return entity;
     }
@@ -130,23 +130,23 @@ TEST_CASE_METHOD(UIDrawerFixture, "UIDrawer draws sprite and text commands from 
 TEST_CASE_METHOD(UIDrawerFixture, "UIDrawer skips sprites without texture and texts without font or text",
     "[unit][ui_drawer]"
 ) {
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
     auto& entities = this->world.entities();
 
     Entity sprite = entities.create();
     UITransform spriteTransform;
     spriteTransform.rect = Rectangle{Position{1.f, 2.f}, Dimension2D{10.f, 12.f}};
 
-    components.add<UITransform>(sprite, spriteTransform);
-    components.add<UISpriteComponent>(sprite, UISpriteComponent{ nullptr, Color::WHITE() });
-    components.add<RenderComponent>(sprite, RenderComponent{});
+    comp.add<UITransform>(sprite, spriteTransform);
+    comp.add<UISpriteComponent>(sprite, UISpriteComponent{ nullptr, Color::WHITE() });
+    comp.add<RenderComponent>(sprite, RenderComponent{});
 
     Entity text = entities.create();
     UITransform textTransform;
     textTransform.rect = Rectangle{Position{3.f, 4.f}, Dimension2D{20.f, 22.f}};
-    components.add<UITransform>(text, textTransform);
-    components.add<UITextComponent>(text, UITextComponent{});
-    components.add<RenderComponent>(text, RenderComponent{});
+    comp.add<UITransform>(text, textTransform);
+    comp.add<UITextComponent>(text, UITextComponent{});
+    comp.add<RenderComponent>(text, RenderComponent{});
 
     this->drawer.draw(this->context);
 

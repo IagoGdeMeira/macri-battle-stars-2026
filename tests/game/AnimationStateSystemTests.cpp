@@ -1,17 +1,17 @@
-#include "../../src/game/include/AnimationStateSystem/AnimationStateSystem.h"
+#include "game/include/AnimationStateSystem/AnimationStateSystem.h"
 
-#include "../../src/domain/components/AnimationComponent.h"
-#include "../../src/domain/components/AnimationControllerComponent.h"
-#include "../../src/domain/components/OrientationComponent.h"
-#include "../../src/domain/events/OrientationChangedEvent.h"
-#include "../../src/domain/include/World/World.h"
-#include "../../src/domain/value_objects/Animation/Animation.h"
+#include "domain/components/AnimationComponent.h"
+#include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/OrientationComponent.h"
+#include "domain/events/OrientationChangedEvent.h"
+#include "domain/include/World/World.h"
+#include "domain/value_objects/Animation/Animation.h"
 
-#include "../../src/engine/include/CommandBuffer/CommandBuffer.h"
-#include "../../src/engine/include/EventBus/EventBus.h"
-#include "../../src/engine/value_objects/UpdateContext/UpdateContext.h"
+#include "engine/include/CommandBuffer/CommandBuffer.h"
+#include "engine/include/EventBus/EventBus.h"
+#include "engine/value_objects/UpdateContext/UpdateContext.h"
 
-#include "../../src/game/events/StateChangedEvent.h"
+#include "game/events/StateChangedEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 

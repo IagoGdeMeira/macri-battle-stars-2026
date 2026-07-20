@@ -1,9 +1,9 @@
 #ifndef input_source_h
 #define input_source_h
 
-#include "../GamepadButton/GamepadButton.h"
-#include "../KeyCode/KeyCode.h"
-#include "../MouseButton/MouseButton.h"
+#include "GamepadButton/GamepadButton.h"
+#include "KeyCode/KeyCode.h"
+#include "MouseButton/MouseButton.h"
 
 #include <cstdint>
 #include <functional>
