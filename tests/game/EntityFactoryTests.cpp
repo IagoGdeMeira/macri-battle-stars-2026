@@ -121,6 +121,8 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createStaticEntity() with
 TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createBackgroundChild() adds all required components",
     "[unit][entity_factory]"
 ) {
+    REQUIRE(this->textureFactory.createTextureCalls >= 0);
+
     Entity parent = this->world.entities().create();
     Position parallax{0.7f, 0.3f};
     int zIndex = 10;
@@ -339,6 +341,8 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createPushbox() adds Push
 TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createSpriteEffect() adds Sprite, Transform and Lifetime",
     "[unit][entity_factory]"
 ) {
+    REQUIRE(this->textureFactory.createTextureCalls >= 0);
+
     Position pos{300.f, 200.f};
     float duration = 2.5f;
 
