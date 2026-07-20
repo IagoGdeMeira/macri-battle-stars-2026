@@ -20,10 +20,9 @@
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/ThreadPool/ThreadPool.h"
+#include "engine/value_objects/Camera2D/Camera2D.h"
 #include "engine/value_objects/GameSettings/GameSettings.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
-
-#include "game/include/Camera2D/Camera2D.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
@@ -183,7 +182,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip fla
     auto& comp = this->world.components();
 
     comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, -2.f, -3.f, 37.5f});
-    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", 16, 8 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{"", Dimension2D{16, 8}, Rectangle{}, false});
     comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->camera.setPosition(0.f, 0.f);
@@ -205,7 +204,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards sprite source rect to
     auto& comp = this->world.components();
 
     comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", 16, 8, 4, 6, 8, 10, true });
+    comp.add<SpriteComponent>(entity, SpriteComponent{"dummy.png", 16, 8, 4, 6, 8, 10, true});
     comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->drawer.draw(this->context);
@@ -224,7 +223,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer skips sprites without textures
     auto& comp = this->world.components();
 
     comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    comp.add<SpriteComponent>(entity, SpriteComponent{ nullptr, 16, 8 });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "", Dimension2D{16, 8}, Rectangle{}, false });
     comp.add<RenderComponent>(entity, RenderComponent{ 0 });
 
     this->drawer.draw(this->context);

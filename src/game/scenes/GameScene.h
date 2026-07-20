@@ -1,7 +1,6 @@
 #ifndef game_scene_h
 #define game_scene_h
 
-#include "Camera2D/Camera2D.h"
 #include "CharacterLoader/CharacterLoader.h"
 #include "Combo/Combo.h"
 #include "EntityFactory/EntityFactory.h"
@@ -24,6 +23,7 @@
 #include "engine/include/SceneManager/SceneManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
 #include "engine/include/Window/Window.h"
+#include "engine/value_objects/Camera2D/Camera2D.h"
 #include "engine/value_objects/GameSettings/GameSettings.h"
 #include "engine/value_objects/InputContext/InputContext.h"
 

@@ -3,8 +3,6 @@
 #include "domain/components/ParallaxComponent.h"
 #include "domain/utils/Logger/Logger.h"
 
-#include "engine/value_objects/GameConstants/GameConstants.h"
-
 Position WorldRenderUtils::worldToScreen(Camera2D& camera, Position worldPos, Viewport& vp, const Position& parallax)
 {
     Position camPos = camera.getPosition();
@@ -34,9 +32,9 @@ Position WorldRenderUtils::resolveParallax(World& world, Entity& entity)
 
 void WorldRenderUtils::computeSpriteTransform(const Camera2D& camera, const Rectangle& spriteConfig, DrawTextureCommand& cmd)
 {
-    const float zoom = GameConstants::APPLY_ZOOM_TO_SIZE ? camera.getZoom() : 1.f;
-    const float width = spriteConfig.size.width * std::abs(spriteConfig.position.x) * zoom;
-    const float height = spriteConfig.size.height * std::abs(spriteConfig.position.y) * zoom;
+    const float sizeScale = camera.getSizeScale();
+    const float width = spriteConfig.size.width * std::abs(spriteConfig.position.x) * sizeScale;
+    const float height = spriteConfig.size.height * std::abs(spriteConfig.position.y) * sizeScale;
     cmd.dest.size = { width, height };
 
     cmd.dest.position.x -= width * 0.5f;

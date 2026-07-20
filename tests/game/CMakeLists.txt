@@ -30,7 +30,6 @@ add_executable(game_tests
     AnimationStateSystemTests.cpp
     AnimationSystemTests.cpp
     AttackSystemTests.cpp
-    Camera2DTests.cpp
     CameraControllerSystemTests.cpp
     ComponentRegistryTests.cpp
     CharacterDefinitionLoaderTests.cpp

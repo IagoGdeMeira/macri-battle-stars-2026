@@ -41,16 +41,16 @@ public:
 
     UIFactoryFixture() : factory(this->world, this->fontFactory, this->textureFactory)
     {
-        auto& components = this->world.components();
-        components.registerComponent<UITransform>();
-        components.registerComponent<FlexContainer>();
-        components.registerComponent<BoxModel>();
-        components.registerComponent<UIFocusable>();
-        components.registerComponent<ParentComponent>();
-        components.registerComponent<FlexItem>();
-        components.registerComponent<UITextComponent>();
-        components.registerComponent<UISpriteComponent>();
-        components.registerComponent<UIActionComponent>();
+        auto& comp = this->world.components();
+        comp.registerComponent<UITransform>();
+        comp.registerComponent<FlexContainer>();
+        comp.registerComponent<BoxModel>();
+        comp.registerComponent<UIFocusable>();
+        comp.registerComponent<ParentComponent>();
+        comp.registerComponent<FlexItem>();
+        comp.registerComponent<UITextComponent>();
+        comp.registerComponent<UISpriteComponent>();
+        comp.registerComponent<UIActionComponent>();
     }
 };
 
@@ -58,19 +58,19 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createPanel adds base UI component
 {
     Entity panel = this->factory.createPanel(Rectangle{Position{10.f, 20.f}, Dimension2D{100.f, 50.f}});
 
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
-    REQUIRE(components.has<UITransform>(panel));
-    REQUIRE(components.has<FlexContainer>(panel));
-    REQUIRE(components.has<BoxModel>(panel));
+    REQUIRE(comp.has<UITransform>(panel));
+    REQUIRE(comp.has<FlexContainer>(panel));
+    REQUIRE(comp.has<BoxModel>(panel));
 
-    const auto& transform = components.get<UITransform>(panel);
+    const auto& transform = comp.get<UITransform>(panel);
     REQUIRE(transform.rect.position.x == Catch::Approx(10.f));
     REQUIRE(transform.rect.position.y == Catch::Approx(20.f));
     REQUIRE(transform.rect.size.width == Catch::Approx(100.f));
     REQUIRE(transform.rect.size.height == Catch::Approx(50.f));
 
-    const auto& box = components.get<BoxModel>(panel);
+    const auto& box = comp.get<BoxModel>(panel);
     REQUIRE(box.margin.left == Catch::Approx(0.f));
     REQUIRE(box.padding.left == Catch::Approx(8.f));
     REQUIRE(box.padding.top == Catch::Approx(8.f));
@@ -82,15 +82,15 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createText builds a text entity", 
 {
     Entity text = this->factory.createText("Play", 24.f, Color::WHITE(), Position{5.f, 6.f});
 
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
     REQUIRE(this->fontFactory.createFontCalls == 1);
     REQUIRE(this->fontFactory.lastPath == "assets/fonts/default.ttf");
-    REQUIRE(components.has<UITransform>(text));
-    REQUIRE(components.has<FlexItem>(text));
-    REQUIRE(components.has<UITextComponent>(text));
+    REQUIRE(comp.has<UITransform>(text));
+    REQUIRE(comp.has<FlexItem>(text));
+    REQUIRE(comp.has<UITextComponent>(text));
 
-    const auto& uiText = components.get<UITextComponent>(text);
+    const auto& uiText = comp.get<UITextComponent>(text);
     REQUIRE(uiText.text == "Play");
     REQUIRE(uiText.font == this->fontFactory.fontToReturn);
     REQUIRE(uiText.fontSize == Catch::Approx(24.f));
@@ -100,15 +100,16 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createImage builds a sprite entity
 {
     Entity image = this->factory.createImage("assets/ui/icon.png", Rectangle{Position{1.f, 2.f}, Dimension2D{32.f, 48.f}});
 
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
     REQUIRE(this->textureFactory.createTextureCalls == 1);
     REQUIRE(this->textureFactory.lastPath == "assets/ui/icon.png");
-    REQUIRE(components.has<UITransform>(image));
-    REQUIRE(components.has<UISpriteComponent>(image));
+    REQUIRE(comp.has<UITransform>(image));
+    REQUIRE(comp.has<UISpriteComponent>(image));
 
-    const auto& sprite = components.get<UISpriteComponent>(image);
-    REQUIRE(sprite.texture == this->textureFactory.textureToReturn);
+    const auto& sprite = comp.get<UISpriteComponent>(image);
+    REQUIRE(sprite.texture != nullptr);
+    REQUIRE(dynamic_cast<StubTexture*>(sprite.texture.get()) != nullptr);
 }
 
 TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createButton wires focus, text and action", "[unit][ui_factory]")
@@ -118,10 +119,10 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createButton wires focus, text and
 
     Entity button = this->factory.createButton("Start", Rectangle{Position{0.f, 0.f}, Dimension2D{200.f, 48.f}}, action);
 
-    auto& components = this->world.components();
+    auto& comp = this->world.components();
 
     std::optional<Entity> optEntity;
-    auto view = View<ParentComponent>(components);
+    auto view = View<ParentComponent>(comp);
     for (auto [entity, parent] : view)
     {
         if (parent.parent != button) continue;
@@ -132,30 +133,30 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createButton wires focus, text and
     REQUIRE(optEntity.has_value());
     Entity textEntity = *optEntity;
 
-    REQUIRE(components.has<UITransform>(button));
-    REQUIRE(components.has<FlexContainer>(button));
-    REQUIRE(components.has<BoxModel>(button));
-    REQUIRE(components.has<UIFocusable>(button));
-    REQUIRE(components.has<UIActionComponent>(button));
+    REQUIRE(comp.has<UITransform>(button));
+    REQUIRE(comp.has<FlexContainer>(button));
+    REQUIRE(comp.has<BoxModel>(button));
+    REQUIRE(comp.has<UIFocusable>(button));
+    REQUIRE(comp.has<UIActionComponent>(button));
 
-    const auto& focusable = components.get<UIFocusable>(button);
+    const auto& focusable = comp.get<UIFocusable>(button);
     REQUIRE(focusable.canFocus);
 
-    const auto& flex = components.get<FlexContainer>(button);
+    const auto& flex = comp.get<FlexContainer>(button);
     REQUIRE(flex.direction == FlexContainer::FlexDirection::Row);
     REQUIRE(flex.justify == FlexContainer::JustifyContent::Center);
     REQUIRE(flex.align == FlexContainer::AlignItems::Center);
 
-    REQUIRE(components.has<ParentComponent>(textEntity));
-    REQUIRE(components.has<FlexItem>(textEntity));
-    REQUIRE(components.has<UITextComponent>(textEntity));
+    REQUIRE(comp.has<ParentComponent>(textEntity));
+    REQUIRE(comp.has<FlexItem>(textEntity));
+    REQUIRE(comp.has<UITextComponent>(textEntity));
 
-    const auto& parentComp = components.get<ParentComponent>(textEntity);
+    const auto& parentComp = comp.get<ParentComponent>(textEntity);
     REQUIRE(parentComp.parent == button);
 
-    const auto& text = components.get<UITextComponent>(textEntity);
+    const auto& text = comp.get<UITextComponent>(textEntity);
     REQUIRE(text.text == "Start");
 
-    components.get<UIActionComponent>(button).execute();
+    comp.get<UIActionComponent>(button).execute();
     REQUIRE(executed == 1);
 }

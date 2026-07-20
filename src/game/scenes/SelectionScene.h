@@ -1,7 +1,6 @@
 #ifndef selection_scene_h
 #define selection_scene_h
 
-#include "Camera2D/Camera2D.h"
 #include "CharacterLoader/CharacterLoader.h"
 #include "CharacterRoster/CharacterRoster.h"
 #include "Combo/Combo.h"
@@ -12,6 +11,7 @@
 #include "engine/include/Scene/Scene.h"
 #include "engine/include/SceneManager/SceneManager.h"
 #include "engine/include/Window/Window.h"
+#include "engine/value_objects/Camera2D/Camera2D.h"
 #include "engine/value_objects/InputContext/InputContext.h"
 
 #include <cstdint>

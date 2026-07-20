@@ -10,13 +10,13 @@ class StubTextureFactory : public ITextureFactory
 public:
     int createTextureCalls = 0;
     std::string lastPath;
-    std::shared_ptr<Texture> textureToReturn = std::make_shared<StubTexture>();
 
     std::shared_ptr<Texture> createTexture(const std::string& path) override
     {
         ++this->createTextureCalls;
         this->lastPath = path;
-        return this->textureToReturn;
+        if (path.empty()) return nullptr;
+        return std::make_shared<StubTexture>();
     }
 };
 

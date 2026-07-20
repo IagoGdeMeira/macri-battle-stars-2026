@@ -14,9 +14,15 @@ public:
 
     void move(float dx, float dy) { this->pos += { dx, dy }; }
 
+    void setApplyZoomToSize(bool apply) { this->applyZoomToSize = apply; }
+    bool getApplyZoomToSize() const { return this->applyZoomToSize; }
+
+    float getSizeScale() const { return this->applyZoomToSize ? this->zoom : 1.f; }
+
 private:
     Position pos = {0.f, 0.f};
     float zoom = 1.f;
+    bool applyZoomToSize = false;
 };
 
 #endif // camera_2d_h

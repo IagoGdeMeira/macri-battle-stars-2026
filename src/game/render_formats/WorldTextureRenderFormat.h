@@ -1,7 +1,6 @@
 #ifndef world_texture_render_format_h
 #define world_texture_render_format_h
 
-#include "Camera2D/Camera2D.h"
 #include "IRenderFormat/IRenderFormat.h"
 
 #include "domain/include/Entity/Entity.h"
@@ -12,6 +11,7 @@
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
+#include "engine/value_objects/Camera2D/Camera2D.h"
 #include "engine/value_objects/Viewport/Viewport.h"
 
 class WorldTextureRenderFormat : public IRenderFormat

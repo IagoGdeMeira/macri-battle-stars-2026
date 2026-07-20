@@ -1,7 +1,6 @@
 #ifndef world_drawer_h
 #define world_drawer_h
 
-#include "Camera2D/Camera2D.h"
 #include "IRenderFormat/IRenderFormat.h"
 
 #include "domain/value_objects/Geometry/Geometry.h"
@@ -9,6 +8,7 @@
 #include "engine/include/Drawer/Drawer.h"
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/Renderer/Renderer.h"
+#include "engine/value_objects/Camera2D/Camera2D.h"
 #include "engine/value_objects/GameConstants/GameConstants.h"
 #include "engine/value_objects/GameSettings/GameSettings.h"
 #include "engine/value_objects/Viewport/Viewport.h"

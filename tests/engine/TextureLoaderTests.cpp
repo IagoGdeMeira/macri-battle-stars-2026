@@ -15,5 +15,7 @@ TEST_CASE("TextureLoader delegates to renderer and returns texture", "[unit][tex
     const auto texture = loader.load("assets/sprites/fighter_idle.png");
 
     REQUIRE(factory.createTextureCalls == 1);
-    REQUIRE(texture == factory.textureToReturn);
+    REQUIRE(texture != nullptr);
+    REQUIRE(texture->getWidth() == 64);
+    REQUIRE(texture->getHeight() == 96);
 }

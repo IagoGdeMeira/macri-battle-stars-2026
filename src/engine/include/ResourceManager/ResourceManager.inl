@@ -28,12 +28,12 @@ std::future<std::shared_ptr<T>> ResourceManager::loadAsync(ResourceLoader<T>& lo
     {
         std::lock_guard<std::mutex> lock(this->mutex);
 
-        auto it = resources.find(key);
-        if (it != resources.end()) if (auto existing = it->second.lock())
+        auto it = this->resources.find(key);
+        if (it != this->resources.end()) if (auto existing = it->second.lock())
         { return this->makeReadyFuture(std::static_pointer_cast<T>(existing)); }
 
-        auto itLoading = loading.find(key);
-        if (itLoading != loading.end()) return this->wrapFuture<T>(itLoading->second);
+        auto itLoading = this->loading.find(key);
+        if (itLoading != this->loading.end()) return this->wrapFuture<T>(itLoading->second);
     }
 
     auto future = this->async.load(loader, path);

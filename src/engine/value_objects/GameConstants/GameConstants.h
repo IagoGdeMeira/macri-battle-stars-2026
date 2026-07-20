@@ -16,7 +16,6 @@ struct GameConstants
 
     static constexpr const char* DEFAULT_TITLE_MENU_PATH = "assets/menus/title.json";
 
-    static constexpr bool APPLY_ZOOM_TO_SIZE = true;
     static constexpr int TARGET_FPS = 60;
 };
 

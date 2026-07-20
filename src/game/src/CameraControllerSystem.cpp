@@ -12,6 +12,16 @@
 #include <algorithm>
 #include <cmath>
 
+CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
+    camera(cfg.camera),
+    window(cfg.window),
+    minZoom(cfg.minZoom),
+    maxZoom(cfg.maxZoom),
+    padding(cfg.padding),
+    verticalOffset(cfg.verticalOffset),
+    bounds(cfg.bounds)
+{ this->camera.setApplyZoomToSize(cfg.applyZoomToSize); }
+
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
     auto playerBounds = this->computePlayerBounds(ctx);

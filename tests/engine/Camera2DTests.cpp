@@ -1,4 +1,4 @@
-#include "game/include/Camera2D/Camera2D.h"
+#include "engine/value_objects/Camera2D/Camera2D.h"
 
 #include <catch2/catch_test_macros.hpp>
 
