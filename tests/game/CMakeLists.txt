@@ -1,7 +1,9 @@
 add_executable(game_tests
-    collision_detection/CircleCircleCollisionDetectionTests.cpp
-    collision_detection/RectCircleCollisionDetectionTests.cpp
-    collision_detection/RectRectCollisionDetectionTests.cpp
+    collision_detections/CircleCircleCollisionDetectionTests.cpp
+    collision_detections/RectCircleCollisionDetectionTests.cpp
+    collision_detections/RectRectCollisionDetectionTests.cpp
+    drawers/UIDrawerTests.cpp
+    drawers/WorldDrawerTests.cpp
     render_formats/UICircleRenderFormatTests.cpp
     render_formats/UIFontRenderFormatTests.cpp
     render_formats/UIRectangleRenderFormatTests.cpp
@@ -69,12 +71,10 @@ add_executable(game_tests
     TriggerConditionFactoryTests.cpp
     TriggerGenerationSystemTests.cpp
     TriggerMapperTests.cpp
-    UIDrawerTests.cpp
     UIFactoryTests.cpp
     UIActionFactoryTests.cpp
     UIInputSystemTests.cpp
     UILayoutSystemTests.cpp
-    WorldDrawerTests.cpp
     WorldRenderUtilsTests.cpp
 )
 

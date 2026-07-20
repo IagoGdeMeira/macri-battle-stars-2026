@@ -23,7 +23,7 @@ void CameraControllerSystem::update(UpdateContext& ctx)
 
     float targetZoom = this->computeTargetZoom(playerBounds, screenSize);
 
-    Position center = {
+    Position center {
         (playerBounds.left + playerBounds.right) * 0.5f,
         (playerBounds.top + playerBounds.bottom) * 0.5f + this->verticalOffset
     };
