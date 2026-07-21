@@ -1,6 +1,5 @@
 #include "EntityFactory/EntityFactory.h"
 
-#include "domain/include/World/World.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/CircleColliderComponent.h"
@@ -14,6 +13,7 @@
 #include "domain/components/LifetimeComponent.h"
 #include "domain/components/PushboxComponent.h"
 #include "domain/components/ShapeRenderComponent.h"
+#include "domain/include/World/World.h"
 #include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/CollisionFrame/ColliderDef.h"
 #include "domain/value_objects/CollisionFrame/CollisionFrame.h"
@@ -217,7 +217,8 @@ void EntityFactory::addSprite(Entity entity, const std::string& texturePath)
     LOG_DEBUG("addSprite: texture loaded, width={}, height={}", texture->getWidth(), texture->getHeight());
     SpriteComponent sprite;
     sprite.texturePath = texturePath;
-    sprite.size = {0.f, 0.f};
+    sprite.size.width = static_cast<float>(texture->getWidth());
+    sprite.size.height = static_cast<float>(texture->getHeight());
     sprite.useSourceRect = false;
     this->world.components().add<SpriteComponent>(entity, std::move(sprite));
 }
