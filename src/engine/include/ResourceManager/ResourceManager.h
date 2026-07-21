@@ -6,6 +6,7 @@
 #include "ResourceLoader/SyncLoader.h"
 #include "ThreadPool/ThreadPool.h"
 
+#include <atomic>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -26,6 +27,7 @@ public:
     virtual void clearCache();
 
 private:
+    std::atomic<uint64_t> version{0};
     std::unordered_map<std::string, std::weak_ptr<void>> resources;
     std::unordered_map<std::string, std::shared_future<std::shared_ptr<void>>> loading;
     std::mutex mutex;

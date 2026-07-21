@@ -99,3 +99,74 @@ TEST_CASE("ResourceManager reuses async-resolved resource in subsequent sync loa
     REQUIRE(loader.loadCalls == 1);
     REQUIRE(syncResult == asyncResult);
 }
+
+TEST_CASE("ResourceManager::clearCache forces reload on subsequent sync load", "[unit][resource_manager]")
+{
+    ThreadPool pool(2);
+    ResourceManager manager(pool);
+    StubLoader loader;
+
+    auto first = manager.load(loader, "assets/data/config.json");
+    REQUIRE(loader.loadCalls == 1);
+    REQUIRE(first == loader.resourceToReturn);
+
+    manager.clearCache();
+
+    auto newResource = std::make_shared<int>(99);
+    loader.resourceToReturn = newResource;
+
+    auto second = manager.load(loader, "assets/data/config.json");
+    REQUIRE(loader.loadCalls == 2);
+    REQUIRE(second == newResource);
+    REQUIRE(second != first);
+}
+
+TEST_CASE("ResourceManager::clearCache forces reload on subsequent async load", "[unit][resource_manager]")
+{
+    ThreadPool pool(2);
+    ResourceManager manager(pool);
+    StubLoader loader;
+
+    auto firstFuture = manager.loadAsync(loader, "assets/data/config.json");
+    auto first = firstFuture.get();
+    REQUIRE(loader.loadCalls == 1);
+    REQUIRE(first == loader.resourceToReturn);
+
+    manager.clearCache();
+
+    auto newResource = std::make_shared<int>(42);
+    loader.resourceToReturn = newResource;
+
+    auto secondFuture = manager.loadAsync(loader, "assets/data/config.json");
+    auto second = secondFuture.get();
+    REQUIRE(loader.loadCalls == 2);
+    REQUIRE(second == newResource);
+    REQUIRE(second != first);
+}
+
+TEST_CASE("ResourceManager::clearCache aborts sharing of pending async loads", "[unit][resource_manager]")
+{
+    ThreadPool pool(2);
+    ResourceManager manager(pool);
+    StubLoader loader;
+    loader.blockUntilReleased = true;
+
+    auto firstFuture = manager.loadAsync(loader, "assets/data/config.json");
+
+    manager.clearCache();
+
+    loader.gate->set_value();
+
+    auto first = firstFuture.get();
+    REQUIRE(loader.loadCalls == 1);
+
+    auto newResource = std::make_shared<int>(777);
+    loader.resourceToReturn = newResource;
+    loader.blockUntilReleased = false;
+
+    auto secondFuture = manager.loadAsync(loader, "assets/data/config.json");
+    auto second = secondFuture.get();
+    REQUIRE(loader.loadCalls == 2);
+    REQUIRE(second == newResource);
+    REQUIRE(second != first);
+}

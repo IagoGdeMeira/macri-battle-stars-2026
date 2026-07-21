@@ -38,8 +38,6 @@ void Engine::run()
 
     while (this->running)
     {
-        LOG_DEBUG("Engine: loop start");
-
         auto t0 = hrclock::now();
 
         this->inputManager.poll();
@@ -88,7 +86,5 @@ void Engine::run()
 
         if (updateCount == 0 && deltaTime > 0.001f)
         { LOG_DEBUG("Engine: no update executed (accumulator={}, deltaTime={})", accumulator, deltaTime); }
-
-        LOG_DEBUG("Engine: loop end");
     }
 }

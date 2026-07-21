@@ -36,7 +36,9 @@ std::future<std::shared_ptr<T>> ResourceManager::loadAsync(ResourceLoader<T>& lo
         if (itLoading != this->loading.end()) return this->wrapFuture<T>(itLoading->second);
     }
 
-    auto future = this->async.load(loader, path);
+    auto task = std::make_shared<std::packaged_task<std::shared_ptr<T>()>>(
+        [&loader, path]() { return loader.load(path); });
+    auto future = task->get_future();
     auto sharedFuture = future.share();
 
     auto erasedFuture = std::shared_future<std::shared_ptr<void>>(
@@ -48,16 +50,18 @@ std::future<std::shared_ptr<T>> ResourceManager::loadAsync(ResourceLoader<T>& lo
         this->loading[key] = erasedFuture;
     }
 
-    return std::async(std::launch::deferred, [this, key, sharedFuture]()
+    auto currentVersion = this->version.load();
+
+    this->async.enqueueTask([task]() { (*task)(); });
+
+    return std::async(std::launch::deferred, [this, key, sharedFuture, currentVersion]()
     {
         auto resource = sharedFuture.get();
-
         {
             std::lock_guard<std::mutex> lock(this->mutex);
-            this->resources[key] = resource;
+            if (this->version.load() == currentVersion) this->resources[key] = resource;
             this->loading.erase(key);
         }
-
         return resource;
     });
 }

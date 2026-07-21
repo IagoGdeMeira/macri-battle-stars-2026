@@ -5,4 +5,5 @@ void ResourceManager::clearCache()
     std::lock_guard<std::mutex> lock(this->mutex);
     this->resources.clear();
     this->loading.clear();
+    ++this->version;
 }
