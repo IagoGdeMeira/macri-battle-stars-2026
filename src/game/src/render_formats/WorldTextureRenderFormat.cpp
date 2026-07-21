@@ -74,7 +74,7 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
     Rectangle spriteConfig = {{transform.scale.x, transform.scale.y}, sprite.size};
 
     DrawTextureCommand cmd;
-    cmd.texture = texture.get();
+    cmd.texture = texture;
     cmd.dest.position = screenPos;
     cmd.rotation = transform.rotation;
     WorldRenderUtils::computeSpriteTransform(this->camera, spriteConfig, cmd);

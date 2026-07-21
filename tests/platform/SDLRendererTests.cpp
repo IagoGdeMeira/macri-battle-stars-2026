@@ -12,6 +12,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <fstream>
+#include <memory>
 
 class SDLRendererFixture
 {
@@ -52,9 +53,11 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws textures", "[unit][sdl_r
     window.create(800, 600, "Texture Rendering Test");
 
     SDLRenderer renderer(window.get());
-    SDLTexture texture(nullptr);
+    SDLTexture dummyTexture(nullptr);
+    auto texturePtr = std::make_shared<SDLTexture>(std::move(dummyTexture));
+
     DrawTextureCommand cmd;
-    cmd.texture = &texture;
+    cmd.texture = texturePtr;
     cmd.dest.position.x = 10.f;
     cmd.dest.position.y = 20.f;
     cmd.dest.size.width = 32.f;

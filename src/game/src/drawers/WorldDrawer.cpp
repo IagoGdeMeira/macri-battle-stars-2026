@@ -42,8 +42,14 @@ void WorldDrawer::addFormat(std::unique_ptr<IRenderFormat> format) { this->forma
 
 void WorldDrawer::draw(RenderContext& ctx)
 {
+    LOG_DEBUG("WorldDrawer::draw: start");
     this->renderer.setViewport(this->worldViewport);
-    for (auto& format : this->formats) format->render(ctx);
+    for (auto& format : this->formats)
+    {
+        LOG_DEBUG("WorldDrawer::draw: rendering format");
+        format->render(ctx);
+    }
+    LOG_DEBUG("WorldDrawer::draw: end");
 }
 
 void WorldDrawer::recalculateViewport()

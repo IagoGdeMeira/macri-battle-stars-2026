@@ -103,7 +103,7 @@ TEST_CASE_METHOD(UIDrawerFixture, "UIDrawer draws sprite and text commands from 
 
     REQUIRE(this->renderer.textureCalls.size() == 1);
     const auto& texCmd = this->renderer.textureCalls[0];
-    REQUIRE(texCmd.texture == texture.get());
+    REQUIRE(texCmd.texture == texture);
     REQUIRE(texCmd.dest.position.x == Catch::Approx(10.f));
     REQUIRE(texCmd.dest.position.y == Catch::Approx(20.f));
     REQUIRE(texCmd.dest.size.width == Catch::Approx(120.f));

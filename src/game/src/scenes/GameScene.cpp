@@ -105,8 +105,10 @@ void GameScene::init()
 
 void GameScene::render()
 {
+    LOG_DEBUG("GameScene::render: start");
     RenderContext ctx{ this->world(), this->eventBus };
     this->worldDrawer->draw(ctx);
+    LOG_DEBUG("GameScene::render: end");
 }
 
 void GameScene::loadInputContext(const std::string& path)

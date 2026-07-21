@@ -45,7 +45,7 @@ private:
     const Dimension2D vSize = GameConstants::VIRTUAL_SIZE;
 
     std::vector<std::unique_ptr<IRenderFormat>> formats;
-    Viewport worldViewport {0, 0, static_cast<int>(vSize.width), static_cast<int>(vSize.height)};
+    Viewport worldViewport {0, 0, static_cast<int>(this->vSize.width), static_cast<int>(this->vSize.height)};
 
     void addFormat(std::unique_ptr<IRenderFormat> format);
     void recalculateViewport();

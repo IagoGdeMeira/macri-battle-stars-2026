@@ -12,7 +12,8 @@
 
 SDLRenderer::SDLRenderer(SDL_Window* window)
 {
-    this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    // this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     if (!this->renderer)
     {
         LOG_WARN("SDL_CreateRenderer with ACCELERATED failed, falling back to SOFTWARE");
@@ -31,11 +32,22 @@ SDLRenderer::SDLRenderer(SDL_Window* window)
 
 void SDLRenderer::present()
 {
+    if (!this->renderer)
+    {
+        LOG_ERROR("SDLRenderer::present called with null renderer");
+        return;
+    }
+
+    LOG_DEBUG("SDLRenderer::present: before SDL_RenderPresent");
     auto start = std::chrono::high_resolution_clock::now();
     SDL_RenderPresent(this->renderer);
     auto end = std::chrono::high_resolution_clock::now();
+    LOG_DEBUG("SDLRenderer::present: after SDL_RenderPresent");
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     if (duration > 5) LOG_DEBUG("SDLRenderer::present took {} ms", duration);
+
+    const char* error = SDL_GetError();
+    if (error && error[0]) LOG_ERROR("SDL error after present: {}", error);
 }
 
 void SDLRenderer::setViewport(const Viewport& viewport)
@@ -46,10 +58,33 @@ void SDLRenderer::setViewport(const Viewport& viewport)
 
 void SDLRenderer::drawTextureImpl(const DrawTextureCommand& cmd)
 {
-    auto startTotal = std::chrono::high_resolution_clock::now();
+    LOG_DEBUG("drawTextureImpl: start for texture");
 
-    if (!cmd.texture) return;
+    using hrclock = std::chrono::high_resolution_clock;
+    using ms = std::chrono::milliseconds;
+
+    auto startTotal = hrclock::now();
+
+    if (!this->renderer)
+    {
+        LOG_ERROR("drawTextureImpl: renderer is null!");
+        return;
+    }
+
+    if (!cmd.texture)
+    {
+        LOG_DEBUG("drawTextureImpl: texture is null, returning");
+        return;
+    }
+    LOG_DEBUG("drawTextureImpl: texture pointer OK");
+
     const SDLTexture& sdlTex = static_cast<const SDLTexture&>(*cmd.texture);
+    SDL_Texture* sdlTexturePtr = sdlTex.get();
+    LOG_DEBUG("drawTextureImpl: SDL_Texture ptr = {}", (void*)sdlTexturePtr);
+
+    int texW = 0, texH = 0;
+    if (SDL_QueryTexture(sdlTexturePtr, nullptr, nullptr, &texW, &texH) == 0) LOG_DEBUG("drawTextureImpl: texture dimensions = {}x{}", texW, texH);
+    else LOG_ERROR("drawTextureImpl: SDL_QueryTexture failed: {}", SDL_GetError());
 
     auto& dest = cmd.dest;
     SDL_Rect dst =
@@ -59,9 +94,10 @@ void SDLRenderer::drawTextureImpl(const DrawTextureCommand& cmd)
         static_cast<int>(std::lround(dest.size.width)),
         static_cast<int>(std::lround(dest.size.height))
     };
+    LOG_DEBUG("drawTextureImpl: dst = ({},{},{},{})", dst.x, dst.y, dst.w, dst.h);
 
     SDL_Rect* srcPtr = nullptr;
-    SDL_Rect src;
+    SDL_Rect src = {0, 0, 0, 0};
     if (cmd.useSourceRect)
     {
         auto& source = cmd.source;
@@ -73,17 +109,25 @@ void SDLRenderer::drawTextureImpl(const DrawTextureCommand& cmd)
             static_cast<int>(std::lround(source.size.height))
         };
         srcPtr = &src;
+        LOG_DEBUG("drawTextureImpl: src = ({},{},{},{})", src.x, src.y, src.w, src.h);
     }
+    else LOG_DEBUG("drawTextureImpl: no source rect (using full texture)");
+    
+    if (srcPtr && texW > 0 && texH > 0 && (src.x + src.w > texW || src.y + src.h > texH)) LOG_WARN(
+        "drawTextureImpl: source rect out of texture bounds! src=({},{},{},{}) texture={}x{}",
+        src.x, src.y, src.w, src.h, texW, texH);
 
     SDL_Point pivot =
     {
         static_cast<int>(cmd.pivot.x * dest.size.width),
         static_cast<int>(cmd.pivot.y * dest.size.height)
     };
+    LOG_DEBUG("drawTextureImpl: pivot = ({},{}) (normalized: {},{})", pivot.x, pivot.y, cmd.pivot.x, cmd.pivot.y);
 
     SDL_RendererFlip flip = SDL_FLIP_NONE;
     if (cmd.flipX) flip = (SDL_RendererFlip)(flip | SDL_FLIP_HORIZONTAL);
     if (cmd.flipY) flip = (SDL_RendererFlip)(flip | SDL_FLIP_VERTICAL);
+    LOG_DEBUG("drawTextureImpl: flip = {}", static_cast<int>(flip));
 
     SDL_BlendMode sdlBlend = SDL_BLENDMODE_BLEND;
     switch (cmd.blend)
@@ -91,36 +135,51 @@ void SDLRenderer::drawTextureImpl(const DrawTextureCommand& cmd)
         case BlendMode::Normal:   sdlBlend = SDL_BLENDMODE_BLEND; break;
         case BlendMode::Add:      sdlBlend = SDL_BLENDMODE_ADD; break;
         case BlendMode::Multiply: sdlBlend = SDL_BLENDMODE_MOD; break;
+        default: break;
     }
+    LOG_DEBUG("drawTextureImpl: blend mode = {}", static_cast<int>(sdlBlend));
 
     SDL_BlendMode oldBlend;
-    SDL_GetTextureBlendMode(sdlTex.get(), &oldBlend);
-    SDL_SetTextureBlendMode(sdlTex.get(), sdlBlend);
+    SDL_GetTextureBlendMode(sdlTexturePtr, &oldBlend);
+    SDL_SetTextureBlendMode(sdlTexturePtr, sdlBlend);
 
-    auto copyStart = std::chrono::high_resolution_clock::now();
+    auto copyStart = hrclock::now();
 
+    int result = -1;
     if (cmd.tint != Color::WHITE())
     {
         Uint8 oldR, oldG, oldB;
-        SDL_GetTextureColorMod(sdlTex.get(), &oldR, &oldG, &oldB);
-        SDL_SetTextureColorMod(sdlTex.get(), cmd.tint.r, cmd.tint.g, cmd.tint.b);
+        SDL_GetTextureColorMod(sdlTexturePtr, &oldR, &oldG, &oldB);
+        SDL_SetTextureColorMod(sdlTexturePtr, cmd.tint.r, cmd.tint.g, cmd.tint.b);
 
-        SDL_RenderCopyEx(this->renderer, sdlTex.get(), srcPtr, &dst, cmd.rotation, &pivot, flip);
-        SDL_SetTextureColorMod(sdlTex.get(), oldR, oldG, oldB);
+        LOG_DEBUG("drawTextureImpl: calling SDL_RenderCopyEx with tint ({},{},{})", cmd.tint.r, cmd.tint.g, cmd.tint.b);
+        result = SDL_RenderCopyEx(this->renderer, sdlTexturePtr, srcPtr, &dst, cmd.rotation, &pivot, flip);
+
+        SDL_SetTextureColorMod(sdlTexturePtr, oldR, oldG, oldB);
     }
-    else SDL_RenderCopyEx(this->renderer, sdlTex.get(), srcPtr, &dst, cmd.rotation, &pivot, flip);
-
-    SDL_SetTextureBlendMode(sdlTex.get(), oldBlend);
-
-    auto copyEnd = std::chrono::high_resolution_clock::now();
-    auto copyDuration = std::chrono::duration_cast<std::chrono::milliseconds>(copyEnd - copyStart).count();
-    if (copyDuration > 5)
+    else
     {
-        LOG_DEBUG("SDL_RenderCopyEx took {} ms", copyDuration);
+        LOG_DEBUG("drawTextureImpl: calling SDL_RenderCopyEx (no tint)");
+        result = SDL_RenderCopyEx(this->renderer, sdlTexturePtr, srcPtr, &dst, cmd.rotation, &pivot, flip);
     }
 
-    auto endTotal = std::chrono::high_resolution_clock::now();
-    auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(endTotal - startTotal).count();
+    SDL_SetTextureBlendMode(sdlTexturePtr, oldBlend);
+
+    if (result == 0) LOG_DEBUG("drawTextureImpl: SDL_RenderCopyEx succeeded"); 
+    else
+    {
+        const char* error = SDL_GetError();
+        LOG_ERROR("drawTextureImpl: SDL_RenderCopyEx failed with code {}: {}", result, error ? error : "unknown error");
+    }
+
+    LOG_DEBUG("drawTextureImpl: after SDL_RenderCopyEx (function returned)");
+
+    auto copyEnd = hrclock::now();
+    auto copyDuration = std::chrono::duration_cast<ms>(copyEnd - copyStart).count();
+    if (copyDuration > 5) LOG_DEBUG("SDL_RenderCopyEx took {} ms", copyDuration);
+
+    auto endTotal = hrclock::now();
+    auto totalDuration = std::chrono::duration_cast<ms>(endTotal - startTotal).count();
     if (totalDuration > 10) LOG_DEBUG("drawTextureImpl total took {} ms", totalDuration);
 }
 

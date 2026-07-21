@@ -7,6 +7,7 @@
 #include "domain/value_objects/Color/Color.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
+#include <memory>
 #include <string>
 
 enum class BlendMode : uint8_t { Normal, Add, Multiply };
@@ -23,7 +24,7 @@ public:
 struct DrawTextureCommand : public DrawCommand
 {
   
-    Texture* texture = nullptr;
+    std::shared_ptr<Texture> texture;
     Rectangle dest;
     float rotation = 0.f;
     Position pivot = {0.5f, 0.5f};

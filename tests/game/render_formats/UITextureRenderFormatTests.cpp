@@ -72,7 +72,7 @@ TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits ba
     REQUIRE(effectCmd.dest.position.x == Catch::Approx(11.f));
 
     const auto& baseCmd = this->renderer.textureCalls[1];
-    REQUIRE(baseCmd.texture == texture.get());
+    REQUIRE(baseCmd.texture == texture);
     REQUIRE(baseCmd.dest.position.x == Catch::Approx(10.f));
     REQUIRE(baseCmd.dest.position.y == Catch::Approx(20.f));
     REQUIRE(baseCmd.rotation == Catch::Approx(45.f));

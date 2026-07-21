@@ -31,7 +31,7 @@ public:
             if (!sprite.texture) continue;
 
             DrawTextureCommand cmd;
-            cmd.texture = sprite.texture.get();
+            cmd.texture = sprite.texture;
             cmd.dest = transform.rect;
             cmd.rotation = transform.rotation;
             cmd.flipX = (transform.scale.x < 0.f);
