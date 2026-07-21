@@ -10,6 +10,7 @@ target_sources(engine
         src/InputManager.cpp
         src/InputMapper.cpp
         src/InputSystem.cpp
+        src/ResourceManager.cpp
         src/Scene.cpp
         src/SceneManager.cpp
 )

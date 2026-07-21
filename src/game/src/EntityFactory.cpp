@@ -213,6 +213,8 @@ void EntityFactory::addDebugVisual(Entity entity, const ColliderDef& collider, c
 
 void EntityFactory::addSprite(Entity entity, const std::string& texturePath)
 {
+    auto texture = this->resourceManager.load<Texture>(this->textureLoader, texturePath);
+    LOG_DEBUG("addSprite: texture loaded, width={}, height={}", texture->getWidth(), texture->getHeight());
     SpriteComponent sprite;
     sprite.texturePath = texturePath;
     sprite.size = {0.f, 0.f};

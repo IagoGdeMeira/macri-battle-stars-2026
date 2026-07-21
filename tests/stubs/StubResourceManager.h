@@ -9,6 +9,8 @@ class StubResourceManager : public ResourceManager
 public:
     StubResourceManager() : ResourceManager(this->pool) {}
 
+    void clearCache() override { ResourceManager::clearCache(); }
+
 private:
     ThreadPool pool{1};
 };

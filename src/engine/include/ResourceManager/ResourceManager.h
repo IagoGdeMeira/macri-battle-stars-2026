@@ -23,6 +23,8 @@ public:
     template<typename T>
     std::future<std::shared_ptr<T>> loadAsync(ResourceLoader<T>& loader, const std::string& path);
 
+    virtual void clearCache();
+
 private:
     std::unordered_map<std::string, std::weak_ptr<void>> resources;
     std::unordered_map<std::string, std::shared_future<std::shared_ptr<void>>> loading;
