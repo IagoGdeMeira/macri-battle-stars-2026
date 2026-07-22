@@ -1,16 +1,14 @@
 #ifndef renderer_h
 #define renderer_h
 
-#include "DrawCommands/DrawCommands.h"
+#include "IDrawCommandHandler/IDrawCommandHandler.h"
 #include "Viewport/Viewport.h"
 
-#include "domain/value_objects/Color/Color.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
-#include <cstdint>
-#include <functional>
+#include <unordered_map>
+#include <typeindex>
 #include <memory>
-#include <string>
 
 class Renderer
 {
@@ -19,26 +17,21 @@ public:
 
     virtual void clear() = 0;
     virtual void present() = 0;
-    virtual void setViewport(const Viewport& viewport) = 0;
-    virtual void setScale(const Position& scale) = 0;
+    virtual void setViewport(const Viewport&) = 0;
+    virtual void setScale(const Position&) = 0;
 
-    void draw(const DrawCommand& command)
+    template<typename CommandType>
+    void registerHandler(std::unique_ptr<IDrawCommandHandler> handler)
+    { this->handlers[std::type_index(typeid(CommandType))] = std::move(handler); }
+
+    virtual void draw(const DrawCommand& command)
     {
         auto it = this->handlers.find(command.type());
-        if (it != this->handlers.end()) it->second(command);
+        if (it != this->handlers.end()) it->second->execute(command);
     }
 
 protected:
-    template <typename Command>
-    void registerHandler(std::function<void(const Command&)> handler)
-    {
-        this->handlers[Command().type()] = [handler](const DrawCommand& cmd)
-        { handler(static_cast<const Command&>(cmd)); };
-    }
-
-private:
-    using HandlerFunc = std::function<void(const DrawCommand&)>;
-    std::unordered_map<DrawCommand::Type, HandlerFunc> handlers;
+    std::unordered_map<std::type_index, std::unique_ptr<IDrawCommandHandler>> handlers;
 };
 
 #endif // renderer_h

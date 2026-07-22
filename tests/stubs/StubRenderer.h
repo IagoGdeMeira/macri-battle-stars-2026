@@ -3,7 +3,13 @@
 
 #include "engine/include/Renderer/Renderer.h"
 
+#include "engine/draw_commands/DrawTextureCommand.h"
+#include "engine/draw_commands/DrawFontCommand.h"
+#include "engine/draw_commands/DrawRectangleCommand.h"
+#include "engine/draw_commands/DrawCircleCommand.h"
+
 #include <vector>
+#include <typeinfo>
 
 class StubRenderer : public Renderer
 {
@@ -27,18 +33,6 @@ public:
         int srcWidth = 0, srcHeight = 0;
         bool useSourceRect = false;
     };
-
-    StubRenderer()
-    {
-        this->registerHandler<DrawTextureCommand>([this]
-            (const DrawTextureCommand& cmd) { this->onDrawTexture(cmd); });
-        this->registerHandler<DrawFontCommand>([this]
-            (const DrawFontCommand& cmd) { this->onDrawFont(cmd); });
-        this->registerHandler<DrawRectangleCommand>([this]
-            (const DrawRectangleCommand& cmd) { this->onDrawRectangle(cmd); });
-        this->registerHandler<DrawCircleCommand>([this]
-            (const DrawCircleCommand& cmd) { this->onDrawCircle(cmd); });
-    }
 
     void clear() override
     {
@@ -70,6 +64,50 @@ public:
         this->scaleHistory.push_back(scale);
     }
 
+    void draw(const DrawCommand& command) override
+    {
+        if (const auto* texCmd = dynamic_cast<const DrawTextureCommand*>(&command))
+        {
+            ++this->calls.drawTexture;
+            this->textureCalls.push_back(*texCmd);
+            this->lastDraw.x = static_cast<int>(texCmd->dest.position.x);
+            this->lastDraw.y = static_cast<int>(texCmd->dest.position.y);
+            this->lastDraw.width = static_cast<int>(texCmd->dest.size.width);
+            this->lastDraw.height = static_cast<int>(texCmd->dest.size.height);
+            this->lastDraw.rotation = texCmd->rotation;
+            this->lastDraw.flipX = texCmd->flipX;
+            this->lastDraw.flipY = texCmd->flipY;
+            this->lastDraw.srcX = static_cast<int>(texCmd->source.position.x);
+            this->lastDraw.srcY = static_cast<int>(texCmd->source.position.y);
+            this->lastDraw.srcWidth = static_cast<int>(texCmd->source.size.width);
+            this->lastDraw.srcHeight = static_cast<int>(texCmd->source.size.height);
+            this->lastDraw.useSourceRect = texCmd->useSourceRect;
+        }
+        else if (const auto* fontCmd = dynamic_cast<const DrawFontCommand*>(&command))
+        {
+            ++this->calls.drawFont;
+            this->fontCalls.push_back(*fontCmd);
+        }
+        else if (const auto* rectCmd = dynamic_cast<const DrawRectangleCommand*>(&command))
+        {
+            ++this->calls.drawRectangle;
+            if (rectCmd->filled) ++this->calls.drawRectFilled;
+            else ++this->calls.drawRectOutline;
+            this->rectangleCalls.push_back(*rectCmd);
+            this->lastRect = rectCmd->rect;
+            this->lastColor = rectCmd->color;
+        }
+        else if (const auto* circleCmd = dynamic_cast<const DrawCircleCommand*>(&command))
+        {
+            ++this->calls.drawCircle;
+            if (circleCmd->filled) ++this->calls.drawCircleFilled;
+            else ++this->calls.drawCircleOutline;
+            this->circleCalls.push_back(*circleCmd);
+            this->lastCircle = circleCmd->circle;
+            this->lastColor = circleCmd->color;
+        }
+    }
+
     Calls calls;
     LastDraw lastDraw;
     Rectangle lastRect;
@@ -84,51 +122,6 @@ public:
     std::vector<DrawCircleCommand> circleCalls;
     std::vector<Viewport> viewportHistory;
     std::vector<Position> scaleHistory;
-
-private:
-    void onDrawTexture(const DrawTextureCommand& cmd)
-    {
-        ++this->calls.drawTexture;
-        this->textureCalls.push_back(cmd);
-        this->lastDraw.x = static_cast<int>(cmd.dest.position.x);
-        this->lastDraw.y = static_cast<int>(cmd.dest.position.y);
-        this->lastDraw.width = static_cast<int>(cmd.dest.size.width);
-        this->lastDraw.height = static_cast<int>(cmd.dest.size.height);
-        this->lastDraw.rotation = cmd.rotation;
-        this->lastDraw.flipX = cmd.flipX;
-        this->lastDraw.flipY = cmd.flipY;
-        this->lastDraw.srcX = static_cast<int>(cmd.source.position.x);
-        this->lastDraw.srcY = static_cast<int>(cmd.source.position.y);
-        this->lastDraw.srcWidth = static_cast<int>(cmd.source.size.width);
-        this->lastDraw.srcHeight = static_cast<int>(cmd.source.size.height);
-        this->lastDraw.useSourceRect = cmd.useSourceRect;
-    }
-
-    void onDrawFont(const DrawFontCommand& cmd)
-    {
-        ++this->calls.drawFont;
-        this->fontCalls.push_back(cmd);
-    }
-
-    void onDrawRectangle(const DrawRectangleCommand& cmd)
-    {
-        ++this->calls.drawRectangle;
-        if (cmd.filled) ++this->calls.drawRectFilled;
-        else ++this->calls.drawRectOutline;
-        this->rectangleCalls.push_back(cmd);
-        this->lastRect = cmd.rect;
-        this->lastColor = cmd.color;
-    }
-
-    void onDrawCircle(const DrawCircleCommand& cmd)
-    {
-        ++this->calls.drawCircle;
-        if (cmd.filled) ++this->calls.drawCircleFilled;
-        else ++this->calls.drawCircleOutline;
-        this->circleCalls.push_back(cmd);
-        this->lastCircle = cmd.circle;
-        this->lastColor = cmd.color;
-    }
 };
 
-#endif // stub_renderer_h
+#endif // stub_renderer_h 

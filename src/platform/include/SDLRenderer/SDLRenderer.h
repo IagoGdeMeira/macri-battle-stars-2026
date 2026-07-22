@@ -1,40 +1,36 @@
 #ifndef sdl_renderer_h
 #define sdl_renderer_h
 
+#include "SDLCircleRenderHandler.h"
+#include "SDLFontRenderHandler.h"
+#include "SDLRectangleRenderHandler.h"
+#include "SDLTextureRenderHandler.h"
+
 #include "engine/include/Renderer/Renderer.h"
-#include "engine/resources/Texture/Texture.h"
-#include "engine/value_objects/Viewport/Viewport.h"
+#include "engine/include/IDrawCommandHandler/IDrawCommandHandler.h"
 
 #include <memory>
 #include <SDL.h>
-#include <string>
+#include <typeindex>
+#include <unordered_map>
 
 class SDLRenderer : public Renderer
 {
 public:
-    SDLRenderer(SDL_Window* window);
-    ~SDLRenderer() { if (this->renderer) SDL_DestroyRenderer(this->renderer); }
+    explicit SDLRenderer(SDL_Window* window);
+    ~SDLRenderer() override;
 
-    void clear() override { SDL_RenderClear(this->renderer); }
+    void clear() override;
     void present() override;
     void setViewport(const Viewport& viewport) override;
-    void setScale(const Position& scale) override { SDL_RenderSetScale(this->renderer, scale.x, scale.y); }
+    void setScale(const Position& scale) override;
+    void draw(const DrawCommand& command) override;
 
     SDL_Renderer* get() const { return this->renderer; }
 
 private:
-    void drawTextureImpl(const DrawTextureCommand& cmd);
-    void drawFontImpl(const DrawFontCommand& cmd);
-    void drawRectangleImpl(const DrawRectangleCommand& cmd);
-    void drawCircleImpl(const DrawCircleCommand& cmd);
-
-    void drawRectOutline(const Rectangle& rect, const Color& color);
-    void drawRectFilled(const Rectangle& rect, const Color& color);
-    void drawCircleOutline(const Circle& circle, const Color& color);
-    void drawCircleFilled(const Circle& circle, const Color& color);
-
-private:
-    SDL_Renderer* renderer = nullptr;
+    SDL_Renderer* renderer;
+    std::unordered_map<std::type_index, std::unique_ptr<IDrawCommandHandler>> handlers;
 };
 
 #endif // sdl_renderer_h

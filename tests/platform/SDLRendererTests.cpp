@@ -2,6 +2,10 @@
 
 #include "domain/value_objects/Color/Color.h"
 
+#include "engine/draw_commands/DrawCircleCommand.h"
+#include "engine/draw_commands/DrawFontCommand.h"
+#include "engine/draw_commands/DrawRectangleCommand.h"
+#include "engine/draw_commands/DrawTextureCommand.h"
 #include "engine/value_objects/Viewport/Viewport.h"
 
 #include "platform/include/SDLTexture/SDLTexture.h"
@@ -9,10 +13,10 @@
 #include "platform/include/SDLFont/SDLFont.h"
 
 #include <catch2/catch_test_macros.hpp>
-#include <SDL.h>
-#include <SDL_ttf.h>
 #include <fstream>
 #include <memory>
+#include <SDL.h>
+#include <SDL_ttf.h>
 
 class SDLRendererFixture
 {
@@ -58,10 +62,8 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws textures", "[unit][sdl_r
 
     DrawTextureCommand cmd;
     cmd.texture = texturePtr;
-    cmd.dest.position.x = 10.f;
-    cmd.dest.position.y = 20.f;
-    cmd.dest.size.width = 32.f;
-    cmd.dest.size.height = 48.f;
+    cmd.dest.position = {10.f, 20.f};
+    cmd.dest.size = {32.f, 48.f};
     cmd.rotation = 30.f;
     cmd.flipX = true;
     cmd.flipY = false;
@@ -87,17 +89,11 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws rectangles", "[unit][sdl
     cmd1.rect = Rectangle{{0.f, 0.f}, 10.f, 10.f};
     cmd1.color = Color{};
     cmd1.filled = false;
-    cmd1.layer = 0;
-    cmd1.zIndex = 0;
-    cmd1.order = 0;
 
     DrawRectangleCommand cmd2;
     cmd2.rect = Rectangle{{1.f, 1.f}, 12.f, 14.f};
     cmd2.color = Color{10, 20, 30, 40};
     cmd2.filled = true;
-    cmd2.layer = 0;
-    cmd2.zIndex = 0;
-    cmd2.order = 0;
 
     REQUIRE_NOTHROW(renderer.clear());
     REQUIRE_NOTHROW(renderer.draw(cmd1));
@@ -121,17 +117,11 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws circles", "[unit][sdl_re
     cmd1.circle = Circle{{4.f, 5.f}, 6.f};
     cmd1.color = Color{};
     cmd1.filled = false;
-    cmd1.layer = 0;
-    cmd1.zIndex = 0;
-    cmd1.order = 0;
 
     DrawCircleCommand cmd2;
     cmd2.circle = Circle{{7.f, 8.f}, 9.f};
     cmd2.color = Color{10, 20, 30, 40};
     cmd2.filled = true;
-    cmd2.layer = 0;
-    cmd2.zIndex = 0;
-    cmd2.order = 0;
 
     REQUIRE_NOTHROW(renderer.clear());
     REQUIRE_NOTHROW(renderer.draw(cmd1));
@@ -180,11 +170,8 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawFont method defined", 
     cmd.dest = textRect;
     cmd.fontSize = 18;
     cmd.color = textColor;
-    cmd.layer = 0;
-    cmd.zIndex = 0;
-    cmd.order = 0;
 
-    REQUIRE_NOTHROW(font.getFontWithSize(cmd.fontSize));
+    REQUIRE_NOTHROW(font.getFontWithSize(static_cast<int>(cmd.fontSize)));
 
     {
         REQUIRE_NOTHROW(renderer.clear());

@@ -81,5 +81,5 @@ TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits ba
     REQUIRE(baseCmd.layer == 2);
     REQUIRE(baseCmd.zIndex == 3);
     REQUIRE(baseCmd.order == 0);
-    REQUIRE(baseCmd.blend == BlendMode::Normal);
+    REQUIRE(baseCmd.blend == DrawTextureCommand::BlendMode::Normal);
 }

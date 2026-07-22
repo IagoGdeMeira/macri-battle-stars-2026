@@ -2,7 +2,7 @@
 #define draw_circle_batch_h
 
 #include "DrawBatch.h"
-#include "DrawCommands/DrawCommands.h"
+#include "DrawCircleCommand.h"
 #include "Renderer/Renderer.h"
 
 class DrawCircleBatch : public DrawBatch<DrawCircleCommand>

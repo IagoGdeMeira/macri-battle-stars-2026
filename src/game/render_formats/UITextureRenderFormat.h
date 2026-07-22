@@ -40,7 +40,7 @@ public:
             cmd.zIndex = render.zIndex;
             cmd.order = order++;
             cmd.tint = sprite.tint;
-            cmd.blend = BlendMode::Normal;
+            cmd.blend = DrawTextureCommand::BlendMode::Normal;
 
             if (comp.has<VisualEffectsComponent>(entity))
             {
