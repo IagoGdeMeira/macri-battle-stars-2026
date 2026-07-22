@@ -20,6 +20,7 @@ public:
     virtual void clear() = 0;
     virtual void present() = 0;
     virtual void setViewport(const Viewport& viewport) = 0;
+    virtual void setScale(float x, float y) = 0;
 
     void draw(const DrawCommand& command)
     {

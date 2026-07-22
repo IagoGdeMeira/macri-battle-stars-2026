@@ -4,8 +4,6 @@
 #include "WorldRectangleRenderFormat.h"
 #include "WorldTextureRenderFormat.h"
 
-#include "domain/utils/Logger/Logger.h"
-
 #include "engine/events/WindowResizedEvent.h"
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
@@ -42,14 +40,13 @@ void WorldDrawer::addFormat(std::unique_ptr<IRenderFormat> format) { this->forma
 
 void WorldDrawer::draw(RenderContext& ctx)
 {
-    LOG_DEBUG("WorldDrawer::draw: start");
+    float zoom = this->camera.getZoom();
+    
+    this->renderer.setScale(zoom, zoom);
     this->renderer.setViewport(this->worldViewport);
-    for (auto& format : this->formats)
-    {
-        LOG_DEBUG("WorldDrawer::draw: rendering format");
-        format->render(ctx);
-    }
-    LOG_DEBUG("WorldDrawer::draw: end");
+    
+    for (auto& format : this->formats) format->render(ctx);
+    this->renderer.setScale(1.f, 1.f);
 }
 
 void WorldDrawer::recalculateViewport()

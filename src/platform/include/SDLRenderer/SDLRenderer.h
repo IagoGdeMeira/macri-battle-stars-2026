@@ -18,6 +18,7 @@ public:
     void clear() override { SDL_RenderClear(this->renderer); }
     void present() override;
     void setViewport(const Viewport& viewport) override;
+    void setScale(float x, float y) override { SDL_RenderSetScale(this->renderer, x, y); }
 
     SDL_Renderer* get() const { return this->renderer; }
 
