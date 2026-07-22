@@ -13,6 +13,7 @@ public:
     virtual void remove(Entity e) = 0;
     virtual bool has(Entity e) const = 0;
     virtual size_t size() const = 0;
+    virtual void clear() = 0;
 
     virtual const std::vector<Entity>& entities() const = 0;
 };
@@ -27,6 +28,7 @@ public:
     void remove(Entity entity) override;
     bool has(Entity entity) const override;
     size_t size() const override { return this->denseComponents.size(); }
+    void clear() override;
 
     const std::vector<Entity>& entities() const override { return this->denseEntities; }
 

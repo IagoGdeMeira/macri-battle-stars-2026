@@ -13,6 +13,7 @@ public:
     Entity create();
     void destroy(Entity e);
     bool isAlive(Entity e) const;
+    void clear();
 
 private:
     static constexpr char DEAD = 0, ALIVE = 1;

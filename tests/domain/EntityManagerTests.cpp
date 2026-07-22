@@ -1,6 +1,7 @@
 #include "domain/include/EntityManager/EntityManager.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <cstdint>
 
 TEST_CASE("EntityManager can create entities", "[unit][entity_manager]")
 {
@@ -91,4 +92,19 @@ TEST_CASE("EntityManager can handle a large number of entities", "[unit][entity_
 
     for (int i = 0; i < numEntities; ++i) entities.push_back(manager.create());
     for (const auto& e : entities) REQUIRE(manager.isAlive(e));
+}
+
+TEST_CASE("EntityManager can clear all entities", "[unit][entity_manager]")
+{
+    EntityManager manager;
+    const uint32_t numEntities = 50;
+
+    for (uint32_t i = 0; i < numEntities; ++i) manager.create();
+    manager.clear();
+
+    for (uint32_t i = 0; i < numEntities; ++i)
+    {
+        Entity e = Entity{i};
+        REQUIRE_FALSE(manager.isAlive(e));
+    }
 }

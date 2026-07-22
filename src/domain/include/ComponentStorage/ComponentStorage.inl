@@ -64,4 +64,12 @@ T& ComponentStorage<T>::get(Entity entity)
     return this->denseComponents[this->sparse[entity.id]];
 }
 
+template <typename T>
+void ComponentStorage<T>::clear()
+{
+    this->denseEntities.clear();
+    this->denseComponents.clear();
+    this->sparse.clear();
+}
+
 #endif // component_storage_inl

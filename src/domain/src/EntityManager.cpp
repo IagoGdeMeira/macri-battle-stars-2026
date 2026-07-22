@@ -34,3 +34,11 @@ bool EntityManager::isAlive(Entity e) const
     if (id >= this->alive.size()) return false;
     return this->alive[id] == EntityManager::ALIVE;
 }
+
+void EntityManager::clear()
+{
+    this->nextId = 0;
+    std::queue<uint32_t> emptyQueue;
+    std::swap(this->freeIds, emptyQueue);
+    this->alive.clear();
+}

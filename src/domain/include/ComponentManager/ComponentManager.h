@@ -37,6 +37,7 @@ public:
     const ComponentStorage<T>* storage() const { return this->getStorage<T>(); }
 
     void entityDestroyed(Entity entity);
+    void clear();
 
 private:
     std::vector<std::unique_ptr<IComponentStorage>> storages;

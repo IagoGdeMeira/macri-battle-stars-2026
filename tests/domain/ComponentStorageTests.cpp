@@ -84,3 +84,15 @@ TEST_CASE("ComponentStorage can return list of entities", "[unit][component_stor
 
     REQUIRE(entities.size() == 2);
 }
+
+TEST_CASE("ComponentStorage can clear all components", "[unit][component_storage]")
+{
+    ComponentStorage<Position> storage;
+    const uint32_t numComponents = 5;
+
+    for (uint32_t i = 0; i < numComponents; ++i) storage.add(Entity{i}, Position{0, 0});
+    REQUIRE(storage.size() == numComponents);
+
+    storage.clear();
+    REQUIRE(storage.size() == 0);
+}

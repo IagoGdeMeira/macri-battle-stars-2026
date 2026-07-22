@@ -71,3 +71,22 @@ TEST_CASE("ComponentManager can handle entity destruction", "[unit][component_ma
 
     REQUIRE_FALSE(manager.has<Position>(e));
 }
+
+TEST_CASE("ComponentManager can clear all components", "[unit][component_manager]")
+{
+    ComponentManager manager;
+
+    manager.registerComponent<Position>();
+    manager.registerComponent<Velocity>();
+
+    Entity e1{1};
+    Entity e2{2};
+
+    manager.add<Position>(e1, Position{10.f, 20.f});
+    manager.add<Velocity>(e2, Velocity{1.f, 2.f});
+
+    manager.clear();
+
+    REQUIRE_FALSE(manager.has<Position>(e1));
+    REQUIRE_FALSE(manager.has<Velocity>(e2));
+}

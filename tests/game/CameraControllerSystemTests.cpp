@@ -51,6 +51,12 @@ public:
         comp.add<PlayerComponent>(entity, PlayerComponent{1});
         return entity;
     }
+
+    void clearWorld()
+    {
+        this->world.entities().clear();
+        this->world.components().clear();
+    }
 };
 
 TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem keeps camera unchanged when no players exist",
@@ -370,4 +376,111 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem vertical
 
     REQUIRE(posY1 == Catch::Approx(posY2));
     REQUIRE(posY1 == Catch::Approx(180.f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem does not update when changes are smaller than epsilon",
+    "[unit][camera_controller_system]"
+) {
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 1.5f,
+        .maxZoom        = 1.5f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .epsilon        = 0.01f
+    });
+
+    this->camera.setPosition(100.f, 200.f);
+    this->camera.setZoom(1.5f);
+
+    this->createPlayer(100.005f, 200.005f, 32.f, 64.f);
+
+    system.update(this->ctx);
+
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(100.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(200.f));
+    REQUIRE(this->camera.getZoom() == Catch::Approx(1.5f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem updates only when zoom change exceeds epsilon",
+    "[unit][camera_controller_system]"
+) {
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.0f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .epsilon        = 0.01f
+    });
+
+    this->camera.setPosition(0.f, 0.f);
+    this->camera.setZoom(0.8f);
+
+    this->createPlayer(0.f, 0.f, 1000.f, 1000.f);
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getZoom() == Catch::Approx(0.8f));
+
+    this->clearWorld();
+    this->createPlayer(0.f, 0.f, 900.f, 900.f);
+
+    system.update(this->ctx);
+    REQUIRE(this->camera.getZoom() == Catch::Approx(0.8f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem respects custom epsilon value",
+    "[unit][camera_controller_system]"
+) {
+    const float customEpsilon = 0.1f;
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 1.5f,
+        .maxZoom        = 1.5f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .epsilon        = customEpsilon
+    });
+
+    this->camera.setPosition(100.f, 200.f);
+    this->camera.setZoom(1.5f);
+
+    this->createPlayer(100.05f, 200.05f, 32.f, 64.f);
+    system.update(this->ctx);
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(100.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(200.f));
+
+    this->clearWorld();
+    this->createPlayer(100.2f, 200.2f, 32.f, 64.f);
+    system.update(this->ctx);
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(100.2f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(200.2f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem updates when changes exceed epsilon",
+    "[unit][camera_controller_system]"
+) {
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.0f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .epsilon        = 0.01f
+    });
+
+    this->camera.setPosition(100.f, 200.f);
+    this->camera.setZoom(1.5f);
+
+    this->createPlayer(150.f, 250.f, 32.f, 64.f);
+
+    system.update(this->ctx);
+
+    REQUIRE(this->camera.getPosition().x != Catch::Approx(100.f));
+    REQUIRE(this->camera.getPosition().y != Catch::Approx(200.f));
+    REQUIRE(this->camera.getZoom() == Catch::Approx(2.0f));
 }

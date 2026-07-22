@@ -21,6 +21,7 @@ public:
         float minZoom = 0.8f, maxZoom = 2.f, padding = 50.f, verticalOffset = -0.f;
         bool applyZoomToSize = false;
         AABB bounds = AABB{limits::lowest(), limits::max(), limits::lowest(), limits::max()};
+        float epsilon = 0.001f;
     };
 
     CameraControllerSystem(Config&& cfg);
@@ -31,7 +32,7 @@ private:
     Camera2D& camera;
     Window& window;
 
-    float minZoom, maxZoom, padding, verticalOffset;
+    float minZoom, maxZoom, padding, verticalOffset, epsilon;
     AABB bounds;
 
     AABB computePlayerBounds(UpdateContext& ctx);

@@ -19,7 +19,8 @@ CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
     maxZoom(cfg.maxZoom),
     padding(cfg.padding),
     verticalOffset(cfg.verticalOffset),
-    bounds(cfg.bounds)
+    bounds(cfg.bounds),
+    epsilon(cfg.epsilon)
 { this->camera.setApplyZoomToSize(cfg.applyZoomToSize); }
 
 void CameraControllerSystem::update(UpdateContext& ctx)
@@ -39,11 +40,25 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     };
     Position clampedPos = this->computeClampedCameraPosition(center, targetZoom, screenSize);
 
-    this->camera.setPosition(clampedPos.x, clampedPos.y);
-    this->camera.setZoom(targetZoom);
+    const float currentZoom = this->camera.getZoom();
+    const Position currentPos = this->camera.getPosition();
+
+    bool needsZoomUpdate = 
+        std::abs(targetZoom - currentZoom) > this->epsilon ||
+        std::abs(clampedPos.x - currentPos.x) > this->epsilon ||
+        std::abs(clampedPos.y - currentPos.y) > this->epsilon;
+    
+    if (needsZoomUpdate)
+    {
+        this->camera.setPosition(clampedPos.x, clampedPos.y);
+        this->camera.setZoom(targetZoom);
+    }
 
     LOG_DEBUG("CameraControllerSystem: center=({}, {}), targetZoom={}, boxSize=({},{}), padding={}",
-        center.x, center.y, targetZoom, playerBounds.right - playerBounds.left, playerBounds.bottom - playerBounds.top, this->padding);
+        center.x, center.y, targetZoom,
+        playerBounds.right - playerBounds.left,
+        playerBounds.bottom - playerBounds.top,
+        this->padding);
 }
 
 AABB CameraControllerSystem::computePlayerBounds(UpdateContext& ctx)
