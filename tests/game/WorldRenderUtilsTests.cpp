@@ -77,7 +77,7 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform applies scaled dimensions an
     spriteConfig.size = Dimension2D { 16.f, 8.f };
 
     DrawTextureCommand cmd;
-    WorldRenderUtils::computeSpriteTransform(camera, spriteConfig, cmd);
+    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
 
     REQUIRE(cmd.dest.size.width == Catch::Approx(32.f));
     REQUIRE(cmd.dest.size.height == Catch::Approx(24.f));
@@ -95,7 +95,7 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform centers sprite on dest.posit
     DrawTextureCommand cmd;
     cmd.dest.position = { 100.f, 200.f };
 
-    WorldRenderUtils::computeSpriteTransform(camera, spriteConfig, cmd);
+    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
 
     REQUIRE(cmd.dest.size.width == Catch::Approx(32.f));
     REQUIRE(cmd.dest.size.height == Catch::Approx(24.f));
@@ -116,8 +116,7 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform handles zero scale", "[unit]
 
     DrawTextureCommand cmd;
     cmd.dest.position = { 10.f, 20.f };
-
-    WorldRenderUtils::computeSpriteTransform(camera, spriteConfig, cmd);
+    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
 
     REQUIRE(cmd.dest.size.width == Catch::Approx(0.f));
     REQUIRE(cmd.dest.size.height == Catch::Approx(0.f));

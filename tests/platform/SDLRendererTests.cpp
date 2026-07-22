@@ -141,7 +141,7 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer draws circles", "[unit][sdl_re
     SDL_Quit();
 }
 
-TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawFont method defined", "[unit][sdl_renderer]")
+TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawFont method defined", "[integration][sdl_renderer]")
 {
     this->configureVideoDriverForCi();
     REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
@@ -193,5 +193,23 @@ TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer has drawFont method defined", 
     }
 
     TTF_Quit();
+    SDL_Quit();
+}
+
+TEST_CASE_METHOD(SDLRendererFixture, "SDLRenderer can set and reset scale without errors", "[integration][sdl_renderer]")
+{
+    this->configureVideoDriverForCi();
+    REQUIRE(SDL_Init(SDL_INIT_VIDEO) == 0);
+
+    SDLWindow window;
+    window.create(800, 600, "Scale Test");
+    SDLRenderer renderer(window.get());
+
+    REQUIRE_NOTHROW(renderer.setScale(Position{2.f, 2.f}));
+    REQUIRE_NOTHROW(renderer.setScale(Position{1.f, 1.f}));
+
+    REQUIRE_NOTHROW(renderer.clear());
+    REQUIRE_NOTHROW(renderer.present());
+
     SDL_Quit();
 }

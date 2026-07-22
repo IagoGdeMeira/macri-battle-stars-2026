@@ -42,11 +42,11 @@ void WorldDrawer::draw(RenderContext& ctx)
 {
     float zoom = this->camera.getZoom();
     
-    this->renderer.setScale(zoom, zoom);
+    this->renderer.setScale(Position{zoom, zoom});
     this->renderer.setViewport(this->worldViewport);
     
     for (auto& format : this->formats) format->render(ctx);
-    this->renderer.setScale(1.f, 1.f);
+    this->renderer.setScale(Position{1.f, 1.f});
 }
 
 void WorldDrawer::recalculateViewport()

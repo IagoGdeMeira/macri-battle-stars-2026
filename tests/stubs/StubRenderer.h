@@ -2,6 +2,7 @@
 #define stub_renderer_h
 
 #include "engine/include/Renderer/Renderer.h"
+
 #include <vector>
 
 class StubRenderer : public Renderer
@@ -13,6 +14,7 @@ public:
         int drawTexture = 0, drawFont = 0;
         int drawRectangle = 0, drawRectFilled = 0, drawRectOutline = 0;
         int drawCircle = 0, drawCircleFilled = 0, drawCircleOutline = 0;
+        int setScale = 0;
     };
 
     struct LastDraw
@@ -46,6 +48,7 @@ public:
         this->rectangleCalls.clear();
         this->circleCalls.clear();
         this->viewportHistory.clear();
+        this->scaleHistory.clear();
         this->calls = Calls{};
         this->calls.clear = 1;
     }
@@ -60,19 +63,27 @@ public:
         this->currentViewport = vp;
     }
 
+    void setScale(const Position& scale) override
+    {
+        ++this->calls.setScale;
+        this->lastScale = scale;
+        this->scaleHistory.push_back(scale);
+    }
+
     Calls calls;
     LastDraw lastDraw;
     Rectangle lastRect;
     Circle lastCircle;
     Color lastColor;
-    Viewport lastViewport;
-    Viewport currentViewport;
+    Viewport lastViewport, currentViewport;
+    Position lastScale;
 
     std::vector<DrawTextureCommand> textureCalls;
     std::vector<DrawFontCommand> fontCalls;
     std::vector<DrawRectangleCommand> rectangleCalls;
     std::vector<DrawCircleCommand> circleCalls;
     std::vector<Viewport> viewportHistory;
+    std::vector<Position> scaleHistory;
 
 private:
     void onDrawTexture(const DrawTextureCommand& cmd)

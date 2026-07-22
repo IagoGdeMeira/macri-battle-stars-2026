@@ -77,7 +77,7 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
     cmd.texture = texture;
     cmd.dest.position = screenPos;
     cmd.rotation = transform.rotation;
-    WorldRenderUtils::computeSpriteTransform(this->camera, spriteConfig, cmd);
+    WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
     
     if (comp.has<OrientationComponent>(entity))
     {

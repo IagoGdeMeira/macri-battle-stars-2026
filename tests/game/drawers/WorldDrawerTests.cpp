@@ -282,3 +282,20 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes",
     REQUIRE(this->renderer.lastColor.b == 7);
     REQUIRE(this->renderer.lastColor.a == 6);
 }
+
+TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer applies global scale from camera zoom", "[unit][world_drawer]")
+{
+    this->camera.setZoom(1.5f);
+    this->drawer.draw(this->context);
+
+    REQUIRE(this->renderer.calls.setScale == 2);
+
+    REQUIRE(this->renderer.scaleHistory.size() == 2);
+    REQUIRE(this->renderer.scaleHistory[0].x == 1.5f);
+    REQUIRE(this->renderer.scaleHistory[0].y == 1.5f);
+    REQUIRE(this->renderer.scaleHistory[1].x == 1.f);
+    REQUIRE(this->renderer.scaleHistory[1].y == 1.f);
+
+    REQUIRE(this->renderer.lastScale.x == 1.f);
+    REQUIRE(this->renderer.lastScale.y == 1.f);
+}
