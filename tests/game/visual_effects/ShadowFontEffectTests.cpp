@@ -2,7 +2,7 @@
 
 #include "StubRenderer.h"
 
-#include "engine/include/DrawBatch/DrawFontBatch.h"
+#include "engine/draw_batches/DrawFontBatch.h"
 #include "engine/include/Renderer/Renderer.h"
 
 #include <catch2/catch_approx.hpp>

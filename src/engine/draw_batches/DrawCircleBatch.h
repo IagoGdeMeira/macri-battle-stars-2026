@@ -1,7 +1,7 @@
 #ifndef draw_circle_batch_h
 #define draw_circle_batch_h
 
-#include "DrawBatch.h"
+#include "DrawBatch/DrawBatch.h"
 #include "DrawCircleCommand.h"
 #include "Renderer/Renderer.h"
 

@@ -9,8 +9,8 @@
 #include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/View/View.h"
 
-#include "engine/include/DrawBatch/DrawTextureBatch.h"
-#include "engine/include/DrawCommands/DrawCommands.h"
+#include "engine/draw_batches/DrawTextureBatch.h"
+#include "engine/draw_commands/DrawTextureCommand.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
@@ -40,7 +40,7 @@ public:
             cmd.zIndex = render.zIndex;
             cmd.order = order++;
             cmd.tint = sprite.tint;
-            cmd.blend = DrawTextureCommand::BlendMode::Normal;
+            cmd.blend = BlendMode::Normal;
 
             if (comp.has<VisualEffectsComponent>(entity))
             {

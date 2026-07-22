@@ -9,8 +9,8 @@
 #include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/View/View.h"
 
-#include "engine/include/DrawBatch/DrawFontBatch.h"
-#include "engine/include/DrawCommands/DrawCommands.h"
+#include "engine/draw_batches/DrawFontBatch.h"
+#include "engine/draw_commands/DrawFontCommand.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
@@ -34,7 +34,7 @@ public:
             cmd.text = text.text;
             cmd.font = text.font.get();
             cmd.dest = transform.rect;
-            cmd.fontSize = static_cast<int>(text.fontSize > 0 ? text.fontSize : 16);
+            cmd.fontSize = text.fontSize > 0 ? text.fontSize : 16;
             cmd.color = text.color;
             cmd.layer = render.layer;
             cmd.zIndex = render.zIndex;

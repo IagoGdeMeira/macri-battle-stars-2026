@@ -5,7 +5,7 @@
 
 #include "domain/components/OutlineComponent.h"
 
-#include "engine/include/DrawBatch/DrawTextureBatch.h"
+#include "engine/draw_batches/DrawTextureBatch.h"
 
 class OutlineTextureEffect : public IVisualEffect<DrawTextureBatch, DrawTextureCommand>
 {

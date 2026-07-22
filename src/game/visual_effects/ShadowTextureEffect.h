@@ -5,7 +5,7 @@
 
 #include "domain/components/ShadowComponent.h"
 
-#include "engine/include/DrawBatch/DrawTextureBatch.h"
+#include "engine/draw_batches/DrawTextureBatch.h"
 
 class ShadowTextureEffect : public IVisualEffect<DrawTextureBatch, DrawTextureCommand>
 {

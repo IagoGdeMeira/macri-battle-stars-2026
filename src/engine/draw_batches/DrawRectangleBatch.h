@@ -1,8 +1,8 @@
 #ifndef draw_rectangle_batch_h
 #define draw_rectangle_batch_h
 
-#include "DrawBatch.h"
-#include "DrawCommands/DrawCommands.h"
+#include "DrawBatch/DrawBatch.h"
+#include "DrawRectangleCommand.h"
 #include "Renderer/Renderer.h"
 
 class DrawRectangleBatch : public DrawBatch<DrawRectangleCommand>

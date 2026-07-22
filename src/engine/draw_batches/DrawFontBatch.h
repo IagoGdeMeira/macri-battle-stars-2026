@@ -1,8 +1,8 @@
 #ifndef draw_font_batch_h
 #define draw_font_batch_h
 
-#include "DrawBatch.h"
-#include "DrawCommands/DrawCommands.h"
+#include "DrawBatch/DrawBatch.h"
+#include "DrawFontCommand.h"
 #include "Renderer/Renderer.h"
 
 class DrawFontBatch : public DrawBatch<DrawFontCommand>

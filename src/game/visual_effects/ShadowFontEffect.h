@@ -5,7 +5,7 @@
 
 #include "domain/components/ShadowComponent.h"
 
-#include "engine/include/DrawBatch/DrawFontBatch.h"
+#include "engine/draw_batches/DrawFontBatch.h"
 
 class ShadowFontEffect : public IVisualEffect<DrawFontBatch, DrawFontCommand>
 {

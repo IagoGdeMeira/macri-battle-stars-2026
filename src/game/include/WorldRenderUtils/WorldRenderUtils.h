@@ -5,7 +5,7 @@
 #include "domain/include/World/World.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
-#include "engine/include/DrawCommands/DrawCommands.h"
+#include "engine/draw_commands/DrawTextureCommand.h"
 #include "engine/value_objects/Camera2D/Camera2D.h"
 #include "engine/value_objects/Viewport/Viewport.h"
 

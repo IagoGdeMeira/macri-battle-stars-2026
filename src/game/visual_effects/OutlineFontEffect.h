@@ -5,7 +5,7 @@
 
 #include "domain/components/OutlineComponent.h"
 
-#include "engine/include/DrawBatch/DrawFontBatch.h"
+#include "engine/draw_batches/DrawFontBatch.h"
 
 class OutlineFontEffect : public IVisualEffect<DrawFontBatch, DrawFontCommand>
 {

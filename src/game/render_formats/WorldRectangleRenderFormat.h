@@ -6,8 +6,8 @@
 #include "domain/include/Entity/Entity.h"
 #include "domain/include/World/World.h"
 
-#include "engine/include/DrawBatch/DrawRectangleBatch.h"
-#include "engine/include/DrawCommands/DrawCommands.h"
+#include "engine/draw_batches/DrawRectangleBatch.h"
+#include "engine/draw_commands/DrawRectangleCommand.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/value_objects/Camera2D/Camera2D.h"
 #include "engine/value_objects/Viewport/Viewport.h"

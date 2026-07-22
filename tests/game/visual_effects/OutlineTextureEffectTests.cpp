@@ -2,7 +2,7 @@
 
 #include "StubRenderer.h"
 
-#include "engine/include/DrawBatch/DrawTextureBatch.h"
+#include "engine/draw_batches/DrawTextureBatch.h"
 #include "engine/include/Renderer/Renderer.h"
 
 #include <catch2/catch_test_macros.hpp>

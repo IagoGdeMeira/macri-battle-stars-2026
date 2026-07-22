@@ -8,8 +8,8 @@
 #include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/View/View.h"
 
-#include "engine/include/DrawBatch/DrawCircleBatch.h"
-#include "engine/include/DrawCommands/DrawCommands.h"
+#include "engine/draw_batches/DrawCircleBatch.h"
+#include "engine/include/DrawBatch/DrawBatch.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 

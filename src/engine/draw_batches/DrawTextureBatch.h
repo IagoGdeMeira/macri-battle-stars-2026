@@ -1,8 +1,8 @@
 #ifndef draw_texture_batch_h
 #define draw_texture_batch_h
 
-#include "DrawBatch.h"
-#include "DrawCommands/DrawCommands.h"
+#include "DrawBatch/DrawBatch.h"
+#include "DrawTextureCommand.h"
 #include "Renderer/Renderer.h"
 
 class DrawTextureBatch : public DrawBatch<DrawTextureCommand>
