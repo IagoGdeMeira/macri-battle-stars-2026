@@ -20,25 +20,25 @@ CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
     padding(cfg.padding),
     verticalOffset(cfg.verticalOffset),
     bounds(cfg.bounds),
-    epsilon(cfg.epsilon)
-{ this->camera.setApplyZoomToSize(cfg.applyZoomToSize); }
+    epsilon(cfg.epsilon),
+    viewSize(cfg.viewSize)
+{
+    LOG_DEBUG("CameraControllerSystem initialized with viewSize=({},{})", viewSize.width, viewSize.height);
+    this->camera.setApplyZoomToSize(cfg.applyZoomToSize);
+}
 
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
     auto playerBounds = this->computePlayerBounds(ctx);
     if (playerBounds.left > playerBounds.right || playerBounds.top > playerBounds.bottom) return;
-    
-    int winW = 0, winH = 0;
-    this->window.getSize(winW, winH);
-    Dimension2D screenSize = {static_cast<float>(winW), static_cast<float>(winH)};
 
-    float targetZoom = this->computeTargetZoom(playerBounds, screenSize);
+    float targetZoom = this->computeTargetZoom(playerBounds);
 
     Position center {
         (playerBounds.left + playerBounds.right) * 0.5f,
         (playerBounds.top + playerBounds.bottom) * 0.5f + this->verticalOffset
     };
-    Position clampedPos = this->computeClampedCameraPosition(center, targetZoom, screenSize);
+    Position clampedPos = this->computeClampedCameraPosition(center, targetZoom);
 
     const float currentZoom = this->camera.getZoom();
     const Position currentPos = this->camera.getPosition();
@@ -95,21 +95,29 @@ AABB CameraControllerSystem::computePlayerBounds(UpdateContext& ctx)
     return playerBounds;
 }
 
-float CameraControllerSystem::computeTargetZoom(const AABB& playerBounds, Dimension2D screenSize)
+float CameraControllerSystem::computeTargetZoom(const AABB& playerBounds)
 {
     float boxWidth = std::max(playerBounds.right - playerBounds.left, 1.f);
     float boxHeight = std::max(playerBounds.bottom - playerBounds.top, 1.f);
 
-    float zoomX = screenSize.width / boxWidth;
-    float zoomY = screenSize.height / boxHeight;
+    float zoomX = this->viewSize.width / boxWidth;
+    float zoomY = this->viewSize.height / boxHeight;
     float targetZoom = std::min(zoomX, zoomY);
 
-    return std::clamp(targetZoom, this->minZoom, this->maxZoom);
+    LOG_DEBUG("viewSize=({},{}), box=({},{}), zoomX={}, zoomY={}, targetZoom={}",
+        this->viewSize.width, this->viewSize.height, boxWidth, boxHeight, zoomX, zoomY, targetZoom);
+
+    float clamped = std::clamp(targetZoom, this->minZoom, this->maxZoom);
+    LOG_DEBUG("clamped zoom = {}", clamped);
+    return clamped;
 }
 
-Position CameraControllerSystem::computeClampedCameraPosition(const Position& center, float targetZoom, Dimension2D screenSize)
+Position CameraControllerSystem::computeClampedCameraPosition(const Position& center, float targetZoom)
 {
-    Dimension2D halfScreen = {(screenSize.width / targetZoom) * 0.5f, (screenSize.height / targetZoom) * 0.5f};
+    Dimension2D halfScreen {
+        (this->viewSize.width / targetZoom) * 0.5f,
+        (this->viewSize.height / targetZoom) * 0.5f
+    };
 
     float clampedX = center.x;
     float minClampX = this->bounds.left + halfScreen.width;

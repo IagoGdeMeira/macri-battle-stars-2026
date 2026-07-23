@@ -2,7 +2,7 @@
 	"name": "Test Stage",
 	"floor": { "y": 400, "texture": "assets/sprites/test_stage_floor.png", "width": 2000, "height": 50 },
   	"walls": [ { "x": 100, "y": 300, "width": 50, "height": 150 } ],
-  	"spawnPoints": [ { "playerId": 0, "x": 800 }, { "playerId": 1, "x": 1400 } ],
+  	"spawnPoints": [ { "playerId": 0, "x": 800 }, { "playerId": 1, "x": 1200 } ],
   	"gravity": 980,
   	"floorFriction": 5,
   	"airFriction": 2,

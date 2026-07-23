@@ -22,6 +22,7 @@ public:
         bool applyZoomToSize = false;
         AABB bounds = AABB{limits::lowest(), limits::max(), limits::lowest(), limits::max()};
         float epsilon = 0.001f;
+        Dimension2D viewSize{800.f, 600.f};
     };
 
     CameraControllerSystem(Config&& cfg);
@@ -34,10 +35,11 @@ private:
 
     float minZoom, maxZoom, padding, verticalOffset, epsilon;
     AABB bounds;
+    Dimension2D viewSize;
 
     AABB computePlayerBounds(UpdateContext& ctx);
-    float computeTargetZoom(const AABB& playerBounds, Dimension2D screenSize);
-    Position computeClampedCameraPosition(const Position& center, float targetZoom, Dimension2D screenSize);
+    float computeTargetZoom(const AABB& playerBounds);
+    Position computeClampedCameraPosition(const Position& center, float targetZoom);
 };
 
 #endif // camera_controller_system_h

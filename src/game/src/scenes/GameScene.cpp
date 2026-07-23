@@ -262,16 +262,15 @@ void GameScene::addSystems()
     systems.addSystem<DamageSystem>(events);
     systems.addSystem<CollisionClipPlayerSystem>(events, *this->entityFactory);
 
-    LOG_DEBUG("GameScene: adding CameraControllerSystem");
     systems.addSystem<CameraControllerSystem>(CameraControllerSystem::Config{
         .camera             = *this->camera,
         .window             = this->window,
-        .minZoom            = 1.f,
-        .maxZoom            = 10.f,
+        .minZoom            = 0.8f,
+        .maxZoom            = 1.f,
         .verticalOffset     = -70.f,
         .applyZoomToSize    = true,
-        .bounds             = mapComp.worldBounds
+        .bounds             = mapComp.worldBounds,
+        .viewSize           = GameConstants::VIRTUAL_SIZE
     });
-    LOG_DEBUG("GameScene: CameraControllerSystem added");
     LOG_DEBUG("GameScene: total systems = {}", this->systems().size());
 }
