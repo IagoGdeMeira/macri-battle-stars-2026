@@ -19,10 +19,10 @@ public:
         Camera2D& camera;
         Window& window;
         float minZoom = 0.8f, maxZoom = 2.f, padding = 50.f, verticalOffset = -0.f;
-        bool applyZoomToSize = false;
         AABB bounds = AABB{limits::lowest(), limits::max(), limits::lowest(), limits::max()};
         float epsilon = 0.001f;
         Dimension2D viewSize{800.f, 600.f};
+        bool applyZoomToSize = false;
     };
 
     CameraControllerSystem(Config&& cfg);

@@ -6,6 +6,8 @@
 #include "domain/value_objects/Color/Color.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
+#include <cstddef>
+
 struct DrawCircleCommand : public DrawCommand
 {
     Circle circle;

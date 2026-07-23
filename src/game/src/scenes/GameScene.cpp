@@ -268,9 +268,9 @@ void GameScene::addSystems()
         .minZoom            = 0.8f,
         .maxZoom            = 1.f,
         .verticalOffset     = -70.f,
-        .applyZoomToSize    = true,
         .bounds             = mapComp.worldBounds,
-        .viewSize           = GameConstants::VIRTUAL_SIZE
+        .viewSize           = GameConstants::VIRTUAL_SIZE,
+        .applyZoomToSize    = true,
     });
     LOG_DEBUG("GameScene: total systems = {}", this->systems().size());
 }

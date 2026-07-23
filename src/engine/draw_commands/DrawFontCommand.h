@@ -7,6 +7,7 @@
 #include "domain/value_objects/Color/Color.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
+#include <cstddef>
 #include <string>
 
 struct DrawFontCommand : public DrawCommand
