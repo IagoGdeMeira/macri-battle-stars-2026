@@ -3,6 +3,7 @@
 
 #include "Geometry/Geometry.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
