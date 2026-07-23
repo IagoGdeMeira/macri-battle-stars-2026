@@ -13,36 +13,30 @@
 #include "engine/resources/Texture/Texture.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
-void WorldTextureRenderFormat::render(RenderContext& ctx)
+void WorldTextureRenderFormat::render(RenderContext &ctx)
 {
-    using hrclock = std::chrono::high_resolution_clock;
-    using milliseconds = std::chrono::milliseconds;
+    LOG_DEBUG("WorldTextureRenderFormat::render: start");
     auto& comp = ctx.world.components();
-    
-    auto start = hrclock::now();
+    auto view = View<SpriteComponent, TransformComponent, RenderComponent>(comp);
+    LOG_DEBUG("WorldTextureRenderFormat: found {} entities with SpriteComponent", view.size());
 
     this->batch.clear();
-    auto view = View<SpriteComponent, TransformComponent, RenderComponent>(comp);
-    size_t order = 0;
-    size_t entityCount = 0;
-
+    size_t order = 0, entityCount = 0;
     for (auto [entity, sprite, transform, render] : view)
     {
-        auto texture = this->resourceManager.load<Texture>(this->textureLoader, sprite.texturePath);
-        if (!texture) continue;
+        LOG_DEBUG("WorldTextureRenderFormat: processing entity {}", entity.id);
+        if (!sprite.cachedTexture) sprite.cachedTexture = this->resourceManager.load<Texture>(this->textureLoader, sprite.texturePath);
+        
+        auto texture = sprite.cachedTexture;
+        if (!texture)
+        {
+            LOG_WARN("WorldTextureRenderFormat: texture not loaded for entity {}", entity.id);
+            continue;
+        }
         ++entityCount;
 
         DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++, texture);
-
-        LOG_DEBUG("WorldTextureRenderFormat: entity {}, has texture: {}", entity.id, texture ? "yes" : "no");
-
-        auto& srcPos = cmd.source.position;
-        auto& srcSize = cmd.source.size;
-        auto& destPos = cmd.dest.position;
-        auto& destSize = cmd.dest.size;
-
-        LOG_DEBUG("Rendering entity {}: source=({}, {}) size=({}x{}) dest=({}, {}) size=({}x{})",
-            entity.id, srcPos.x, srcPos.y, srcSize.width, srcSize.height, destPos.x, destPos.y, destSize.width, destSize.height);
+        LOG_DEBUG("WorldTextureRenderFormat: entity {} texture loaded", entity.id);
 
         if (comp.has<VisualEffectsComponent>(entity))
         {
@@ -51,11 +45,10 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
         }
         this->batch.add(cmd);
     }
-    this->batch.submit(this->renderer);
 
-    auto end = hrclock::now();
-    auto duration = std::chrono::duration_cast<milliseconds>(end - start).count();
-    if (duration > 10) LOG_DEBUG("WorldTextureRenderFormat::render took {} ms for {} entities", duration, entityCount);
+    LOG_DEBUG("WorldTextureRenderFormat: submitting batch with {} commands", entityCount);
+    this->batch.submit(this->renderer);
+    LOG_DEBUG("WorldTextureRenderFormat: batch submitted");
 }
 
 DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(

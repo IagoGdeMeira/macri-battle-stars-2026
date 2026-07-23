@@ -36,21 +36,22 @@ public:
         size_t baseIndex;
 
         void advance();
-
         bool matches(Entity e);
-
         template <size_t... I>
         bool matchesImpl(Entity e, std::index_sequence<I...>);
     };
+
+    size_t size() const;
 
     Iterator begin();
     Iterator end();
 
 private:
     ComponentManager& manager;
-
     IComponentStorage* baseStorage;
     size_t baseIndex;
+
+    bool matchesEntity(Entity e) const;
 };
 
 #include "View.inl"

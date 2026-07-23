@@ -60,8 +60,7 @@ template <typename... Components>
 template <size_t... I>
 bool View<Components...>::Iterator::matchesImpl(Entity e, std::index_sequence<I...>)
 {
-    return ((
-        I == this->baseIndex ||
+    return ((I == this->baseIndex ||
         this->manager.has<std::tuple_element_t<I, std::tuple<Components...>>>(e)) && ...
     );
 }
@@ -72,10 +71,32 @@ void View<Components...>::Iterator::advance()
     while (this->index < this->entities.size())
     {
         Entity e = this->entities[this->index];
-
         if (this->matches(e)) break;
         this->index++;
     }
+}
+
+template <typename... Components>
+size_t View<Components...>::size() const
+{
+    const auto& entities = this->baseStorage->entities();
+    size_t count = 0;
+
+    for (const Entity& e : entities) if (this->matchesEntity(e)) ++count;
+    return count;
+}
+
+template <typename... Components>
+bool View<Components...>::matchesEntity(Entity e) const
+{
+    std::array<IComponentStorage*, sizeof...(Components)> storages = {
+        const_cast<ComponentManager&>(this->manager).storage<Components>()...};
+    for (size_t i = 0; i < storages.size(); ++i)
+    {
+        if (i == this->baseIndex) continue;
+        if (!storages[i]->has(e)) return false;
+    }
+    return true;
 }
 
 template <typename... Components>

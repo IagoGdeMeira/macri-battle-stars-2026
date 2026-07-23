@@ -11,9 +11,7 @@ Position WorldRenderUtils::worldToScreen(Camera2D& camera, Position worldPos, Vi
     float screenX = (worldPos.x - camPos.x * parallax.x) * zoom + vp.width / 2.f;
     float screenY = (worldPos.y - camPos.y * parallax.y) * zoom + vp.height / 2.f;
 
-    LOG_DEBUG("worldToScreen: world=({},{}), cam=({},{}), zoom={}, parallax=({},{}), screen=({},{})",
-        worldPos.x, worldPos.y, camPos.x, camPos.y, zoom, parallax.x, parallax.y, screenX, screenY);
-
+    LOG_DEBUG("worldToScreen: world=({},{}), screen=({},{})", worldPos.x, worldPos.y, screenX, screenY);
     return {screenX, screenY};
 }
 

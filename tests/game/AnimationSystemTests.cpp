@@ -36,7 +36,7 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem advances sprite source
 
     auto& comp = this->world.components();
     comp.add<AnimationComponent>(entity, AnimationComponent{ Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 0 });
-    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", Dimension2D{16, 16}, Rectangle{}, false });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", nullptr, Dimension2D{16, 16}, Rectangle{}, false });
 
     this->context.deltaTime = 0.1f;
     this->system.update(this->context);
@@ -60,7 +60,7 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem loops back to the firs
 
     auto& comp = this->world.components();
     comp.add<AnimationComponent>(entity, AnimationComponent { Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 1 });
-    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", Dimension2D{16, 16}, Rectangle{}, false });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", nullptr, Dimension2D{16, 16}, Rectangle{}, false });
 
     this->context.deltaTime = 0.1f;
     this->system.update(this->context);
@@ -82,7 +82,7 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem holds the last frame w
 
     auto& comp = this->world.components();
     comp.add<AnimationComponent>(entity, AnimationComponent{ Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, false}, 0.f, 1 });
-    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", Dimension2D{16, 16}, Rectangle{}, false });
+    comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", nullptr, Dimension2D{16, 16}, Rectangle{}, false });
 
     this->context.deltaTime = 0.3f;
     this->system.update(this->context);

@@ -39,7 +39,7 @@ public:
         auto& comp = this->world.components();
         comp.add<TransformComponent>(entity, TransformComponent{x, y, 1.f, 1.f, 0.f});
         comp.add<PlayerComponent>(entity, PlayerComponent{1});
-        comp.add<SpriteComponent>(entity, SpriteComponent{"dummy.png", Dimension2D{width, height}, Rectangle{}, false});
+        comp.add<SpriteComponent>(entity, SpriteComponent{"dummy.png", nullptr, Dimension2D{width, height}});
         return entity;
     }
 

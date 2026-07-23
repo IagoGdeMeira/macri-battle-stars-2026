@@ -3,6 +3,10 @@
 
 #include "Geometry/Geometry.h"
 
-struct RectangleColliderComponent { Dimension2D size{0.f, 0.f}; };
+struct RectangleColliderComponent
+{
+    Dimension2D size{0.f, 0.f};
+    AABB cachedAABB{0.f, 0.f, 0.f, 0.f};
+};
 
 #endif // rectangle_collider_component_h

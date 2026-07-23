@@ -4,6 +4,8 @@
 #include "WorldRectangleRenderFormat.h"
 #include "WorldTextureRenderFormat.h"
 
+#include "domain/utils/Logger/Logger.h"
+
 #include "engine/events/WindowResizedEvent.h"
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
@@ -41,14 +43,25 @@ void WorldDrawer::addFormat(std::unique_ptr<IRenderFormat> format) { this->forma
 void WorldDrawer::draw(RenderContext& ctx)
 {
     float zoom = this->camera.getZoom();
-    
-    this->renderer.setScale(Position{zoom, zoom});
-    this->renderer.setViewport(this->worldViewport);
-    
-    for (auto& format : this->formats) format->render(ctx);
-    this->renderer.setScale(Position{1.f, 1.f});
-}
+    LOG_DEBUG("WorldDrawer::draw: start, zoom={}", zoom);
 
+    this->renderer.setScale(Position{zoom, zoom});
+    LOG_DEBUG("WorldDrawer::draw: after setScale");
+
+    this->renderer.setViewport(this->worldViewport);
+    LOG_DEBUG("WorldDrawer::draw: viewport set to ({},{},{},{})",
+        this->worldViewport.x, this->worldViewport.y,
+        this->worldViewport.width, this->worldViewport.height);
+
+    for (auto& format : this->formats)
+    {
+        LOG_DEBUG("WorldDrawer::draw: rendering format");
+        format->render(ctx);
+    }
+
+    this->renderer.setScale(Position{1.f, 1.f});
+    LOG_DEBUG("WorldDrawer::draw: end");
+}
 void WorldDrawer::recalculateViewport()
 {
     const Dimension2D& winSize = this->settings.screen.size;

@@ -116,3 +116,57 @@ TEST_CASE("View must iterate over all matching entities",
 
     REQUIRE(count == 5);
 }
+
+TEST_CASE("View must handle entities being added and removed during iteration", "[unit][view]")
+{
+    ComponentManager manager;
+    manager.registerComponent<Position>();
+    manager.registerComponent<Velocity>();
+
+    for (uint32_t i = 0; i < 5; i++)
+    {
+        Entity e(i);
+        manager.add<Position>(e, Position{});
+        manager.add<Velocity>(e, Velocity{});
+    }
+
+    Entity newEntity(5);
+    manager.add<Position>(newEntity, Position{});
+    manager.add<Velocity>(newEntity, Velocity{});
+
+    View<Position, Velocity> view(manager);
+
+    int count = 0;
+    for (auto [entity, pos, vel] : view) count++;
+
+    REQUIRE(count == 6);
+}
+
+TEST_CASE("View must return the correct size of matching entities", "[unit][view]")
+{
+    ComponentManager manager;
+
+    manager.registerComponent<Position>();
+    manager.registerComponent<Velocity>();
+
+    for (uint32_t i = 0; i < 5; i++)
+    {
+        Entity e(i);
+        manager.add<Position>(e, Position{});
+        manager.add<Velocity>(e, Velocity{});
+    }
+
+    View<Position, Velocity> view(manager);
+
+    REQUIRE(view.size() == 5);
+
+    Entity newEntity(5);
+    manager.add<Position>(newEntity, Position{});
+    manager.add<Velocity>(newEntity, Velocity{});
+
+    REQUIRE(view.size() == 6);
+
+    manager.remove<Velocity>(newEntity);
+
+    REQUIRE(view.size() == 5);
+}
