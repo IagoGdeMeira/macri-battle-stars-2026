@@ -6,93 +6,86 @@
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/value_objects/Geometry/Geometry.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <algorithm>
-#include <cmath>
 
 void CollisionDetectionSystem::update(UpdateContext& ctx)
 {
-    Grid grid;
-    this->buildGrid(ctx, grid);
+    ++this->frameCounter;
+    if (this->frameCounter % this->updateInterval != 0) return;
+
+    this->updateAABBs(ctx);
 
     std::vector<ICollisionDetection::CollisionPair> pairs;
-    this->collectPairs(grid, pairs);
+    this->sweepAndPrune(pairs);
 
     for (auto& detector : this->detectors) detector->detect(pairs, ctx);
 }
 
-
-unsigned long long CollisionDetectionSystem::hashPair(Entity a, Entity b)
-{
-    using ullong = unsigned long long;
-    const ullong low = std::min(a.id, b.id);
-    const ullong high = std::max(a.id, b.id);
-    return (low << 32) | high;
-}
-
-void CollisionDetectionSystem::buildGrid(UpdateContext& ctx, Grid& grid)
+void CollisionDetectionSystem::updateAABBs(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();
+    this->aabbs.clear();
+    this->aabbs.reserve(64);
 
-    auto rects = View<TransformComponent, RectangleColliderComponent>(comp);
-    for (auto [e, t, r] : rects)
+    for (auto [e, t, r] : View<TransformComponent, RectangleColliderComponent>(comp))
     {
-        auto& pos = t.position;
-        const AABB rectBounds {
-            pos.x - r.size.width * 0.5f, pos.x + r.size.width * 0.5f,
-            pos.y - r.size.height * 0.5f, pos.y + r.size.height * 0.5f
-        };
-        const AABB cellBounds {
-            std::floor(rectBounds.left / this->cellSize) * this->cellSize,
-            std::floor(rectBounds.right / this->cellSize) * this->cellSize,
-            std::floor(rectBounds.top / this->cellSize) * this->cellSize,
-            std::floor(rectBounds.bottom / this->cellSize) * this->cellSize
-        };
-
-        for (int cellX = static_cast<int>(cellBounds.left); cellX <= static_cast<int>(cellBounds.right); ++cellX)
-        {
-            for (int cellY = static_cast<int>(cellBounds.top); cellY <= static_cast<int>(cellBounds.bottom); ++cellY)
-            { grid[CollisionDetectionSystem::hash(cellX, cellY)].entities.push_back(e); }
-        }
+        AABB aabb;
+        aabb.left = t.position.x - r.size.width * 0.5f;
+        aabb.right = t.position.x + r.size.width * 0.5f;
+        aabb.top = t.position.y - r.size.height * 0.5f;
+        aabb.bottom = t.position.y + r.size.height * 0.5f;
+        this->aabbs.push_back({e, aabb.left, aabb.right, aabb.top, aabb.bottom});
     }
 
-    auto circles = View<TransformComponent, CircleColliderComponent>(comp);
-    for (auto [e, t, c] : circles)
+    for (auto [e, t, c] : View<TransformComponent, CircleColliderComponent>(comp))
     {
-        auto& pos = t.position;
-        const AABB circleBounds {pos.x - c.radius, pos.x + c.radius, pos.y - c.radius, pos.y + c.radius};
-        const AABB cellBounds {
-            std::floor(circleBounds.left / this->cellSize) * this->cellSize,
-            std::floor(circleBounds.right / this->cellSize) * this->cellSize,
-            std::floor(circleBounds.top / this->cellSize) * this->cellSize,
-            std::floor(circleBounds.bottom / this->cellSize) * this->cellSize};
+        AABB aabb;
+        aabb.left = t.position.x - c.radius;
+        aabb.right = t.position.x + c.radius;
+        aabb.top = t.position.y - c.radius;
+        aabb.bottom = t.position.y + c.radius;
+        this->aabbs.push_back({e, aabb.left, aabb.right, aabb.top, aabb.bottom});
+    }
 
-        for (int cellX = static_cast<int>(cellBounds.left); cellX <= static_cast<int>(cellBounds.right); ++cellX)
+    this->insertionSortAABBs();
+}
+
+void CollisionDetectionSystem::insertionSortAABBs()
+{
+    if (this->aabbs.size() <= 1) return;
+
+    for (size_t i = 1; i < this->aabbs.size(); ++i)
+    {
+        EntityAABB key = std::move(this->aabbs[i]);
+        size_t j = i;
+        while (j > 0 && this->aabbs[j - 1].minX > key.minX)
         {
-            for (int cellY = static_cast<int>(cellBounds.top); cellY <= static_cast<int>(cellBounds.bottom); ++cellY)
-            { grid[CollisionDetectionSystem::hash(cellX, cellY)].entities.push_back(e); }
+            this->aabbs[j] = std::move(this->aabbs[j - 1]);
+            --j;
         }
+        this->aabbs[j] = std::move(key);
     }
 }
 
-void CollisionDetectionSystem::collectPairs(Grid& grid, std::vector<ICollisionDetection::CollisionPair>& outPairs)
+void CollisionDetectionSystem::sweepAndPrune(std::vector<ICollisionDetection::CollisionPair>& outPairs)
 {
-    PairSet checkedPairs;
+    const size_t n = this->aabbs.size();
+    outPairs.reserve(n * 2);
 
-    for (auto& [key, cell] : grid)
+    for (size_t i = 0; i < n; ++i)
     {
-        auto& entities = cell.entities;
-        for (size_t i = 0; i < entities.size(); ++i) for (size_t j = i + 1; j < entities.size(); ++j)
+        const auto& a = this->aabbs[i];
+        for (size_t j = i + 1; j < n; ++j)
         {
-            Entity a = entities[i];
-            Entity b = entities[j];
-            unsigned long long pairKey = CollisionDetectionSystem::hashPair(a, b);
-            if (checkedPairs.find(pairKey) != checkedPairs.end()) continue;
-            checkedPairs.insert(pairKey);
-            outPairs.push_back({a, b});
+            const auto& b = this->aabbs[j];
+
+            if (a.maxX < b.minX) break;
+            if (a.minY > b.maxY || b.minY > a.maxY || a.entity.id == b.entity.id) continue;
+
+            outPairs.push_back({a.entity, b.entity});
         }
     }
 }

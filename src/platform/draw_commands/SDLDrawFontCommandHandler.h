@@ -1,5 +1,5 @@
-#ifndef sdl_font_render_handler_h
-#define sdl_font_render_handler_h
+#ifndef sdl_draw_font_command_handler_h
+#define sdl_draw_font_command_handler_h
 
 #include "SDLFont/SDLFont.h"
 
@@ -9,10 +9,10 @@
 #include <SDL_ttf.h>
 #include <cmath>
 
-class SDLFontRenderHandler : public IDrawCommandHandler
+class SDLDrawFontCommandHandler : public IDrawCommandHandler
 {
 public:
-    explicit SDLFontRenderHandler(SDL_Renderer* renderer) : renderer(renderer) {}
+    explicit SDLDrawFontCommandHandler(SDL_Renderer* renderer) : renderer(renderer) {}
 
     void execute(const DrawCommand& command) override
     {
@@ -53,4 +53,4 @@ private:
     SDL_Renderer* renderer;
 };
 
-#endif // sdl_font_render_handler_h
+#endif // sdl_draw_font_command_handler_h

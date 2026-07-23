@@ -5,33 +5,32 @@
 
 #include "engine/include/System/System.h"
 
-#include <memory>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
+#include <memory>
 
 class CollisionDetectionSystem : public System
 {
 public:
-    explicit CollisionDetectionSystem(float cellSize = 500.f) : cellSize(cellSize) {}
+    explicit CollisionDetectionSystem(int updateInterval = 2) : updateInterval(updateInterval) {}
 
     void update(UpdateContext& ctx) override;
     void addDetector(std::unique_ptr<ICollisionDetection> detector) { this->detectors.push_back(std::move(detector)); }
 
 private:
-    struct Cell { std::vector<Entity> entities; };
+    struct EntityAABB
+    {
+        Entity entity;
+        float minX, maxX, minY, maxY;
+    };
 
-    using Grid = std::unordered_map<long long, Cell>;
-    using PairSet = std::unordered_set<unsigned long long>;
-
-    float cellSize;
+    int updateInterval = 2;
+    int frameCounter = 0;
+    std::vector<EntityAABB> aabbs;
     std::vector<std::unique_ptr<ICollisionDetection>> detectors;
 
-    static long long hash(int x, int y) { return (static_cast<long long>(x) << 32) | static_cast<unsigned int>(y); }
-    static unsigned long long hashPair(Entity a, Entity b);
-
-    void buildGrid(UpdateContext& ctx, Grid& grid);
-    void collectPairs(Grid& grid, std::vector<ICollisionDetection::CollisionPair>& outPairs);
+    void updateAABBs(UpdateContext& ctx);
+    void sweepAndPrune(std::vector<ICollisionDetection::CollisionPair>& outPairs);
+    void insertionSortAABBs();
 };
 
 #endif // collision_detection_system_h

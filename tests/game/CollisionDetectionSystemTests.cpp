@@ -30,7 +30,7 @@ public:
 
         this->bus.subscribe<CollisionEvent>([&](const CollisionEvent& event) { this->events.push_back(event); });
 
-        auto& system = this->scene.systems().addSystem<CollisionDetectionSystem>(500.f);
+        auto& system = this->scene.systems().addSystem<CollisionDetectionSystem>(1);
         system.addDetector(std::make_unique<RectRectCollisionDetection>());
         system.addDetector(std::make_unique<CircleCircleCollisionDetection>());
         system.addDetector(std::make_unique<RectCircleCollisionDetection>());
@@ -68,8 +68,7 @@ protected:
     }
 };
 
-TEST_CASE_METHOD(CollisionDetectionSystemFixture,
-    "CollisionDetectionSystem detects rectangle-rectangle collision with grid",
+TEST_CASE_METHOD(CollisionDetectionSystemFixture, "CollisionDetectionSystem detects rectangle-rectangle collision",
     "[integration][collision_detection_system]"
 ) {
     const Entity left = this->createRect(0.f, 0.f, 4.f, 4.f);
@@ -80,8 +79,7 @@ TEST_CASE_METHOD(CollisionDetectionSystemFixture,
     REQUIRE(this->hasPair(left, right));
 }
 
-TEST_CASE_METHOD(CollisionDetectionSystemFixture,
-    "CollisionDetectionSystem detects circle-circle collision with grid",
+TEST_CASE_METHOD(CollisionDetectionSystemFixture, "CollisionDetectionSystem detects circle-circle collision",
     "[integration][collision_detection_system]"
 ) {
     const Entity first = this->createCircle(0.f, 0.f, 2.f);
@@ -92,8 +90,7 @@ TEST_CASE_METHOD(CollisionDetectionSystemFixture,
     REQUIRE(this->hasPair(first, second));
 }
 
-TEST_CASE_METHOD(CollisionDetectionSystemFixture,
-    "CollisionDetectionSystem detects rect-circle collision with grid",
+TEST_CASE_METHOD(CollisionDetectionSystemFixture, "CollisionDetectionSystem detects rect-circle collision",
     "[integration][collision_detection_system]"
 ) {
     const Entity rect = this->createRect(0.f, 0.f, 4.f, 4.f);
@@ -104,8 +101,7 @@ TEST_CASE_METHOD(CollisionDetectionSystemFixture,
     REQUIRE(this->hasPair(rect, circle));
 }
 
-TEST_CASE_METHOD(CollisionDetectionSystemFixture,
-    "CollisionDetectionSystem does not emit events for separated entities",
+TEST_CASE_METHOD(CollisionDetectionSystemFixture, "CollisionDetectionSystem does not emit events for separated entities",
     "[integration][collision_detection_system]"
 ) {
     this->createRect(-10.f, -10.f, 2.f, 2.f);
@@ -117,7 +113,7 @@ TEST_CASE_METHOD(CollisionDetectionSystemFixture,
 }
 
 TEST_CASE_METHOD(CollisionDetectionSystemFixture,
-    "CollisionDetectionSystem detects collision across grid cell boundary",
+    "CollisionDetectionSystem detects collision across large distance (was grid cell boundary)",
     "[integration][collision_detection_system]"
 ) {
     const Entity rect = this->createRect(499.f, 0.f, 40.f, 20.f);
@@ -128,8 +124,7 @@ TEST_CASE_METHOD(CollisionDetectionSystemFixture,
     REQUIRE(this->hasPair(rect, circle));
 }
 
-TEST_CASE_METHOD(CollisionDetectionSystemFixture,
-    "CollisionDetectionSystem emits each colliding pair only once across multiple cells",
+TEST_CASE_METHOD(CollisionDetectionSystemFixture, "CollisionDetectionSystem emits each colliding pair only once",
     "[integration][collision_detection_system]"
 ) {
     const Entity left = this->createRect(99.f, 0.f, 40.f, 20.f);

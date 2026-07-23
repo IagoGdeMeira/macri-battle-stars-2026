@@ -1,5 +1,5 @@
-#ifndef sdl_rectangle_render_handler_h
-#define sdl_rectangle_render_handler_h
+#ifndef sdl_draw_rectangle_command_handler_h
+#define sdl_draw_rectangle_command_handler_h
 
 #include "engine/draw_commands/DrawRectangleCommand.h"
 #include "engine/include/IDrawCommandHandler/IDrawCommandHandler.h"
@@ -7,10 +7,10 @@
 #include <cmath>
 #include <SDL.h>
 
-class SDLRectangleRenderHandler : public IDrawCommandHandler
+class SDLDrawRectangleCommandHandler : public IDrawCommandHandler
 {
 public:
-    explicit SDLRectangleRenderHandler(SDL_Renderer* renderer) : renderer(renderer) {}
+    explicit SDLDrawRectangleCommandHandler(SDL_Renderer* renderer) : renderer(renderer) {}
 
     void execute(const DrawCommand& command) override
     {
@@ -30,4 +30,4 @@ private:
     SDL_Renderer* renderer;
 };
 
-#endif // sdl_rectangle_render_handler_h
+#endif // sdl_draw_rectangle_command_handler_h

@@ -1,5 +1,5 @@
-#ifndef sdl_texture_render_handler_h
-#define sdl_texture_render_handler_h
+#ifndef sdl_draw_texture_command_handler_h
+#define sdl_draw_texture_command_handler_h
 
 #include "SDLTexture/SDLTexture.h"
 
@@ -9,10 +9,10 @@
 #include <cmath>
 #include <SDL.h>
 
-class SDLTextureRenderHandler : public IDrawCommandHandler
+class SDLDrawTextureCommandHandler : public IDrawCommandHandler
 {
 public:
-    explicit SDLTextureRenderHandler(SDL_Renderer* renderer) : renderer(renderer) {}
+    explicit SDLDrawTextureCommandHandler(SDL_Renderer* renderer) : renderer(renderer) {}
 
     void execute(const DrawCommand& command) override
     {
@@ -82,4 +82,4 @@ private:
     SDL_Renderer* renderer;
 };
 
-#endif // sdl_texture_render_handler_h
+#endif // sdl_draw_texture_command_handler_h

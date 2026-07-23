@@ -6,6 +6,7 @@
 
 #include "domain/utils/Logger/Logger.h"
 
+#include <chrono>
 #include <memory>
 #include <vector>
 
@@ -22,15 +23,15 @@ public:
         LOG_DEBUG("SystemManager::update called, systems count = {}", this->systems.size());
         
         using hrclock = std::chrono::high_resolution_clock;
-        using milliseconds = std::chrono::milliseconds;
+        using ms = std::chrono::milliseconds;
 
         for (const auto& system : this->systems)
         {
             auto start = hrclock::now();
             system->update(ctx);
             auto end = hrclock::now();
-            auto ms = std::chrono::duration_cast<milliseconds>(end - start).count();
-            if (ms > 5) LOG_DEBUG("System (type: {}) took {} ms", typeid(*system).name(), ms);
+            auto msCount = std::chrono::duration_cast<ms>(end - start).count();
+            if (msCount > 5) LOG_DEBUG("System (type: {}) took {} ms", typeid(*system).name(), msCount);
         }
     }
 

@@ -27,6 +27,8 @@
 class SceneFactoryFixture
 {
 public:
+    using ms = std::chrono::milliseconds;
+
     StubWindow window;
     StubRenderer renderer;
     GameSettings settings;
@@ -167,7 +169,7 @@ TEST_CASE_METHOD(SceneFactoryFixture, "Integration: Engine runs a scene created 
     this->engine->events().subscribe<QuitEvent>([&](const QuitEvent&) { quit = true; });
 
     auto t = std::thread([this]() { this->engine->run(); });
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(SceneFactoryFixture::ms(10));
     this->engine->events().emit<QuitEvent>();
     t.join();
 

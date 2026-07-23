@@ -23,6 +23,8 @@
 class EngineFixture
 {
 public:
+    using ms = std::chrono::milliseconds;
+
     StubWindow window;
     StubRenderer renderer;
     GameSettings settings;
@@ -70,7 +72,7 @@ TEST_CASE_METHOD(EngineFixture, "Engine run and stop via QuitEvent", "[unit][eng
     this->engine->events().subscribe<QuitEvent>([&](const QuitEvent&) { stopped = true; });
 
     auto t = std::thread([this]() { this->engine->run(); });
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(EngineFixture::ms(10));
     this->engine->events().emit<QuitEvent>();
     t.join();
 
@@ -84,7 +86,7 @@ TEST_CASE_METHOD(EngineFixture, "Engine uses targetFPS from GameSettings", "[uni
 
     auto t = std::thread([this]() { this->engine->run(); });
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(EngineFixture::ms(100));
     this->engine->stop();
     t.join();
 
@@ -107,7 +109,7 @@ TEST_CASE_METHOD(EngineFixture, "Engine handles different FPS configurations wit
 
         auto t = std::thread([this]() { this->engine->run(); });
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(EngineFixture::ms(50));
         this->engine->stop();
         t.join();
 
@@ -121,7 +123,7 @@ TEST_CASE_METHOD(EngineFixture, "Engine uses default FPS from GameConstants when
 
     auto t = std::thread([this]() { this->engine->run(); });
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(EngineFixture::ms(100));
     this->engine->stop();
     t.join();
 

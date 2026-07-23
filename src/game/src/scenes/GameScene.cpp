@@ -249,7 +249,7 @@ void GameScene::addSystems()
     systems.addSystem<AnimationStateSystem>(events);
     systems.addSystem<AnimationSystem>();
 
-    auto& collisionDetectionSystem = systems.addSystem<CollisionDetectionSystem>(1000.f);
+    auto& collisionDetectionSystem = systems.addSystem<CollisionDetectionSystem>(2);
     collisionDetectionSystem.addDetector(std::make_unique<RectRectCollisionDetection>());
     collisionDetectionSystem.addDetector(std::make_unique<RectCircleCollisionDetection>());
     collisionDetectionSystem.addDetector(std::make_unique<CircleCircleCollisionDetection>());

@@ -1,10 +1,10 @@
 #ifndef sdl_renderer_h
 #define sdl_renderer_h
 
-#include "SDLCircleRenderHandler.h"
-#include "SDLFontRenderHandler.h"
-#include "SDLRectangleRenderHandler.h"
-#include "SDLTextureRenderHandler.h"
+#include "SDLDrawCircleCommandHandler.h"
+#include "SDLDrawFontCommandHandler.h"
+#include "SDLDrawRectangleCommandHandler.h"
+#include "SDLDrawTextureCommandHandler.h"
 
 #include "domain/utils/Logger/Logger.h"
 

@@ -1,5 +1,5 @@
-#ifndef sdl_circle_render_handler_h
-#define sdl_circle_render_handler_h
+#ifndef sdl_draw_circle_command_handler_h
+#define sdl_draw_circle_command_handler_h
 
 #include "engine/draw_commands/DrawCircleCommand.h"
 #include "engine/include/IDrawCommandHandler/IDrawCommandHandler.h"
@@ -7,10 +7,10 @@
 #include <cmath>
 #include <SDL.h>
 
-class SDLCircleRenderHandler : public IDrawCommandHandler
+class SDLDrawCircleCommandHandler : public IDrawCommandHandler
 {
 public:
-    explicit SDLCircleRenderHandler(SDL_Renderer* renderer) : renderer(renderer) {}
+    explicit SDLDrawCircleCommandHandler(SDL_Renderer* renderer) : renderer(renderer) {}
 
     void execute(const DrawCommand& command) override
     {
@@ -51,4 +51,4 @@ private:
     SDL_Renderer* renderer;
 };
 
-#endif // sdl_circle_render_handler_h
+#endif // sdl_draw_circle_command_handler_h

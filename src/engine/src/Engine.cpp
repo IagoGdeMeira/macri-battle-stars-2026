@@ -25,13 +25,15 @@ void Engine::run()
 {
     if (!this->sceneManager) throw std::runtime_error("Cannot run without SceneManager");
 
-    const int targetFPS = this->gameSettings.targetFPS;
-    const float fixedDelta = 1.f / static_cast<float>(targetFPS);
+    const int TARGET_FPS = this->gameSettings.targetFPS;
+    const float FIXED_DELTA = 1.f / static_cast<float>(TARGET_FPS);
+    const int MAX_UPDATES_PER_FRAME = 5;
 
     using hrclock = std::chrono::high_resolution_clock;
     using duration = std::chrono::duration<float>;
+    using ms = std::chrono::milliseconds;
 
-    LOG_DEBUG("Engine: targetFPS = {}, fixedDelta = {}", targetFPS, fixedDelta);
+    LOG_DEBUG("Engine: targetFPS = {}, fixedDelta = {}", TARGET_FPS, FIXED_DELTA);
 
     float accumulator = 0.f;
     auto previousTime = hrclock::now();
@@ -53,11 +55,11 @@ void Engine::run()
         auto t2 = hrclock::now();
 
         int updateCount = 0;
-        while (accumulator >= fixedDelta)
+        while (accumulator >= FIXED_DELTA && updateCount < MAX_UPDATES_PER_FRAME)
         {
             LOG_DEBUG("Engine: update step {}, accumulator={}", updateCount, accumulator);
-            this->sceneManager->update(fixedDelta);
-            accumulator -= fixedDelta;
+            this->sceneManager->update(FIXED_DELTA);
+            accumulator -= FIXED_DELTA;
             ++updateCount;
         }
         auto t3 = hrclock::now();
@@ -73,8 +75,8 @@ void Engine::run()
 
         auto log_duration = [](auto start, auto end, const char* label)
         {
-            auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-            if (ms > 5) LOG_DEBUG("{} took {} ms", label, ms);
+            auto msCount = std::chrono::duration_cast<ms>(end - start).count();
+            if (msCount > 5) LOG_DEBUG("{} took {} ms", label, msCount);
         };
 
         log_duration(t0, t1, "input.poll");
