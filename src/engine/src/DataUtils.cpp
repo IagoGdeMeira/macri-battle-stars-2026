@@ -14,42 +14,48 @@ Dimension2D DataUtils::parseSize(const DataNode& node, Dimension2D defaultValue)
     return {node.getFloat("w", defaultValue.width), node.getFloat("h", defaultValue.height)};
 }
 
-Rectangle DataUtils::parseRect(const DataNode& node, Rectangle defaultValue) {
+Rectangle DataUtils::parseRect(const DataNode& node, Rectangle defaultValue)
+{
     if (!node.has("position") || !node.has("size")) return defaultValue;
-    return
-    {
-        DataUtils::parsePosition(*node.getObject("position"), defaultValue.position),
-        DataUtils::parseSize(*node.getObject("size"), defaultValue.size)
-    };
+    Rectangle rect;
+    rect.position = DataUtils::parsePosition(*node.getObject("position"), defaultValue.position);
+    rect.size = DataUtils::parseSize(*node.getObject("size"), defaultValue.size);
+    return rect;
+}
+
+Circle DataUtils::parseCircle(const DataNode& node, Circle defaultValue)
+{
+    if (!node.has("radius")) return defaultValue;
+    Circle circle;
+    circle.radius = node.getFloat("radius", defaultValue.radius);
+    circle.position = DataUtils::parsePosition(node, defaultValue.position);
+    return circle;
 }
 
 Color DataUtils::parseColor(const DataNode& node, Color defaultValue)
 {
     if (!node.has("r") || !node.has("g") || !node.has("b") || !node.has("a")) return defaultValue;
-    return
-    {
-        static_cast<uint8_t>(node.getInt("r", defaultValue.r)),
-        static_cast<uint8_t>(node.getInt("g", defaultValue.g)),
-        static_cast<uint8_t>(node.getInt("b", defaultValue.b)),
-        static_cast<uint8_t>(node.getInt("a", defaultValue.a))
-    };
+    Color color;
+    color.r = static_cast<uint8_t>(node.getInt("r", defaultValue.r));
+    color.g = static_cast<uint8_t>(node.getInt("g", defaultValue.g));
+    color.b = static_cast<uint8_t>(node.getInt("b", defaultValue.b));
+    color.a = static_cast<uint8_t>(node.getInt("a", defaultValue.a));
+    return color;
 }
 
 AABB DataUtils::parseAABB(const DataNode& node, AABB defaultValue)
 {
-
     if (!node.has("left")) return defaultValue;
     if (!node.has("right")) return defaultValue;
     if (!node.has("top")) return defaultValue;
     if (!node.has("bottom")) return defaultValue;
 
-    return
-    {
-        node.getFloat("left", defaultValue.left),
-        node.getFloat("right", defaultValue.right),
-        node.getFloat("top", defaultValue.top),
-        node.getFloat("bottom", defaultValue.bottom)
-    };
+    AABB aabb;
+    aabb.left = node.getFloat("left", defaultValue.left);
+    aabb.right = node.getFloat("right", defaultValue.right);
+    aabb.top = node.getFloat("top", defaultValue.top);
+    aabb.bottom = node.getFloat("bottom", defaultValue.bottom);
+    return aabb;
 }
 
 Corners DataUtils::parseCorners(const DataNode& node, Corners defaultValue)
@@ -59,13 +65,12 @@ Corners DataUtils::parseCorners(const DataNode& node, Corners defaultValue)
     if (!node.has("bottomRight")) return defaultValue;
     if (!node.has("bottomLeft")) return defaultValue;
 
-    return
-    {
-        node.getFloat("topLeft", defaultValue.topLeft),
-        node.getFloat("topRight", defaultValue.topRight),
-        node.getFloat("bottomRight", defaultValue.bottomRight),
-        node.getFloat("bottomLeft", defaultValue.bottomLeft)
-    };
+    Corners corners;
+    corners.topLeft = node.getFloat("topLeft", defaultValue.topLeft);
+    corners.topRight = node.getFloat("topRight", defaultValue.topRight);
+    corners.bottomRight = node.getFloat("bottomRight", defaultValue.bottomRight);
+    corners.bottomLeft = node.getFloat("bottomLeft", defaultValue.bottomLeft);
+    return corners;
 }
 
 void DataUtils::setPosition(DataNode& node, const Position& pos)
@@ -85,21 +90,32 @@ void DataUtils::setRect(DataNode& node, const Rectangle& rect)
     if (node.has("position"))
     {
         auto posNode = node.getObject("position");
-        if (posNode)
-        {
-            DataUtils::setPosition(*posNode, rect.position);
-            node.setObject("position", std::move(posNode));
-        }
+        if (!posNode) return;
+    
+        DataUtils::setPosition(*posNode, rect.position);
+        node.setObject("position", std::move(posNode));
     }
     if (node.has("size"))
     {
         auto sizeNode = node.getObject("size");
-        if (sizeNode)
-        {
-            DataUtils::setSize(*sizeNode, rect.size);
-            node.setObject("size", std::move(sizeNode));
-        }
+        if (!sizeNode) return;
+    
+        DataUtils::setSize(*sizeNode, rect.size);
+        node.setObject("size", std::move(sizeNode));
     }
+}
+
+void DataUtils::setCircle(DataNode& node, const Circle& circle)
+{
+    if (node.has("position"))
+    {
+        auto posNode = node.getObject("position");
+        if (!posNode) return;
+
+        DataUtils::setPosition(*posNode, circle.position);
+        node.setObject("position", std::move(posNode));
+    }
+    if (node.has("radius")) node.setFloat("radius", circle.radius);
 }
 
 void DataUtils::setColor(DataNode& node, const Color& color)

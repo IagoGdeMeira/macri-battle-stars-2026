@@ -36,8 +36,6 @@ add_executable(game_tests
     CharacterLoaderTests.cpp
     CharacterRosterTests.cpp
     CharacterRosterLoaderTests.cpp
-    CollisionClipLoaderTests.cpp
-    CollisionClipPlayerSystemTests.cpp
     CollisionDetectionSystemTests.cpp
     CollisionHandlerFactoryTests.cpp
     ComboLoaderTests.cpp

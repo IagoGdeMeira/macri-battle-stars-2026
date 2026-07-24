@@ -23,8 +23,6 @@ target_sources(game
         src/CharacterLoader.cpp
         src/CharacterRoster.cpp
         src/CharacterRosterLoader.cpp
-        src/CollisionClipLoader.cpp
-        src/CollisionClipPlayerSystem.cpp
         src/CollisionDetectionSystem.cpp
         src/CollisionHandlerFactory.cpp
         src/ComboLoader.cpp
@@ -40,8 +38,10 @@ target_sources(game
         src/FrictionSystem.cpp
         src/GravitySystem.cpp
         src/GroundDetectionSystem.cpp
+        src/HitboxLoader.cpp
         src/HitstopSystem.cpp
         src/HorizontalMovementSystem.cpp
+        src/HurtboxLoader.cpp
         src/JumpSystem.cpp
         src/KnockbackSystem.cpp
         src/LocalToWorldSystem.cpp
@@ -49,6 +49,7 @@ target_sources(game
         src/MapRoster.cpp
         src/MapRosterLoader.cpp
         src/MenuLoader.cpp
+        src/PushboxLoader.cpp
         src/StateMachineLoader.cpp
         src/StateMachineRegistry.cpp
         src/StateIdMapper.cpp

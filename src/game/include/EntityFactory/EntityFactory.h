@@ -1,8 +1,11 @@
 #ifndef entity_factory_h
 #define entity_factory_h
 
+#include "AnimationLoader/AnimationLoader.h"
+
+#include "domain/components/PushboxComponent.h"
 #include "domain/include/Entity/Entity.h"
-#include "domain/value_objects/CollisionFrame/CollisionFrame.h"
+#include "domain/value_objects/Color/Color.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
 #include <memory>
@@ -16,33 +19,61 @@ class World;
 class EntityFactory
 {
 public:
-    EntityFactory(World& world, ResourceManager& resourceManager, TextureLoader& textureLoader) :
-        world(world), resourceManager(resourceManager), textureLoader(textureLoader) {}
+    struct Config
+    {
+        World& world;
+        ResourceManager& resourceManager;
+        TextureLoader& textureLoader;
+        AnimationLoader& animationLoader;
+    };
 
-    Entity createStaticEntity(const Position& position, const Rectangle& rect, std::optional<Entity> parent = std::nullopt);
-    Entity createStaticEntity(const Position& position, const Circle& circle, std::optional<Entity> parent = std::nullopt);
-    Entity createPushbox(Entity parent, const PushboxDef& def, bool facingLeft);
-    Entity createHitbox(Entity parent, const HitboxDef& def, bool facingLeft);
-    Entity createHurtbox(Entity parent, const HurtboxDef& def, bool facingLeft);
-    Entity createSpriteEffect(const std::string& texturePath, const Position& position, float duration);
-    Entity createBackgroundChild(const std::string& texturePath, const Position& parallax, int zIndex, Entity parent);
-    Entity createFloorChild(const std::string& texturePath, const Position& position, const Dimension2D& size, Entity parent);
-    Entity createWallChild(const Position& position, const Dimension2D& size, Entity parent);
+    EntityFactory(const Config& cfg) :
+        world(cfg.world),
+        resourceManager(cfg.resourceManager),
+        textureLoader(cfg.textureLoader),
+        animLoader(cfg.animationLoader) {}
+
+    struct HitboxChildParams { Entity parent; const Position& offset; int damage; bool facingLeft; };
+    Entity createHitboxChild(const HitboxChildParams& params, const Rectangle& rect);
+    Entity createHitboxChild(const HitboxChildParams& params, const Circle& circle);
+
+    struct HurtboxChildParams { Entity parent; const Position& offset; float damageMultiplier; bool facingLeft; };
+    Entity createHurtboxChild(const HurtboxChildParams& params, const Rectangle& rect);
+    Entity createHurtboxChild(const HurtboxChildParams& params, const Circle& circle);
+
+    struct PushboxChildParams { Entity parent; const Position& offset; PushboxComponent::Type type; float mass; float pushResistance; bool facingLeft; };
+    Entity createPushboxChild(const PushboxChildParams& params, const Rectangle& rect);
+    Entity createPushboxChild(const PushboxChildParams& params, const Circle& circle);
+
+    struct StaticEntityParams { const Position& position; std::optional<Entity> parent; };
+    Entity createStaticEntity(const StaticEntityParams& params, const Rectangle& rect);
+    Entity createStaticEntity(const StaticEntityParams& params, const Circle& circle);
+    
+    Entity createEffectSprite(const std::string& texturePath, const Position& position, float duration);
+    
+    struct BackgroundParams { const Position& parallax; int zIndex; Entity parent; };
+    Entity createBackgroundSprite(const BackgroundParams& params, const std::string& texturePath);
+    Entity createBackgroundRectangle(const BackgroundParams& params, const Rectangle& rect, const Color& color, bool filled = true);
+    Entity createBackgroundCircle(const BackgroundParams& params, const Circle& circle, const Color& color, bool filled = true);
+    Entity createBackgroundAnimated(const BackgroundParams& params, const std::string& texturePath, const std::string& animationPath);
 
 private:
     World& world;
     ResourceManager& resourceManager;
     TextureLoader& textureLoader;
+    AnimationLoader& animLoader;
 
-    Entity createStaticEntityImpl(const Position& position, const ColliderDef& colliderDef, std::optional<Entity> parent);
-
-    void addColliderComponents(Entity entity, const ColliderDef& collider);
-    void addDebugVisual(Entity entity, const ColliderDef& collider, const ColliderDebugDef& debug);
-
-    void addSprite(Entity entity, const std::string& texturePath);
+    void addParentAndLocal(Entity entity, Entity parent, const Position& localPos);
     void addRender(Entity entity, int layer, int zIndex);
     void addParallax(Entity entity, const Position& factor);
-    void addParentAndLocal(Entity entity, Entity parent, const Position& localPos);
+    void addSprite(Entity entity, const std::string& texturePath);
+
+    struct ShapeParams { Entity entity; const Color& color; bool filled; int layer; };
+    void addCircleShape(const ShapeParams& params, const Circle& circle);
+    void addRectangleShape(const ShapeParams& params, const Rectangle& rect);
+    
+    void addCollider(Entity entity, const Rectangle& rect);
+    void addCollider(Entity entity, const Circle& circle);
 };
 
 #endif // entity_factory_h

@@ -8,7 +8,7 @@ class ComponentRegistry
 public:
     ComponentRegistry() = delete;
 
-    static void registerAll(ComponentManager& components);
+    static void registerAll(ComponentManager& comp);
 };
 
 #endif // component_registry_h
