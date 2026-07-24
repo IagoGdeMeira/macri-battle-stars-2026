@@ -40,7 +40,7 @@ DrawCircleCommand WorldCircleRenderFormat::buildCircleCommand(Entity& entity, Wo
     auto* circ = static_cast<const CircleDef*>(shapeComp.shape.get());
 
     Viewport vp = this->viewport;
-    Position screenPos = WorldRenderUtils::worldToScreen(this->camera, transform.position, vp);
+    Position screenPos = WorldRenderUtils::worldToScreen(this->camera, transform.position);
     float zoom = this->camera.getZoom();
 
     DrawCircleCommand cmd;

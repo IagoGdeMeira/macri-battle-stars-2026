@@ -63,7 +63,7 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
     Position worldPos{transform.position.x, transform.position.y};
     Viewport vp = this->viewport;
 
-    const Position screenPos = WorldRenderUtils::worldToScreen(this->camera, worldPos, vp, parallax);
+    const Position screenPos = WorldRenderUtils::worldToScreen(this->camera, worldPos, parallax);
     Rectangle spriteConfig = {{transform.scale.x, transform.scale.y}, sprite.size};
 
     DrawTextureCommand cmd;

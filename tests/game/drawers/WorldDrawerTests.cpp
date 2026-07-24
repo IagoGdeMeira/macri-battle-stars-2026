@@ -24,6 +24,7 @@
 #include "engine/value_objects/GameSettings/GameSettings.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
 #include <memory>
@@ -135,20 +136,20 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards resized world viewpor
     REQUIRE(this->renderer.viewportHistory[0].height == 1080);
 
     REQUIRE(this->renderer.textureCalls.size() == 1);
-    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.x - 714.f) < 0.001f);
-    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.y - 548.f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.x - 394.f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.textureCalls[0].dest.position.y - 308.f) < 0.001f);
     REQUIRE(std::abs(this->renderer.textureCalls[0].dest.size.width - 32.f) < 0.001f);
     REQUIRE(std::abs(this->renderer.textureCalls[0].dest.size.height - 24.f) < 0.001f);
 
     REQUIRE(this->renderer.rectangleCalls.size() == 1);
-    REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.position.x - 718.f) < 0.001f);
-    REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.position.y - 548.f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.position.x - 398.f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.position.y - 308.f) < 0.001f);
     REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.size.width - 24.f) < 0.001f);
     REQUIRE(std::abs(this->renderer.rectangleCalls[0].rect.size.height - 24.f) < 0.001f);
 
     REQUIRE(this->renderer.circleCalls.size() == 1);
-    REQUIRE(std::abs(this->renderer.circleCalls[0].circle.position.x - 730.f) < 0.001f);
-    REQUIRE(std::abs(this->renderer.circleCalls[0].circle.position.y - 560.f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.circleCalls[0].circle.position.x - 410.f) < 0.001f);
+    REQUIRE(std::abs(this->renderer.circleCalls[0].circle.position.y - 320.f) < 0.001f);
     REQUIRE(std::abs(this->renderer.circleCalls[0].circle.radius - 21.f) < 0.001f);
 }
 
@@ -168,8 +169,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.calls.drawTexture == 1);
-    REQUIRE(this->renderer.lastDraw.x == 719);
-    REQUIRE(this->renderer.lastDraw.y == 558);
+    REQUIRE(this->renderer.lastDraw.x == 399);
+    REQUIRE(this->renderer.lastDraw.y == 318);
     REQUIRE(this->renderer.lastDraw.width == 32);
     REQUIRE(this->renderer.lastDraw.height == 24);
     REQUIRE(this->renderer.lastDraw.rotation == 0.f);
@@ -248,8 +249,9 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws filled rectangle shapes"
 
     REQUIRE(this->renderer.calls.drawRectFilled == 1);
     REQUIRE(this->renderer.calls.drawRectOutline == 0);
-    REQUIRE(this->renderer.lastRect.position.x == 718.f);
-    REQUIRE(this->renderer.lastRect.position.y == 548.f);
+
+    REQUIRE(this->renderer.lastRect.position.x == 398.f);
+    REQUIRE(this->renderer.lastRect.position.y == 308.f);
     REQUIRE(this->renderer.lastRect.size.width == 24.f);
     REQUIRE(this->renderer.lastRect.size.height == 24.f);
     REQUIRE(this->renderer.lastColor.r == 1);
@@ -274,8 +276,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes",
 
     REQUIRE(this->renderer.calls.drawCircleOutline == 1);
     REQUIRE(this->renderer.calls.drawCircleFilled == 0);
-    REQUIRE(this->renderer.lastCircle.position.x == 740.f);
-    REQUIRE(this->renderer.lastCircle.position.y == 580.f);
+    REQUIRE(this->renderer.lastCircle.position.x == 420.f);
+    REQUIRE(this->renderer.lastCircle.position.y == 340.f);
     REQUIRE(this->renderer.lastCircle.radius == 42.f);
     REQUIRE(this->renderer.lastColor.r == 9);
     REQUIRE(this->renderer.lastColor.g == 8);
@@ -291,11 +293,11 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer applies global scale from came
     REQUIRE(this->renderer.calls.setScale == 2);
 
     REQUIRE(this->renderer.scaleHistory.size() == 2);
-    REQUIRE(this->renderer.scaleHistory[0].x == 1.5f);
-    REQUIRE(this->renderer.scaleHistory[0].y == 1.5f);
-    REQUIRE(this->renderer.scaleHistory[1].x == 1.f);
-    REQUIRE(this->renderer.scaleHistory[1].y == 1.f);
+    REQUIRE(this->renderer.scaleHistory[0].x == Catch::Approx(2.7f));
+    REQUIRE(this->renderer.scaleHistory[0].y == Catch::Approx(2.7f));
+    REQUIRE(this->renderer.scaleHistory[1].x == Catch::Approx(1.f));
+    REQUIRE(this->renderer.scaleHistory[1].y == Catch::Approx(1.f));
 
-    REQUIRE(this->renderer.lastScale.x == 1.f);
-    REQUIRE(this->renderer.lastScale.y == 1.f);
+    REQUIRE(this->renderer.lastScale.x == Catch::Approx(1.f));
+    REQUIRE(this->renderer.lastScale.y == Catch::Approx(1.f));
 }

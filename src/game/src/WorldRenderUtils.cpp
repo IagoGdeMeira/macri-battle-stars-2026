@@ -3,13 +3,20 @@
 #include "domain/components/ParallaxComponent.h"
 #include "domain/utils/Logger/Logger.h"
 
-Position WorldRenderUtils::worldToScreen(Camera2D& camera, Position worldPos, Viewport& vp, const Position& parallax)
+#include "engine/value_objects/GameConstants/GameConstants.h"
+
+Position WorldRenderUtils::worldToScreen(Camera2D& camera, Position worldPos, const Position& parallax)
 {
     Position camPos = camera.getPosition();
     float zoom = camera.getZoom();
 
-    float screenX = (worldPos.x - camPos.x * parallax.x) * zoom + vp.width / 2.f;
-    float screenY = (worldPos.y - camPos.y * parallax.y) * zoom + vp.height / 2.f;
+    const Dimension2D& virtualSize = GameConstants::VIRTUAL_SIZE;
+
+    float screenX = (worldPos.x - camPos.x * parallax.x) * zoom + virtualSize.width / 2.f;
+    float screenY = (worldPos.y - camPos.y * parallax.y) * zoom + virtualSize.height / 2.f;
+
+    LOG_DEBUG("worldToScreen: world=({},{}), cam=({},{}), zoom={}, parallax=({},{}), screen=({},{})",
+        worldPos.x, worldPos.y, camPos.x, camPos.y, zoom, parallax.x, parallax.y, screenX, screenY);
 
     return {screenX, screenY};
 }

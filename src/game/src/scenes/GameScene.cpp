@@ -138,8 +138,7 @@ void GameScene::loadMap(const std::string& path)
 
 void GameScene::loadCombos(const std::string& path) { this->combos = ComboLoader(this->parser).load(path); }
 
-void GameScene::loadTriggerBindings(const std::string& path)
-{ this->triggerContext = TriggerBindingLoader(this->parser).load(path); }
+void GameScene::loadTriggerBindings(const std::string& path) { this->triggerContext = TriggerBindingLoader(this->parser).load(path); }
 
 void GameScene::createCharacterLoader()
 {
@@ -167,11 +166,9 @@ void GameScene::prepareScene()
     this->preparePlayers();
 }
 
-void GameScene::prepareComponents()
-{ ComponentRegistry::registerAll(this->world().components()); }
+void GameScene::prepareComponents() { ComponentRegistry::registerAll(this->world().components()); }
 
-void GameScene::preparePlayers()
-{ for (const auto& slot : this->playerSlots) this->preparePlayer(slot); }
+void GameScene::preparePlayers() { for (const auto& slot : this->playerSlots) this->preparePlayer(slot); }
 
 void GameScene::preparePlayer(const PlayerSlot& slot)
 {
@@ -267,6 +264,7 @@ void GameScene::addSystems()
         .window             = this->window,
         .minZoom            = 0.8f,
         .maxZoom            = 1.f,
+        .padding            = 30.f,
         .verticalOffset     = -70.f,
         .bounds             = mapComp.worldBounds,
         .viewSize           = GameConstants::VIRTUAL_SIZE,

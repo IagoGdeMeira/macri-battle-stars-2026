@@ -69,7 +69,8 @@ TEST_CASE_METHOD(WorldCircleRenderFormatFixture, "WorldCircleRenderFormat submit
     REQUIRE(effectCmd.filled == true);
 
     const auto& baseCmd = this->renderer.circleCalls[1];
-    REQUIRE(baseCmd.circle.position.x == Catch::Approx(540.f));
+    
+    REQUIRE(baseCmd.circle.position.x == Catch::Approx(440.f));
     REQUIRE(baseCmd.circle.position.y == Catch::Approx(330.f));
     REQUIRE(baseCmd.circle.radius == Catch::Approx(30.f));
     REQUIRE(baseCmd.color == Color { 10, 20, 30, 255 });

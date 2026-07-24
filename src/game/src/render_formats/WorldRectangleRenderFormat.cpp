@@ -41,7 +41,7 @@ DrawRectangleCommand WorldRectangleRenderFormat::buildRectangleCommand(Entity& e
     auto* rect = static_cast<const RectangleDef*>(shapeComp.shape.get());
 
     Viewport vp = this->viewport;
-    Position screenPos = WorldRenderUtils::worldToScreen(this->camera, transform.position, vp);
+    Position screenPos = WorldRenderUtils::worldToScreen(this->camera, transform.position);
     float zoom = this->camera.getZoom();
 
     DrawRectangleCommand cmd;

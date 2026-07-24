@@ -42,41 +42,42 @@ void WorldDrawer::addFormat(std::unique_ptr<IRenderFormat> format) { this->forma
 
 void WorldDrawer::draw(RenderContext& ctx)
 {
-    float zoom = this->camera.getZoom();
-    LOG_DEBUG("WorldDrawer::draw: start, zoom={}", zoom);
+    float viewportScale = static_cast<float>(this->worldViewport.width) / this->vSize.width;
 
-    this->renderer.setScale(Position{zoom, zoom});
-    LOG_DEBUG("WorldDrawer::draw: after setScale");
+    float zoom = this->camera.getZoom();
+    float totalScale = viewportScale * zoom;
+
+    LOG_DEBUG("WorldDrawer::draw: start, viewportScale={}, zoom={}, totalScale={}",
+        viewportScale, zoom, totalScale);
 
     this->renderer.setViewport(this->worldViewport);
-    LOG_DEBUG("WorldDrawer::draw: viewport set to ({},{},{},{})",
-        this->worldViewport.x, this->worldViewport.y,
-        this->worldViewport.width, this->worldViewport.height);
+    this->renderer.setScale(Position{totalScale, totalScale});
 
-    for (auto& format : this->formats)
-    {
-        LOG_DEBUG("WorldDrawer::draw: rendering format");
-        format->render(ctx);
-    }
-
+    for (auto& format : this->formats) format->render(ctx);
     this->renderer.setScale(Position{1.f, 1.f});
+
     LOG_DEBUG("WorldDrawer::draw: end");
 }
+
 void WorldDrawer::recalculateViewport()
 {
     const Dimension2D& winSize = this->settings.screen.size;
 
-    const auto& vWidth = this->vSize.width;
-    const auto& vHeight = this->vSize.height;
-    const float scale = std::min(winSize.width / vWidth, winSize.height / vHeight);
+    const float scale = std::min(
+        winSize.width / this->vSize.width,
+        winSize.height / this->vSize.height);
 
-    const Dimension2D& viewSize = {vWidth * scale, vHeight * scale};
-    const Position offset = {(winSize.width - viewSize.width) * 0.5f, (winSize.height - viewSize.height) * 0.5f};
+    const Dimension2D viewSize { this->vSize.width * scale, this->vSize.height * scale };
+    const Position offset {
+        (winSize.width - viewSize.width) * 0.5f,
+        (winSize.height - viewSize.height) * 0.5f
+    };
 
-    this->worldViewport =
-    {
-        static_cast<int>(offset.x), static_cast<int>(offset.y),
-        static_cast<int>(viewSize.width), static_cast<int>(viewSize.height)
+    this->worldViewport = {
+        static_cast<int>(offset.x),
+        static_cast<int>(offset.y),
+        static_cast<int>(viewSize.width),
+        static_cast<int>(viewSize.height)
     };
 }
 

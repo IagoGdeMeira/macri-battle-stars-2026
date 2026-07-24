@@ -2,6 +2,7 @@
 
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
+#include "engine/events/WindowResizedEvent.h"
 
 #include "game/scenes/GameScene.h"
 
@@ -40,6 +41,10 @@ void Application::initSystems()
     int sizeW = static_cast<int>(this->windowSize.width), sizeH = static_cast<int>(this->windowSize.height);
     this->window = this->platformFactory->createWindow(sizeW, sizeH, this->windowTitle);
     this->renderer = this->platformFactory->createRenderer(*this->window);
+
+    int w, h;
+    this->window->getSize(w, h);
+    this->gameSettings.screen.size = {static_cast<float>(w), static_cast<float>(h)};
 }
 
 void Application::initLoaders()
@@ -58,13 +63,20 @@ void Application::setupInitialScene()
     this->engine = std::make_unique<Engine>(*this->window, this->gameSettings);
     this->engine->setRenderer(*this->renderer);
 
+    auto& events = this->engine->events();
+    events.subscribe<WindowResizedEvent>([this](const WindowResizedEvent& e)
+    {
+        this->gameSettings.screen.size = e.newSize;
+        LOG_DEBUG("Window resized to {}x{}, updating screen size", e.newSize.width, e.newSize.height);
+    });
+
     this->sceneFactory = std::make_unique<SceneFactory>(SceneFactory::Config{
         .window             = *this->window,
         .parser             = *this->parser,
         .resourceManager    = *this->resourceManager,
         .textureLoader      = *this->textureLoader,
         .renderer           = *this->renderer,
-        .eventBus           = this->engine->events(),
+        .eventBus           = events,
         .settings           = this->gameSettings,
         .engine             = *this->engine,
         .fontFactory        = *this->fontFactory,

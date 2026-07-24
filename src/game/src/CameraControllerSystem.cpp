@@ -32,30 +32,38 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     auto playerBounds = this->computePlayerBounds(ctx);
     if (playerBounds.left > playerBounds.right || playerBounds.top > playerBounds.bottom) return;
 
-    float targetZoom = this->computeTargetZoom(playerBounds);
+    float boxWidth = std::max(playerBounds.right - playerBounds.left, 1.f);
+    float boxHeight = std::max(playerBounds.bottom - playerBounds.top, 1.f);
+
+    float zoomX = this->viewSize.width / boxWidth;
+    float zoomY = this->viewSize.height / boxHeight;
+    float targetZoom = std::min(zoomX, zoomY);
+
+    float finalZoom = std::clamp(targetZoom, this->minZoom, this->maxZoom);
 
     Position center {
         (playerBounds.left + playerBounds.right) * 0.5f,
         (playerBounds.top + playerBounds.bottom) * 0.5f + this->verticalOffset
     };
-    Position clampedPos = this->computeClampedCameraPosition(center, targetZoom);
+
+    Position clampedPos = this->computeClampedCameraPosition(center, finalZoom);
 
     const float currentZoom = this->camera.getZoom();
     const Position currentPos = this->camera.getPosition();
 
-    bool needsZoomUpdate = 
-        std::abs(targetZoom - currentZoom) > this->epsilon ||
+    bool needsZoomUpdate =
+        std::abs(finalZoom - currentZoom) > this->epsilon ||
         std::abs(clampedPos.x - currentPos.x) > this->epsilon ||
         std::abs(clampedPos.y - currentPos.y) > this->epsilon;
-    
+
     if (needsZoomUpdate)
     {
         this->camera.setPosition(clampedPos.x, clampedPos.y);
-        this->camera.setZoom(targetZoom);
+        this->camera.setZoom(finalZoom);
     }
 
-    LOG_DEBUG("CameraControllerSystem: center=({}, {}), targetZoom={}, boxSize=({},{}), padding={}",
-        center.x, center.y, targetZoom,
+    LOG_DEBUG("CameraControllerSystem: center=({}, {}), targetZoom={}, finalZoom={}, boxSize=({},{}), padding={}",
+        center.x, center.y, targetZoom, finalZoom,
         playerBounds.right - playerBounds.left,
         playerBounds.bottom - playerBounds.top,
         this->padding);
