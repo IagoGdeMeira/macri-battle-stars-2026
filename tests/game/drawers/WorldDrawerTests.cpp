@@ -6,10 +6,11 @@
 #include "StubTextureLoader.h"
 
 #include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/CircleShapeComponent.h"
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/ParallaxComponent.h"
 #include "domain/components/RenderComponent.h"
-#include "domain/components/ShapeRenderComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VisualEffectsComponent.h"
@@ -62,7 +63,8 @@ public:
         comp.registerComponent<SpriteComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<ParallaxComponent>();
-        comp.registerComponent<ShapeRenderComponent>();
+        comp.registerComponent<RectangleShapeComponent>();
+        comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<AnimationControllerComponent>();
         comp.registerComponent<OrientationComponent>();
         comp.registerComponent<VisualEffectsComponent>();
@@ -115,17 +117,14 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards resized world viewpor
     comp.add<RenderComponent>(spriteEntity, RenderComponent{ 0 });
 
     const auto rectangleEntity = this->world.entities().create();
-    auto rectangleShape = std::make_unique<RectangleDef>();
-    rectangleShape->width = 12.f;
-    rectangleShape->height = 8.f;
+    Rectangle rect{Position{0.f, 0.f}, Dimension2D{12.f, 8.f}};
     comp.add<TransformComponent>(rectangleEntity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    comp.add<ShapeRenderComponent>(rectangleEntity, ShapeRenderComponent{std::move(rectangleShape), Color{1, 2, 3, 4}, true});
+    comp.add<RectangleShapeComponent>(rectangleEntity, RectangleShapeComponent{rect, Color{1, 2, 3, 4}, true, 0});
 
     const auto circleEntity = this->world.entities().create();
-    auto circleShape = std::make_unique<CircleDef>();
-    circleShape->radius = 7.f;
+    Circle circle{Position{0.f, 0.f}, 7.f};
     comp.add<TransformComponent>(circleEntity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
-    comp.add<ShapeRenderComponent>(circleEntity, ShapeRenderComponent{std::move(circleShape), Color{9, 8, 7, 6}, false});
+    comp.add<CircleShapeComponent>(circleEntity, CircleShapeComponent{circle, Color{9, 8, 7, 6}, false, 0});
 
     this->drawer.draw(this->context);
 
@@ -238,12 +237,9 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws filled rectangle shapes"
     const auto entity = this->world.entities().create();
     auto& comp = this->world.components();
 
-    auto shape = std::make_unique<RectangleDef>();
-    shape->width = 12.f;
-    shape->height = 8.f;
-
-    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f });
-    comp.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{1, 2, 3, 4}, true });
+    Rectangle rect{Position{0.f, 0.f}, Dimension2D{12.f, 8.f}};
+    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, 3.f, 0.f});
+    comp.add<RectangleShapeComponent>(entity, RectangleShapeComponent{rect, Color{1, 2, 3, 4}, true, 0});
 
     this->drawer.draw(this->context);
 
@@ -265,13 +261,11 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes",
     const auto entity = this->world.entities().create();
     auto& comp = this->world.components();
 
-    auto shape = std::make_unique<CircleDef>();
-    shape->radius = 7.f;
+    Circle circle{Position{0.f, 0.f}, 7.f};
+    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, -3.f, 0.f});
+    comp.add<CircleShapeComponent>(entity, CircleShapeComponent{circle, Color{9, 8, 7, 6}, false, 0});
 
     this->camera.setZoom(2.f);
-    comp.add<TransformComponent>(entity, TransformComponent{10.f, 20.f, 2.f, -3.f, 0.f});
-    comp.add<ShapeRenderComponent>(entity, ShapeRenderComponent{ std::move(shape), Color{9, 8, 7, 6}, false });
-
     this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.calls.drawCircleOutline == 1);

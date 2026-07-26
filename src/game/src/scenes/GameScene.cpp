@@ -8,8 +8,7 @@
 #include "CameraControllerSystem/CameraControllerSystem.h"
 #include "CharacterDefinitionLoader/CharacterDefinitionLoader.h"
 #include "CircleCircleCollisionDetection.h"
-#include "CollisionClipLoader/CollisionClipLoader.h"
-#include "CollisionClipPlayerSystem/CollisionClipPlayerSystem.h"
+#include "CollisionControllerSystem/CollisionControllerSystem.h"
 #include "CollisionDetectionSystem/CollisionDetectionSystem.h"
 #include "ComboLoader/ComboLoader.h"
 #include "ComboSystem/ComboSystem.h"
@@ -23,11 +22,17 @@
 #include "FrictionSystem/FrictionSystem.h"
 #include "GravitySystem/GravitySystem.h"
 #include "GroundDetectionSystem/GroundDetectionSystem.h"
+#include "HitboxControllerSystem/HitboxControllerSystem.h"
+#include "HitboxLoader/HitboxLoader.h"
 #include "HorizontalMovementSystem/HorizontalMovementSystem.h"
+#include "HurtboxControllerSystem/HurtboxControllerSystem.h"
+#include "HurtboxLoader/HurtboxLoader.h"
 #include "JumpSystem/JumpSystem.h"
 #include "LocalToWorldSystem/LocalToWorldSystem.h"
 #include "MapLoader/MapLoader.h"
 #include "MovementSystem/MovementSystem.h"
+#include "PushboxControllerSystem/PushboxControllerSystem.h"
+#include "PushboxLoader/PushboxLoader.h"
 #include "RectCircleCollisionDetection.h"
 #include "RectRectCollisionDetection.h"
 #include "StateMachineLoader/StateMachineLoader.h"
@@ -80,12 +85,34 @@ GameScene::GameScene(Config&& cfg) :
 
     if (!cfg.combosPath.empty()) this->loadCombos(cfg.combosPath);
     if (!cfg.triggersPath.empty()) this->loadTriggerBindings(cfg.triggersPath);
-
     if (cfg.platformFactory) this->setupInputAdapters();
 
-    this->createCharacterLoader();
+    this->charDefLoader = std::make_unique<CharacterDefinitionLoader>(this->parser);
+    this->animLoader = std::make_unique<AnimationLoader>(this->parser);
+    this->fsmLoader = std::make_unique<StateMachineLoader>(this->parser);
+    this->stateMachineRegistry = std::make_unique<StateMachineRegistry>();
+
+    this->entityFactory = std::make_unique<EntityFactory>(EntityFactory::Config{
+        this->world(), this->resourceManager, this->textureLoader, *this->animLoader });
+
+    this->hitboxLoader = std::make_unique<HitboxLoader>(this->parser, *this->entityFactory);
+    this->hurtboxLoader = std::make_unique<HurtboxLoader>(this->parser, *this->entityFactory);
+    this->pushboxLoader = std::make_unique<PushboxLoader>(this->parser, *this->entityFactory);
+
+    this->characterLoader = std::make_unique<CharacterLoader>(CharacterLoader::Config{
+        .parser                 = this->parser,
+        .defLoader              = *this->charDefLoader,
+        .animLoader             = *this->animLoader,
+        .fsmLoader              = *this->fsmLoader,
+        .resourceManager        = this->resourceManager,
+        .textureLoader          = this->textureLoader,
+        .hitboxLoader           = *this->hitboxLoader,
+        .hurtboxLoader          = *this->hurtboxLoader,
+        .pushboxLoader          = *this->pushboxLoader,
+        .stateMachineRegistry   = *this->stateMachineRegistry
+    });
+
     this->camera = std::make_unique<Camera2D>();
-    this->entityFactory = std::make_unique<EntityFactory>(this->world(), this->resourceManager, this->textureLoader);
 }
 
 void GameScene::init()
@@ -139,25 +166,6 @@ void GameScene::loadMap(const std::string& path)
 void GameScene::loadCombos(const std::string& path) { this->combos = ComboLoader(this->parser).load(path); }
 
 void GameScene::loadTriggerBindings(const std::string& path) { this->triggerContext = TriggerBindingLoader(this->parser).load(path); }
-
-void GameScene::createCharacterLoader()
-{
-    this->charDefLoader         = std::make_unique<CharacterDefinitionLoader>(this->parser);
-    this->animLoader            = std::make_unique<AnimationLoader>(this->parser);
-    this->fsmLoader             = std::make_unique<StateMachineLoader>(this->parser);
-    this->clipLoader            = std::make_unique<CollisionClipLoader>(this->parser);
-    this->stateMachineRegistry  = std::make_unique<StateMachineRegistry>();
-
-    this->characterLoader = std::make_unique<CharacterLoader>(CharacterLoader::Config{
-        .defLoader              = *this->charDefLoader,
-        .animLoader             = *this->animLoader,
-        .fsmLoader              = *this->fsmLoader,
-        .resourceManager        = this->resourceManager,
-        .textureLoader          = this->textureLoader,
-        .clipLoader             = *this->clipLoader,
-        .stateMachineRegistry   = *this->stateMachineRegistry
-    });
-}
 
 void GameScene::prepareScene()
 {
@@ -257,7 +265,11 @@ void GameScene::addSystems()
     systems.addSystem<FrictionSystem>(mapComp.floorFriction);
 
     systems.addSystem<DamageSystem>(events);
-    systems.addSystem<CollisionClipPlayerSystem>(events, *this->entityFactory);
+
+    systems.addSystem<CollisionControllerSystem>(this->eventBus);
+    systems.addSystem<HitboxControllerSystem>();
+    systems.addSystem<HurtboxControllerSystem>();
+    systems.addSystem<PushboxControllerSystem>();
 
     systems.addSystem<CameraControllerSystem>(CameraControllerSystem::Config{
         .camera             = *this->camera,
@@ -270,5 +282,6 @@ void GameScene::addSystems()
         .viewSize           = GameConstants::VIRTUAL_SIZE,
         .applyZoomToSize    = true,
     });
+
     LOG_DEBUG("GameScene: total systems = {}", this->systems().size());
 }

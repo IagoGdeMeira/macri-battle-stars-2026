@@ -2,7 +2,8 @@
 
 #include "StubRenderer.h"
 
-#include "domain/components/ShapeRenderComponent.h"
+#include "domain/components/CircleShapeComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/World/World.h"
@@ -23,7 +24,8 @@ public:
     WorldRectangleRenderFormatFixture() : format(this->renderer, this->camera), context { this->world, this->bus }
     {
         auto& comp = this->world.components();
-        comp.registerComponent<ShapeRenderComponent>();
+        comp.registerComponent<CircleShapeComponent>();
+        comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<VisualEffectsComponent>();
 
@@ -45,12 +47,10 @@ TEST_CASE_METHOD(WorldRectangleRenderFormatFixture, "WorldRectangleRenderFormat 
 ) {
     const Entity entity = this->world.entities().create();
 
-    auto rect = std::make_unique<RectangleDef>();
-    rect->width = 10.f;
-    rect->height = 4.f;
+    Rectangle rect{Position{0.f, 0.f}, Dimension2D{10.f, 4.f}};
 
     auto& comp = this->world.components();
-    comp.add<ShapeRenderComponent>(entity, ShapeRenderComponent { std::move(rect), Color { 100, 150, 200, 255 }, true });
+    comp.add<RectangleShapeComponent>(entity, RectangleShapeComponent{rect, Color{100, 150, 200, 255}, true, 0});
     comp.add<TransformComponent>(entity, TransformComponent{Position{20.f, 10.f}, Position{-2.f, 3.f}, 0.f});
 
     VisualEffectsComponent fx;
@@ -87,13 +87,12 @@ TEST_CASE_METHOD(WorldRectangleRenderFormatFixture, "WorldRectangleRenderFormat 
     auto& entities = this->world.entities();
 
     const Entity nullShapeEntity = entities.create();
-    comp.add<ShapeRenderComponent>(nullShapeEntity, ShapeRenderComponent {});
+    comp.add<RectangleShapeComponent>(nullShapeEntity, RectangleShapeComponent{});
     comp.add<TransformComponent>(nullShapeEntity, TransformComponent{Position{0.f, 0.f}, Position{1.f, 1.f}, 0.f});
 
     const Entity circleEntity = entities.create();
-    auto circle = std::make_unique<CircleDef>();
-    circle->radius = 5.f;
-    comp.add<ShapeRenderComponent>(circleEntity, ShapeRenderComponent { std::move(circle), Color::WHITE(), false });
+    Circle circle{Position{0.f, 0.f}, 5.f};
+    comp.add<CircleShapeComponent>(circleEntity, CircleShapeComponent{circle, Color::WHITE(), false, 0});
     comp.add<TransformComponent>(circleEntity, TransformComponent{Position{2.f, 3.f}, Position{1.f, 1.f}, 0.f});
 
     this->format.render(this->context);

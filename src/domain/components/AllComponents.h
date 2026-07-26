@@ -1,6 +1,7 @@
 #ifndef all_components_h
 #define all_components_h
 
+#include "ActiveComponent.h"
 #include "AirFrictionComponent.h"
 #include "AnalogInputComponent.h"
 #include "AnimationComponent.h"
@@ -15,9 +16,11 @@
 #include "HealthComponent.h"
 #include "HitboxComponent.h"
 #include "HitboxControllerComponent.h"
+#include "HitboxControllerMapComponent.h"
 #include "HitstopComponent.h"
 #include "HurtboxComponent.h"
 #include "HurtboxControllerComponent.h"
+#include "HurtboxControllerMapComponent.h"
 #include "InputBufferComponent.h"
 #include "InputComponent.h"
 #include "KnockbackComponent.h"
@@ -31,6 +34,7 @@
 #include "PlayerComponent.h"
 #include "PushboxComponent.h"
 #include "PushboxControllerComponent.h"
+#include "PushboxControllerMapComponent.h"
 #include "RectangleColliderComponent.h"
 #include "RectangleShapeComponent.h"
 #include "RenderComponent.h"

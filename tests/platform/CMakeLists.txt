@@ -3,6 +3,7 @@ add_executable(platform_tests
     draw_commands/SDLDrawFontCommandHandlerTests.cpp
     draw_commands/SDLDrawRectangleCommandHandlerTests.cpp
     draw_commands/SDLDrawTextureCommandHandlerTests.cpp
+    
     JsonNodeTests.cpp
     JsonParserTests.cpp
     SDLFontTests.cpp

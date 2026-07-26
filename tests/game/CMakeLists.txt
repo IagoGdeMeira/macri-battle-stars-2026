@@ -2,8 +2,10 @@ add_executable(game_tests
     collision_detections/CircleCircleCollisionDetectionTests.cpp
     collision_detections/RectCircleCollisionDetectionTests.cpp
     collision_detections/RectRectCollisionDetectionTests.cpp
+
     drawers/UIDrawerTests.cpp
     drawers/WorldDrawerTests.cpp
+
     render_formats/UICircleRenderFormatTests.cpp
     render_formats/UIFontRenderFormatTests.cpp
     render_formats/UIRectangleRenderFormatTests.cpp
@@ -11,36 +13,45 @@ add_executable(game_tests
     render_formats/WorldCircleRenderFormatTests.cpp
     render_formats/WorldRectangleRenderFormatTests.cpp
     render_formats/WorldTextureRenderFormatTests.cpp
+
     scenes/GameSceneTests.cpp
+
     trigger_conditions/CompositeConditionTests.cpp
     trigger_conditions/HealthBelowConditionTests.cpp
     trigger_conditions/InputPressedConditionTests.cpp
     trigger_conditions/MinTimeConditionTests.cpp
     trigger_conditions/NotConditionTests.cpp
     trigger_conditions/VelocityAboveConditionTests.cpp
+
     ui_actions/NavigateToSelectionActionTests.cpp
     ui_actions/NavigateToTitleActionTests.cpp
     ui_actions/QuitActionTests.cpp
+
+    utils/ComponentRegistryTests.cpp
+    utils/WorldRenderUtilsTests.cpp
+
+    value_objects/ComboTests.cpp
+
     visual_effects/OutlineFontEffectTests.cpp
     visual_effects/OutlineTextureEffectTests.cpp
     visual_effects/ShadowFontEffectTests.cpp
     visual_effects/ShadowTextureEffectTests.cpp
+
     AirFrictionSystemTests.cpp
     AnimationLoaderTests.cpp
     AnimationStateSystemTests.cpp
     AnimationSystemTests.cpp
     AttackSystemTests.cpp
     CameraControllerSystemTests.cpp
-    ComponentRegistryTests.cpp
     CharacterDefinitionLoaderTests.cpp
     CharacterLoaderTests.cpp
     CharacterRosterTests.cpp
     CharacterRosterLoaderTests.cpp
+    CollisionControllerSystemTests.cpp
     CollisionDetectionSystemTests.cpp
     CollisionHandlerFactoryTests.cpp
     ComboLoaderTests.cpp
     ComboSystemTests.cpp
-    ComboTests.cpp
     CrouchSystemTests.cpp
     DirectionTriggerSystemTests.cpp
     DynamicPushboxResolutionSystemTests.cpp
@@ -50,8 +61,12 @@ add_executable(game_tests
     FrictionSystemTests.cpp
     GravitySystemTests.cpp
     GroundDetectionSystemTests.cpp
+    HitboxControllerSystemTests.cpp
+    HitboxLoaderTests.cpp
     HitstopSystemTests.cpp
     HorizontalMovementSystemTests.cpp
+    HurtboxControllerSystemTests.cpp
+    HurtboxLoaderTests.cpp
     JumpSystemTests.cpp
     KnockbackSystemTests.cpp
     LocalToWorldSystemTests.cpp
@@ -61,6 +76,8 @@ add_executable(game_tests
     MapRosterLoaderTests.cpp
     MenuLoaderTests.cpp
     MovementSystemTests.cpp
+    PushboxControllerSystemTests.cpp
+    PushboxLoaderTests.cpp
     StateMachineLoaderTests.cpp
     StateSystemTests.cpp
     StaticPushboxResolutionSystemTests.cpp
@@ -72,7 +89,6 @@ add_executable(game_tests
     UIActionFactoryTests.cpp
     UIInputSystemTests.cpp
     UILayoutSystemTests.cpp
-    WorldRenderUtilsTests.cpp
 )
 
 target_link_libraries(game_tests

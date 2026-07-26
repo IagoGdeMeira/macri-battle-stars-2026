@@ -1,4 +1,4 @@
-#include "game/include/ComponentRegistry/ComponentRegistry.h"
+#include "game/utils/ComponentRegistry/ComponentRegistry.h"
 
 #include "domain/components/AllComponents.h"
 #include "domain/include/ComponentManager/ComponentManager.h"
@@ -11,6 +11,7 @@ TEST_CASE("ComponentRegistry registers every game component", "[unit][component_
 
     ComponentRegistry::registerAll(comp);
 
+    REQUIRE(comp.storage<ActiveComponent>() != nullptr);
     REQUIRE(comp.storage<AirFrictionComponent>() != nullptr);
     REQUIRE(comp.storage<AnalogInputComponent>() != nullptr);
     REQUIRE(comp.storage<AnimationComponent>() != nullptr);
@@ -25,9 +26,11 @@ TEST_CASE("ComponentRegistry registers every game component", "[unit][component_
     REQUIRE(comp.storage<HealthComponent>() != nullptr);
     REQUIRE(comp.storage<HitboxComponent>() != nullptr);
     REQUIRE(comp.storage<HitboxControllerComponent>() != nullptr);
+    REQUIRE(comp.storage<HitboxControllerMapComponent>() != nullptr);
     REQUIRE(comp.storage<HitstopComponent>() != nullptr);
     REQUIRE(comp.storage<HurtboxComponent>() != nullptr);
     REQUIRE(comp.storage<HurtboxControllerComponent>() != nullptr);
+    REQUIRE(comp.storage<HurtboxControllerMapComponent>() != nullptr);
     REQUIRE(comp.storage<InputBufferComponent>() != nullptr);
     REQUIRE(comp.storage<InputComponent>() != nullptr);
     REQUIRE(comp.storage<KnockbackComponent>() != nullptr);
@@ -41,6 +44,7 @@ TEST_CASE("ComponentRegistry registers every game component", "[unit][component_
     REQUIRE(comp.storage<PlayerComponent>() != nullptr);
     REQUIRE(comp.storage<PushboxComponent>() != nullptr);
     REQUIRE(comp.storage<PushboxControllerComponent>() != nullptr);
+    REQUIRE(comp.storage<PushboxControllerMapComponent>() != nullptr);
     REQUIRE(comp.storage<RectangleColliderComponent>() != nullptr);
     REQUIRE(comp.storage<RectangleShapeComponent>() != nullptr);
     REQUIRE(comp.storage<RenderComponent>() != nullptr);

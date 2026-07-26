@@ -26,7 +26,6 @@
 #include "domain/include/View/View.h"
 #include "domain/value_objects/StateId/StateId.h"
 
-#include "engine/include/DataUtils/DataUtils.h"
 #include "engine/include/Engine/Engine.h"
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/IFontFactory/IFontFactory.h"
@@ -36,6 +35,7 @@
 #include "engine/include/SceneManager/SceneManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
 #include "engine/include/Window/Window.h"
+#include "engine/utils/DataUtils/DataUtils.h"
 #include "engine/value_objects/GameSettings/GameSettings.h"
 
 #include <catch2/catch_approx.hpp>

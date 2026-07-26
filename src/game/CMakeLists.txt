@@ -5,14 +5,21 @@ target_sources(game
         src/collision_detections/CircleCircleCollisionDetection.cpp
         src/collision_detections/RectCircleCollisionDetection.cpp
         src/collision_detections/RectRectCollisionDetection.cpp
+
         src/drawers/UIDrawer.cpp
         src/drawers/WorldDrawer.cpp
+
         src/render_formats/WorldCircleRenderFormat.cpp
         src/render_formats/WorldRectangleRenderFormat.cpp
         src/render_formats/WorldTextureRenderFormat.cpp
+
         src/scenes/GameScene.cpp
         src/scenes/SelectionScene.cpp
         src/scenes/TitleScene.cpp
+
+        src/utils/ComponentRegistry.cpp
+        src/utils/WorldRenderUtils.cpp
+
         src/AirFrictionSystem.cpp
         src/AnimationLoader.cpp
         src/AnimationStateSystem.cpp
@@ -23,11 +30,11 @@ target_sources(game
         src/CharacterLoader.cpp
         src/CharacterRoster.cpp
         src/CharacterRosterLoader.cpp
+        src/CollisionControllerSystem.cpp
         src/CollisionDetectionSystem.cpp
         src/CollisionHandlerFactory.cpp
         src/ComboLoader.cpp
         src/ComboSystem.cpp
-        src/ComponentRegistry.cpp
         src/CrouchSystem.cpp
         src/DamageSystem.cpp
         src/DirectionTriggerSystem.cpp
@@ -38,9 +45,11 @@ target_sources(game
         src/FrictionSystem.cpp
         src/GravitySystem.cpp
         src/GroundDetectionSystem.cpp
+        src/HitboxControllerSystem.cpp
         src/HitboxLoader.cpp
         src/HitstopSystem.cpp
         src/HorizontalMovementSystem.cpp
+        src/HurtboxControllerSystem.cpp
         src/HurtboxLoader.cpp
         src/JumpSystem.cpp
         src/KnockbackSystem.cpp
@@ -49,6 +58,7 @@ target_sources(game
         src/MapRoster.cpp
         src/MapRosterLoader.cpp
         src/MenuLoader.cpp
+        src/PushboxControllerSystem.cpp
         src/PushboxLoader.cpp
         src/StateMachineLoader.cpp
         src/StateMachineRegistry.cpp
@@ -63,7 +73,6 @@ target_sources(game
         src/UIFactory.cpp
         src/UIInputSystem.cpp
         src/UILayoutSystem.cpp
-        src/WorldRenderUtils.cpp
 )
 
 target_include_directories(game
@@ -77,6 +86,7 @@ target_include_directories(game
         ${CMAKE_CURRENT_SOURCE_DIR}/scenes
         ${CMAKE_CURRENT_SOURCE_DIR}/trigger_conditions
         ${CMAKE_CURRENT_SOURCE_DIR}/ui_actions
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/value_objects
         ${CMAKE_CURRENT_SOURCE_DIR}/visual_effects
         ${CMAKE_SOURCE_DIR}/src

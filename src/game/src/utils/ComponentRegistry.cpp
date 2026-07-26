@@ -5,6 +5,7 @@
 
 void ComponentRegistry::registerAll(ComponentManager& comp)
 {
+    comp.registerComponent<ActiveComponent>();
     comp.registerComponent<AirFrictionComponent>();
     comp.registerComponent<AnalogInputComponent>();
     comp.registerComponent<AnimationComponent>();
@@ -19,9 +20,11 @@ void ComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<HealthComponent>();
     comp.registerComponent<HitboxComponent>();
     comp.registerComponent<HitboxControllerComponent>();
+    comp.registerComponent<HitboxControllerMapComponent>();
     comp.registerComponent<HitstopComponent>();
     comp.registerComponent<HurtboxComponent>();
     comp.registerComponent<HurtboxControllerComponent>();
+    comp.registerComponent<HurtboxControllerMapComponent>();
     comp.registerComponent<InputBufferComponent>();
     comp.registerComponent<InputComponent>();
     comp.registerComponent<KnockbackComponent>();
@@ -35,6 +38,7 @@ void ComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<PlayerComponent>();
     comp.registerComponent<PushboxComponent>();
     comp.registerComponent<PushboxControllerComponent>();
+    comp.registerComponent<PushboxControllerMapComponent>();
     comp.registerComponent<RectangleColliderComponent>();
     comp.registerComponent<RectangleShapeComponent>();
     comp.registerComponent<RenderComponent>();

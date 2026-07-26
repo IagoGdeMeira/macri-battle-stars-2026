@@ -2,61 +2,62 @@
 
 #include "EntityFactory/EntityFactory.h"
 
-#include "domain/components/PushboxComponent.h"
-#include "domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/StateId/StateId.h"
 
-#include "engine/include/DataUtils/DataUtils.h"
+#include "engine/utils/DataUtils/DataUtils.h"
 
 #include <stdexcept>
 
-PushboxControllerComponent PushboxLoader::load(const std::string& path, Entity parent, bool facingLeft)
+PushboxLoader::ControllerMap PushboxLoader::load(const DataNode& root, Entity parent, bool facingLeft) const
 {
-    auto root = this->parser.parse(path);
-    PushboxControllerComponent controller;
-    controller.loop = root->getBool("loop", false);
+    ControllerMap result;
 
-    for (auto& frameNode : root->getArray("frames"))
+    if (!root.has("states")) return result;
+    for (auto& stateNode : root.getArray("states"))
     {
-        PushboxControllerComponent::Frame frame;
-        frame.duration = frameNode->getFloat("duration", 0.f);
+        std::string stateName = stateNode->getString("name");
+        StateId state = StateId::fromBaseName(stateName);
 
-        for (auto& pbNode : frameNode->getArray("pushboxes"))
+        PushboxControllerComponent controller;
+        controller.loop = stateNode->getBool("loop", false);
+
+        for (auto& frameNode : stateNode->getArray("frames"))
         {
-            Entity pushbox = this->createPushboxFromNode(*pbNode, parent, facingLeft);
-            frame.pushboxes.push_back(pushbox);
-        }
-        controller.frames.push_back(std::move(frame));
-    }
+            PushboxControllerComponent::Frame frame;
+            frame.duration = frameNode->getFloat("duration", 0.f);
 
-    return controller;
+            for (auto& hbNode : frameNode->getArray("pushboxes"))
+            {
+                Entity hitbox = this->createPushboxFromNode(*hbNode, parent, facingLeft);
+                frame.pushboxes.push_back(hitbox);
+            }
+            controller.frames.push_back(std::move(frame));
+        }
+        result[state] = std::move(controller);
+    }
+    return result;
 }
 
-Entity PushboxLoader::createPushboxFromNode(const DataNode& node, Entity parent, bool facingLeft)
+Entity PushboxLoader::createPushboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
 {
-    std::string type = node.getString("type", "rectangle");
     Position offset = DataUtils::parsePosition(node, Position{0.f, 0.f});
     PushboxComponent::Type pushType = this->parsePushboxType(node.getString("pushboxType", "dynamic"));
     float mass = node.getFloat("mass", 1.f);
     float pushResistance = node.getFloat("pushResistance", 1.f);
 
-    if (type == "rectangle")
-    {
-        Rectangle rect = DataUtils::parseRect(node);
-        return this->factory.createPushboxChild(EntityFactory::PushboxChildParams{
-            parent, offset, pushType, mass, pushResistance, facingLeft}, rect);
-    }
-    if (type == "circle")
-    {
-        Circle circle = DataUtils::parseCircle(node);
-        return this->factory.createPushboxChild(EntityFactory::PushboxChildParams{
-            parent, offset, pushType, mass, pushResistance, facingLeft}, circle);
-    }
+    std::string type = node.getString("type", "rectangle");
+    if (type == "rectangle") return this->factory.createPushboxChild(EntityFactory::PushboxChildParams{
+        parent, offset, pushType, mass, pushResistance, facingLeft}, DataUtils::parseRect(node));
+
+    if (type == "circle")  return this->factory.createPushboxChild(EntityFactory::PushboxChildParams{
+        parent, offset, pushType, mass, pushResistance, facingLeft}, DataUtils::parseCircle(node));
+
     throw std::runtime_error("Invalid pushbox type: " + type);
 }
 
-PushboxComponent::Type PushboxLoader::parsePushboxType(const std::string& typeStr)
+PushboxComponent::Type PushboxLoader::parsePushboxType(const std::string& typeStr) const
 {
-    if (typeStr == "static") return PushboxComponent::Type::Static;
-    if (typeStr == "dynamic") return PushboxComponent::Type::Dynamic;
+    if (typeStr == "static")    return PushboxComponent::Type::Static;
+    if (typeStr == "dynamic")   return PushboxComponent::Type::Dynamic;
     throw std::runtime_error("Invalid pushbox type: " + typeStr);
 }

@@ -18,7 +18,8 @@ template <typename T>
 ComponentStorage<T>* ComponentManager::getStorage()
 {
     uint32_t id = ComponentManager::getTypeId<T>();
-    if (id >= this->storages.size() || !this->storages[id]) throw std::logic_error("Component not registered");
+    if (id >= this->storages.size() || !this->storages[id])
+    { throw std::logic_error("Component not registered: " + std::string(typeid(T).name())); }
     return static_cast<ComponentStorage<T>*>(this->storages[id].get());
 }
 

@@ -33,6 +33,9 @@ public:
         textureLoader(cfg.textureLoader),
         animLoader(cfg.animationLoader) {}
 
+    ResourceManager& resources() { return this->resourceManager; }
+    TextureLoader& texLoader() { return this->textureLoader; }
+
     struct HitboxChildParams { Entity parent; const Position& offset; int damage; bool facingLeft; };
     Entity createHitboxChild(const HitboxChildParams& params, const Rectangle& rect);
     Entity createHitboxChild(const HitboxChildParams& params, const Circle& circle);

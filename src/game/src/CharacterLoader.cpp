@@ -2,14 +2,16 @@
 
 #include "StateIdMapper/StateIdMapper.h"
 
-#include "domain/components/CollisionClipDefinitionsComponent.h"
-#include "domain/components/CollisionClipPlayerComponent.h"
+#include "domain/components/HitboxControllerComponent.h"
+#include "domain/components/HitboxControllerMapComponent.h"
+#include "domain/components/HurtboxControllerComponent.h"
+#include "domain/components/HurtboxControllerMapComponent.h"
+#include "domain/components/PushboxControllerComponent.h"
+#include "domain/components/PushboxControllerMapComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/StateComponent.h"
 #include "domain/components/StateMachineComponent.h"
 #include "domain/utils/Logger/Logger.h"
-
-#include <memory>
 
 Entity CharacterLoader::create(World& world, const std::string& path) const
 {
@@ -21,14 +23,13 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 
     auto mapper = this->buildStateMapper(def);
     uint32_t machineId = this->registerStateMachine(def, *mapper);
-
     this->addStateComponents(world, entity, machineId);
 
     comp.add<AnimationControllerComponent>(entity, this->buildAnimationController(def, *mapper));
 
-    if (!def.collisionsPath.empty()) this->addCollisionComponents(world, entity, def, *mapper);
-    
-    comp.add<CollisionClipPlayerComponent>(entity, CollisionClipPlayerComponent{});
+    bool facingLeft = false;
+    this->loadCollisionControllers(world, entity, def, facingLeft);
+
     comp.add<AnimationComponent>(entity, this->buildInitialAnimation(entity, world));
 
     LOG_DEBUG("CharacterLoader: created entity {} with sprite texture {}", entity.id, def.texturePath);
@@ -75,15 +76,6 @@ AnimationControllerComponent CharacterLoader::buildAnimationController(const Cha
     return controller;
 }
 
-void CharacterLoader::addCollisionComponents(World& world, Entity entity, const CharacterDefinition& def, const StateIdMapper& mapper) const
-{
-    auto clipMap = this->clipLoader.load(def.collisionsPath, mapper);
-    CollisionClipDefinitionsComponent clipDefs;
-    for (auto& [state, clip] : clipMap) clipDefs.clips[state] = std::make_shared<CollisionClip>(std::move(clip));
-    
-    world.components().add<CollisionClipDefinitionsComponent>(entity, std::move(clipDefs));
-}
-
 AnimationComponent CharacterLoader::buildInitialAnimation(Entity entity, World& world) const
 {
     auto& comp = world.components();
@@ -97,4 +89,29 @@ AnimationComponent CharacterLoader::buildInitialAnimation(Entity entity, World& 
     if (it != controllerRef.animations.right.end()) anim.animation = it->second;
     else LOG_WARN("CharacterLoader: Idle animation not found for entity {}", entity.id);
     return anim;
+}
+
+void CharacterLoader::loadCollisionControllers(World& world, Entity entity, const CharacterDefinition& def, bool facingLeft) const
+{
+    if (def.collisionsPath.empty()) return;
+
+    auto root = this->parser.parse(def.collisionsPath);
+    auto& comp = world.components();
+
+    HitboxControllerComponent hitboxController;
+    
+    auto hitboxMap = this->hitboxLoader.load(*root, entity, facingLeft);
+    HitboxControllerMapComponent hitboxMapComp;
+    hitboxMapComp.map = std::move(hitboxMap);
+    comp.add<HitboxControllerMapComponent>(entity, std::move(hitboxMapComp));
+
+    auto hurtboxMap = this->hurtboxLoader.load(*root, entity, facingLeft);
+    HurtboxControllerMapComponent hurtboxMapComp;
+    hurtboxMapComp.map = std::move(hurtboxMap);
+    comp.add<HurtboxControllerMapComponent>(entity, std::move(hurtboxMapComp));
+
+    auto pushboxMap = this->pushboxLoader.load(*root, entity, facingLeft);
+    PushboxControllerMapComponent pushboxMapComp;
+    pushboxMapComp.map = std::move(pushboxMap);
+    comp.add<PushboxControllerMapComponent>(entity, std::move(pushboxMapComp));
 }

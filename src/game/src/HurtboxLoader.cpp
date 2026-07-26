@@ -2,51 +2,53 @@
 
 #include "EntityFactory/EntityFactory.h"
 
-#include "domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/StateId/StateId.h"
 
-#include "engine/include/DataUtils/DataUtils.h"
+#include "engine/utils/DataUtils/DataUtils.h"
 
 #include <stdexcept>
 
-HurtboxControllerComponent HurtboxLoader::load(const std::string& path, Entity parent, bool facingLeft)
+HurtboxLoader::ControllerMap HurtboxLoader::load(const DataNode& root, Entity parent, bool facingLeft) const
 {
-    auto root = this->parser.parse(path);
-    HurtboxControllerComponent controller;
-    controller.loop = root->getBool("loop", false);
+    ControllerMap result;
 
-    for (auto& frameNode : root->getArray("frames"))
+    if (!root.has("states")) return result;
+    for (auto& stateNode : root.getArray("states"))
     {
-        HurtboxControllerComponent::Frame frame;
-        frame.duration = frameNode->getFloat("duration", 0.f);
+        std::string stateName = stateNode->getString("name");
+        StateId state = StateId::fromBaseName(stateName);
 
-        for (auto& hbNode : frameNode->getArray("hurtboxes"))
+        HurtboxControllerComponent controller;
+        controller.loop = stateNode->getBool("loop", false);
+
+        for (auto& frameNode : stateNode->getArray("frames"))
         {
-            Entity hurtbox = this->createHurtboxFromNode(*hbNode, parent, facingLeft);
-            frame.hurtboxes.push_back(hurtbox);
-        }
-        controller.frames.push_back(std::move(frame));
-    }
+            HurtboxControllerComponent::Frame frame;
+            frame.duration = frameNode->getFloat("duration", 0.f);
 
-    return controller;
+            for (auto& hbNode : frameNode->getArray("hurtboxes"))
+            {
+                Entity hurtbox = this->createHurtboxFromNode(*hbNode, parent, facingLeft);
+                frame.hurtboxes.push_back(hurtbox);
+            }
+            controller.frames.push_back(std::move(frame));
+        }
+        result[state] = std::move(controller);
+    }
+    return result;
 }
 
-Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent, bool facingLeft)
+Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
 {
-    std::string type = node.getString("type", "rectangle");
     Position offset = DataUtils::parsePosition(node, Position{0.f, 0.f});
-    float damageMultiplier = node.getFloat("damageMultiplier", 1.f);
+    float damageMultiplier = node.getFloat("damageMultiplier", 0.f);
 
-    if (type == "rectangle")
-    {
-        Rectangle rect = DataUtils::parseRect(node);
-        return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
-            parent, offset, damageMultiplier, facingLeft}, rect);
-    }
-    if (type == "circle")
-    {
-        Circle circle = DataUtils::parseCircle(node);
-        return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
-            parent, offset, damageMultiplier, facingLeft}, circle);
-    }
+    std::string type = node.getString("type", "rectangle");
+    if (type == "rectangle") return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
+        parent, offset, damageMultiplier, facingLeft}, DataUtils::parseRect(node));
+    
+    if (type == "circle") return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
+        parent, offset, damageMultiplier, facingLeft}, DataUtils::parseCircle(node));
+        
     throw std::runtime_error("Invalid hurtbox type: " + type);
 }

@@ -1,4 +1,4 @@
-#include "game/include/WorldRenderUtils/WorldRenderUtils.h"
+#include "game/utils/WorldRenderUtils/WorldRenderUtils.h"
 
 #include "domain/components/ParallaxComponent.h"
 #include "domain/include/World/World.h"

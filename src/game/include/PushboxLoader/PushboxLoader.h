@@ -1,10 +1,14 @@
 #ifndef pushbox_loader_h
 #define pushbox_loader_h
 
+#include "domain/components/PushboxComponent.h"
 #include "domain/components/PushboxControllerComponent.h"
-#include "domain/include/Entity/Entity.h"
+#include "domain/value_objects/StateId/StateId.h"
 
+#include "engine/include/DataNode/DataNode.h"
 #include "engine/include/DataParser/DataParser.h"
+
+#include <unordered_map>
 
 class EntityFactory;
 
@@ -12,15 +16,16 @@ class PushboxLoader
 {
 public:
     PushboxLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
-    PushboxControllerComponent load(const std::string& path, Entity parent, bool facingLeft);
+
+    using ControllerMap = std::unordered_map<StateId, PushboxControllerComponent, StateId::Hash>;
+    virtual ControllerMap load(const DataNode& root, Entity parent, bool facingLeft) const;
 
 private:
     DataParser& parser;
     EntityFactory& factory;
 
-    Entity createPushboxFromNode(const DataNode& node, Entity parent, bool facingLeft);
-
-    PushboxComponent::Type parsePushboxType(const std::string& typeStr);
+    Entity createPushboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const;
+    PushboxComponent::Type parsePushboxType(const std::string& typeStr) const;
 };
 
 #endif // pushbox_loader_h

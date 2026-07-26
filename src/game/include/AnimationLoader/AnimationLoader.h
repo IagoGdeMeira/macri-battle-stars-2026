@@ -16,8 +16,8 @@ class AnimationLoader
 public:
     AnimationLoader(DataParser& parser) : parser(parser) {}
 
-    AnimationSet load(const std::string& path) const;
-    AnimationSet load(const std::string& path, const StateIdMapper& mapper) const;
+    virtual AnimationSet load(const std::string& path) const;
+    virtual AnimationSet load(const std::string& path, const StateIdMapper& mapper) const;
 
 private:
     DataParser& parser;

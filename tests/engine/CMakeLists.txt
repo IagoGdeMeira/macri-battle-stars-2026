@@ -1,7 +1,8 @@
 add_executable(engine_tests
+    utils/DataUtilsTests.cpp
+    
     Camera2DTests.cpp
     CommandBufferTests.cpp
-    DataUtilsTests.cpp
     EngineTests.cpp
     EventBusTests.cpp
     InputBindingLoaderTests.cpp

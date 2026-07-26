@@ -4,9 +4,14 @@
 
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
 #include "domain/utils/Logger/Logger.h"
+
+#include "engine/include/ResourceManager/ResourceManager.h"
+#include "engine/include/TextureLoader/TextureLoader.h"
 
 #include <cstdint>
 
@@ -69,7 +74,9 @@ MapComponent MapLoader::parseMapComponent(const std::unique_ptr<DataNode>& root)
 
 void MapLoader::createBackgrounds(const std::unique_ptr<DataNode>& root, Entity mapEntity)
 {
-    if (root->has("backgroundLayers")) for (auto& layer : root->getArray("backgroundLayers"))
+    if (!root->has("backgroundLayers")) return;
+
+    for (auto& layer : root->getArray("backgroundLayers"))
     {
         std::string tex = layer->getString("texture");
         auto parallaxNode = layer->getObject("parallaxFactor");
@@ -78,7 +85,9 @@ void MapLoader::createBackgrounds(const std::unique_ptr<DataNode>& root, Entity 
             parallaxNode ? parallaxNode->getFloat("y", 1.f) : 1.f
         };
         int zIndex = layer->getInt("zIndex", 0);
-        this->factory.createBackgroundChild(tex, parallax, zIndex, mapEntity);
+
+        EntityFactory::BackgroundParams params{parallax, zIndex, mapEntity};
+        this->factory.createBackgroundSprite(params, tex);
     }
 }
 
@@ -95,7 +104,23 @@ void MapLoader::createFloor(const std::unique_ptr<DataNode>& root, Entity mapEnt
 
     LOG_DEBUG("MapLoader: creating floor at local pos ({}, {}) size {}x{}", localPos.x, localPos.y, size.width, size.height);
 
-    Entity floorEntity = this->factory.createFloorChild(floorTex, localPos, size, mapEntity);
+    auto& fac = this->factory;
+    Entity floorEntity = fac.createStaticEntity(EntityFactory::StaticEntityParams{
+        localPos, mapEntity}, Rectangle{Position{0.f, 0.f}, size});
+
+    if (!floorTex.empty())
+    {
+        auto texture = fac.resources().load<Texture>(fac.texLoader(), floorTex);
+        SpriteComponent sprite;
+        sprite.texturePath = floorTex;
+        sprite.cachedTexture = texture;
+        sprite.size = size;
+        sprite.useSourceRect = false;
+
+        auto& comp = world.components();
+        comp.add<SpriteComponent>(floorEntity, std::move(sprite));
+        comp.add<RenderComponent>(floorEntity, RenderComponent{0, 0});
+    }
 
     auto& comp = world.components();
     if (comp.has<ParentComponent>(floorEntity))
@@ -108,12 +133,18 @@ void MapLoader::createFloor(const std::unique_ptr<DataNode>& root, Entity mapEnt
 
 void MapLoader::createWalls(const std::unique_ptr<DataNode>& root, Entity mapEntity)
 {
-    if (root->has("walls")) for (auto& wall : root->getArray("walls"))
+    if (!root->has("walls")) return;
+
+    for (auto& wall : root->getArray("walls"))
     {
         float x = wall->getFloat("x");
         float y = wall->getFloat("y");
         float w = wall->getFloat("width");
         float h = wall->getFloat("height");
-        this->factory.createWallChild({x + w * 0.5f, y + h * 0.5f}, {w, h}, mapEntity);
+
+        Position pos = { x + w * 0.5f, y + h * 0.5f };
+        Rectangle rect{Position{0.f, 0.f}, Dimension2D{w, h}};
+
+        this->factory.createStaticEntity(EntityFactory::StaticEntityParams{pos, mapEntity}, rect);
     }
 }

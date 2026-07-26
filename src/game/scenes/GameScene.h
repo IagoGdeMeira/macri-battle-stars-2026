@@ -32,6 +32,10 @@
 #include <string>
 #include <vector>
 
+class HitboxLoader;
+class HurtboxLoader;
+class PushboxLoader;
+
 class GameScene : public Scene
 {
 public:
@@ -77,8 +81,11 @@ private:
     std::unique_ptr<CharacterDefinitionLoader> charDefLoader;
     std::unique_ptr<AnimationLoader> animLoader;
     std::unique_ptr<StateMachineLoader> fsmLoader;
-    std::unique_ptr<CollisionClipLoader> clipLoader;
     std::unique_ptr<StateMachineRegistry> stateMachineRegistry;
+
+    std::unique_ptr<HitboxLoader> hitboxLoader;
+    std::unique_ptr<HurtboxLoader> hurtboxLoader;
+    std::unique_ptr<PushboxLoader> pushboxLoader;
 
     Entity mapRoot;
 
@@ -87,7 +94,6 @@ private:
     void loadMap(const std::string& path);
     void loadCombos(const std::string& path);
     void loadTriggerBindings(const std::string& path);
-    void createCharacterLoader();
 
     void prepareScene();
     void prepareComponents();

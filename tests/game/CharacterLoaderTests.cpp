@@ -1,21 +1,29 @@
 #include "game/include/CharacterLoader/CharacterLoader.h"
 
+#include "StubAnimationLoader.h"
 #include "StubDataNode.h"
 #include "StubDataParser.h"
+#include "StubHitboxLoader.h"
+#include "StubHurtboxLoader.h"
+#include "StubPushboxLoader.h"
 #include "StubRenderer.h"
 #include "StubResourceManager.h"
 #include "StubTextureFactory.h"
+#include "StubTextureLoader.h"
 
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
-#include "domain/components/CollisionClipDefinitionsComponent.h"
-#include "domain/components/CollisionClipPlayerComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/StateComponent.h"
 #include "domain/components/StateMachineComponent.h"
+#include "domain/components/HitboxControllerComponent.h"
+#include "domain/components/HitboxControllerMapComponent.h"
+#include "domain/components/HurtboxControllerComponent.h"
+#include "domain/components/HurtboxControllerMapComponent.h"
+#include "domain/components/PushboxControllerComponent.h"
+#include "domain/components/PushboxControllerMapComponent.h"
 #include "domain/include/World/World.h"
 #include "domain/value_objects/StateId/StateId.h"
-#include "domain/value_objects/TriggerId/TriggerId.h"
 
 #include "engine/include/DataParser/DataParser.h"
 #include "engine/include/ResourceManager/ResourceManager.h"
@@ -23,7 +31,10 @@
 
 #include "game/include/AnimationLoader/AnimationLoader.h"
 #include "game/include/CharacterDefinitionLoader/CharacterDefinitionLoader.h"
-#include "game/include/CollisionClipLoader/CollisionClipLoader.h"
+#include "game/include/EntityFactory/EntityFactory.h"
+#include "game/include/HitboxLoader/HitboxLoader.h"
+#include "game/include/HurtboxLoader/HurtboxLoader.h"
+#include "game/include/PushboxLoader/PushboxLoader.h"
 #include "game/include/StateIdMapper/StateIdMapper.h"
 #include "game/include/StateMachineLoader/StateMachineLoader.h"
 
@@ -43,10 +54,10 @@ public:
         return sizeNode;
     }
 
-    std::unique_ptr<StubDataNode> makeEmptyClipsRoot() const
+    std::unique_ptr<StubDataNode> makeEmptyCollisionsRoot() const
     {
         auto root = std::make_unique<StubDataNode>();
-        root->setArray("clips", std::vector<std::unique_ptr<DataNode>>());
+        root->setArray("states", std::vector<std::unique_ptr<DataNode>>());
         return root;
     }
 
@@ -58,6 +69,7 @@ public:
         root->setObject("spriteSize", this->makeSpriteSize(64.f, 96.f));
         root->setString("animations", "assets/animations/fighter_01.json");
         root->setString("stateMachine", "assets/fsm/fighter_01.json");
+        root->setString("collisions", "assets/collisions/fighter_01.json");
         return root;
     }
 
@@ -97,46 +109,63 @@ public:
         root->setArray("transitions", std::move(transitions));
         return root;
     }
+
+    std::unique_ptr<StubDataNode> makeCollisionsRoot() const { return this->makeEmptyCollisionsRoot(); }
 };
 
 TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and required gameplay components",
     "[integration][character_loader]"
 ) {
-    StubDataParser defParser, animParser, fsmParser, clipParser;
+    StubDataParser defParser, animParser, fsmParser, collParser;
     defParser.registerNode("assets/characters/fighter_01.json", this->makeDefinitionRoot());
     animParser.registerNode("assets/animations/fighter_01.json", this->makeAnimationRoot());
     fsmParser.registerNode("assets/fsm/fighter_01.json", this->makeStateMachineRoot());
-    clipParser.registerNode("assets/collisions/fighter_01.json", this->makeEmptyClipsRoot());
+    collParser.registerNode("assets/collisions/fighter_01.json", this->makeCollisionsRoot());
 
     CharacterDefinitionLoader defLoader(defParser);
     AnimationLoader animLoader(animParser);
     StateMachineLoader fsmLoader(fsmParser);
-    CollisionClipLoader clipLoader(clipParser);
 
     StubResourceManager resourceManager;
     StubTextureFactory textureFactory;
-    TextureLoader textureLoader(textureFactory);
+    StubTextureLoader textureLoader(textureFactory);
+    StubAnimationLoader animLoaderStub;
     StateMachineRegistry registry;
 
+    World world;
+    
+    auto entityFactory = std::make_unique<EntityFactory>(EntityFactory::Config{ 
+        world, resourceManager, textureLoader, animLoaderStub});
+
+    HitboxLoader hitboxLoader(collParser, *entityFactory);
+    HurtboxLoader hurtboxLoader(collParser, *entityFactory);
+    PushboxLoader pushboxLoader(collParser, *entityFactory);
+
     CharacterLoader loader(CharacterLoader::Config{
+        .parser                 = collParser,
         .defLoader              = defLoader,
         .animLoader             = animLoader,
         .fsmLoader              = fsmLoader,
         .resourceManager        = resourceManager,
         .textureLoader          = textureLoader,
-        .clipLoader             = clipLoader,
+        .hitboxLoader           = hitboxLoader,
+        .hurtboxLoader          = hurtboxLoader,
+        .pushboxLoader          = pushboxLoader,
         .stateMachineRegistry   = registry
     });
 
-    World world;
     auto& comp = world.components();
     comp.registerComponent<SpriteComponent>();
     comp.registerComponent<StateComponent>();
     comp.registerComponent<StateMachineComponent>();
     comp.registerComponent<AnimationControllerComponent>();
     comp.registerComponent<AnimationComponent>();
-    comp.registerComponent<CollisionClipDefinitionsComponent>();
-    comp.registerComponent<CollisionClipPlayerComponent>();
+    comp.registerComponent<HitboxControllerMapComponent>();
+    comp.registerComponent<HurtboxControllerMapComponent>();
+    comp.registerComponent<PushboxControllerMapComponent>();
+    comp.registerComponent<HitboxControllerComponent>();
+    comp.registerComponent<HurtboxControllerComponent>();
+    comp.registerComponent<PushboxControllerComponent>();
 
     const auto entity = loader.create(world, "assets/characters/fighter_01.json");
 
@@ -154,7 +183,6 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 
     const auto& state = comp.get<StateComponent>(entity);
     REQUIRE(state.current == StateId::Idle);
-    REQUIRE(state.timeInState == 0.f);
 
     uint32_t machineId = comp.get<StateMachineComponent>(entity).machineId;
     const StateMachine* machine = registry.getMachine(machineId);
@@ -172,6 +200,10 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(animation.currentFrame == 0);
     REQUIRE(animation.elapsedTime == 0.f);
     REQUIRE(animation.currentState == StateId::Idle);
+
+    REQUIRE(comp.has<HitboxControllerMapComponent>(entity));
+    REQUIRE(comp.has<HurtboxControllerMapComponent>(entity));
+    REQUIRE(comp.has<PushboxControllerMapComponent>(entity));
 }
 
 TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states per character definition",
@@ -183,6 +215,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     defRoot->setObject("spriteSize", this->makeSpriteSize(64.f, 96.f));
     defRoot->setString("animations", "assets/animations/fighter_custom.json");
     defRoot->setString("stateMachine", "assets/fsm/fighter_custom.json");
+    defRoot->setString("collisions", "assets/collisions/fighter_custom.json");
 
     auto customStateNode = std::make_unique<StubDataNode>();
     customStateNode->setString("", "PowerCharge");
@@ -216,43 +249,57 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     transitions.push_back(std::move(trans));
     fsmRoot->setArray("transitions", std::move(transitions));
 
-    auto clipRoot = this->makeEmptyClipsRoot();
+    auto collRoot = this->makeEmptyCollisionsRoot();
 
-    StubDataParser defParser, animParser, fsmParser, clipParser;
+    StubDataParser defParser, animParser, fsmParser, collParser;
     defParser.registerNode("def.json", std::move(defRoot));
     animParser.registerNode("assets/animations/fighter_custom.json", std::move(animRoot));
     fsmParser.registerNode("assets/fsm/fighter_custom.json", std::move(fsmRoot));
-    clipParser.registerNode("clip.json", std::move(clipRoot));
+    collParser.registerNode("assets/collisions/fighter_custom.json", std::move(collRoot));
 
     CharacterDefinitionLoader defLoader(defParser);
     AnimationLoader animLoader(animParser);
     StateMachineLoader fsmLoader(fsmParser);
-    CollisionClipLoader clipLoader(clipParser);
 
     StubResourceManager resourceManager;
     StubTextureFactory textureFactory;
-    TextureLoader textureLoader(textureFactory);
+    StubTextureLoader textureLoader(textureFactory);
+    StubAnimationLoader animLoaderStub;
     StateMachineRegistry registry;
 
+    World world;
+    auto entityFactory = std::make_unique<EntityFactory>(EntityFactory::Config{
+        world, resourceManager, textureLoader, animLoaderStub});
+
+    HitboxLoader hitboxLoader(collParser, *entityFactory);
+    HurtboxLoader hurtboxLoader(collParser, *entityFactory);
+    PushboxLoader pushboxLoader(collParser, *entityFactory);
+
     CharacterLoader loader(CharacterLoader::Config{
+        .parser                 = collParser,
         .defLoader              = defLoader,
         .animLoader             = animLoader,
         .fsmLoader              = fsmLoader,
         .resourceManager        = resourceManager,
         .textureLoader          = textureLoader,
-        .clipLoader             = clipLoader,
+        .hitboxLoader           = hitboxLoader,
+        .hurtboxLoader          = hurtboxLoader,
+        .pushboxLoader          = pushboxLoader,
         .stateMachineRegistry   = registry
     });
 
-    World world;
     auto& comp = world.components();
     comp.registerComponent<SpriteComponent>();
     comp.registerComponent<StateComponent>();
     comp.registerComponent<StateMachineComponent>();
     comp.registerComponent<AnimationControllerComponent>();
     comp.registerComponent<AnimationComponent>();
-    comp.registerComponent<CollisionClipDefinitionsComponent>();
-    comp.registerComponent<CollisionClipPlayerComponent>();
+    comp.registerComponent<HitboxControllerMapComponent>();
+    comp.registerComponent<HurtboxControllerMapComponent>();
+    comp.registerComponent<PushboxControllerMapComponent>();
+    comp.registerComponent<HitboxControllerComponent>();
+    comp.registerComponent<HurtboxControllerComponent>();
+    comp.registerComponent<PushboxControllerComponent>();
 
     const auto entity = loader.create(world, "def.json");
 
@@ -266,4 +313,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
 
     const auto& controller = comp.get<AnimationControllerComponent>(entity);
     REQUIRE(controller.animations.right.contains(customStateId));
+    REQUIRE(comp.has<HitboxControllerMapComponent>(entity));
+    REQUIRE(comp.has<HurtboxControllerMapComponent>(entity));
+    REQUIRE(comp.has<PushboxControllerMapComponent>(entity));
 }

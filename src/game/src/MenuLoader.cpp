@@ -1,8 +1,8 @@
-#include "../include/MenuLoader/MenuLoader.h"
+#include "MenuLoader/MenuLoader.h"
 
-#include "../include/DataUtils/DataUtils.h"
-#include "../include/UIElement/TextElement.h"
-#include "../include/UIElement/UIElement.h"
+#include "DataUtils/DataUtils.h"
+#include "UIElement/TextElement.h"
+#include "UIElement/UIElement.h"
 
 #include <stdexcept>
 
@@ -12,8 +12,7 @@ MenuData MenuLoader::load(const std::string& path) const
     MenuData data;
     data.id = root->getString("id");
 
-    for (auto& elemNode : root->getArray("elements"))
-    { data.elements.push_back(this->parseElement(*elemNode)); }
+    for (auto& elemNode : root->getArray("elements")) data.elements.push_back(this->parseElement(*elemNode));
 
     return data;
 }

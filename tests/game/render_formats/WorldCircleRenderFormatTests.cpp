@@ -2,7 +2,8 @@
 
 #include "StubRenderer.h"
 
-#include "domain/components/ShapeRenderComponent.h"
+#include "domain/components/CircleShapeComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/World/World.h"
@@ -29,7 +30,8 @@ public:
     WorldCircleRenderFormatFixture() : format(this->renderer, this->camera), context { this->world, this->bus }
     {
         auto& comp = this->world.components();
-        comp.registerComponent<ShapeRenderComponent>();
+        comp.registerComponent<CircleShapeComponent>();
+        comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<VisualEffectsComponent>();
 
@@ -44,11 +46,10 @@ TEST_CASE_METHOD(WorldCircleRenderFormatFixture, "WorldCircleRenderFormat submit
 ) {
     const Entity entity = this->world.entities().create();
 
-    auto circle = std::make_unique<CircleDef>();
-    circle->radius = 5.f;
+    Circle circle{Position{0.f, 0.f}, 5.f};
 
     auto& comp = this->world.components();
-    comp.add<ShapeRenderComponent>(entity, ShapeRenderComponent { std::move(circle), Color { 10, 20, 30, 255 }, false });
+    comp.add<CircleShapeComponent>(entity, CircleShapeComponent{circle, Color{10, 20, 30, 255}, false, 0});
     comp.add<TransformComponent>(entity, TransformComponent{Position{30.f, 20.f}, Position{-2.f, 3.f}, 0.f});
 
     VisualEffectsComponent fx;
@@ -69,7 +70,6 @@ TEST_CASE_METHOD(WorldCircleRenderFormatFixture, "WorldCircleRenderFormat submit
     REQUIRE(effectCmd.filled == true);
 
     const auto& baseCmd = this->renderer.circleCalls[1];
-    
     REQUIRE(baseCmd.circle.position.x == Catch::Approx(440.f));
     REQUIRE(baseCmd.circle.position.y == Catch::Approx(330.f));
     REQUIRE(baseCmd.circle.radius == Catch::Approx(30.f));
@@ -85,15 +85,12 @@ TEST_CASE_METHOD(WorldCircleRenderFormatFixture, "WorldCircleRenderFormat filter
     auto& entities = this->world.entities();
     
     const Entity nullShapeEntity = entities.create();
-    
-    comp.add<ShapeRenderComponent>(nullShapeEntity, ShapeRenderComponent {});
+    comp.add<CircleShapeComponent>(nullShapeEntity, CircleShapeComponent{});
     comp.add<TransformComponent>(nullShapeEntity, TransformComponent{Position{0.f, 0.f}, Position{1.f, 1.f}, 0.f});
 
     const Entity rectangleEntity = entities.create();
-    auto rect = std::make_unique<RectangleDef>();
-    rect->width = 8.f;
-    rect->height = 6.f;
-    comp.add<ShapeRenderComponent>(rectangleEntity, ShapeRenderComponent { std::move(rect), Color::WHITE(), false });
+    Rectangle rect{Position{0.f, 0.f}, Dimension2D{8.f, 6.f}};
+    comp.add<RectangleShapeComponent>(rectangleEntity, RectangleShapeComponent{rect, Color::WHITE(), false, 0});
     comp.add<TransformComponent>(rectangleEntity, TransformComponent{Position{2.f, 3.f}, Position{1.f, 1.f}, 0.f});
 
     this->format.render(this->context);

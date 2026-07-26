@@ -2,48 +2,53 @@
 
 #include "EntityFactory/EntityFactory.h"
 
-#include "domain/include/Entity/Entity.h"
-#include "domain/value_objects/Geometry/Geometry.h"
+#include "domain/value_objects/StateId/StateId.h"
 
-#include "engine/include/DataUtils/DataUtils.h"
+#include "engine/utils/DataUtils/DataUtils.h"
 
 #include <stdexcept>
 
-HitboxControllerComponent HitboxLoader::load(const std::string& path, Entity parent, bool facingLeft)
+HitboxLoader::ControllerMap HitboxLoader::load(const DataNode& root, Entity parent, bool facingLeft) const
 {
-    auto root = this->parser.parse(path);
-    HitboxControllerComponent controller;
-    controller.loop = root->getBool("loop", false);
+    ControllerMap result;
 
-    for (auto& frameNode : root->getArray("frames"))
+    if (!root.has("states")) return result;
+    for (auto& stateNode : root.getArray("states"))
     {
-        HitboxControllerComponent::Frame frame;
-        frame.duration = frameNode->getFloat("duration", 0.f);
+        std::string stateName = stateNode->getString("name");
+        StateId state = StateId::fromBaseName(stateName);
 
-        for (auto& hbNode : frameNode->getArray("hitboxes"))
+        HitboxControllerComponent controller;
+        controller.loop = stateNode->getBool("loop", false);
+
+        for (auto& frameNode : stateNode->getArray("frames"))
         {
-            std::string type = hbNode->getString("type", "rectangle");
-            Position offset = DataUtils::parsePosition(*hbNode, Position{0.f, 0.f});
-            int damage = hbNode->getInt("damage", 0);
+            HitboxControllerComponent::Frame frame;
+            frame.duration = frameNode->getFloat("duration", 0.f);
 
-            if (type == "rectangle")
+            for (auto& hbNode : frameNode->getArray("hitboxes"))
             {
-                Rectangle rect = DataUtils::parseRect(*hbNode);
-                Entity hitbox = this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
-                    parent, offset, damage, facingLeft}, rect);
+                Entity hitbox = this->createHitboxFromNode(*hbNode, parent, facingLeft);
                 frame.hitboxes.push_back(hitbox);
             }
-            else if (type == "circle")
-            {
-                Circle circle = DataUtils::parseCircle(*hbNode);
-                Entity hitbox = this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
-                    parent, offset, damage, facingLeft}, circle);
-                frame.hitboxes.push_back(hitbox);
-            }
-            else throw std::runtime_error("Invalid hitbox type: " + type);
+            controller.frames.push_back(std::move(frame));
         }
-        controller.frames.push_back(std::move(frame));
+        result[state] = std::move(controller);
     }
+    return result;
+}
 
-    return controller;
+Entity HitboxLoader::createHitboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
+{
+    Position offset = DataUtils::parsePosition(node, Position{0.f, 0.f});
+    int damage = node.getInt("damage", 0);
+    
+    std::string type = node.getString("type", "rectangle");
+    if (type == "rectangle") return this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
+        parent, offset, damage, facingLeft}, DataUtils::parseRect(node));
+
+    if (type == "circle") return this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
+        parent, offset, damage, facingLeft}, DataUtils::parseCircle(node));
+
+    throw std::runtime_error("Invalid hitbox type: " + type);
 }
