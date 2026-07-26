@@ -1,8 +1,9 @@
 #ifndef stub_font_factory_h
 #define stub_font_factory_h
 
-#include "engine/include/IFontFactory/IFontFactory.h"
 #include "StubFont.h"
+
+#include "engine/include/IFontFactory/IFontFactory.h"
 
 class StubFontFactory : public IFontFactory
 {

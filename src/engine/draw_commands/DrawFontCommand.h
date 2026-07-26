@@ -2,8 +2,8 @@
 #define draw_font_command_h
 
 #include "DrawCommand/DrawCommand.h"
-#include "Font/Font.h"
 
+#include "domain/resources/Font/Font.h"
 #include "domain/value_objects/Color/Color.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 

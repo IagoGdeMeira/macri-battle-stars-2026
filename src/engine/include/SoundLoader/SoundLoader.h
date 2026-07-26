@@ -3,7 +3,8 @@
 
 #include "ISoundFactory/ISoundFactory.h"
 #include "ResourceLoader/ResourceLoader.h"
-#include "Sound/Sound.h"
+
+#include "domain/resources/Sound/Sound.h"
 
 class SoundLoader : public ResourceLoader<Sound>
 {

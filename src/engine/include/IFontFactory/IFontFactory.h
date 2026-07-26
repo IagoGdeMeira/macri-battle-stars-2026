@@ -1,7 +1,7 @@
 #ifndef i_font_factory_h
 #define i_font_factory_h
 
-#include "Font/Font.h"
+#include "domain/resources/Font/Font.h"
 
 #include <memory>
 #include <string>

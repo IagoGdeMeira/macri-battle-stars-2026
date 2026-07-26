@@ -90,7 +90,7 @@ TEST_CASE("View must return empty if no entities match the query", "[unit][view]
 
     int count = 0;
 
-    for (auto _ : view) count++;
+    for (auto &&item : view) (void)item, ++count;
     REQUIRE(count == 0);
 }
 
@@ -112,7 +112,7 @@ TEST_CASE("View must iterate over all matching entities",
     View<Position, Velocity> view(manager);
 
     int count = 0;
-    for (auto [entity, pos, vel] : view) count++;
+    for (auto &&item : view) (void)item, ++count;
 
     REQUIRE(count == 5);
 }
@@ -137,7 +137,7 @@ TEST_CASE("View must handle entities being added and removed during iteration", 
     View<Position, Velocity> view(manager);
 
     int count = 0;
-    for (auto [entity, pos, vel] : view) count++;
+    for (auto &&item : view) (void)item, ++count;
 
     REQUIRE(count == 6);
 }

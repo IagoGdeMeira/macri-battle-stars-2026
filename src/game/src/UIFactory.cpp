@@ -14,10 +14,10 @@
 #include "domain/components/UITextComponent.h"
 #include "domain/components/UITransform.h"
 #include "domain/include/World/World.h"
+#include "domain/resources/Font/Font.h"
+#include "domain/resources/Texture/Texture.h"
 
 #include "engine/include/IPlatformFactory/IPlatformFactory.h"
-#include "engine/resources/Font/Font.h"
-#include "engine/resources/Texture/Texture.h"
 
 #include <stdexcept>
 

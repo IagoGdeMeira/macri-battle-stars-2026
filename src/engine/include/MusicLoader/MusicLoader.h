@@ -2,8 +2,9 @@
 #define music_loader_h
 
 #include "IMusicFactory/IMusicFactory.h"
-#include "Music/Music.h"
 #include "ResourceLoader/ResourceLoader.h"
+
+#include "domain/resources/Music/Music.h"
 
 class MusicLoader : public ResourceLoader<Music>
 {

@@ -21,7 +21,6 @@ target_include_directories(engine
         ${CMAKE_CURRENT_SOURCE_DIR}/draw_commands
         ${CMAKE_CURRENT_SOURCE_DIR}/events
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/value_objects
         ${CMAKE_SOURCE_DIR}/src

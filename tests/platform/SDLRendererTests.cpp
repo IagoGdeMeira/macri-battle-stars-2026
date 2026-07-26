@@ -8,9 +8,9 @@
 #include "engine/draw_commands/DrawTextureCommand.h"
 #include "engine/value_objects/Viewport/Viewport.h"
 
+#include "platform/include/SDLFont/SDLFont.h"
 #include "platform/include/SDLTexture/SDLTexture.h"
 #include "platform/include/SDLWindow/SDLWindow.h"
-#include "platform/include/SDLFont/SDLFont.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <fstream>

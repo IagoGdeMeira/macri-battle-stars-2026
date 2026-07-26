@@ -2,8 +2,8 @@
 #define draw_texture_command_h
 
 #include "DrawCommand/DrawCommand.h"
-#include "Texture/Texture.h"
 
+#include "domain/resources/Texture/Texture.h"
 #include "domain/value_objects/Color/Color.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 

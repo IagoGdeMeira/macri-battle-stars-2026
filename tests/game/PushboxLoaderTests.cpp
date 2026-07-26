@@ -48,8 +48,8 @@ public:
     World world;
     StubDataParser parser;
     StubResourceManager resourceManager;
-    StubTextureLoader textureLoader;
     StubTextureFactory textureFactory;
+    StubTextureLoader textureLoader;
     StubAnimationLoader animLoader;
     std::unique_ptr<EntityFactory> factory;
     std::unique_ptr<PushboxLoader> loader;

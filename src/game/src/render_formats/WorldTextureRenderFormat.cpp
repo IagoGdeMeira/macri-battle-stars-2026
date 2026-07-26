@@ -8,9 +8,9 @@
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VisualEffectsComponent.h"
+#include "domain/resources/Texture/Texture.h"
 #include "domain/utils/Logger/Logger.h"
 
-#include "engine/resources/Texture/Texture.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
 void WorldTextureRenderFormat::render(RenderContext& ctx)

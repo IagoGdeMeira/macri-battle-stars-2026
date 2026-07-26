@@ -170,7 +170,7 @@ TEST_CASE_METHOD(MapLoaderFixture, "MapLoader parses map data and creates map en
         if (comp.has<RectangleColliderComponent>(entity)) foundFloor = true;
     }
 
-    for (auto [entity, collider] : View<RectangleColliderComponent>(comp)) ++rectColliderCount;
+    for (auto &&item : View<RectangleColliderComponent>(comp)) (void)item, ++rectColliderCount;
     
     REQUIRE(rectColliderCount >= 2);
     REQUIRE(foundBackground);

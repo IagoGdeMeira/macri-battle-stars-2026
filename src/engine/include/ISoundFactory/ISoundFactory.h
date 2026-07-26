@@ -1,7 +1,7 @@
 #ifndef i_sound_factory_h
 #define i_sound_factory_h
 
-#include "Sound/Sound.h"
+#include "domain/resources/Sound/Sound.h"
 
 #include <memory>
 #include <string>
