@@ -33,6 +33,7 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const R
     this->addCollider(e, rect);
     comp.add<HitboxComponent>(e, HitboxComponent{params.damage});
 
+    if (params.debug.enabled) this->addDebugVisual(e, rect, params.debug);
     return e;
 }
 
@@ -46,6 +47,7 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const C
     this->addCollider(e, circle);
     comp.add<HitboxComponent>(e, HitboxComponent{params.damage});
 
+    if (params.debug.enabled) this->addDebugVisual(e, circle, params.debug);
     return e;
 }
 
@@ -59,6 +61,7 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
     this->addCollider(e, rect);
     comp.add<HurtboxComponent>(e, HurtboxComponent{params.damageMultiplier});
 
+    if (params.debug.enabled) this->addDebugVisual(e, rect, params.debug);
     return e;
 }
 
@@ -72,6 +75,7 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
     this->addCollider(e, circle);
     comp.add<HurtboxComponent>(e, HurtboxComponent{params.damageMultiplier});
 
+    if (params.debug.enabled) this->addDebugVisual(e, circle, params.debug);
     return e;
 }
 
@@ -85,6 +89,7 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
     this->addCollider(e, rect);
     comp.add<PushboxComponent>(e, PushboxComponent{params.type, params.mass, params.pushResistance});
 
+    if (params.debug.enabled) this->addDebugVisual(e, rect, params.debug);
     return e;
 }
 
@@ -98,6 +103,7 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
     this->addCollider(e, circle);
     comp.add<PushboxComponent>(e, PushboxComponent{params.type, params.mass, params.pushResistance});
 
+    if (params.debug.enabled) this->addDebugVisual(e, circle, params.debug);
     return e;
 }
 
@@ -118,6 +124,7 @@ Entity EntityFactory::createStaticEntity(const StaticEntityParams& params, const
     this->addCollider(e, rect);
     comp.add<PushboxComponent>(e, PushboxComponent{PushboxComponent::Type::Static});
 
+    if (params.debug.enabled) this->addDebugVisual(e, rect, params.debug);
     return e;
 }
 
@@ -138,6 +145,7 @@ Entity EntityFactory::createStaticEntity(const StaticEntityParams& params, const
     this->addCollider(e, circle);
     comp.add<PushboxComponent>(e, PushboxComponent{PushboxComponent::Type::Static});
 
+    if (params.debug.enabled) this->addDebugVisual(e, circle, params.debug);
     return e;
 }
 
@@ -176,7 +184,6 @@ Entity EntityFactory::createBackgroundRectangle(const BackgroundParams& params, 
     this->addRender(e, 0, params.zIndex);
 
     this->addRectangleShape(ShapeParams{e, color, filled, 0}, rect);
-
     return e;
 }
 
@@ -191,7 +198,6 @@ Entity EntityFactory::createBackgroundCircle(const BackgroundParams& params, con
     this->addRender(e, 0, params.zIndex);
 
     this->addCircleShape(ShapeParams{e, color, filled, 0}, circle);
-
     return e;
 }
 
@@ -277,4 +283,28 @@ void EntityFactory::addCollider(Entity entity, const Circle& circle)
 {
     CircleColliderComponent collider{circle.radius};
     this->world.components().add<CircleColliderComponent>(entity, std::move(collider));
+}
+
+void EntityFactory::addDebugVisual(Entity entity, const Rectangle& rect, const DebugConfig& debug)
+{
+    if (!debug.enabled) return;
+    auto& comp = this->world.components();
+    RectangleShapeComponent shape;
+    shape.rect = rect;
+    shape.color = debug.color;
+    shape.filled = false;
+    shape.layer = 10;
+    comp.add<RectangleShapeComponent>(entity, std::move(shape));
+}
+
+void EntityFactory::addDebugVisual(Entity entity, const Circle& circle, const DebugConfig& debug)
+{
+    if (!debug.enabled) return;
+    auto& comp = this->world.components();
+    CircleShapeComponent shape;
+    shape.circle = circle;
+    shape.color = debug.color;
+    shape.filled = false;
+    shape.layer = 10;
+    comp.add<CircleShapeComponent>(entity, std::move(shape));
 }

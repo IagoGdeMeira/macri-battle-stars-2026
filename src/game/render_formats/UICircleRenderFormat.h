@@ -50,8 +50,6 @@ public:
         this->batch.submit(this->renderer);
     }
 
-    void setViewport(const Viewport& vp) override { (void)vp; }
-
 private:
     DrawCircleBatch batch;
     Renderer& renderer;

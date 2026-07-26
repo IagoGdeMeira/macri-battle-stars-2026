@@ -73,6 +73,26 @@ Corners DataUtils::parseCorners(const DataNode& node, Corners defaultValue)
     return corners;
 }
 
+DebugConfig DataUtils::parseDebug(const DataNode& node, const DebugConfig& defaultConfig)
+{
+    if (!node.has("debug")) return defaultConfig;
+
+    auto debugNode = node.getObject("debug");
+    if (!debugNode) return defaultConfig;
+
+    DebugConfig config;
+    config.enabled = debugNode->getBool("enabled", defaultConfig.enabled);
+
+    if (debugNode->has("color"))
+    {
+        auto colorNode = debugNode->getObject("color");
+        if (colorNode) config.color = DataUtils::parseColor(*colorNode, defaultConfig.color);
+    }
+    else config.color = defaultConfig.color;
+
+    return config;
+}
+
 void DataUtils::setPosition(DataNode& node, const Position& pos)
 {
     node.setFloat("x", pos.x);

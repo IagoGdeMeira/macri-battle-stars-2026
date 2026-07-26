@@ -13,7 +13,7 @@
 #include "engine/resources/Texture/Texture.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
-void WorldTextureRenderFormat::render(RenderContext &ctx)
+void WorldTextureRenderFormat::render(RenderContext& ctx)
 {
     LOG_DEBUG("WorldTextureRenderFormat::render: start");
     auto& comp = ctx.world.components();
@@ -61,7 +61,6 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
 
     const Position parallax = WorldRenderUtils::resolveParallax(world, entity);
     Position worldPos{transform.position.x, transform.position.y};
-    Viewport vp = this->viewport;
 
     const Position screenPos = WorldRenderUtils::worldToScreen(this->camera, worldPos, parallax);
     Rectangle spriteConfig = {{transform.scale.x, transform.scale.y}, sprite.size};

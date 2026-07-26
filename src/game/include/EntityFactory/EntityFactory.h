@@ -8,6 +8,8 @@
 #include "domain/value_objects/Color/Color.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
+#include "engine/value_objects/DebugConfig/DebugConfig.h"
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -36,19 +38,25 @@ public:
     ResourceManager& resources() { return this->resourceManager; }
     TextureLoader& texLoader() { return this->textureLoader; }
 
-    struct HitboxChildParams { Entity parent; const Position& offset; int damage; bool facingLeft; };
+    struct HitboxChildParams
+    { Entity parent; const Position& offset; int damage; bool facingLeft; DebugConfig debug = {false, Color{255, 0, 0, 128}}; };
     Entity createHitboxChild(const HitboxChildParams& params, const Rectangle& rect);
     Entity createHitboxChild(const HitboxChildParams& params, const Circle& circle);
 
-    struct HurtboxChildParams { Entity parent; const Position& offset; float damageMultiplier; bool facingLeft; };
+    struct HurtboxChildParams 
+    { Entity parent; const Position& offset; float damageMultiplier; bool facingLeft; DebugConfig debug = {false, Color{0, 255, 0, 128}};};
     Entity createHurtboxChild(const HurtboxChildParams& params, const Rectangle& rect);
     Entity createHurtboxChild(const HurtboxChildParams& params, const Circle& circle);
 
-    struct PushboxChildParams { Entity parent; const Position& offset; PushboxComponent::Type type; float mass; float pushResistance; bool facingLeft; };
+    struct PushboxChildParams
+    {  
+        Entity parent; const Position& offset; PushboxComponent::Type type; float mass; float pushResistance; bool facingLeft;
+        DebugConfig debug = {false, Color{0, 0, 255, 128}};
+    };
     Entity createPushboxChild(const PushboxChildParams& params, const Rectangle& rect);
     Entity createPushboxChild(const PushboxChildParams& params, const Circle& circle);
 
-    struct StaticEntityParams { const Position& position; std::optional<Entity> parent; };
+    struct StaticEntityParams { const Position& position; std::optional<Entity> parent; DebugConfig debug = {true, Color{128, 128, 128, 128}}; };
     Entity createStaticEntity(const StaticEntityParams& params, const Rectangle& rect);
     Entity createStaticEntity(const StaticEntityParams& params, const Circle& circle);
     
@@ -77,6 +85,9 @@ private:
     
     void addCollider(Entity entity, const Rectangle& rect);
     void addCollider(Entity entity, const Circle& circle);
+    
+    void addDebugVisual(Entity entity, const Rectangle& rect, const DebugConfig& debug);
+    void addDebugVisual(Entity entity, const Circle& circle, const DebugConfig& debug);
 };
 
 #endif // entity_factory_h

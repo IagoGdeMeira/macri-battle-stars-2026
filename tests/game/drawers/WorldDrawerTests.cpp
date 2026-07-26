@@ -34,19 +34,12 @@
 class WorldDrawerFixture
 {
 public:
-    GameSettings makeSettings()
-    {
-        GameSettings set;
-        set.screen.size = { 1920.f, 1080.f };
-        return set;
-    }
-
     WorldDrawerFixture() :
         threadPool(1),
+        settings(this->makeSettings()),
         textureFactory(),
         textureLoader(this->textureFactory),
         resourceManager(this->threadPool),
-        settings(this->makeSettings()),
         drawer(WorldDrawer::Config{
             this->bus,
             this->renderer,
@@ -70,19 +63,26 @@ public:
         comp.registerComponent<VisualEffectsComponent>();
     }
 
+    GameSettings makeSettings()
+    {
+        GameSettings set;
+        set.screen.size = {1920.f, 1080.f};
+        return set;
+    }
+
 protected:
     World world;
     EventBus bus;
     StubRenderer renderer;
     Camera2D camera;
-    GameSettings settings;
-    WorldDrawer drawer;
-    RenderContext context;
 
     ThreadPool threadPool;
+    GameSettings settings;
     StubTextureFactory textureFactory;
     StubTextureLoader textureLoader;
     ResourceManager resourceManager;
+    WorldDrawer drawer;
+    RenderContext context;
 };
 
 TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer configures viewports on draw", "[unit][world_drawer]")

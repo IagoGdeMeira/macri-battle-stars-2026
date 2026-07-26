@@ -5,6 +5,7 @@
 #include "domain/value_objects/StateId/StateId.h"
 
 #include "engine/utils/DataUtils/DataUtils.h"
+#include "engine/value_objects/DebugConfig/DebugConfig.h"
 
 #include <stdexcept>
 
@@ -40,15 +41,16 @@ HurtboxLoader::ControllerMap HurtboxLoader::load(const DataNode& root, Entity pa
 
 Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
 {
-    Position offset = DataUtils::parsePosition(node, Position{0.f, 0.f});
-    float damageMultiplier = node.getFloat("damageMultiplier", 0.f);
+    Position offset         = DataUtils::parsePosition(node, Position{0.f, 0.f});
+    float damageMultiplier  = node.getFloat("damageMultiplier", 0.f);
+    DebugConfig debug       = DataUtils::parseDebug(node, {false, Color{0, 255, 0, 128}});
 
     std::string type = node.getString("type", "rectangle");
     if (type == "rectangle") return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
-        parent, offset, damageMultiplier, facingLeft}, DataUtils::parseRect(node));
+        parent, offset, damageMultiplier, facingLeft, debug}, DataUtils::parseRect(node));
     
     if (type == "circle") return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
-        parent, offset, damageMultiplier, facingLeft}, DataUtils::parseCircle(node));
+        parent, offset, damageMultiplier, facingLeft, debug}, DataUtils::parseCircle(node));
         
     throw std::runtime_error("Invalid hurtbox type: " + type);
 }

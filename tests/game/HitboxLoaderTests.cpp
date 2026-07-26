@@ -29,6 +29,7 @@ class HitboxLoaderFixture
 {
 public:
     HitboxLoaderFixture() :
+        textureFactory(),
         textureLoader(this->textureFactory),
         factory(std::make_unique<EntityFactory>(EntityFactory::Config{
             this->world, this->resourceManager, this->textureLoader, this->animLoader})),
@@ -48,8 +49,8 @@ public:
     World world;
     StubDataParser parser;
     StubResourceManager resourceManager;
-    StubTextureLoader textureLoader;
     StubTextureFactory textureFactory;
+    StubTextureLoader textureLoader;
     StubAnimationLoader animLoader;
     std::unique_ptr<EntityFactory> factory;
     std::unique_ptr<HitboxLoader> loader;

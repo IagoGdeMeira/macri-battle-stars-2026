@@ -19,8 +19,8 @@ CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
     maxZoom(cfg.maxZoom),
     padding(cfg.padding),
     verticalOffset(cfg.verticalOffset),
-    bounds(cfg.bounds),
     epsilon(cfg.epsilon),
+    bounds(cfg.bounds),
     viewSize(cfg.viewSize)
 {
     LOG_DEBUG("CameraControllerSystem initialized with viewSize=({},{})", viewSize.width, viewSize.height);

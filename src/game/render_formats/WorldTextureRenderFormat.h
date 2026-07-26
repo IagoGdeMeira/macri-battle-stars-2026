@@ -12,7 +12,6 @@
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
 #include "engine/value_objects/Camera2D/Camera2D.h"
-#include "engine/value_objects/Viewport/Viewport.h"
 
 class WorldTextureRenderFormat : public IRenderFormat
 {
@@ -32,14 +31,12 @@ public:
         textureLoader(cfg.textureLoader) {}
 
     void render(RenderContext& ctx) override;
-    void setViewport(const Viewport& vp) override { this->viewport = vp; }
 
 private:
     Renderer& renderer;
     Camera2D& camera;
     ResourceManager& resourceManager;
     TextureLoader& textureLoader;
-    Viewport viewport;
     DrawTextureBatch batch;
 
     DrawTextureCommand buildTextureCommand(Entity& entity, World& world, size_t order, std::shared_ptr<Texture> texture) const;

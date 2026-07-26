@@ -2,9 +2,11 @@
 #define data_utils_h
 
 #include "DataNode/DataNode.h"
+#include "DebugConfig/DebugConfig.h"
 
 #include "domain/value_objects/Color/Color.h"
 #include "domain/value_objects/Geometry/Geometry.h"
+
 
 class DataUtils
 {
@@ -16,6 +18,8 @@ public:
     static Color parseColor(const DataNode& node, Color defaultValue = {255, 255, 255, 255});
     static AABB parseAABB(const DataNode& node, AABB defaultValue = {0.f, 0.f, 0.f, 0.f});
     static Corners parseCorners(const DataNode& node, Corners defaultValue = {0.f, 0.f, 0.f, 0.f});
+    
+    static DebugConfig parseDebug(const DataNode& node, const DebugConfig& defaultConfig = {false, Color::WHITE()});
 
     static void setPosition(DataNode& node, const Position& pos);
     static void setSize(DataNode& node, const Dimension2D& size);

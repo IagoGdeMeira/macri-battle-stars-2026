@@ -10,20 +10,16 @@
 #include "engine/include/DrawCommand/DrawCommand.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/value_objects/Camera2D/Camera2D.h"
-#include "engine/value_objects/Viewport/Viewport.h"
 
 class WorldCircleRenderFormat : public IRenderFormat
 {
 public:
     WorldCircleRenderFormat(Renderer& renderer, Camera2D& camera) : renderer(renderer), camera(camera) {}
-    
     void render(RenderContext& ctx) override;
-    void setViewport(const Viewport& vp) override { this->viewport = vp; }
 
 private:
     Renderer& renderer;
     Camera2D& camera;
-    Viewport viewport;
     DrawCircleBatch batch;
 
     DrawCircleCommand buildCircleCommand(Entity& entity, World& world, size_t order) const;

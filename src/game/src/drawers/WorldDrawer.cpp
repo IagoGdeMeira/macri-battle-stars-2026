@@ -19,11 +19,7 @@ WorldDrawer::WorldDrawer(Config&& cfg) :
 {
     this->recalculateViewport();
 
-    cfg.bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent&)
-    {
-        this->recalculateViewport();
-        this->propagateViewport();
-    });
+    cfg.bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent&) { this->recalculateViewport(); });
 
     this->addFormat(std::make_unique<WorldTextureRenderFormat>(WorldTextureRenderFormat::Config{
         .renderer           = this->renderer,
@@ -31,11 +27,8 @@ WorldDrawer::WorldDrawer(Config&& cfg) :
         .resourceManager    = this->resourceManager,
         .textureLoader      = this->textureLoader
     }));
-
     this->addFormat(std::make_unique<WorldRectangleRenderFormat>(renderer, camera));
     this->addFormat(std::make_unique<WorldCircleRenderFormat>(renderer, camera));
-
-    this->propagateViewport();
 }
 
 void WorldDrawer::addFormat(std::unique_ptr<IRenderFormat> format) { this->formats.push_back(std::move(format)); }
@@ -80,5 +73,3 @@ void WorldDrawer::recalculateViewport()
         static_cast<int>(viewSize.height)
     };
 }
-
-void WorldDrawer::propagateViewport() { for (auto& format : this->formats) format->setViewport(this->worldViewport); }

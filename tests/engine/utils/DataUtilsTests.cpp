@@ -131,6 +131,32 @@ TEST_CASE("DataUtils::parseCorners returns default when missing", "[unit][data_u
     REQUIRE(result.bottomRight == def.bottomRight);
 }
 
+TEST_CASE("DataUtils::parseDebug reads enabled state and color", "[unit][data_utils]")
+{
+    StubDataNode node;
+
+    auto debugNode = std::make_unique<StubDataNode>();
+    debugNode->setBool("enabled", true);
+
+    auto colorNode = std::make_unique<StubDataNode>();
+    colorNode->setInt("r", 10);
+    colorNode->setInt("g", 20);
+    colorNode->setInt("b", 30);
+    colorNode->setInt("a", 128);
+
+    debugNode->setObject("color", std::move(colorNode));
+    node.setObject("debug", std::move(debugNode));
+
+    DebugConfig defaultConfig{false, Color::WHITE()};
+    DebugConfig result = DataUtils::parseDebug(node, defaultConfig);
+
+    REQUIRE(result.enabled == true);
+    REQUIRE(result.color.r == 10);
+    REQUIRE(result.color.g == 20);
+    REQUIRE(result.color.b == 30);
+    REQUIRE(result.color.a == 128);
+}
+
 TEST_CASE("DataUtils::setPosition sets x and y", "[unit][data_utils]")
 {
     StubDataNode node;

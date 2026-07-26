@@ -5,6 +5,7 @@
 #include "domain/value_objects/StateId/StateId.h"
 
 #include "engine/utils/DataUtils/DataUtils.h"
+#include "engine/value_objects/DebugConfig/DebugConfig.h"
 
 #include <stdexcept>
 
@@ -40,17 +41,19 @@ PushboxLoader::ControllerMap PushboxLoader::load(const DataNode& root, Entity pa
 
 Entity PushboxLoader::createPushboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
 {
-    Position offset = DataUtils::parsePosition(node, Position{0.f, 0.f});
-    PushboxComponent::Type pushType = this->parsePushboxType(node.getString("pushboxType", "dynamic"));
-    float mass = node.getFloat("mass", 1.f);
-    float pushResistance = node.getFloat("pushResistance", 1.f);
+    using PushType = PushboxComponent::Type;
+    Position offset         = DataUtils::parsePosition(node, Position{0.f, 0.f});
+    PushType pushType       = this->parsePushboxType(node.getString("pushboxType", "dynamic"));
+    float mass              = node.getFloat("mass", 1.f);
+    float pushResistance    = node.getFloat("pushResistance", 1.f);
+    DebugConfig debug       = DataUtils::parseDebug(node, {false, Color{0, 0, 255, 128}});
 
     std::string type = node.getString("type", "rectangle");
     if (type == "rectangle") return this->factory.createPushboxChild(EntityFactory::PushboxChildParams{
-        parent, offset, pushType, mass, pushResistance, facingLeft}, DataUtils::parseRect(node));
+        parent, offset, pushType, mass, pushResistance, facingLeft, debug}, DataUtils::parseRect(node));
 
     if (type == "circle")  return this->factory.createPushboxChild(EntityFactory::PushboxChildParams{
-        parent, offset, pushType, mass, pushResistance, facingLeft}, DataUtils::parseCircle(node));
+        parent, offset, pushType, mass, pushResistance, facingLeft, debug}, DataUtils::parseCircle(node));
 
     throw std::runtime_error("Invalid pushbox type: " + type);
 }

@@ -12,9 +12,7 @@ TEST_CASE("WorldRenderUtils::worldToScreen applies camera and zoom", "[unit][wor
     camera.setPosition(10.f, 20.f);
     camera.setZoom(2.f);
 
-    Viewport vp { 0, 0, 800, 600 };
-    Position worldPos { 100.f, 60.f };
-
+    Position worldPos {100.f, 60.f};
     const Position screen = WorldRenderUtils::worldToScreen(camera, worldPos);
 
     REQUIRE(screen.x == Catch::Approx(580.f));
@@ -27,9 +25,7 @@ TEST_CASE("WorldRenderUtils::worldToScreen applies parallax factors", "[unit][wo
     camera.setPosition(10.f, 20.f);
     camera.setZoom(2.f);
 
-    Viewport vp { 0, 0, 800, 600 };
-    Position worldPos { 100.f, 60.f };
-
+    Position worldPos {100.f, 60.f};
     const Position screen = WorldRenderUtils::worldToScreen(camera, worldPos, Position{0.5f, 2.f});
 
     REQUIRE(screen.x == Catch::Approx(590.f));
@@ -89,11 +85,11 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform centers sprite on dest.posit
 {
     Camera2D camera;
     Rectangle spriteConfig;
-    spriteConfig.position = Position { 2.f, 3.f };
-    spriteConfig.size = Dimension2D { 16.f, 8.f };
+    spriteConfig.position = Position {2.f, 3.f};
+    spriteConfig.size = Dimension2D {16.f, 8.f};
 
     DrawTextureCommand cmd;
-    cmd.dest.position = { 100.f, 200.f };
+    cmd.dest.position = {100.f, 200.f};
 
     WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
 
@@ -111,11 +107,11 @@ TEST_CASE("WorldRenderUtils::computeSpriteTransform handles zero scale", "[unit]
 {
     Camera2D camera;
     Rectangle spriteConfig;
-    spriteConfig.position = Position { 0.f, 0.f };
-    spriteConfig.size = Dimension2D { 16.f, 8.f };
+    spriteConfig.position = Position {0.f, 0.f};
+    spriteConfig.size = Dimension2D {16.f, 8.f};
 
     DrawTextureCommand cmd;
-    cmd.dest.position = { 10.f, 20.f };
+    cmd.dest.position = {10.f, 20.f};
     WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
 
     REQUIRE(cmd.dest.size.width == Catch::Approx(0.f));

@@ -50,8 +50,6 @@ public:
         this->batch.submit(this->renderer);
     }
 
-    void setViewport(const Viewport& vp) override { (void)vp; }
-
 private:
     DrawFontBatch batch;
     Renderer& renderer;

@@ -57,7 +57,6 @@ public:
 
         this->camera.setPosition(50.f, 20.f);
         this->camera.setZoom(2.f);
-        this->format.setViewport(Viewport{ 0, 0, 800, 600});
     }
 };
 

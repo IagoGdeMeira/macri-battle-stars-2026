@@ -49,7 +49,6 @@ private:
 
     void addFormat(std::unique_ptr<IRenderFormat> format);
     void recalculateViewport();
-    void propagateViewport();
 };
 
 #endif // world_drawer_h

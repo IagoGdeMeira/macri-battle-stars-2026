@@ -5,6 +5,7 @@
 #include "domain/value_objects/StateId/StateId.h"
 
 #include "engine/utils/DataUtils/DataUtils.h"
+#include "engine/value_objects/DebugConfig/DebugConfig.h"
 
 #include <stdexcept>
 
@@ -40,15 +41,16 @@ HitboxLoader::ControllerMap HitboxLoader::load(const DataNode& root, Entity pare
 
 Entity HitboxLoader::createHitboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
 {
-    Position offset = DataUtils::parsePosition(node, Position{0.f, 0.f});
-    int damage = node.getInt("damage", 0);
+    Position offset     = DataUtils::parsePosition(node, Position{0.f, 0.f});
+    int damage          = node.getInt("damage", 0);
+    DebugConfig debug   = DataUtils::parseDebug(node, {false, Color{255, 0, 0, 128}});
     
     std::string type = node.getString("type", "rectangle");
     if (type == "rectangle") return this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
-        parent, offset, damage, facingLeft}, DataUtils::parseRect(node));
+        parent, offset, damage, facingLeft, debug}, DataUtils::parseRect(node));
 
     if (type == "circle") return this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
-        parent, offset, damage, facingLeft}, DataUtils::parseCircle(node));
+        parent, offset, damage, facingLeft, debug}, DataUtils::parseCircle(node));
 
     throw std::runtime_error("Invalid hitbox type: " + type);
 }

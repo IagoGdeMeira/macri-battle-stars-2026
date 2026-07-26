@@ -1,5 +1,6 @@
 #include "game/include/MapLoader/MapLoader.h"
 
+#include "StubAnimationLoader.h"
 #include "StubDataNode.h"
 #include "StubDataParser.h"
 #include "StubResourceManager.h"
@@ -16,8 +17,8 @@
 #include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxComponent.h"
 #include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
-#include "domain/components/ShapeRenderComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/ComponentManager/ComponentManager.h"
@@ -40,26 +41,27 @@ public:
     World world;
     StubResourceManager resourceManager;
     StubTextureFactory textureFactory;
+    StubAnimationLoader animationLoader;
     TextureLoader textureLoader{this->textureFactory};
-    EntityFactory entityFactory{this->world, this->resourceManager, this->textureLoader};
+    EntityFactory entityFactory{{this->world, this->resourceManager, this->textureLoader, this->animationLoader}};
     StubDataParser parser;
 
     MapLoaderFixture()
     {
         auto& comp = this->world.components();
-        comp.registerComponent<MapComponent>();
-        comp.registerComponent<TransformComponent>();
-        comp.registerComponent<ParentComponent>();
-        comp.registerComponent<RectangleColliderComponent>();
-        comp.registerComponent<SpriteComponent>();
-        comp.registerComponent<RenderComponent>();
-        comp.registerComponent<ParallaxComponent>();
         comp.registerComponent<CircleColliderComponent>();
-        comp.registerComponent<ShapeRenderComponent>();
-        comp.registerComponent<LocalTransform>();
-        comp.registerComponent<PushboxComponent>();
         comp.registerComponent<HitboxComponent>();
         comp.registerComponent<HurtboxComponent>();
+        comp.registerComponent<LocalTransform>();
+        comp.registerComponent<MapComponent>();
+        comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<ParentComponent>();
+        comp.registerComponent<PushboxComponent>();
+        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<RectangleShapeComponent>();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<SpriteComponent>();
+        comp.registerComponent<TransformComponent>();
     }
 
     std::unique_ptr<StubDataNode> makeBackgroundLayer() const
@@ -132,9 +134,8 @@ public:
     }
 };
 
-TEST_CASE_METHOD(MapLoaderFixture, "MapLoader parses map data and creates map entity",
-    "[unit][map_loader]"
-) {
+TEST_CASE_METHOD(MapLoaderFixture, "MapLoader parses map data and creates map entity", "[unit][map_loader]")
+{
     this->parser.registerNode("assets/maps/dojo.json", this->makeMapRoot());
 
     MapLoader loader(this->parser, this->entityFactory);
