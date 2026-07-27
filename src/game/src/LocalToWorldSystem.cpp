@@ -4,6 +4,7 @@
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -18,6 +19,12 @@ void LocalToWorldSystem::update(UpdateContext& ctx)
         if (!comp.has<TransformComponent>(parent.parent)) continue;
         const auto& parentTransform = comp.get<TransformComponent>(parent.parent);
         this->applyParentTransform(transform, local, parentTransform);
+
+        /*
+        LOG_DEBUG("LocalToWorld: entity {} parent {} local({},{}) -> world({},{})",
+            entity.id, parent.parent.id, local.position.x, local.position.y,
+            transform.position.x, transform.position.y);
+        */
     }
 }
 

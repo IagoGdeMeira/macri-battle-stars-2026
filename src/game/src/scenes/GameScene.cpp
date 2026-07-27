@@ -57,6 +57,7 @@
 #include "domain/components/StateComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/include/InputBindingLoader/InputBindingLoader.h"
 #include "engine/include/InputBufferSystem/InputBufferSystem.h"
@@ -214,6 +215,9 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     else transform.position.y = mapComp.floorY - 32.f;
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
+
+    LOG_DEBUG("GameScene: prepared player {} entity {} at ({}, {})",
+        slot.playerId, entity.id, transform.position.x, transform.position.y);
 }
 
 void GameScene::addSystems()
