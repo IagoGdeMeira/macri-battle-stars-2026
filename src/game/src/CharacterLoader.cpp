@@ -2,6 +2,7 @@
 
 #include "StateIdMapper/StateIdMapper.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
 #include "domain/components/HitboxControllerMapComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
@@ -97,8 +98,6 @@ void CharacterLoader::loadCollisionControllers(World& world, Entity entity, cons
 
     auto root = this->parser.parse(def.collisionsPath);
     auto& comp = world.components();
-
-    HitboxControllerComponent hitboxController;
     
     auto hitboxMap = this->hitboxLoader.load(*root, entity, facingLeft);
     HitboxControllerMapComponent hitboxMapComp;

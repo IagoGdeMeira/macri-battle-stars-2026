@@ -1,5 +1,6 @@
 #include "EntityFactory/EntityFactory.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
 #include "domain/components/CircleColliderComponent.h"
@@ -30,6 +31,9 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const R
 
     float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    comp.add<TransformComponent>(e, TransformComponent{});
+    comp.add<ActiveComponent>(e, ActiveComponent{false});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
     this->addCollider(e, rect);
     comp.add<HitboxComponent>(e, HitboxComponent{params.damage});
 
@@ -44,6 +48,9 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const C
 
     float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    comp.add<TransformComponent>(e, TransformComponent{});
+    comp.add<ActiveComponent>(e, ActiveComponent{false});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
     this->addCollider(e, circle);
     comp.add<HitboxComponent>(e, HitboxComponent{params.damage});
 
@@ -58,6 +65,9 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
 
     float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    comp.add<TransformComponent>(e, TransformComponent{});
+    comp.add<ActiveComponent>(e, ActiveComponent{false});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
     this->addCollider(e, rect);
     comp.add<HurtboxComponent>(e, HurtboxComponent{params.damageMultiplier});
 
@@ -72,6 +82,9 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
 
     float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    comp.add<TransformComponent>(e, TransformComponent{});
+    comp.add<ActiveComponent>(e, ActiveComponent{false});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
     this->addCollider(e, circle);
     comp.add<HurtboxComponent>(e, HurtboxComponent{params.damageMultiplier});
 
@@ -86,6 +99,9 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
 
     float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    comp.add<TransformComponent>(e, TransformComponent{});
+    comp.add<ActiveComponent>(e, ActiveComponent{false});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
     this->addCollider(e, rect);
     comp.add<PushboxComponent>(e, PushboxComponent{params.type, params.mass, params.pushResistance});
 
@@ -100,6 +116,9 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
 
     float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    comp.add<TransformComponent>(e, TransformComponent{});
+    comp.add<ActiveComponent>(e, ActiveComponent{false});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
     this->addCollider(e, circle);
     comp.add<PushboxComponent>(e, PushboxComponent{params.type, params.mass, params.pushResistance});
 

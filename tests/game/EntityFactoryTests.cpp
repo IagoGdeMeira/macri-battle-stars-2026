@@ -253,7 +253,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createHitboxChild() with 
     REQUIRE(comp.has<LocalTransform>(hitbox));
     REQUIRE(comp.has<RectangleColliderComponent>(hitbox));
     REQUIRE(comp.has<HitboxComponent>(hitbox));
-    REQUIRE_FALSE(comp.has<TransformComponent>(hitbox));
+    REQUIRE(comp.has<TransformComponent>(hitbox));
 
     const auto& local = comp.get<LocalTransform>(hitbox);
     REQUIRE(local.position.x == 5.f);

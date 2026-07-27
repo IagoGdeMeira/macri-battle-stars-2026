@@ -20,12 +20,11 @@ void ComboSystem::update(UpdateContext& ctx)
             if (!best || combo.priority > best->priority) best = &combo;
         }
 
-        if (best)
-        {
-            this->eventBus.emit<ComboExecutedEvent>(ComboExecutedEvent{entity, best->trigger});
-            this->eventBus.emit<TriggerEvent>(TriggerEvent{entity, best->trigger});
-            if (best->consumeInput) buffer.buffer.clear();
-        }
+        if (!best) continue;
+        
+        this->eventBus.emit<ComboExecutedEvent>(ComboExecutedEvent{entity, best->trigger});
+        this->eventBus.emit<TriggerEvent>(TriggerEvent{entity, best->trigger});
+        if (best->consumeInput) buffer.buffer.clear();
     }
 }
 

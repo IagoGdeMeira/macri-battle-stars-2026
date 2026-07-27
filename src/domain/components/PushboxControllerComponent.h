@@ -12,7 +12,7 @@ struct PushboxControllerComponent
     std::vector<Frame> frames;
     int currentFrame = 0;
     float elapsedTime = 0.f;
-    bool loop = false;
+    bool loop = false, initialized = false;
 };
 
 #endif // pushbox_controller_component_h
