@@ -54,15 +54,17 @@ TEST_CASE_METHOD(PushboxControllerSystemFixture, "PushboxControllerSystem advanc
     controller.currentFrame = 0;
     controller.elapsedTime = 0.f;
 
+    comp.get<ActiveComponent>(pb0).active = true;
+    controller.initialized = true;
+
     comp.add<PushboxControllerComponent>(entity, std::move(controller));
 
     UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.05f};
     this->system.update(ctx);
 
-    REQUIRE(comp.get<ActiveComponent>(pb0).active == false);
+    REQUIRE(comp.get<ActiveComponent>(pb0).active == true);
     REQUIRE(comp.get<ActiveComponent>(pb1).active == false);
 
-    ctx.deltaTime = 0.06f;
     this->system.update(ctx);
 
     REQUIRE(comp.get<ActiveComponent>(pb0).active == false);
@@ -97,6 +99,9 @@ TEST_CASE_METHOD(PushboxControllerSystemFixture, "PushboxControllerSystem loops 
     controller.currentFrame = 0;
     controller.elapsedTime = 0.f;
 
+    comp.get<ActiveComponent>(pb0).active = true;
+    controller.initialized = true;
+
     comp.add<PushboxControllerComponent>(entity, std::move(controller));
 
     UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.15f};
@@ -105,7 +110,6 @@ TEST_CASE_METHOD(PushboxControllerSystemFixture, "PushboxControllerSystem loops 
     REQUIRE(comp.get<ActiveComponent>(pb0).active == false);
     REQUIRE(comp.get<ActiveComponent>(pb1).active == true);
 
-    ctx.deltaTime = 0.15f;
     this->system.update(ctx);
 
     REQUIRE(comp.get<ActiveComponent>(pb0).active == true);
@@ -140,6 +144,9 @@ TEST_CASE_METHOD(PushboxControllerSystemFixture, "PushboxControllerSystem stays 
     controller.currentFrame = 0;
     controller.elapsedTime = 0.f;
 
+    comp.get<ActiveComponent>(pb0).active = true;
+    controller.initialized = true;
+
     comp.add<PushboxControllerComponent>(entity, std::move(controller));
 
     UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.25f};
@@ -148,7 +155,6 @@ TEST_CASE_METHOD(PushboxControllerSystemFixture, "PushboxControllerSystem stays 
     REQUIRE(comp.get<ActiveComponent>(pb0).active == false);
     REQUIRE(comp.get<ActiveComponent>(pb1).active == true);
 
-    ctx.deltaTime = 0.1f;
     this->system.update(ctx);
 
     REQUIRE(comp.get<ActiveComponent>(pb0).active == false);

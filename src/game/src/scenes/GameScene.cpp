@@ -22,15 +22,18 @@
 #include "FrictionSystem/FrictionSystem.h"
 #include "GravitySystem/GravitySystem.h"
 #include "GroundDetectionSystem/GroundDetectionSystem.h"
+#include "HitboxCollisionController.h"
 #include "HitboxControllerSystem/HitboxControllerSystem.h"
 #include "HitboxLoader/HitboxLoader.h"
 #include "HorizontalMovementSystem/HorizontalMovementSystem.h"
+#include "HurtboxCollisionController.h"
 #include "HurtboxControllerSystem/HurtboxControllerSystem.h"
 #include "HurtboxLoader/HurtboxLoader.h"
 #include "JumpSystem/JumpSystem.h"
 #include "LocalToWorldSystem/LocalToWorldSystem.h"
 #include "MapLoader/MapLoader.h"
 #include "MovementSystem/MovementSystem.h"
+#include "PushboxCollisionController.h"
 #include "PushboxControllerSystem/PushboxControllerSystem.h"
 #include "PushboxLoader/PushboxLoader.h"
 #include "RectCircleCollisionDetection.h"
@@ -245,10 +248,10 @@ void GameScene::addSystems()
     systems.addSystem<AnimationStateSystem>(events);
     systems.addSystem<AnimationSystem>();
 
-    auto& collisionDetectionSystem = systems.addSystem<CollisionDetectionSystem>(2);
-    collisionDetectionSystem.addDetector(std::make_unique<RectRectCollisionDetection>());
-    collisionDetectionSystem.addDetector(std::make_unique<RectCircleCollisionDetection>());
-    collisionDetectionSystem.addDetector(std::make_unique<CircleCircleCollisionDetection>());
+    auto& collisionDetect = systems.addSystem<CollisionDetectionSystem>(2);
+    collisionDetect.addDetector(std::make_unique<RectRectCollisionDetection>());
+    collisionDetect.addDetector(std::make_unique<RectCircleCollisionDetection>());
+    collisionDetect.addDetector(std::make_unique<CircleCircleCollisionDetection>());
 
     systems.addSystem<GroundDetectionSystem>(events);
     systems.addSystem<StaticPushboxResolutionSystem>(events);
@@ -257,7 +260,11 @@ void GameScene::addSystems()
 
     systems.addSystem<DamageSystem>(events);
 
-    systems.addSystem<CollisionControllerSystem>(this->eventBus);
+    auto& collisionCtrl = systems.addSystem<CollisionControllerSystem>(this->eventBus);
+    collisionCtrl.addController(std::make_unique<HitboxCollisionController>());
+    collisionCtrl.addController(std::make_unique<HurtboxCollisionController>());
+    collisionCtrl.addController(std::make_unique<PushboxCollisionController>());
+
     systems.addSystem<HitboxControllerSystem>();
     systems.addSystem<HurtboxControllerSystem>();
     systems.addSystem<PushboxControllerSystem>();

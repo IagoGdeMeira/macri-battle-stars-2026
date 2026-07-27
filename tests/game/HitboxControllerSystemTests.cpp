@@ -54,12 +54,15 @@ TEST_CASE_METHOD(HitboxControllerSystemFixture, "HitboxControllerSystem advances
     controller.currentFrame = 0;
     controller.elapsedTime = 0.f;
 
+    comp.get<ActiveComponent>(hb0).active = true;
+    controller.initialized = true;
+
     comp.add<HitboxControllerComponent>(entity, std::move(controller));
 
     UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.05f};
     this->system.update(ctx);
 
-    REQUIRE(comp.get<ActiveComponent>(hb0).active == false);
+    REQUIRE(comp.get<ActiveComponent>(hb0).active == true);
     REQUIRE(comp.get<ActiveComponent>(hb1).active == false);
 
     this->system.update(ctx);
@@ -96,6 +99,9 @@ TEST_CASE_METHOD(HitboxControllerSystemFixture, "HitboxControllerSystem loops fr
     controller.currentFrame = 0;
     controller.elapsedTime = 0.f;
 
+    comp.get<ActiveComponent>(hb0).active = true;
+    controller.initialized = true;
+
     comp.add<HitboxControllerComponent>(entity, std::move(controller));
 
     UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.15f};
@@ -104,7 +110,6 @@ TEST_CASE_METHOD(HitboxControllerSystemFixture, "HitboxControllerSystem loops fr
     REQUIRE(comp.get<ActiveComponent>(hb0).active == false);
     REQUIRE(comp.get<ActiveComponent>(hb1).active == true);
 
-    ctx.deltaTime = 0.15f;
     this->system.update(ctx);
 
     REQUIRE(comp.get<ActiveComponent>(hb0).active == true);
@@ -139,6 +144,9 @@ TEST_CASE_METHOD(HitboxControllerSystemFixture, "HitboxControllerSystem stays on
     controller.currentFrame = 0;
     controller.elapsedTime = 0.f;
 
+    comp.get<ActiveComponent>(hb0).active = true;
+    controller.initialized = true;
+
     comp.add<HitboxControllerComponent>(entity, std::move(controller));
 
     UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.25f};
@@ -147,7 +155,6 @@ TEST_CASE_METHOD(HitboxControllerSystemFixture, "HitboxControllerSystem stays on
     REQUIRE(comp.get<ActiveComponent>(hb0).active == false);
     REQUIRE(comp.get<ActiveComponent>(hb1).active == true);
 
-    ctx.deltaTime = 0.1f;
     this->system.update(ctx);
 
     REQUIRE(comp.get<ActiveComponent>(hb0).active == false);

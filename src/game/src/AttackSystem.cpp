@@ -47,8 +47,6 @@ bool AttackSystem::canAttack(UpdateContext& ctx, Entity entity) const
         default:
             return false;
     }
-
-    return true;
 }
 
 bool AttackSystem::hasInputAction(InputComponent& input, InputAction inputAction) const

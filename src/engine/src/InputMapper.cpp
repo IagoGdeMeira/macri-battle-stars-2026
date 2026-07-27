@@ -254,11 +254,11 @@ std::string InputMapper::keyToString(KeyCode keyCode)
 
 MouseButton InputMapper::stringToMouseButton(const std::string& buttonStr)
 {
-    if (buttonStr == "LeftButton")   return MouseButton::Left;
-    if (buttonStr == "RightButton")  return MouseButton::Right;
-    if (buttonStr == "MiddleButton") return MouseButton::Middle;
-    if (buttonStr == "X1")           return MouseButton::X1;
-    if (buttonStr == "X2")           return MouseButton::X2;
+    if (buttonStr == "Left")    return MouseButton::Left;
+    if (buttonStr == "Right")   return MouseButton::Right;
+    if (buttonStr == "Middle")  return MouseButton::Middle;
+    if (buttonStr == "X1")      return MouseButton::X1;
+    if (buttonStr == "X2")      return MouseButton::X2;
     
     return MouseButton::Unknown;
 }
@@ -267,12 +267,11 @@ std::string InputMapper::mouseButtonToString(MouseButton button)
 {
     switch (button)
     {
-        case MouseButton::Left:   return "LeftButton";
-        case MouseButton::Right:  return "RightButton";
-        case MouseButton::Middle: return "MiddleButton";
-        case MouseButton::X1:     return "X1";
-        case MouseButton::X2:     return "X2";
-
+        case MouseButton::Left:     return "Left";
+        case MouseButton::Right:    return "Right";
+        case MouseButton::Middle:   return "Middle";
+        case MouseButton::X1:       return "X1";
+        case MouseButton::X2:       return "X2";
         default: return "Unknown";
     }
 }

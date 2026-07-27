@@ -49,3 +49,9 @@ void DirectionTriggerSystem::update(UpdateContext& ctx)
         this->wasMovingRight[entity] = moveRight;
     }
 }
+
+bool DirectionTriggerSystem::hasInputAction(InputComponent& input, InputAction action) const
+{
+    auto it = input.actions.find(action);
+    return it != input.actions.end() && it->second.pressed;
+}

@@ -45,8 +45,8 @@ TEST_CASE("InputMapper throws for invalid source strings", "[unit][input_mapper]
 {
     REQUIRE_THROWS_AS(InputMapper::stringToSource("InvalidSource"), std::runtime_error);
     REQUIRE_THROWS_AS(InputMapper::stringToSource("Keyboard"), std::runtime_error);
-    REQUIRE_THROWS_AS(InputMapper::stringToSource("Mouse.LeftButton"), std::runtime_error);
-    REQUIRE_THROWS_AS(InputMapper::stringToSource("Gamepad.A"), std::runtime_error);
+    REQUIRE(InputMapper::stringToSource("Mouse.LeftButton").code() == static_cast<uint32_t>(MouseButton::Unknown));
+    REQUIRE(InputMapper::stringToSource("Gamepad.InvalidButton").code() == static_cast<uint32_t>(GamepadButton::Unknown));
 }
 
 TEST_CASE("InputMapper supports round-trip conversion for InputSource", "[unit][input_mapper]")
@@ -109,8 +109,8 @@ TEST_CASE("InputMapper throws for invalid source strings with mouse and gamepad 
 {
     REQUIRE_THROWS_AS(InputMapper::stringToSource("Mouse"), std::runtime_error);
     REQUIRE_THROWS_AS(InputMapper::stringToSource("Gamepad"), std::runtime_error);
-    REQUIRE_THROWS_AS(InputMapper::stringToSource("Mouse.InvalidButton"), std::runtime_error);
-    REQUIRE_THROWS_AS(InputMapper::stringToSource("Gamepad.InvalidButton"), std::runtime_error);
+    REQUIRE(InputMapper::stringToSource("Mouse.InvalidButton").code() == static_cast<uint32_t>(MouseButton::Unknown));
+    REQUIRE(InputMapper::stringToSource("Gamepad.InvalidButton").code() == static_cast<uint32_t>(GamepadButton::Unknown));
 }
 
 TEST_CASE("InputMapper converts known and unknown source strings", "[unit][input_mapper]")

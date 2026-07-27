@@ -2,6 +2,10 @@ add_library(game STATIC)
 
 target_sources(game
     PRIVATE
+        src/collision_controllers/HitboxCollisionController.cpp
+        src/collision_controllers/HurtboxCollisionController.cpp
+        src/collision_controllers/PushboxCollisionController.cpp
+
         src/collision_detections/CircleCircleCollisionDetection.cpp
         src/collision_detections/RectCircleCollisionDetection.cpp
         src/collision_detections/RectRectCollisionDetection.cpp
@@ -77,6 +81,7 @@ target_sources(game
 
 target_include_directories(game
     PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/collision_controllers
         ${CMAKE_CURRENT_SOURCE_DIR}/collision_detections
         ${CMAKE_CURRENT_SOURCE_DIR}/collision_handlers
         ${CMAKE_CURRENT_SOURCE_DIR}/drawers

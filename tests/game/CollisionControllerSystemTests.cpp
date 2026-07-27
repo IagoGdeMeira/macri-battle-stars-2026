@@ -1,17 +1,22 @@
 #include "game/include/CollisionControllerSystem/CollisionControllerSystem.h"
 
-#include "domain/components/HitboxControllerMapComponent.h"
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
-#include "domain/components/HurtboxControllerMapComponent.h"
+#include "domain/components/HitboxControllerMapComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
-#include "domain/components/PushboxControllerMapComponent.h"
+#include "domain/components/HurtboxControllerMapComponent.h"
 #include "domain/components/PushboxControllerComponent.h"
+#include "domain/components/PushboxControllerMapComponent.h"
+#include "domain/components/StateComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/CommandBuffer/CommandBuffer.h"
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
+#include "game/collision_controllers/HitboxCollisionController.h"
+#include "game/collision_controllers/HurtboxCollisionController.h"
+#include "game/collision_controllers/PushboxCollisionController.h"
 #include "game/events/StateChangedEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -28,6 +33,12 @@ public:
         comp.registerComponent<HurtboxControllerComponent>();
         comp.registerComponent<PushboxControllerMapComponent>();
         comp.registerComponent<PushboxControllerComponent>();
+        comp.registerComponent<StateComponent>();
+        comp.registerComponent<ActiveComponent>();
+
+        this->system.addController(std::make_unique<HitboxCollisionController>());
+        this->system.addController(std::make_unique<HurtboxCollisionController>());
+        this->system.addController(std::make_unique<PushboxCollisionController>());
     }
 
     World world;
@@ -36,16 +47,23 @@ public:
     CollisionControllerSystem system{this->bus};
 };
 
-TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem adds HitboxController when state has map entry",
-    "[unit][collision_controller_system]"
-) {
+TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem adds controllers on StateChangedEvent",
+    "[unit][collision_controller_system]")
+{
     auto& comp = this->world.components();
-
     Entity entity = this->world.entities().create();
 
-    HitboxControllerMapComponent map;
-    map.map[StateId::Punching] = HitboxControllerComponent{};
-    comp.add<HitboxControllerMapComponent>(entity, std::move(map));
+    HitboxControllerMapComponent hbMap;
+    hbMap.map[StateId::Punching] = HitboxControllerComponent{};
+    comp.add<HitboxControllerMapComponent>(entity, std::move(hbMap));
+
+    HurtboxControllerMapComponent huMap;
+    huMap.map[StateId::Punching] = HurtboxControllerComponent{};
+    comp.add<HurtboxControllerMapComponent>(entity, std::move(huMap));
+
+    PushboxControllerMapComponent pbMap;
+    pbMap.map[StateId::Punching] = PushboxControllerComponent{};
+    comp.add<PushboxControllerMapComponent>(entity, std::move(pbMap));
 
     this->bus.emit<StateChangedEvent>(entity, StateId::Idle, StateId::Punching);
 
@@ -53,17 +71,27 @@ TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem ad
     this->system.update(ctx);
 
     REQUIRE(comp.has<HitboxControllerComponent>(entity));
+    REQUIRE(comp.has<HurtboxControllerComponent>(entity));
+    REQUIRE(comp.has<PushboxControllerComponent>(entity));
 }
 
-TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem removes HitboxController when state has no map entry",
-    "[unit][collision_controller_system]"
-) {
+TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem removes controllers when state not in map",
+    "[unit][collision_controller_system]")
+{
     auto& comp = this->world.components();
-
     Entity entity = this->world.entities().create();
 
-    HitboxControllerMapComponent map;
-    comp.add<HitboxControllerMapComponent>(entity, std::move(map));
+    HitboxControllerMapComponent hbMap;
+    comp.add<HitboxControllerMapComponent>(entity, std::move(hbMap));
+    comp.add<HitboxControllerComponent>(entity, HitboxControllerComponent{});
+
+    HurtboxControllerMapComponent huMap;
+    comp.add<HurtboxControllerMapComponent>(entity, std::move(huMap));
+    comp.add<HurtboxControllerComponent>(entity, HurtboxControllerComponent{});
+
+    PushboxControllerMapComponent pbMap;
+    comp.add<PushboxControllerMapComponent>(entity, std::move(pbMap));
+    comp.add<PushboxControllerComponent>(entity, PushboxControllerComponent{});
 
     this->bus.emit<StateChangedEvent>(entity, StateId::Idle, StateId::Blocking);
 
@@ -71,104 +99,71 @@ TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem re
     this->system.update(ctx);
 
     REQUIRE_FALSE(comp.has<HitboxControllerComponent>(entity));
-}
-
-TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem adds HurtboxController when state has map entry",
-    "[unit][collision_controller_system]"
-) {
-    auto& comp = this->world.components();
-
-    Entity entity = this->world.entities().create();
-
-    HurtboxControllerMapComponent map;
-    map.map[StateId::Punching] = HurtboxControllerComponent{};
-    comp.add<HurtboxControllerMapComponent>(entity, std::move(map));
-
-    this->bus.emit<StateChangedEvent>(entity, StateId::Idle, StateId::Punching);
-
-    UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.016f};
-    this->system.update(ctx);
-
-    REQUIRE(comp.has<HurtboxControllerComponent>(entity));
-}
-
-TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem removes HurtboxController when state has no map entry",
-    "[unit][collision_controller_system]"
-) {
-    auto& comp = this->world.components();
-
-    Entity entity = this->world.entities().create();
-
-    HurtboxControllerMapComponent map;
-    comp.add<HurtboxControllerMapComponent>(entity, std::move(map));
-
-    this->bus.emit<StateChangedEvent>(entity, StateId::Idle, StateId::Blocking);
-
-    UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.016f};
-    this->system.update(ctx);
-
     REQUIRE_FALSE(comp.has<HurtboxControllerComponent>(entity));
-}
-
-TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem adds PushboxController when state has map entry",
-    "[unit][collision_controller_system]"
-) {
-    auto& comp = this->world.components();
-
-    Entity entity = this->world.entities().create();
-
-    PushboxControllerMapComponent map;
-    map.map[StateId::Punching] = PushboxControllerComponent{};
-    comp.add<PushboxControllerMapComponent>(entity, std::move(map));
-
-    this->bus.emit<StateChangedEvent>(entity, StateId::Idle, StateId::Punching);
-
-    UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.016f};
-    this->system.update(ctx);
-
-    REQUIRE(comp.has<PushboxControllerComponent>(entity));
-}
-
-TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem removes PushboxController when state has no map entry",
-    "[unit][collision_controller_system]"
-) {
-    auto& comp = this->world.components();
-
-    Entity entity = this->world.entities().create();
-
-    PushboxControllerMapComponent map;
-    comp.add<PushboxControllerMapComponent>(entity, std::move(map));
-
-    this->bus.emit<StateChangedEvent>(entity, StateId::Idle, StateId::Blocking);
-
-    UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.016f};
-    this->system.update(ctx);
-
     REQUIRE_FALSE(comp.has<PushboxControllerComponent>(entity));
 }
 
-TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem handles multiple entities independently",
-    "[unit][collision_controller_system]"
-) {
+TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem proactively initializes controllers on Idle",
+    "[unit][collision_controller_system]")
+{
     auto& comp = this->world.components();
-    auto& entities = this->world.entities();
+    Entity entity = this->world.entities().create();
 
-    Entity entity1 = entities.create();
-    Entity entity2 = entities.create();
+    comp.add<StateComponent>(entity, StateComponent{StateId::Idle});
+    HitboxControllerMapComponent hbMap;
+    hbMap.map[StateId::Idle] = HitboxControllerComponent{};
+    comp.add<HitboxControllerMapComponent>(entity, std::move(hbMap));
 
-    HitboxControllerMapComponent map1;
-    map1.map[StateId::Punching] = HitboxControllerComponent{};
-    comp.add<HitboxControllerMapComponent>(entity1, std::move(map1));
+    HurtboxControllerMapComponent huMap;
+    huMap.map[StateId::Idle] = HurtboxControllerComponent{};
+    comp.add<HurtboxControllerMapComponent>(entity, std::move(huMap));
 
-    HitboxControllerMapComponent map2;
-    comp.add<HitboxControllerMapComponent>(entity2, std::move(map2));
-
-    this->bus.emit<StateChangedEvent>(entity1, StateId::Idle, StateId::Punching);
-    this->bus.emit<StateChangedEvent>(entity2, StateId::Idle, StateId::Punching);
+    PushboxControllerMapComponent pbMap;
+    pbMap.map[StateId::Idle] = PushboxControllerComponent{};
+    comp.add<PushboxControllerMapComponent>(entity, std::move(pbMap));
 
     UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.016f};
     this->system.update(ctx);
 
-    REQUIRE(comp.has<HitboxControllerComponent>(entity1));
-    REQUIRE_FALSE(comp.has<HitboxControllerComponent>(entity2));
+    REQUIRE(comp.has<HitboxControllerComponent>(entity));
+    REQUIRE(comp.has<HurtboxControllerComponent>(entity));
+    REQUIRE(comp.has<PushboxControllerComponent>(entity));
+}
+
+TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem handles multiple entities with different maps",
+    "[unit][collision_controller_system]")
+{
+    auto& comp = this->world.components();
+    auto& entities = this->world.entities();
+
+    Entity e1 = entities.create();
+    comp.add<StateComponent>(e1, StateComponent{StateId::Idle});
+    HitboxControllerMapComponent map1;
+    map1.map[StateId::Idle] = HitboxControllerComponent{};
+    comp.add<HitboxControllerMapComponent>(e1, std::move(map1));
+
+    Entity e2 = entities.create();
+    comp.add<StateComponent>(e2, StateComponent{StateId::Idle});
+
+    UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.016f};
+    this->system.update(ctx);
+
+    REQUIRE(comp.has<HitboxControllerComponent>(e1));
+    REQUIRE_FALSE(comp.has<HitboxControllerComponent>(e2));
+}
+
+TEST_CASE_METHOD(CollisionControllerSystemFixture, "CollisionControllerSystem does not duplicate proactive init if controller already exists",
+    "[unit][collision_controller_system]")
+{
+    auto& comp = this->world.components();
+    Entity entity = this->world.entities().create();
+
+    comp.add<StateComponent>(entity, StateComponent{StateId::Idle});
+    HitboxControllerMapComponent map;
+    map.map[StateId::Idle] = HitboxControllerComponent{};
+    comp.add<HitboxControllerMapComponent>(entity, std::move(map));
+    comp.add<HitboxControllerComponent>(entity, HitboxControllerComponent{});
+
+    UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.016f};
+    REQUIRE_NOTHROW(this->system.update(ctx));
 }

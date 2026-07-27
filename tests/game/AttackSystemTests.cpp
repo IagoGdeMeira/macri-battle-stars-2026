@@ -46,6 +46,7 @@ TEST_CASE_METHOD(AttackSystemFixture, "AttackSystem emits the configured trigger
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
     comp.add<PlayerComponent>(entity, PlayerComponent{1});
+    comp.add<StateComponent>(entity, StateComponent{StateId::Idle});
 
     std::vector<TriggerEvent> events;
     this->bus.subscribe<TriggerEvent>([&](const TriggerEvent& event) { events.push_back(event); });

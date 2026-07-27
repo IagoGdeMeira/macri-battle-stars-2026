@@ -1,4 +1,8 @@
 add_executable(game_tests
+    collision_controllers/HitboxCollisionControllerTests.cpp
+    collision_controllers/HurtboxCollisionControllerTests.cpp
+    collision_controllers/PushboxCollisionControllerTests.cpp
+
     collision_detections/CircleCircleCollisionDetectionTests.cpp
     collision_detections/RectCircleCollisionDetectionTests.cpp
     collision_detections/RectRectCollisionDetectionTests.cpp
