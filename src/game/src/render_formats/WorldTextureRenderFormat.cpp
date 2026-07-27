@@ -9,34 +9,26 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VisualEffectsComponent.h"
 #include "domain/resources/Texture/Texture.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
 void WorldTextureRenderFormat::render(RenderContext& ctx)
 {
-    LOG_DEBUG("WorldTextureRenderFormat::render: start");
     auto& comp = ctx.world.components();
     auto view = View<SpriteComponent, TransformComponent, RenderComponent>(comp);
-    LOG_DEBUG("WorldTextureRenderFormat: found {} entities with SpriteComponent", view.size());
 
     this->batch.clear();
     size_t order = 0, entityCount = 0;
     for (auto [entity, sprite, transform, render] : view)
     {
-        LOG_DEBUG("WorldTextureRenderFormat: processing entity {}", entity.id);
         if (!sprite.cachedTexture) sprite.cachedTexture = this->resourceManager.load<Texture>(this->textureLoader, sprite.texturePath);
         
         auto texture = sprite.cachedTexture;
-        if (!texture)
-        {
-            LOG_WARN("WorldTextureRenderFormat: texture not loaded for entity {}", entity.id);
-            continue;
-        }
+        if (!texture) continue;
+        
         ++entityCount;
 
         DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++, texture);
-        LOG_DEBUG("WorldTextureRenderFormat: entity {} texture loaded", entity.id);
 
         if (comp.has<VisualEffectsComponent>(entity))
         {
@@ -45,10 +37,7 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
         }
         this->batch.add(cmd);
     }
-
-    LOG_DEBUG("WorldTextureRenderFormat: submitting batch with {} commands", entityCount);
     this->batch.submit(this->renderer);
-    LOG_DEBUG("WorldTextureRenderFormat: batch submitted");
 }
 
 DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
@@ -77,8 +66,6 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
             ? comp.get<AnimationControllerComponent>(entity).animations.symmetric : true;
         cmd.flipX = symmetric ? (comp.get<OrientationComponent>(entity).direction == Orientation::Left) : false;
     }
-
-    LOG_DEBUG("buildTextureCommand: entity {} worldPos=({},{})", entity.id, worldPos.x, worldPos.y);
 
     cmd.layer = render.layer;
     cmd.zIndex = render.zIndex;

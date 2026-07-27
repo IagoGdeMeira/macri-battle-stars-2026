@@ -6,8 +6,6 @@
 #include "SDLDrawRectangleCommandHandler.h"
 #include "SDLDrawTextureCommandHandler.h"
 
-#include "domain/utils/Logger/Logger.h"
-
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/include/IDrawCommandHandler/IDrawCommandHandler.h"
 
@@ -36,11 +34,7 @@ private:
 
     template <typename CommandType>
     void registerHandler(std::unique_ptr<IDrawCommandHandler> handler)
-    {
-        LOG_DEBUG("SDLRenderer::registerHandler: registering type {}", typeid(CommandType).name());
-        this->handlers[std::type_index(typeid(CommandType))] = std::move(handler);
-        LOG_DEBUG("SDLRenderer::registerHandler: map size = {}", this->handlers.size());
-    }
+    { this->handlers[std::type_index(typeid(CommandType))] = std::move(handler); }
 };
 
 #endif // sdl_renderer_h

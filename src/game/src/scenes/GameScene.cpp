@@ -54,7 +54,6 @@
 #include "domain/components/StateComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/include/InputBindingLoader/InputBindingLoader.h"
 #include "engine/include/InputBufferSystem/InputBufferSystem.h"
@@ -132,10 +131,8 @@ void GameScene::init()
 
 void GameScene::render()
 {
-    LOG_DEBUG("GameScene::render: start");
     RenderContext ctx{ this->world(), this->eventBus };
     this->worldDrawer->draw(ctx);
-    LOG_DEBUG("GameScene::render: end");
 }
 
 void GameScene::loadInputContext(const std::string& path)
@@ -197,9 +194,6 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     comp.add<RenderComponent>(entity, RenderComponent{ 0, 10 });
     comp.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Right });
 
-    LOG_DEBUG("GameScene: player entity {} state.current = {}",
-        entity.id, comp.get<StateComponent>(entity).current.value());
-
     const auto& mapComp = comp.get<MapComponent>(this->mapRoot);
 
     float spawnX = 400.f;
@@ -217,9 +211,6 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     else transform.position.y = mapComp.floorY - 32.f;
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
-
-    LOG_DEBUG("preparePlayer: entity {} final position = ({}, {})",
-        entity.id, transform.position.x, transform.position.y);
 }
 
 void GameScene::addSystems()
@@ -282,6 +273,4 @@ void GameScene::addSystems()
         .viewSize           = GameConstants::VIRTUAL_SIZE,
         .applyZoomToSize    = true,
     });
-
-    LOG_DEBUG("GameScene: total systems = {}", this->systems().size());
 }

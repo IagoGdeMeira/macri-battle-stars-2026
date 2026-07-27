@@ -20,8 +20,6 @@ public:
 
     void update(UpdateContext& ctx)
     {
-        LOG_DEBUG("SystemManager::update called, systems count = {}", this->systems.size());
-        
         using hrclock = std::chrono::high_resolution_clock;
         using ms = std::chrono::milliseconds;
 

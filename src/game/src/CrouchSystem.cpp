@@ -8,7 +8,9 @@
 #include "domain/include/View/View.h"
 #include "domain/value_objects/InputAction/InputAction.h"
 #include "domain/value_objects/TriggerId/TriggerId.h"
+#include "domain/utils/Logger/Logger.h"
 
+#include "engine/include/InputMapper/InputMapper.h"
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void CrouchSystem::update(UpdateContext& ctx)
@@ -16,7 +18,7 @@ void CrouchSystem::update(UpdateContext& ctx)
     auto& comp = ctx.world.components();
     auto view = View<InputComponent, PlayerComponent>(comp);
 
-    for (auto [entity, input, p_] : view)
+    for (auto [entity, input, player] : view)
     {
         bool crouchPressed = this->hasInputAction(input, InputAction::Crouch);
         bool entityCrouching = this->wasCrouching[entity];
@@ -25,12 +27,21 @@ void CrouchSystem::update(UpdateContext& ctx)
         {
             bool grounded = this->isGrounded(ctx, entity);
 
-            if (crouchPressed && grounded)
-            { this->bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Crouched }); }
-            else if (!crouchPressed && entityCrouching)
-            { this->bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::CrouchReleased }); }
+            if (crouchPressed)
+            {
+                if (grounded)
+                {
+                    LOG_DEBUG("CrouchSystem: player {} action Crouch -> Crouched (grounded)", player.id);
+                    this->bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Crouched });
+                }
+                else LOG_DEBUG("CrouchSystem: player {} crouch pressed but not grounded – ignored", player.id);
+            }
+            else
+            {
+                LOG_DEBUG("CrouchSystem: player {} action Crouch -> CrouchReleased", player.id);
+                this->bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::CrouchReleased });
+            }
         }
-
         this->wasCrouching[entity] = crouchPressed;
     }
 }

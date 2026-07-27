@@ -4,8 +4,6 @@
 #include "WorldRectangleRenderFormat.h"
 #include "WorldTextureRenderFormat.h"
 
-#include "domain/utils/Logger/Logger.h"
-
 #include "engine/events/WindowResizedEvent.h"
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
@@ -40,16 +38,11 @@ void WorldDrawer::draw(RenderContext& ctx)
     float zoom = this->camera.getZoom();
     float totalScale = viewportScale * zoom;
 
-    LOG_DEBUG("WorldDrawer::draw: start, viewportScale={}, zoom={}, totalScale={}",
-        viewportScale, zoom, totalScale);
-
     this->renderer.setViewport(this->worldViewport);
     this->renderer.setScale(Position{totalScale, totalScale});
 
     for (auto& format : this->formats) format->render(ctx);
     this->renderer.setScale(Position{1.f, 1.f});
-
-    LOG_DEBUG("WorldDrawer::draw: end");
 }
 
 void WorldDrawer::recalculateViewport()

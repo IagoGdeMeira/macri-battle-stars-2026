@@ -1,11 +1,13 @@
 #include "InputSystem/InputSystem.h"
 
+#include "InputMapper/InputMapper.h"
 #include "UpdateContext/UpdateContext.h"
 
 #include "domain/components/AnalogInputComponent.h"
 #include "domain/components/InputComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 
 InputSystem::InputSystem(EventBus& bus, InputContext& inputContext) : context(inputContext)
 {
@@ -20,7 +22,12 @@ void InputSystem::update(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();
 
-    for (const auto& e : this->digitalEvents) this->sourceStates[e.playerId][e.source] = e.pressed;
+    for (const auto& e : this->digitalEvents)
+    {
+        this->sourceStates[e.playerId][e.source] = e.pressed;
+        LOG_DEBUG("InputSystem: digital event player={} source={} pressed={}",
+            e.playerId, InputMapper::sourceToString(e.source), e.pressed);
+    }
 
     auto digitalView = View<InputComponent, PlayerComponent>(comp);
     for (auto [entity, input, player] : digitalView)

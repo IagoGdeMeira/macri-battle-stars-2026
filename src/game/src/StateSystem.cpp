@@ -4,6 +4,7 @@
 
 #include "domain/components/StateComponent.h"
 #include "domain/components/StateMachineComponent.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -14,7 +15,11 @@
 StateSystem::StateSystem(EventBus& eventBus, StateMachineRegistry& registry) : bus(eventBus), registry(registry)
 {
     this->bus.subscribe<TriggerEvent>([this](const TriggerEvent& event)
-    { this->events.push_back(event); });
+    {
+        LOG_DEBUG("StateSystem: received TriggerEvent entity {} trigger {}",
+            event.entity.id, static_cast<int>(event.trigger));
+        this->events.push_back(event);
+    });
 }
 
 void StateSystem::update(UpdateContext& ctx)
@@ -23,7 +28,7 @@ void StateSystem::update(UpdateContext& ctx)
 
     auto view = View<StateComponent>(comp);
     for (auto [entity, state] : view) state.timeInState += ctx.deltaTime;
-    
+
     std::unordered_map<Entity, std::vector<TriggerId>, Entity::Hash> grouped;
     for (const auto& e : this->events) grouped[e.entity].push_back(e.trigger);
     for (const auto& entry : grouped) this->processEntity(ctx, entry.first, entry.second);
@@ -35,13 +40,21 @@ void StateSystem::processEntity(UpdateContext& ctx, Entity entity, const std::ve
 {
     auto& comp = ctx.world.components();
 
-    if (!comp.has<StateComponent>(entity) || !comp.has<StateMachineComponent>(entity)) return;
+    if (!comp.has<StateComponent>(entity) || !comp.has<StateMachineComponent>(entity))
+    {
+        LOG_DEBUG("StateSystem: entity {} missing StateComponent or StateMachineComponent", entity.id);
+        return;
+    }
 
     auto& state = comp.get<StateComponent>(entity);
     uint32_t machineId = comp.get<StateMachineComponent>(entity).machineId;
 
     const StateMachine* machine = this->registry.getMachine(machineId);
-    if (!machine) return;
+    if (!machine)
+    {
+        LOG_DEBUG("StateSystem: entity {} machine {} not found", entity.id, machineId);
+        return;
+    }
 
     TriggerConditionContext cctx{ ctx.world, entity, state };
 
@@ -71,8 +84,12 @@ void StateSystem::processEntity(UpdateContext& ctx, Entity entity, const std::ve
         StateId previous = state.current;
         state.current = best->to;
         state.timeInState = 0.f;
+        LOG_DEBUG("StateSystem: entity {} state change {} -> {}",
+            entity.id, StateId::toBaseName(previous), StateId::toBaseName(state.current));
         this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, previous, state.current });
     }
+    else LOG_DEBUG("StateSystem: entity {} no valid transition from {} with triggers",
+        entity.id, StateId::toBaseName(state.current));
 }
 
 bool StateSystem::hasTrigger(const StateTransition& transition, TriggerId trigger)

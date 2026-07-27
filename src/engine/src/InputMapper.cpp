@@ -336,3 +336,31 @@ InputSource InputMapper::stringToSource(const std::string& sourceStr)
     
     throw std::runtime_error("Unknown device in source: " + device);
 }
+
+std::string InputMapper::sourceToString(const InputSource& source)
+{
+    std::string device, code;
+    switch (source.type())
+    {
+        case InputSource::Type::Keyboard:
+        {
+            device = "Keyboard";
+            code = InputMapper::keyToString(static_cast<KeyCode>(source.code()));
+            break;
+        }
+        case InputSource::Type::Mouse:
+        {
+            device = "Mouse";
+            code = InputMapper::mouseButtonToString(static_cast<MouseButton>(source.code()));
+            break;
+        }
+        case InputSource::Type::Gamepad:
+        {
+            device = "Gamepad";
+            code = InputMapper::gamepadButtonToString(static_cast<GamepadButton>(source.code()));
+            break;
+        }
+        default: throw std::runtime_error("Unknown input source type");
+    }
+    return device + "." + code;
+}

@@ -12,7 +12,6 @@
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/StateComponent.h"
 #include "domain/components/StateMachineComponent.h"
-#include "domain/utils/Logger/Logger.h"
 
 Entity CharacterLoader::create(World& world, const std::string& path) const
 {
@@ -33,7 +32,6 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 
     comp.add<AnimationComponent>(entity, this->buildInitialAnimation(entity, world));
 
-    LOG_DEBUG("CharacterLoader: created entity {} with sprite texture {}", entity.id, def.texturePath);
     return entity;
 }
 
@@ -88,7 +86,6 @@ AnimationComponent CharacterLoader::buildInitialAnimation(Entity entity, World& 
     const auto& controllerRef = comp.get<AnimationControllerComponent>(entity);
     auto it = controllerRef.animations.right.find(StateId::Idle);
     if (it != controllerRef.animations.right.end()) anim.animation = it->second;
-    else LOG_WARN("CharacterLoader: Idle animation not found for entity {}", entity.id);
     return anim;
 }
 

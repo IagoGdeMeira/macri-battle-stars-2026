@@ -12,7 +12,6 @@ class InputBufferSystem : public System
 {
 public:
     InputBufferSystem(EventBus& bus, InputContext& context);
-
     void update(UpdateContext& ctx) override;
 
 private:

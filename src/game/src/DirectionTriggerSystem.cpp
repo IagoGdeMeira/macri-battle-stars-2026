@@ -4,6 +4,7 @@
 
 #include "domain/components/PlayerComponent.h"
 #include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/InputAction/InputAction.h"
 #include "domain/value_objects/TriggerId/TriggerId.h"
 
@@ -22,19 +23,29 @@ void DirectionTriggerSystem::update(UpdateContext& ctx)
         bool wasLeft = this->wasMovingLeft[entity];
         bool wasRight = this->wasMovingRight[entity];
 
-        if (moveLeft && !wasLeft) this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::MoveLeft});
-        else if (!moveLeft && wasLeft) this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::MoveLeftReleased});
+        if (moveLeft && !wasLeft)
+        {
+            LOG_DEBUG("DirectionTriggerSystem: player {} MoveLeft", player.id);
+            this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::MoveLeft});
+        }
+        else if (!moveLeft && wasLeft)
+        {
+            LOG_DEBUG("DirectionTriggerSystem: player {} MoveLeftReleased", player.id);
+            this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::MoveLeftReleased});
+        }
 
-        if (moveRight && !wasRight) this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::MoveRight});
-        else if (!moveRight && wasRight) this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::MoveRightReleased});
+        if (moveRight && !wasRight)
+        {
+            LOG_DEBUG("DirectionTriggerSystem: player {} MoveRight", player.id);
+            this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::MoveRight});
+        }
+        else if (!moveRight && wasRight)
+        {
+            LOG_DEBUG("DirectionTriggerSystem: player {} MoveRightReleased", player.id);
+            this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::MoveRightReleased});
+        }
 
         this->wasMovingLeft[entity] = moveLeft;
         this->wasMovingRight[entity] = moveRight;
     }
-}
-
-bool DirectionTriggerSystem::hasInputAction(InputComponent& input, InputAction action) const
-{
-    auto it = input.actions.find(action);
-    return it != input.actions.end() && it->second.pressed;
 }

@@ -8,7 +8,6 @@
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
@@ -57,10 +56,6 @@ MapComponent MapLoader::parseMapComponent(const std::unique_ptr<DataNode>& root)
         mapComp.worldBounds = { 0.f, floorW, -200.f, mapComp.floorY + floorH + 50.f };
     }
 
-    LOG_DEBUG("MapLoader: worldBounds = [{}, {}, {}, {}]",
-        mapComp.worldBounds.left, mapComp.worldBounds.right,
-        mapComp.worldBounds.top, mapComp.worldBounds.bottom);
-
     if (root->has("spawnPoints")) for (auto& sp : root->getArray("spawnPoints"))
     {
         MapComponent::SpawnPoint s;
@@ -102,8 +97,6 @@ void MapLoader::createFloor(const std::unique_ptr<DataNode>& root, Entity mapEnt
     Position localPos = { floorW * 0.5f, floorY };
     Dimension2D size = { floorW, floorH };
 
-    LOG_DEBUG("MapLoader: creating floor at local pos ({}, {}) size {}x{}", localPos.x, localPos.y, size.width, size.height);
-
     auto& fac = this->factory;
     Entity floorEntity = fac.createStaticEntity(EntityFactory::StaticEntityParams{
         localPos, mapEntity}, Rectangle{Position{0.f, 0.f}, size});
@@ -121,14 +114,6 @@ void MapLoader::createFloor(const std::unique_ptr<DataNode>& root, Entity mapEnt
         comp.add<SpriteComponent>(floorEntity, std::move(sprite));
         comp.add<RenderComponent>(floorEntity, RenderComponent{0, 0});
     }
-
-    auto& comp = world.components();
-    if (comp.has<ParentComponent>(floorEntity))
-    {
-        Entity parent = comp.get<ParentComponent>(floorEntity).parent;
-        LOG_DEBUG("MapLoader: floor entity {} has parent {}", floorEntity.id, parent.id);
-    }
-    else LOG_WARN("MapLoader: floor entity {} has NO ParentComponent!", floorEntity.id);
 }
 
 void MapLoader::createWalls(const std::unique_ptr<DataNode>& root, Entity mapEntity)

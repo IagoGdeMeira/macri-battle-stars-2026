@@ -4,7 +4,6 @@
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -22,10 +21,7 @@ CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
     epsilon(cfg.epsilon),
     bounds(cfg.bounds),
     viewSize(cfg.viewSize)
-{
-    LOG_DEBUG("CameraControllerSystem initialized with viewSize=({},{})", viewSize.width, viewSize.height);
-    this->camera.setApplyZoomToSize(cfg.applyZoomToSize);
-}
+{ this->camera.setApplyZoomToSize(cfg.applyZoomToSize); }
 
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
@@ -61,12 +57,6 @@ void CameraControllerSystem::update(UpdateContext& ctx)
         this->camera.setPosition(clampedPos.x, clampedPos.y);
         this->camera.setZoom(finalZoom);
     }
-
-    LOG_DEBUG("CameraControllerSystem: center=({}, {}), targetZoom={}, finalZoom={}, boxSize=({},{}), padding={}",
-        center.x, center.y, targetZoom, finalZoom,
-        playerBounds.right - playerBounds.left,
-        playerBounds.bottom - playerBounds.top,
-        this->padding);
 }
 
 AABB CameraControllerSystem::computePlayerBounds(UpdateContext& ctx)
@@ -112,12 +102,7 @@ float CameraControllerSystem::computeTargetZoom(const AABB& playerBounds)
     float zoomY = this->viewSize.height / boxHeight;
     float targetZoom = std::min(zoomX, zoomY);
 
-    LOG_DEBUG("viewSize=({},{}), box=({},{}), zoomX={}, zoomY={}, targetZoom={}",
-        this->viewSize.width, this->viewSize.height, boxWidth, boxHeight, zoomX, zoomY, targetZoom);
-
-    float clamped = std::clamp(targetZoom, this->minZoom, this->maxZoom);
-    LOG_DEBUG("clamped zoom = {}", clamped);
-    return clamped;
+    return std::clamp(targetZoom, this->minZoom, this->maxZoom);
 }
 
 Position CameraControllerSystem::computeClampedCameraPosition(const Position& center, float targetZoom)

@@ -26,6 +26,7 @@ public:
     static std::string gamepadButtonToString(GamepadButton button);
 
     static InputSource stringToSource(const std::string& sourceStr);
+    static std::string sourceToString(const InputSource& source);
 };
 
 #endif // input_mapper_h

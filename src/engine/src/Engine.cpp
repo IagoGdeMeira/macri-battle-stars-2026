@@ -33,8 +33,6 @@ void Engine::run()
     using duration = std::chrono::duration<float>;
     using ms = std::chrono::milliseconds;
 
-    LOG_DEBUG("Engine: targetFPS = {}, fixedDelta = {}", TARGET_FPS, FIXED_DELTA);
-
     float accumulator = 0.f;
     auto previousTime = hrclock::now();
 
@@ -57,7 +55,6 @@ void Engine::run()
         int updateCount = 0;
         while (accumulator >= FIXED_DELTA && updateCount < MAX_UPDATES_PER_FRAME)
         {
-            LOG_DEBUG("Engine: update step {}, accumulator={}", updateCount, accumulator);
             this->sceneManager->update(FIXED_DELTA);
             accumulator -= FIXED_DELTA;
             ++updateCount;
@@ -85,8 +82,5 @@ void Engine::run()
         log_duration(t3, t4, "render");
         log_duration(t4, t5, "present");
         log_duration(t5, t6, "yield");
-
-        if (updateCount == 0 && deltaTime > 0.001f)
-        { LOG_DEBUG("Engine: no update executed (accumulator={}, deltaTime={})", accumulator, deltaTime); }
     }
 }
