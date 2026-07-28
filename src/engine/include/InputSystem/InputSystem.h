@@ -25,6 +25,11 @@ private:
 
     std::unordered_map<uint32_t, PlayerInputState> sourceStates;
     std::unordered_map<uint32_t, PlayerInputState> previousSourceStates;
+
+    bool hasProcessedThisFrame = false;
+
+    void processDigitalEvents(UpdateContext& ctx);
+    void processAnalogEvents(UpdateContext& ctx);
 };
 
 #endif // input_system_h

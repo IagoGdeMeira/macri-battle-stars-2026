@@ -48,7 +48,7 @@ TEST_CASE_METHOD(InputSystemFixture, "InputSystem updates mapped action for matc
     REQUIRE(input.actions.at(InputAction::Punch).pressed == true);
 }
 
-TEST_CASE_METHOD(InputSystemFixture, "InputSystem keeps heldTime progression when mapped key is released",
+TEST_CASE_METHOD(InputSystemFixture, "InputSystem keeps heldTime unchanged when mapped key is released",
     "[integration][input_system]"
 ) {
     const auto entity = this->scene.world().entities().create();
@@ -70,7 +70,7 @@ TEST_CASE_METHOD(InputSystemFixture, "InputSystem keeps heldTime progression whe
 
     const auto& updated = comp.get<InputComponent>(entity);
     REQUIRE(updated.actions.at(InputAction::MoveLeft).pressed == false);
-    REQUIRE(updated.actions.at(InputAction::MoveLeft).heldTime == Catch::Approx(2.516f));
+    REQUIRE(updated.actions.at(InputAction::MoveLeft).heldTime == Catch::Approx(2.5f));
 }
 
 TEST_CASE_METHOD(InputSystemFixture, "InputSystem ignores events from other players",
@@ -95,4 +95,26 @@ TEST_CASE_METHOD(InputSystemFixture, "InputSystem ignores events from other play
 
     const auto& updated = comp.get<InputComponent>(entity);
     REQUIRE(updated.actions.at(InputAction::Defend).pressed == false);
+}
+
+TEST_CASE_METHOD(InputSystemFixture, "InputSystem keeps action pressed when at least one source is active",
+    "[integration][input_system]"
+) {
+    const auto entity = this->scene.world().entities().create();
+    auto& comp = this->scene.world().components();
+    comp.add<InputComponent>(entity, InputComponent{});
+    comp.add<PlayerComponent>(entity, PlayerComponent{0});
+
+    InputContext context;
+    context.bindings[0].keyMap[InputSource::keyboard(KeyCode::D)] = InputAction::MoveRight;
+    context.bindings[0].keyMap[InputSource::gamepad(GamepadButton::DpadRight)] = InputAction::MoveRight;
+
+    this->scene.systems().addSystem<InputSystem>(this->bus, context);
+
+    this->bus.emit<DigitalInputEvent>(InputSource::keyboard(KeyCode::D), 0, true);
+    this->bus.emit<DigitalInputEvent>(InputSource::gamepad(GamepadButton::DpadRight), 0, false);
+    this->scene.update(0.016f);
+
+    const auto& input = comp.get<InputComponent>(entity);
+    REQUIRE(input.actions.at(InputAction::MoveRight).pressed == true);
 }
