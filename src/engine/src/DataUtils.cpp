@@ -90,6 +90,10 @@ DebugConfig DataUtils::parseDebug(const DataNode& node, const DebugConfig& defau
     }
     else config.color = defaultConfig.color;
 
+    config.layer = debugNode->getInt("layer", defaultConfig.layer);
+    config.zIndex = debugNode->getInt("zIndex", defaultConfig.zIndex);
+    config.filled = debugNode->getBool("filled", defaultConfig.filled);
+    
     return config;
 }
 

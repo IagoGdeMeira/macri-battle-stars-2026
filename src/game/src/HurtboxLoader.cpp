@@ -2,6 +2,7 @@
 
 #include "EntityFactory/EntityFactory.h"
 
+#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/StateId/StateId.h"
 
 #include "engine/utils/DataUtils/DataUtils.h"
@@ -41,16 +42,34 @@ HurtboxLoader::ControllerMap HurtboxLoader::load(const DataNode& root, Entity pa
 
 Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
 {
-    Position offset         = DataUtils::parsePosition(node, Position{0.f, 0.f});
-    float damageMultiplier  = node.getFloat("damageMultiplier", 0.f);
-    DebugConfig debug       = DataUtils::parseDebug(node, {false, Color{0, 255, 0, 225}});
+    LOG_DEBUG("HurtboxLoader: node has 'position'={}, has 'size'={}, has 'debug'={}",
+        node.has("position"), node.has("size"), node.has("debug"));
+    LOG_DEBUG("HurtboxLoader: node has 'x'={}, has 'y'={}, has 'width'={}, has 'height'={}",
+        node.has("x"), node.has("y"), node.has("width"), node.has("height"));
+
+    auto posNode = node.has("position") ? node.getObject("position") : nullptr;
+    Position offset = posNode ? DataUtils::parsePosition(*posNode) : Position{0.f, 0.f};
+
+    float damageMultiplier = node.getFloat("damageMultiplier", 0.f);
+    DebugConfig debug = DataUtils::parseDebug(node, {false, Color{0, 255, 0, 255}});
 
     std::string type = node.getString("type", "rectangle");
-    if (type == "rectangle") return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
-        parent, offset, damageMultiplier, facingLeft, debug}, DataUtils::parseRect(node));
-    
-    if (type == "circle") return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
-        parent, offset, damageMultiplier, facingLeft, debug}, DataUtils::parseCircle(node));
-        
+    if (type == "rectangle")
+    {
+        Rectangle rect = DataUtils::parseRect(node);
+        LOG_DEBUG("HurtboxLoader: parsed rect size=({},{}) offset=({},{}) debug.color=({},{},{},{})",
+            rect.size.width, rect.size.height, offset.x, offset.y,
+            debug.color.r, debug.color.g, debug.color.b, debug.color.a);
+        return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
+            parent, offset, damageMultiplier, facingLeft, debug}, rect);
+    }
+    if (type == "circle")
+    {
+        Circle circle = DataUtils::parseCircle(node);
+        LOG_DEBUG("HurtboxLoader: parsed circle radius={} offset=({},{})", circle.radius, offset.x, offset.y);
+        return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
+            parent, offset, damageMultiplier, facingLeft, debug}, circle);
+    }
+
     throw std::runtime_error("Invalid hurtbox type: " + type);
 }

@@ -1,7 +1,9 @@
 #include "LocalToWorldSystem/LocalToWorldSystem.h"
 
+#include "domain/components/CircleShapeComponent.h"
 #include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/utils/Logger/Logger.h"
@@ -20,11 +22,10 @@ void LocalToWorldSystem::update(UpdateContext& ctx)
         const auto& parentTransform = comp.get<TransformComponent>(parent.parent);
         this->applyParentTransform(transform, local, parentTransform);
 
-        /*
-        LOG_DEBUG("LocalToWorld: entity {} parent {} local({},{}) -> world({},{})",
-            entity.id, parent.parent.id, local.position.x, local.position.y,
-            transform.position.x, transform.position.y);
-        */
+        if (comp.has<RectangleShapeComponent>(entity) || comp.has<CircleShapeComponent>(entity)) LOG_DEBUG(
+            "LocalToWorld: entity {} parent {} worldPos=({},{}) scale=({},{})",
+            entity.id, parent.parent.id, transform.position.x, transform.position.y,
+            transform.scale.x, transform.scale.y);
     }
 }
 

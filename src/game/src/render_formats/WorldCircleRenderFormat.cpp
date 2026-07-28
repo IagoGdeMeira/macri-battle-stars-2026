@@ -6,6 +6,7 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
@@ -15,6 +16,7 @@ void WorldCircleRenderFormat::render(RenderContext& ctx)
     auto& comp = ctx.world.components();
 
     auto view = View<CircleShapeComponent, TransformComponent>(comp);
+    LOG_DEBUG("WorldCircleRenderFormat: found {} entities", view.size());
     size_t order = 0;
 
     for (auto [entity, shape, transform] : view)
@@ -22,6 +24,13 @@ void WorldCircleRenderFormat::render(RenderContext& ctx)
         if (shape.circle.radius <= 0.f) continue;
 
         DrawCircleCommand cmd = this->buildCircleCommand(entity, ctx.world, order++);
+        LOG_DEBUG("  entity {} pos=({},{}) radius={} filled={} color=({},{},{},{}) cmdRadius={}",
+            entity.id, transform.position.x, transform.position.y,
+            shape.circle.radius, shape.filled,
+            static_cast<int>(shape.color.r), static_cast<int>(shape.color.g),
+            static_cast<int>(shape.color.b), static_cast<int>(shape.color.a),
+            cmd.circle.radius);
+        
         if (comp.has<VisualEffectsComponent>(entity))
         {
             const auto& fx = comp.get<VisualEffectsComponent>(entity);

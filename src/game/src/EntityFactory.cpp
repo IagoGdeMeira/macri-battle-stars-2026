@@ -33,7 +33,7 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const R
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{true});
-    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
     this->addCollider(e, rect);
     comp.add<HitboxComponent>(e, HitboxComponent{params.damage});
 
@@ -50,7 +50,7 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const C
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{true});
-    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
     this->addCollider(e, circle);
     comp.add<HitboxComponent>(e, HitboxComponent{params.damage});
 
@@ -67,7 +67,7 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{true});
-    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
     this->addCollider(e, rect);
     comp.add<HurtboxComponent>(e, HurtboxComponent{params.damageMultiplier});
 
@@ -84,7 +84,7 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{true});
-    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
     this->addCollider(e, circle);
     comp.add<HurtboxComponent>(e, HurtboxComponent{params.damageMultiplier});
 
@@ -101,7 +101,7 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{true});
-    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
     this->addCollider(e, rect);
     comp.add<PushboxComponent>(e, PushboxComponent{params.type, params.mass, params.pushResistance});
 
@@ -118,7 +118,7 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
     this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{true});
-    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{20, 0});
+    if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
     this->addCollider(e, circle);
     comp.add<PushboxComponent>(e, PushboxComponent{params.type, params.mass, params.pushResistance});
 
@@ -238,9 +238,10 @@ Entity EntityFactory::createBackgroundAnimated(const BackgroundParams& params, c
     comp.add<AnimationControllerComponent>(e, std::move(controller));
 
     AnimationComponent anim;
-    anim.currentState = StateId::Idle;
-    anim.elapsedTime = 0.f;
-    anim.currentFrame = 0;
+    anim.currentState   = StateId::Idle;
+    anim.elapsedTime    = 0.f;
+    anim.currentFrame   = 0;
+    
     auto& anims = comp.get<AnimationControllerComponent>(e).animations;
     auto it = anims.right.find(StateId::Idle);
     if (it != anims.right.end()) anim.animation = it->second;
@@ -272,11 +273,11 @@ void EntityFactory::addSprite(Entity entity, const std::string& texturePath)
 {
     auto texture = this->resourceManager.load<Texture>(this->textureLoader, texturePath);
     SpriteComponent sprite;
-    sprite.texturePath = texturePath;
-    sprite.cachedTexture = texture;
-    sprite.size.width = static_cast<float>(texture->getWidth());
-    sprite.size.height = static_cast<float>(texture->getHeight());
-    sprite.useSourceRect = false;
+    sprite.texturePath      = texturePath;
+    sprite.cachedTexture    = texture;
+    sprite.size.width       = static_cast<float>(texture->getWidth());
+    sprite.size.height      = static_cast<float>(texture->getHeight());
+    sprite.useSourceRect    = false;
     this->world.components().add<SpriteComponent>(entity, std::move(sprite));
 }
 
@@ -309,11 +310,15 @@ void EntityFactory::addDebugVisual(Entity entity, const Rectangle& rect, const D
     if (!debug.enabled) return;
     auto& comp = this->world.components();
     RectangleShapeComponent shape;
-    shape.rect = rect;
-    shape.color = debug.color;
-    shape.filled = false;
-    shape.layer = 10;
+    shape.rect      = rect;
+    shape.color     = debug.color;
+    shape.filled    = debug.filled;
+    shape.layer     = debug.layer;
+    shape.zIndex    = debug.zIndex;
     comp.add<RectangleShapeComponent>(entity, std::move(shape));
+    
+    LOG_DEBUG("EntityFactory::addDebugVisual (rect): entity {} size=({},{})",
+        entity.id, rect.size.width, rect.size.height);
 }
 
 void EntityFactory::addDebugVisual(Entity entity, const Circle& circle, const DebugConfig& debug)
@@ -321,9 +326,10 @@ void EntityFactory::addDebugVisual(Entity entity, const Circle& circle, const De
     if (!debug.enabled) return;
     auto& comp = this->world.components();
     CircleShapeComponent shape;
-    shape.circle = circle;
-    shape.color = debug.color;
-    shape.filled = false;
-    shape.layer = 10;
+    shape.circle    = circle;
+    shape.color     = debug.color;
+    shape.filled    = debug.filled;
+    shape.layer     = debug.layer;
+    shape.zIndex    = debug.zIndex;
     comp.add<CircleShapeComponent>(entity, std::move(shape));
 }

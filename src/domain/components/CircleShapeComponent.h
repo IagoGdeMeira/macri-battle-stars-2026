@@ -9,7 +9,7 @@ struct CircleShapeComponent
     Circle circle;
     Color color = Color::WHITE();
     bool filled = false;
-    int layer = 0;
+    int layer = 0, zIndex = 0;
 };
 
 #endif // circle_shape_component_h

@@ -246,7 +246,7 @@ void GameScene::addSystems()
     auto& mapComp = this->world().components().get<MapComponent>(this->mapRoot);
 
     systems.addSystem<AirFrictionSystem>(mapComp.airFriction);
-    systems.addSystem<GravitySystem>(mapComp.gravity);
+    // systems.addSystem<GravitySystem>(mapComp.gravity);
     systems.addSystem<MovementSystem>();
     systems.addSystem<LocalToWorldSystem>();
 
