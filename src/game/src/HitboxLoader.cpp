@@ -43,7 +43,7 @@ Entity HitboxLoader::createHitboxFromNode(const DataNode& node, Entity parent, b
 {
     Position offset     = DataUtils::parsePosition(node, Position{0.f, 0.f});
     int damage          = node.getInt("damage", 0);
-    DebugConfig debug   = DataUtils::parseDebug(node, {false, Color{255, 0, 0, 128}});
+    DebugConfig debug   = DataUtils::parseDebug(node, {false, Color{255, 0, 0, 225}});
     
     std::string type = node.getString("type", "rectangle");
     if (type == "rectangle") return this->factory.createHitboxChild(EntityFactory::HitboxChildParams{

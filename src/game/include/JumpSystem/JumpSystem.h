@@ -19,4 +19,4 @@ private:
     bool hasInputAction(InputComponent& input, InputAction action) const;
 };
 
-#endif
+#endif // jump_system_h

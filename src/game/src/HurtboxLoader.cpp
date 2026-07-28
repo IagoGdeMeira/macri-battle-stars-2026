@@ -43,7 +43,7 @@ Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent,
 {
     Position offset         = DataUtils::parsePosition(node, Position{0.f, 0.f});
     float damageMultiplier  = node.getFloat("damageMultiplier", 0.f);
-    DebugConfig debug       = DataUtils::parseDebug(node, {false, Color{0, 255, 0, 128}});
+    DebugConfig debug       = DataUtils::parseDebug(node, {false, Color{0, 255, 0, 225}});
 
     std::string type = node.getString("type", "rectangle");
     if (type == "rectangle") return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{

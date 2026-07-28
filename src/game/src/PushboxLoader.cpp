@@ -46,7 +46,7 @@ Entity PushboxLoader::createPushboxFromNode(const DataNode& node, Entity parent,
     PushType pushType       = this->parsePushboxType(node.getString("pushboxType", "dynamic"));
     float mass              = node.getFloat("mass", 1.f);
     float pushResistance    = node.getFloat("pushResistance", 1.f);
-    DebugConfig debug       = DataUtils::parseDebug(node, {false, Color{0, 0, 255, 128}});
+    DebugConfig debug       = DataUtils::parseDebug(node, {false, Color{0, 0, 255, 225}});
 
     std::string type = node.getString("type", "rectangle");
     if (type == "rectangle") return this->factory.createPushboxChild(EntityFactory::PushboxChildParams{

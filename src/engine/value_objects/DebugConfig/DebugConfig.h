@@ -8,6 +8,7 @@ struct DebugConfig
     bool enabled = false;
     Color color = Color::WHITE();
     int zIndex = 0, layer = 0;
+    bool filled = true;
 };
 
 #endif // debug_config_h

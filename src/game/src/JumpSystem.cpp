@@ -8,6 +8,7 @@
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/InputAction/InputAction.h"
 #include "domain/value_objects/TriggerId/TriggerId.h"
 
@@ -18,16 +19,18 @@ void JumpSystem::update(UpdateContext& ctx)
     auto& comp = ctx.world.components();
     auto view = View<InputComponent, VelocityComponent, GroundedComponent, PlayerComponent>(comp);
 
-    for (auto [entity, input, velocity, grounded, p_] : view)
+    for (auto [entity, input, velocity, grounded, player] : view)
     {
         if (comp.has<HitstopComponent>(entity) && comp.get<HitstopComponent>(entity).frozen) continue;
-        if (!grounded.onGround) continue;
-        
-        if (this->hasInputAction(input, InputAction::Jump))
-        {
-            velocity.velocity.y = this->jumpImpulse;
-            this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Jump});
-        }
+
+        bool jumpPressed = this->hasInputAction(input, InputAction::Jump);
+        LOG_DEBUG("JumpSystem: player {} entity {} onGround={} jumpPressed={}",
+            player.id, entity.id, grounded.onGround, jumpPressed);
+
+        if (!grounded.onGround || !jumpPressed) continue;
+
+        velocity.velocity.y = this->jumpImpulse;
+        this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Jump});
     }
 }
 

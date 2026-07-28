@@ -18,7 +18,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -46,7 +46,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -74,7 +74,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 30, "width": 60, "height": 80,
+                            "x": 0, "y": 143.5, "width": 60, "height": 80,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -96,7 +96,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 30, "width": 60, "height": 80,
+                            "x": 0, "y": 143.5, "width": 60, "height": 80,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -118,7 +118,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 30, "width": 60, "height": 80,
+                            "x": 0, "y": 143.5, "width": 60, "height": 80,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -146,7 +146,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -168,7 +168,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -190,7 +190,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -218,7 +218,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -240,7 +240,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -275,7 +275,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -304,7 +304,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -326,7 +326,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -348,7 +348,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -370,7 +370,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -392,7 +392,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -414,7 +414,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -449,7 +449,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -478,7 +478,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -500,7 +500,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -522,7 +522,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -544,7 +544,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
@@ -572,7 +572,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 2.0,
@@ -594,7 +594,7 @@
                     "pushboxes": [
                         {
                             "type": "rectangle",
-                            "x": 0, "y": 0, "width": 60, "height": 130,
+                            "x": 0, "y": 118.5, "width": 60, "height": 130,
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 2.0,

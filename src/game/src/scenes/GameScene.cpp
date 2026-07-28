@@ -246,13 +246,14 @@ void GameScene::addSystems()
     auto& mapComp = this->world().components().get<MapComponent>(this->mapRoot);
 
     systems.addSystem<AirFrictionSystem>(mapComp.airFriction);
+    systems.addSystem<GravitySystem>(mapComp.gravity);
     systems.addSystem<MovementSystem>();
     systems.addSystem<LocalToWorldSystem>();
 
     systems.addSystem<AnimationStateSystem>(events);
     systems.addSystem<AnimationSystem>();
 
-    auto& collisionDetect = systems.addSystem<CollisionDetectionSystem>(2);
+    auto& collisionDetect = systems.addSystem<CollisionDetectionSystem>(1);
     collisionDetect.addDetector(std::make_unique<RectRectCollisionDetection>());
     collisionDetect.addDetector(std::make_unique<RectCircleCollisionDetection>());
     collisionDetect.addDetector(std::make_unique<CircleCircleCollisionDetection>());
