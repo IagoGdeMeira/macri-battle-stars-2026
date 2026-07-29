@@ -1,6 +1,7 @@
 #ifndef draw_texture_command_h
 #define draw_texture_command_h
 
+#include "BlendMode/BlendMode.h"
 #include "DrawCommand/DrawCommand.h"
 
 #include "domain/resources/Texture/Texture.h"
@@ -9,8 +10,6 @@
 
 #include <cstddef>
 #include <memory>
-
-enum class BlendMode { Normal, Add, Multiply };
 
 struct DrawTextureCommand : public DrawCommand
 {

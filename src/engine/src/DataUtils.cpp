@@ -123,7 +123,9 @@ DebugConfig DataUtils::parseDebug(const DataNode& node, const DebugConfig& defau
     config.filled  = debugNode->getBool("filled", defaultConfig.filled);
 
     LOG_DEBUG("DataUtils::parseDebug: enabled={} color=({},{},{},{})",
-        config.enabled, config.color.r, config.color.g, config.color.b, config.color.a);
+        config.enabled,
+        static_cast<int>(config.color.r), static_cast<int>(config.color.g),
+        static_cast<int>(config.color.b), static_cast<int>(config.color.a));
     return config;
 }
 

@@ -218,6 +218,12 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
 
     LOG_DEBUG("GameScene: prepared player {} entity {} at ({}, {})",
         slot.playerId, entity.id, transform.position.x, transform.position.y);
+
+    LOG_DEBUG("GameScene::preparePlayer: player {} entity {} completed. hasSprite={} hasRender={} pos=({},{})",
+        slot.playerId, entity.id,
+        comp.has<SpriteComponent>(entity),
+        comp.has<RenderComponent>(entity),
+        transform.position.x, transform.position.y);
 }
 
 void GameScene::addSystems()

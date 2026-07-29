@@ -9,32 +9,33 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VisualEffectsComponent.h"
 #include "domain/resources/Texture/Texture.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
 void WorldTextureRenderFormat::render(RenderContext& ctx)
 {
+    this->batch.clear();
     auto& comp = ctx.world.components();
     auto view = View<SpriteComponent, TransformComponent, RenderComponent>(comp);
+    LOG_DEBUG("WorldTextureRenderFormat: found {} sprites", view.size());
 
-    this->batch.clear();
-    size_t order = 0, entityCount = 0;
+    size_t order = 0;
     for (auto [entity, sprite, transform, render] : view)
     {
+        LOG_DEBUG("  entity {} layer={} zIndex={} pos=({},{}) texture='{}'",
+            entity.id, render.layer, render.zIndex,
+            transform.position.x, transform.position.y,
+            sprite.texturePath);
+
         if (!sprite.cachedTexture) sprite.cachedTexture = this->resourceManager.load<Texture>(this->textureLoader, sprite.texturePath);
-        
-        auto texture = sprite.cachedTexture;
-        if (!texture) continue;
-        
-        ++entityCount;
-
-        DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++, texture);
-
-        if (comp.has<VisualEffectsComponent>(entity))
+        if (!sprite.cachedTexture)
         {
-            const auto& fx = comp.get<VisualEffectsComponent>(entity);
-            for (auto& effect : fx.textureEffects) effect(this->batch, cmd);
+            LOG_WARN("  -> texture not loaded");
+            continue;
         }
+
+        DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++, sprite.cachedTexture);
         this->batch.add(cmd);
     }
     this->batch.submit(this->renderer);

@@ -9,7 +9,6 @@ class CharacterDefinitionLoader
 {
 public:
     CharacterDefinitionLoader(DataParser& parser) : parser(parser) {}
-
     CharacterDefinition load(const std::string& path) const;
 
 private:

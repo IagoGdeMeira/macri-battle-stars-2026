@@ -8,6 +8,7 @@
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
@@ -101,6 +102,7 @@ void MapLoader::createFloor(const std::unique_ptr<DataNode>& root, Entity mapEnt
     Entity floorEntity = fac.createStaticEntity(EntityFactory::StaticEntityParams{
         localPos, mapEntity}, Rectangle{Position{0.f, 0.f}, size});
 
+    auto& comp = world.components();
     if (!floorTex.empty())
     {
         auto texture = fac.resources().load<Texture>(fac.texLoader(), floorTex);
@@ -110,10 +112,15 @@ void MapLoader::createFloor(const std::unique_ptr<DataNode>& root, Entity mapEnt
         sprite.size = size;
         sprite.useSourceRect = false;
 
-        auto& comp = world.components();
         comp.add<SpriteComponent>(floorEntity, std::move(sprite));
         comp.add<RenderComponent>(floorEntity, RenderComponent{0, 0});
     }
+
+    LOG_DEBUG("MapLoader::createFloor: floor entity {} hasSprite={} hasRender={} pos=({},{})",
+        floorEntity.id,
+        comp.has<SpriteComponent>(floorEntity),
+        comp.has<RenderComponent>(floorEntity),
+        localPos.x, localPos.y);
 }
 
 void MapLoader::createWalls(const std::unique_ptr<DataNode>& root, Entity mapEntity)
