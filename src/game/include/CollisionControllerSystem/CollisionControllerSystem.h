@@ -2,6 +2,7 @@
 #define collision_controller_system_h
 
 #include "ICollisionController/ICollisionController.h"
+#include "OrientationChangedEvent.h"
 #include "StateChangedEvent.h"
 
 #include "engine/include/System/System.h"
@@ -22,8 +23,10 @@ public:
 
 private:
     EventBus& bus;
-    std::vector<StateChangedEvent> pendingEvents;
     std::vector<std::unique_ptr<ICollisionController>> controllers;
+
+    std::vector<StateChangedEvent> stateChangedEvents;
+    std::vector<OrientationChangedEvent> orientationChangedEvents;
 };
 
 #endif // collision_controller_system_h

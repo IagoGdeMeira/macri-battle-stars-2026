@@ -2,6 +2,7 @@
 
 #include "WorldRenderUtils/WorldRenderUtils.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VisualEffectsComponent.h"
@@ -21,6 +22,7 @@ void WorldCircleRenderFormat::render(RenderContext& ctx)
 
     for (auto [entity, shape, transform] : view)
     {
+        if (comp.has<ActiveComponent>(entity) && !comp.get<ActiveComponent>(entity).active) continue;
         if (shape.circle.radius <= 0.f) continue;
 
         DrawCircleCommand cmd = this->buildCircleCommand(entity, ctx.world, order++);

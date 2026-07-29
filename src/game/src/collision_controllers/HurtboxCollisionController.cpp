@@ -1,8 +1,12 @@
 #include "HurtboxCollisionController.h"
 
 #include "domain/components/ActiveComponent.h"
+#include "domain/components/HurtboxComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
 #include "domain/components/HurtboxControllerMapComponent.h"
+#include "domain/components/LocalTransform.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
 
 bool HurtboxCollisionController::hasMapComponent(const ControllerParams& params) const
@@ -25,11 +29,22 @@ void HurtboxCollisionController::apply(const ControllerParams& params, StateId n
 void HurtboxCollisionController::remove(const ControllerParams& params)
 {
     auto& comp = params.world.components();
-    if (comp.has<HurtboxControllerComponent>(params.entity))
+    if (!comp.has<HurtboxControllerComponent>(params.entity)) return;
+
+    auto& controller = comp.get<HurtboxControllerComponent>(params.entity);
+    this->deactivateCurrentFrame(controller, params.world);
+    comp.remove<HurtboxControllerComponent>(params.entity);  
+}
+
+void HurtboxCollisionController::onOrientationChanged(const ControllerParams& params)
+{
+    auto& comp = params.world.components();
+    auto view = View<LocalTransform, ParentComponent>(comp);
+    for (auto [childEntity, local, parent] : view)
     {
-        auto& controller = comp.get<HurtboxControllerComponent>(params.entity);
-        this->deactivateCurrentFrame(controller, params.world);
-        comp.remove<HurtboxControllerComponent>(params.entity);
+        if (parent.parent != params.entity) continue;
+        if (!comp.has<HurtboxComponent>(childEntity)) continue;
+        local.position.x = -local.position.x;
     }
 }
 

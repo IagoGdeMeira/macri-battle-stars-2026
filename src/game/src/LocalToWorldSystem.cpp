@@ -21,11 +21,6 @@ void LocalToWorldSystem::update(UpdateContext& ctx)
         if (!comp.has<TransformComponent>(parent.parent)) continue;
         const auto& parentTransform = comp.get<TransformComponent>(parent.parent);
         this->applyParentTransform(transform, local, parentTransform);
-
-        if (comp.has<RectangleShapeComponent>(entity) || comp.has<CircleShapeComponent>(entity)) LOG_DEBUG(
-            "LocalToWorld: entity {} parent {} worldPos=({},{}) scale=({},{})",
-            entity.id, parent.parent.id, transform.position.x, transform.position.y,
-            transform.scale.x, transform.scale.y);
     }
 }
 

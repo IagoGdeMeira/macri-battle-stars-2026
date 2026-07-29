@@ -14,7 +14,14 @@ CollisionControllerSystem::CollisionControllerSystem(EventBus& bus) : bus(bus)
     {
         LOG_DEBUG("CollisionControllerSystem: received StateChangedEvent entity {} prev {} curr {}",
             e.entity.id, StateId::toBaseName(e.previous), StateId::toBaseName(e.current));
-        this->pendingEvents.push_back(e);
+        this->stateChangedEvents.push_back(e);
+    });
+
+    bus.subscribe<OrientationChangedEvent>([this](const OrientationChangedEvent& e)
+    {
+        LOG_DEBUG("CollisionControllerSystem: received OrientationChangedEvent entity {}",
+            e.entity.id);
+        this->orientationChangedEvents.push_back(e);
     });
 }
 
@@ -26,10 +33,13 @@ void CollisionControllerSystem::update(UpdateContext& ctx)
     World& world = ctx.world;
     auto& comp = world.components();
 
-    for (const auto& e : this->pendingEvents) for (auto& controller : this->controllers)
+    for (const auto& e : this->stateChangedEvents) for (auto& controller : this->controllers)
     { if (controller->hasMapComponent({e.entity, world})) controller->apply({e.entity, world}, e.current); }
+    this->stateChangedEvents.clear();
 
-    this->pendingEvents.clear();
+    for (const auto& e : this->orientationChangedEvents) for (auto& controller : this->controllers)
+    { controller->onOrientationChanged({e.entity, world}); }
+    this->orientationChangedEvents.clear();
 
     auto initView = View<StateComponent>(comp);
     for (auto [entity, state] : initView) for (auto& ctrl : this->controllers)

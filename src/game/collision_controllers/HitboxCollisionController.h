@@ -13,6 +13,8 @@ public:
     void apply(const ControllerParams& params, StateId newState = StateId::Idle) override;
     void remove(const ControllerParams& params) override;
 
+    void onOrientationChanged(const ControllerParams& params) override;
+
 private:
     void activateFirstFrame(HitboxControllerComponent& controller, World& world);
     void deactivateCurrentFrame(HitboxControllerComponent& controller, World& world);

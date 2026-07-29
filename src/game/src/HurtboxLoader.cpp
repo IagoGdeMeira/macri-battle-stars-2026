@@ -59,7 +59,8 @@ Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent,
         Rectangle rect = DataUtils::parseRect(node);
         LOG_DEBUG("HurtboxLoader: parsed rect size=({},{}) offset=({},{}) debug.color=({},{},{},{})",
             rect.size.width, rect.size.height, offset.x, offset.y,
-            debug.color.r, debug.color.g, debug.color.b, debug.color.a);
+            static_cast<int>(debug.color.r), static_cast<int>(debug.color.g),
+            static_cast<int>(debug.color.b), static_cast<int>(debug.color.a));
         return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
             parent, offset, damageMultiplier, facingLeft, debug}, rect);
     }

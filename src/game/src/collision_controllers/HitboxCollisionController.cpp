@@ -1,9 +1,12 @@
 #include "HitboxCollisionController.h"
 
 #include "domain/components/ActiveComponent.h"
+#include "domain/components/HitboxComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
 #include "domain/components/HitboxControllerMapComponent.h"
-#include "domain/components/StateComponent.h"
+#include "domain/components/LocalTransform.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
 
 bool HitboxCollisionController::hasMapComponent(const ControllerParams& params) const
@@ -26,11 +29,22 @@ void HitboxCollisionController::apply(const ControllerParams& params, StateId ne
 void HitboxCollisionController::remove(const ControllerParams& params)
 {
     auto& comp = params.world.components();
-    if (comp.has<HitboxControllerComponent>(params.entity))
+    if (!comp.has<HitboxControllerComponent>(params.entity)) return;
+    
+    auto& controller = comp.get<HitboxControllerComponent>(params.entity);
+    this->deactivateCurrentFrame(controller, params.world);
+    comp.remove<HitboxControllerComponent>(params.entity);
+}
+
+void HitboxCollisionController::onOrientationChanged(const ControllerParams& params)
+{
+    auto& comp = params.world.components();
+    auto view = View<LocalTransform, ParentComponent>(comp);
+    for (auto [childEntity, local, parent] : view)
     {
-        auto& controller = comp.get<HitboxControllerComponent>(params.entity);
-        this->deactivateCurrentFrame(controller, params.world);
-        comp.remove<HitboxControllerComponent>(params.entity);
+        if (parent.parent != params.entity) continue;
+        if (!comp.has<HitboxComponent>(childEntity)) continue;
+        local.position.x = -local.position.x;
     }
 }
 
