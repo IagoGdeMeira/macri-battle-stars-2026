@@ -31,6 +31,13 @@ public:
     virtual void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value) { (void)key; (void)value; }
     virtual void setObject(const std::string& key, std::unique_ptr<DataNode> value) { (void)key; (void)value; }
 
+    virtual bool isString() const = 0;
+    virtual bool isInt() const = 0;
+    virtual bool isFloat() const = 0;
+    virtual bool isBool() const = 0;
+    virtual bool isArray() const = 0;
+    virtual bool isObject() const = 0;
+
     virtual std::unique_ptr<DataNode> clone() const = 0;
 };
 

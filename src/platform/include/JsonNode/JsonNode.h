@@ -29,6 +29,13 @@ public:
     void setArray(const std::string& key, std::vector<std::unique_ptr<DataNode>> value) override;
     void setObject(const std::string& key, std::unique_ptr<DataNode> value) override;
 
+    virtual bool isString() const override;
+    virtual bool isInt() const override;
+    virtual bool isFloat() const override;
+    virtual bool isBool() const override;
+    virtual bool isArray() const override;
+    virtual bool isObject() const override;
+
     std::unique_ptr<DataNode> clone() const override;
 
 private:

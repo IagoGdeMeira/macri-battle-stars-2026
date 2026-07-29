@@ -13,7 +13,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -24,7 +24,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 }
@@ -43,7 +43,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -54,7 +54,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 }
@@ -73,7 +73,7 @@
                             "position": { "x": 0, "y": 30 },
                             "size": { "width": 60, "height": 80 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -84,7 +84,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -97,7 +97,7 @@
                             "position": { "x": 0, "y": 30 },
                             "size": { "width": 60, "height": 80 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -108,7 +108,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -121,7 +121,7 @@
                             "position": { "x": 0, "y": 30 },
                             "size": { "width": 60, "height": 80 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -132,7 +132,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 }
@@ -151,7 +151,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -162,7 +162,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -175,7 +175,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -186,7 +186,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -199,7 +199,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -210,7 +210,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 }
@@ -229,7 +229,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -240,7 +240,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -253,7 +253,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -264,7 +264,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 }
@@ -282,7 +282,7 @@
                             "position": { "x": 40, "y": 10 },
                             "size": { "width": 30, "height": 30 },
                             "damage": 10,
-                            "debug": { "enabled": true, "color": [255, 0, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 255, "g": 0, "b": 0, "a": 128 } }
                         }
                     ],
                     "hurtboxes": [
@@ -291,7 +291,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -302,7 +302,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -314,7 +314,7 @@
                             "position": { "x": 40, "y": 10 },
                             "size": { "width": 30, "height": 30 },
                             "damage": 10,
-                            "debug": { "enabled": true, "color": [255, 0, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 255, "g": 0, "b": 0, "a": 128 } }
                         }
                     ],
                     "hurtboxes": [
@@ -323,7 +323,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -334,7 +334,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -347,7 +347,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -358,7 +358,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -371,7 +371,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -382,7 +382,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -395,7 +395,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -406,7 +406,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -419,7 +419,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -430,7 +430,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -443,7 +443,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -454,7 +454,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 }
@@ -472,7 +472,7 @@
                             "position": { "x": 50, "y": 40 },
                             "size": { "width": 30, "height": 30 },
                             "damage": 15,
-                            "debug": { "enabled": true, "color": [255, 0, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 255, "g": 0, "b": 0, "a": 128 } }
                         }
                     ],
                     "hurtboxes": [
@@ -481,7 +481,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -492,7 +492,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -504,7 +504,7 @@
                             "position": { "x": 50, "y": 40 },
                             "size": { "width": 30, "height": 30 },
                             "damage": 15,
-                            "debug": { "enabled": true, "color": [255, 0, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 255, "g": 0, "b": 0, "a": 128 } }
                         }
                     ],
                     "hurtboxes": [
@@ -513,7 +513,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -524,7 +524,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -537,7 +537,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -548,7 +548,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -561,7 +561,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -572,7 +572,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -585,7 +585,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -596,7 +596,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 1.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 }
@@ -615,7 +615,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -626,7 +626,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 2.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 },
@@ -639,7 +639,7 @@
                             "position": { "x": 0, "y": 0 },
                             "size": { "width": 60, "height": 130 },
                             "damageMultiplier": 1.0,
-                            "debug": { "enabled": true, "color": [0, 255, 0, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
                         }
                     ],
                     "pushboxes": [
@@ -650,7 +650,7 @@
                             "pushboxType": "dynamic",
                             "mass": 1.0,
                             "pushResistance": 2.0,
-                            "debug": { "enabled": true, "color": [0, 0, 255, 128] }
+                            "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
                         }
                     ]
                 }

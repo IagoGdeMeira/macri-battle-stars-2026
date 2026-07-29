@@ -38,12 +38,12 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
 SpriteComponent CharacterLoader::buildSpriteComponent(const CharacterDefinition& def) const
 {
     SpriteComponent sprite;
-    sprite.texturePath = def.texturePath;
-    sprite.size.width = static_cast<float>(def.spriteSize.width);
-    sprite.size.height = static_cast<float>(def.spriteSize.height);
-    sprite.source.position = {0.f, 0.f};
-    sprite.source.size = sprite.size;
-    sprite.useSourceRect = false;
+    sprite.texturePath      = def.texturePath;
+    sprite.size.width       = def.spriteSize.width;
+    sprite.size.height      = def.spriteSize.height;
+    sprite.source.position  = Position{0.f, 0.f};
+    sprite.source.size      = sprite.size;
+    sprite.useSourceRect    = false;
     return sprite;
 }
 

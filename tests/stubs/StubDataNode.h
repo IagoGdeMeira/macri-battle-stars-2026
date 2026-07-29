@@ -149,6 +149,13 @@ public:
         this->objects[key] = *typed;
     }
 
+    bool isString() const override { return this->hasRootString; }
+    bool isInt() const override { return this->hasRootInt; }
+    bool isFloat() const override { return this->hasRootFloat; }
+    bool isBool() const override { return this->hasRootBool; }
+    bool isArray() const override { return !this->arrays.empty(); }
+    bool isObject() const override { return !this->objects.empty(); }
+
     std::unique_ptr<DataNode> clone() const override { return std::make_unique<StubDataNode>(*this); }
 
 private:

@@ -128,4 +128,16 @@ void JsonNode::setObject(const std::string& key, std::unique_ptr<DataNode> value
     else this->data[key] = jsonNode->data;
 }
 
+bool JsonNode::isString() const { return this->data.is_string(); }
+
+bool JsonNode::isInt() const { return this->data.is_number_integer(); }
+
+bool JsonNode::isFloat() const { return this->data.is_number_float() || this->isInt(); }
+
+bool JsonNode::isBool() const { return this->data.is_boolean(); }
+
+bool JsonNode::isArray() const { return this->data.is_array(); }
+
+bool JsonNode::isObject() const { return this->data.is_object(); }
+
 std::unique_ptr<DataNode> JsonNode::clone() const { return std::make_unique<JsonNode>(this->data); }

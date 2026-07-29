@@ -1,75 +1,102 @@
 #include "DataUtils/DataUtils.h"
 
-#include <stdexcept>
+#include "domain/utils/Logger/Logger.h"
 
-Position DataUtils::parsePosition(const DataNode& node, Position defaultValue)
+Position DataUtils::parsePosition(const DataNode& node, const Position& defaultValue)
 {
-    if (!node.has("x") || !node.has("y")) return defaultValue;
-    return {node.getFloat("x", defaultValue.x), node.getFloat("y", defaultValue.y)};
+    if (!node.has("x") || !node.has("y"))
+    {
+        LOG_DEBUG("DataUtils::parsePosition: missing x or y, returning default");
+        return defaultValue;
+    }
+    Position pos;
+    pos.x = node.getFloat("x", defaultValue.x);
+    pos.y = node.getFloat("y", defaultValue.y);
+    LOG_DEBUG("DataUtils::parsePosition: x={} y={}", pos.x, pos.y);
+    return pos;
 }
 
-Dimension2D DataUtils::parseSize(const DataNode& node, Dimension2D defaultValue)
+Dimension2D DataUtils::parseSize(const DataNode& node, const Dimension2D& defaultValue)
 {
-    if (!node.has("w") || !node.has("h")) return defaultValue;
-    return {node.getFloat("w", defaultValue.width), node.getFloat("h", defaultValue.height)};
+    if (!node.has("width") || !node.has("height"))
+    {
+        LOG_DEBUG("DataUtils::parseSize: missing width or height, returning default");
+        return defaultValue;
+    }
+    Dimension2D size;
+    size.width  = node.getFloat("width",  defaultValue.width);
+    size.height = node.getFloat("height", defaultValue.height);
+    LOG_DEBUG("DataUtils::parseSize: width={} height={}", size.width, size.height);
+    return size;
 }
 
-Rectangle DataUtils::parseRect(const DataNode& node, Rectangle defaultValue)
+Rectangle DataUtils::parseRect(const DataNode& node, const Rectangle& defaultValue)
 {
-    if (!node.has("position") || !node.has("size")) return defaultValue;
+    if (!node.has("position") || !node.has("size"))
+    {
+        LOG_DEBUG("DataUtils::parseRect: missing position or size, returning default");
+        return defaultValue;
+    }
+
+    auto posNode    = node.getObject("position");
+    auto sizeNode   = node.getObject("size");
+
+    if (!posNode || !sizeNode)
+    {
+        LOG_DEBUG("DataUtils::parseRect: null position or size node, returning default");
+        return defaultValue;
+    }
+
     Rectangle rect;
-    rect.position = DataUtils::parsePosition(*node.getObject("position"), defaultValue.position);
-    rect.size = DataUtils::parseSize(*node.getObject("size"), defaultValue.size);
+    rect.position   = DataUtils::parsePosition(*posNode, defaultValue.position);
+    rect.size       = DataUtils::parseSize(*sizeNode, defaultValue.size);
+
+    LOG_DEBUG("DataUtils::parseRect: result size=({},{})", rect.size.width, rect.size.height);
     return rect;
 }
 
-Circle DataUtils::parseCircle(const DataNode& node, Circle defaultValue)
+Circle DataUtils::parseCircle(const DataNode& node, const Circle& defaultValue)
 {
     if (!node.has("radius")) return defaultValue;
     Circle circle;
-    circle.radius = node.getFloat("radius", defaultValue.radius);
+    circle.radius   = node.getFloat("radius", defaultValue.radius);
     circle.position = DataUtils::parsePosition(node, defaultValue.position);
     return circle;
 }
 
-Color DataUtils::parseColor(const DataNode& node, Color defaultValue)
+Color DataUtils::parseColor(const DataNode& node, const Color& defaultColor)
 {
-    if (!node.has("r") || !node.has("g") || !node.has("b") || !node.has("a")) return defaultValue;
-    Color color;
-    color.r = static_cast<uint8_t>(node.getInt("r", defaultValue.r));
-    color.g = static_cast<uint8_t>(node.getInt("g", defaultValue.g));
-    color.b = static_cast<uint8_t>(node.getInt("b", defaultValue.b));
-    color.a = static_cast<uint8_t>(node.getInt("a", defaultValue.a));
-    return color;
+    if (!node.has("r") || !node.has("g") || !node.has("b") || !node.has("a")) return defaultColor;
+    return Color
+    {
+        static_cast<uint8_t>(node.getInt("r", defaultColor.r)),
+        static_cast<uint8_t>(node.getInt("g", defaultColor.g)),
+        static_cast<uint8_t>(node.getInt("b", defaultColor.b)),
+        static_cast<uint8_t>(node.getInt("a", defaultColor.a))
+    };
 }
 
-AABB DataUtils::parseAABB(const DataNode& node, AABB defaultValue)
+AABB DataUtils::parseAABB(const DataNode& node, const AABB& defaultValue)
 {
-    if (!node.has("left")) return defaultValue;
-    if (!node.has("right")) return defaultValue;
-    if (!node.has("top")) return defaultValue;
-    if (!node.has("bottom")) return defaultValue;
+    if (!node.has("left") || !node.has("right") || !node.has("top") || !node.has("bottom")) return defaultValue;
 
     AABB aabb;
-    aabb.left = node.getFloat("left", defaultValue.left);
-    aabb.right = node.getFloat("right", defaultValue.right);
-    aabb.top = node.getFloat("top", defaultValue.top);
+    aabb.left   = node.getFloat("left", defaultValue.left);
+    aabb.right  = node.getFloat("right", defaultValue.right);
+    aabb.top    = node.getFloat("top", defaultValue.top);
     aabb.bottom = node.getFloat("bottom", defaultValue.bottom);
     return aabb;
 }
 
-Corners DataUtils::parseCorners(const DataNode& node, Corners defaultValue)
+Corners DataUtils::parseCorners(const DataNode& node, const Corners& defaultValue)
 {
-    if (!node.has("topLeft")) return defaultValue;
-    if (!node.has("topRight")) return defaultValue;
-    if (!node.has("bottomRight")) return defaultValue;
-    if (!node.has("bottomLeft")) return defaultValue;
+    if (!node.has("topLeft") || !node.has("topRight") || !node.has("bottomRight") || !node.has("bottomLeft")) return defaultValue;
 
     Corners corners;
-    corners.topLeft = node.getFloat("topLeft", defaultValue.topLeft);
-    corners.topRight = node.getFloat("topRight", defaultValue.topRight);
+    corners.topLeft     = node.getFloat("topLeft", defaultValue.topLeft);
+    corners.topRight    = node.getFloat("topRight", defaultValue.topRight);
     corners.bottomRight = node.getFloat("bottomRight", defaultValue.bottomRight);
-    corners.bottomLeft = node.getFloat("bottomLeft", defaultValue.bottomLeft);
+    corners.bottomLeft  = node.getFloat("bottomLeft", defaultValue.bottomLeft);
     return corners;
 }
 
@@ -87,13 +114,16 @@ DebugConfig DataUtils::parseDebug(const DataNode& node, const DebugConfig& defau
     {
         auto colorNode = debugNode->getObject("color");
         if (colorNode) config.color = DataUtils::parseColor(*colorNode, defaultConfig.color);
+        else config.color = defaultConfig.color;
     }
     else config.color = defaultConfig.color;
-
-    config.layer = debugNode->getInt("layer", defaultConfig.layer);
-    config.zIndex = debugNode->getInt("zIndex", defaultConfig.zIndex);
-    config.filled = debugNode->getBool("filled", defaultConfig.filled);
     
+    config.layer   = debugNode->getInt("layer", defaultConfig.layer);
+    config.zIndex  = debugNode->getInt("zIndex", defaultConfig.zIndex);
+    config.filled  = debugNode->getBool("filled", defaultConfig.filled);
+
+    LOG_DEBUG("DataUtils::parseDebug: enabled={} color=({},{},{},{})",
+        config.enabled, config.color.r, config.color.g, config.color.b, config.color.a);
     return config;
 }
 
@@ -111,19 +141,15 @@ void DataUtils::setSize(DataNode& node, const Dimension2D& size)
 
 void DataUtils::setRect(DataNode& node, const Rectangle& rect)
 {
-    if (node.has("position"))
+    if (node.has("position") && node.getObject("position"))
     {
         auto posNode = node.getObject("position");
-        if (!posNode) return;
-    
         DataUtils::setPosition(*posNode, rect.position);
         node.setObject("position", std::move(posNode));
     }
-    if (node.has("size"))
+    if (node.has("size") && node.getObject("size"))
     {
         auto sizeNode = node.getObject("size");
-        if (!sizeNode) return;
-    
         DataUtils::setSize(*sizeNode, rect.size);
         node.setObject("size", std::move(sizeNode));
     }
@@ -131,11 +157,9 @@ void DataUtils::setRect(DataNode& node, const Rectangle& rect)
 
 void DataUtils::setCircle(DataNode& node, const Circle& circle)
 {
-    if (node.has("position"))
+    if (node.has("position") && node.getObject("position"))
     {
         auto posNode = node.getObject("position");
-        if (!posNode) return;
-
         DataUtils::setPosition(*posNode, circle.position);
         node.setObject("position", std::move(posNode));
     }
