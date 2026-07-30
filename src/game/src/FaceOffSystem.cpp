@@ -5,6 +5,7 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/events/OrientationChangedEvent.h"
 #include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -34,6 +35,11 @@ void FaceOffSystem::update(UpdateContext& ctx)
         
         Orientation previous = orientation.direction;
         orientation.direction = newOrientation;
+
+        auto& playerComp = comp.get<PlayerComponent>(players[i].entity);
+        LOG_DEBUG("FaceOffSystem: Orientation changed for player {} (entity {}) to {}",
+            playerComp.id, players[i].entity.id, (newOrientation == Orientation::Left ? "Left" : "Right"));
+
         this->bus.emit<OrientationChangedEvent>(OrientationChangedEvent{players[i].entity, previous, newOrientation});
     }
 }

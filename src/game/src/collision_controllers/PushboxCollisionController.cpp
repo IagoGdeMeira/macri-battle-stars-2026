@@ -2,12 +2,14 @@
 
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/LocalTransform.h"
+#include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxComponent.h"
 #include "domain/components/PushboxControllerComponent.h"
 #include "domain/components/PushboxControllerMapComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
+#include "domain/utils/Logger/Logger.h"
 
 bool PushboxCollisionController::hasMapComponent(const ControllerParams& params) const
 { return params.world.components().has<PushboxControllerMapComponent>(params.entity); }
@@ -29,23 +31,31 @@ void PushboxCollisionController::apply(const ControllerParams& params, StateId n
 void PushboxCollisionController::remove(const ControllerParams& params)
 {
     auto& comp = params.world.components();
-    if (comp.has<PushboxControllerComponent>(params.entity))
-    {
-        auto& controller = comp.get<PushboxControllerComponent>(params.entity);
-        this->deactivateCurrentFrame(controller, params.world);
-        comp.remove<PushboxControllerComponent>(params.entity);
-    }
+    if (!comp.has<PushboxControllerComponent>(params.entity)) return;
+    
+    auto& controller = comp.get<PushboxControllerComponent>(params.entity);
+    this->deactivateCurrentFrame(controller, params.world);
+    comp.remove<PushboxControllerComponent>(params.entity);
 }
 
 void PushboxCollisionController::onOrientationChanged(const ControllerParams& params)
 {
     auto& comp = params.world.components();
+    if (!comp.has<OrientationComponent>(params.entity)) return;
+
+    Orientation orient = comp.get<OrientationComponent>(params.entity).direction;
+    float sign = (orient == Orientation::Right) ? 1.0f : -1.0f;
+
+    LOG_DEBUG("HurtboxCollisionController::onOrientationChanged: entity {} orientation={} sign={}",
+        params.entity.id, (orient == Orientation::Right ? "Right" : "Left"), sign);
+
     auto view = View<LocalTransform, ParentComponent>(comp);
     for (auto [childEntity, local, parent] : view)
     {
         if (parent.parent != params.entity) continue;
         if (!comp.has<PushboxComponent>(childEntity)) continue;
-        local.position.x = -local.position.x;
+
+        local.position.x = std::abs(local.position.x) * sign;
     }
 }
 

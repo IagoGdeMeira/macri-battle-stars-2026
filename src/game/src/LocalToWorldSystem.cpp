@@ -20,7 +20,7 @@ void LocalToWorldSystem::update(UpdateContext& ctx)
     {
         if (!comp.has<TransformComponent>(parent.parent)) continue;
         const auto& parentTransform = comp.get<TransformComponent>(parent.parent);
-        this->applyParentTransform(transform, local, parentTransform);
+        this->applyParentTransform({transform, parentTransform, local});
     }
 }
 
@@ -30,18 +30,22 @@ float LocalToWorldSystem::rotateLocalX(const LocalTransform& local, float cosR, 
 float LocalToWorldSystem::rotateLocalY(const LocalTransform& local, float cosR, float sinR)
 { return local.position.x * sinR + local.position.y * cosR; }
 
-void LocalToWorldSystem::applyParentTransform(
-    TransformComponent& transform, const LocalTransform& local, const TransformComponent& parentTransform
-) {
-    float cosR = std::cos(parentTransform.rotation);
-    float sinR = std::sin(parentTransform.rotation);
+void LocalToWorldSystem::applyParentTransform(const ParentParams& params)
+{
+    auto& transform = params.transform;
+    const auto& local = params.local;
+    const auto& parentTrans = params.parentTrans;
+
+    float cosR = std::cos(parentTrans.rotation);
+    float sinR = std::sin(parentTrans.rotation);
 
     float rotatedX = LocalToWorldSystem::rotateLocalX(local, cosR, sinR);
     float rotatedY = LocalToWorldSystem::rotateLocalY(local, cosR, sinR);
 
-    auto& parentPos = parentTransform.position;
-    auto& parentScale = parentTransform.scale;
-    transform.position = { parentPos.x + rotatedX * parentScale.x, parentPos.y + rotatedY * parentScale.y };
-    transform.rotation = parentTransform.rotation + local.rotation;
+    auto& parentPos = parentTrans.position;
+    auto& parentScale = parentTrans.scale;
+    transform.position.x = parentPos.x + rotatedX * parentScale.x;
+    transform.position.y = parentPos.y + rotatedY * parentScale.y;
+    transform.rotation = parentTrans.rotation + local.rotation;
     transform.scale = { parentScale.x * local.scale.x, parentScale.y * local.scale.y };
 }

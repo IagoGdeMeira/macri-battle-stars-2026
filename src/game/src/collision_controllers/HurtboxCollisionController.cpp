@@ -5,9 +5,11 @@
 #include "domain/components/HurtboxControllerComponent.h"
 #include "domain/components/HurtboxControllerMapComponent.h"
 #include "domain/components/LocalTransform.h"
+#include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
+#include "domain/utils/Logger/Logger.h"
 
 bool HurtboxCollisionController::hasMapComponent(const ControllerParams& params) const
 { return params.world.components().has<HurtboxControllerMapComponent>(params.entity); }
@@ -39,12 +41,21 @@ void HurtboxCollisionController::remove(const ControllerParams& params)
 void HurtboxCollisionController::onOrientationChanged(const ControllerParams& params)
 {
     auto& comp = params.world.components();
+    if (!comp.has<OrientationComponent>(params.entity)) return;
+
+    Orientation orient = comp.get<OrientationComponent>(params.entity).direction;
+    float sign = (orient == Orientation::Right) ? 1.0f : -1.0f;
+
+    LOG_DEBUG("HurtboxCollisionController::onOrientationChanged: entity {} orientation={} sign={}",
+        params.entity.id, (orient == Orientation::Right ? "Right" : "Left"), sign);
+
     auto view = View<LocalTransform, ParentComponent>(comp);
     for (auto [childEntity, local, parent] : view)
     {
         if (parent.parent != params.entity) continue;
         if (!comp.has<HurtboxComponent>(childEntity)) continue;
-        local.position.x = -local.position.x;
+
+        local.position.x = std::abs(local.position.x) * sign;
     }
 }
 

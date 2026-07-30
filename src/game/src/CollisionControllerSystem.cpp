@@ -38,7 +38,10 @@ void CollisionControllerSystem::update(UpdateContext& ctx)
     this->stateChangedEvents.clear();
 
     for (const auto& e : this->orientationChangedEvents) for (auto& controller : this->controllers)
-    { controller->onOrientationChanged({e.entity, world}); }
+    {
+        LOG_DEBUG("CollisionControllerSystem: processing OrientationChangedEvent for entity {} with controller", e.entity.id);
+        controller->onOrientationChanged({e.entity, world});
+    }
     this->orientationChangedEvents.clear();
 
     auto initView = View<StateComponent>(comp);

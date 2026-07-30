@@ -14,10 +14,9 @@ public:
 private:
     static float rotateLocalX(const LocalTransform& local, float cosR, float sinR);
     static float rotateLocalY(const LocalTransform& local, float cosR, float sinR);
-    static void applyParentTransform(
-        TransformComponent& transform,
-        const LocalTransform& local,
-        const TransformComponent& parentTransform);
+
+    struct ParentParams { TransformComponent& transform; const TransformComponent& parentTrans; const LocalTransform& local; };
+    static void applyParentTransform(const ParentParams& params);
 };
 
 #endif // local_to_world_system_h
