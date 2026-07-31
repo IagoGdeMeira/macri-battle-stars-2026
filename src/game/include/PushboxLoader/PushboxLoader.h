@@ -16,9 +16,7 @@ class PushboxLoader
 {
 public:
     PushboxLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
-
-    using ControllerMap = std::unordered_map<StateId, PushboxControllerComponent, StateId::Hash>;
-    virtual ControllerMap load(const DataNode& root, Entity parent) const;
+    virtual PushboxControllerComponent loadSingleState(const DataNode& stateNode, Entity parent) const;
 
 private:
     DataParser& parser;

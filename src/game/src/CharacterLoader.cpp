@@ -94,19 +94,25 @@ void CharacterLoader::loadCollisionControllers(World& world, Entity entity, cons
 
     auto root = this->parser.parse(def.collisionsPath);
     auto& comp = world.components();
-    
-    auto hitboxMap = this->hitboxLoader.load(*root, entity);
+
     HitboxControllerMapComponent hitboxMapComp;
-    hitboxMapComp.map = std::move(hitboxMap);
-    comp.add<HitboxControllerMapComponent>(entity, std::move(hitboxMapComp));
-
-    auto hurtboxMap = this->hurtboxLoader.load(*root, entity);
     HurtboxControllerMapComponent hurtboxMapComp;
-    hurtboxMapComp.map = std::move(hurtboxMap);
-    comp.add<HurtboxControllerMapComponent>(entity, std::move(hurtboxMapComp));
-
-    auto pushboxMap = this->pushboxLoader.load(*root, entity);
     PushboxControllerMapComponent pushboxMapComp;
-    pushboxMapComp.map = std::move(pushboxMap);
+
+    for (auto& entry : root->getArray("states"))
+    {
+        std::string stateName = entry->getString("name");
+        std::string stateFilePath = entry->getString("path");
+        StateId stateId = StateId::fromBaseName(stateName);
+
+        auto stateRoot = this->parser.parse(stateFilePath);
+
+        hitboxMapComp.map[stateId]   = this->hitboxLoader.loadSingleState(*stateRoot, entity);
+        hurtboxMapComp.map[stateId]  = this->hurtboxLoader.loadSingleState(*stateRoot, entity);
+        pushboxMapComp.map[stateId]  = this->pushboxLoader.loadSingleState(*stateRoot, entity);
+    }
+
+    comp.add<HitboxControllerMapComponent>(entity, std::move(hitboxMapComp));
+    comp.add<HurtboxControllerMapComponent>(entity, std::move(hurtboxMapComp));
     comp.add<PushboxControllerMapComponent>(entity, std::move(pushboxMapComp));
 }

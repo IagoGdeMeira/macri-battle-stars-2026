@@ -15,9 +15,7 @@ class HitboxLoader
 {
 public:
     HitboxLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
-
-    using ControllerMap = std::unordered_map<StateId, HitboxControllerComponent, StateId::Hash>;
-    virtual ControllerMap load(const DataNode& root, Entity parent) const;
+    virtual HitboxControllerComponent loadSingleState(const DataNode& stateNode, Entity parent) const;
 
 private:
     DataParser& parser;

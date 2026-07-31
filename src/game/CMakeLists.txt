@@ -21,6 +21,7 @@ target_sources(game
         src/scenes/SelectionScene.cpp
         src/scenes/TitleScene.cpp
 
+        src/utils/CollisionUtils.cpp
         src/utils/ComponentRegistry.cpp
         src/utils/WorldRenderUtils.cpp
 

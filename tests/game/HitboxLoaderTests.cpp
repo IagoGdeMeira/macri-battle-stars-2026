@@ -108,7 +108,7 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader loads a single state with re
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent);
+    auto controllerMap = this->loader->loadSingleState(*state, parent);
 
     REQUIRE(controllerMap.size() == 1);
     auto it = controllerMap.find(StateId::Idle);
@@ -148,7 +148,7 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader loads a single state with ci
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent);
+    auto controllerMap = this->loader->loadSingleState(*state, parent);
 
     REQUIRE(controllerMap.size() == 1);
     auto it = controllerMap.find(StateId::Idle);
@@ -187,7 +187,7 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader handles multiple frames in a
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent);
+    auto controllerMap = this->loader->loadSingleState(*state, parent);
 
     REQUIRE(controllerMap.size() == 1);
     auto it = controllerMap.find(StateId::Idle);
@@ -227,7 +227,7 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader handles multiple states", "[
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent);
+    auto controllerMap = this->loader->loadSingleState(*idleState, parent);
 
     REQUIRE(controllerMap.size() == 2);
     REQUIRE(controllerMap.find(StateId::Idle) != controllerMap.end());
@@ -287,7 +287,7 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader handles empty hitbox list", 
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent);
+    auto controllerMap = this->loader->loadSingleState(*state, parent);
 
     REQUIRE(controllerMap.size() == 1);
     auto it = controllerMap.find(StateId::Idle);

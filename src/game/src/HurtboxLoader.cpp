@@ -10,34 +10,24 @@
 
 #include <stdexcept>
 
-HurtboxLoader::ControllerMap HurtboxLoader::load(const DataNode& root, Entity parent) const
+HurtboxControllerComponent HurtboxLoader::loadSingleState(const DataNode& stateNode, Entity parent) const
 {
-    ControllerMap result;
+    HurtboxControllerComponent controller;
+    controller.loop = stateNode.getBool("loop", false);
 
-    if (!root.has("states")) return result;
-    for (auto& stateNode : root.getArray("states"))
+    for (auto& frameNode : stateNode.getArray("frames"))
     {
-        std::string stateName = stateNode->getString("name");
-        StateId state = StateId::fromBaseName(stateName);
+        HurtboxControllerComponent::Frame frame;
+        frame.duration = frameNode->getFloat("duration", 0.f);
 
-        HurtboxControllerComponent controller;
-        controller.loop = stateNode->getBool("loop", false);
-
-        for (auto& frameNode : stateNode->getArray("frames"))
+        for (auto& hbNode : frameNode->getArray("hurtboxes"))
         {
-            HurtboxControllerComponent::Frame frame;
-            frame.duration = frameNode->getFloat("duration", 0.f);
-
-            for (auto& hbNode : frameNode->getArray("hurtboxes"))
-            {
-                Entity hurtbox = this->createHurtboxFromNode(*hbNode, parent);
-                frame.hurtboxes.push_back(hurtbox);
-            }
-            controller.frames.push_back(std::move(frame));
+            Entity hurtbox = this->createHurtboxFromNode(*hbNode, parent);
+            frame.hurtboxes.push_back(hurtbox);
         }
-        result[state] = std::move(controller);
+        controller.frames.push_back(std::move(frame));
     }
-    return result;
+    return controller;
 }
 
 Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent) const

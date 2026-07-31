@@ -1,0 +1,77 @@
+{
+    "loop": false,
+    "frames": [
+        {
+            "duration": 0.1,
+            "hitboxes": [],
+            "hurtboxes": [
+                {
+                    "type": "rectangle",
+                    "position": { "x": 0, "y": 30 },
+                    "size": { "width": 60, "height": 80 },
+                    "damageMultiplier": 1.0,
+                    "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
+                }
+            ],
+            "pushboxes": [
+                {
+                    "type": "rectangle",
+                    "position": { "x": 0, "y": 143.5 },
+                    "size": { "width": 60, "height": 80 },
+                    "pushboxType": "dynamic",
+                    "mass": 1.0,
+                    "pushResistance": 1.0,
+                    "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
+                }
+            ]
+        },
+        {
+            "duration": 0.1,
+            "hitboxes": [],
+            "hurtboxes": [
+                {
+                    "type": "rectangle",
+                    "position": { "x": 0, "y": 30 },
+                    "size": { "width": 60, "height": 80 },
+                    "damageMultiplier": 1.0,
+                    "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
+                }
+            ],
+            "pushboxes": [
+                {
+                    "type": "rectangle",
+                    "position": { "x": 0, "y": 143.5 },
+                    "size": { "width": 60, "height": 80 },
+                    "pushboxType": "dynamic",
+                    "mass": 1.0,
+                    "pushResistance": 1.0,
+                    "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
+                }
+            ]
+        },
+        {
+            "duration": 0.1,
+            "hitboxes": [],
+            "hurtboxes": [
+                {
+                    "type": "rectangle",
+                    "position": { "x": 0, "y": 30 },
+                    "size": { "width": 60, "height": 80 },
+                    "damageMultiplier": 1.0,
+                    "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
+                }
+            ],
+            "pushboxes": [
+                {
+                    "type": "rectangle",
+                    "position": { "x": 0, "y": 143.5 },
+                    "size": { "width": 60, "height": 80 },
+                    "pushboxType": "dynamic",
+                    "mass": 1.0,
+                    "pushResistance": 1.0,
+                    "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
+                }
+            ]
+        }
+    ]
+}

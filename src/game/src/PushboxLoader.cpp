@@ -10,34 +10,24 @@
 
 #include <stdexcept>
 
-PushboxLoader::ControllerMap PushboxLoader::load(const DataNode& root, Entity parent) const
+PushboxControllerComponent PushboxLoader::loadSingleState(const DataNode& stateNode, Entity parent) const
 {
-    ControllerMap result;
+    PushboxControllerComponent controller;
+    controller.loop = stateNode.getBool("loop", false);
 
-    if (!root.has("states")) return result;
-    for (auto& stateNode : root.getArray("states"))
+    for (auto& frameNode : stateNode.getArray("frames"))
     {
-        std::string stateName = stateNode->getString("name");
-        StateId state = StateId::fromBaseName(stateName);
+        PushboxControllerComponent::Frame frame;
+        frame.duration = frameNode->getFloat("duration", 0.f);
 
-        PushboxControllerComponent controller;
-        controller.loop = stateNode->getBool("loop", false);
-
-        for (auto& frameNode : stateNode->getArray("frames"))
+        for (auto& hbNode : frameNode->getArray("hitboxes"))
         {
-            PushboxControllerComponent::Frame frame;
-            frame.duration = frameNode->getFloat("duration", 0.f);
-
-            for (auto& hbNode : frameNode->getArray("pushboxes"))
-            {
-                Entity hitbox = this->createPushboxFromNode(*hbNode, parent);
-                frame.pushboxes.push_back(hitbox);
-            }
-            controller.frames.push_back(std::move(frame));
+            Entity pushbox = this->createPushboxFromNode(*hbNode, parent);
+            frame.pushboxes.push_back(pushbox);
         }
-        result[state] = std::move(controller);
+        controller.frames.push_back(std::move(frame));
     }
-    return result;
+    return controller;
 }
 
 Entity PushboxLoader::createPushboxFromNode(const DataNode& node, Entity parent) const

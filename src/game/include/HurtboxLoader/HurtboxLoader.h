@@ -15,9 +15,7 @@ class HurtboxLoader
 {
 public:
     HurtboxLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
-
-    using ControllerMap = std::unordered_map<StateId, HurtboxControllerComponent, StateId::Hash>;
-    virtual ControllerMap load(const DataNode& root, Entity parent) const;
+    virtual HurtboxControllerComponent loadSingleState(const DataNode& stateNode, Entity parent) const;
 
 private:
     DataParser& parser;

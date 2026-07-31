@@ -1,0 +1,29 @@
+{
+    "loop": true,
+    "frames": [
+        {
+            "duration": 0.12,
+            "hitboxes": [],
+            "hurtboxes": [
+                {
+                    "type": "rectangle",
+                    "position": { "x": 0, "y": 0 },
+                    "size": { "width": 60, "height": 130 },
+                    "damageMultiplier": 1.0,
+                    "debug": { "enabled": true, "color": { "r": 0, "g": 255, "b": 0, "a": 128 } }
+                }
+            ],
+            "pushboxes": [
+                {
+                    "type": "rectangle",
+                    "position": { "x": 0, "y": 118.5 },
+                    "size": { "width": 60, "height": 130 },
+                    "pushboxType": "dynamic",
+                    "mass": 1.0,
+                    "pushResistance": 1.0,
+                    "debug": { "enabled": true, "color": { "r": 0, "g": 0, "b": 255, "a": 128 } }
+                }
+            ]
+        }
+    ]
+}

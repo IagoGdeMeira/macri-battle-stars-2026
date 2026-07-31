@@ -1,5 +1,7 @@
 #include "HitboxCollisionController.h"
 
+#include "CollisionUtils/CollisionUtils.h"
+
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/HitboxComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
@@ -56,6 +58,7 @@ void HitboxCollisionController::onOrientationChanged(const ControllerParams& par
         if (!comp.has<HitboxComponent>(childEntity)) continue;
 
         local.position.x = std::abs(local.position.x) * sign;
+        CollisionUtils::updateWorldTransform(params.world, childEntity, params.entity);
     }
 }
 

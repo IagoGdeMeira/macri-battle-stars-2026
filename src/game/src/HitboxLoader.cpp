@@ -10,34 +10,24 @@
 
 #include <stdexcept>
 
-HitboxLoader::ControllerMap HitboxLoader::load(const DataNode& root, Entity parent) const
+HitboxControllerComponent HitboxLoader::loadSingleState(const DataNode& stateNode, Entity parent) const
 {
-    ControllerMap result;
+    HitboxControllerComponent controller;
+    controller.loop = stateNode.getBool("loop", false);
 
-    if (!root.has("states")) return result;
-    for (auto& stateNode : root.getArray("states"))
+    for (auto& frameNode : stateNode.getArray("frames"))
     {
-        std::string stateName = stateNode->getString("name");
-        StateId state = StateId::fromBaseName(stateName);
+        HitboxControllerComponent::Frame frame;
+        frame.duration = frameNode->getFloat("duration", 0.f);
 
-        HitboxControllerComponent controller;
-        controller.loop = stateNode->getBool("loop", false);
-
-        for (auto& frameNode : stateNode->getArray("frames"))
+        for (auto& hbNode : frameNode->getArray("hitboxes"))
         {
-            HitboxControllerComponent::Frame frame;
-            frame.duration = frameNode->getFloat("duration", 0.f);
-
-            for (auto& hbNode : frameNode->getArray("hitboxes"))
-            {
-                Entity hitbox = this->createHitboxFromNode(*hbNode, parent);
-                frame.hitboxes.push_back(hitbox);
-            }
-            controller.frames.push_back(std::move(frame));
+            Entity hitbox = this->createHitboxFromNode(*hbNode, parent);
+            frame.hitboxes.push_back(hitbox);
         }
-        result[state] = std::move(controller);
+        controller.frames.push_back(std::move(frame));
     }
-    return result;
+    return controller;
 }
 
 Entity HitboxLoader::createHitboxFromNode(const DataNode& node, Entity parent) const

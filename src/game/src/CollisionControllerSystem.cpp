@@ -3,9 +3,9 @@
 #include "domain/components/StateComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
-#include "engine/include/EventBus/EventBus.h"
 #include "domain/utils/Logger/Logger.h"
 
+#include "engine/include/EventBus/EventBus.h"
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 CollisionControllerSystem::CollisionControllerSystem(EventBus& bus) : bus(bus)
@@ -51,6 +51,8 @@ void CollisionControllerSystem::update(UpdateContext& ctx)
     
         LOG_DEBUG("CollisionControllerSystem: proactive init for entity {} state {}",
             entity.id, StateId::toBaseName(state.current));
+
         ctrl->apply({entity, world}, state.current);
+        ctrl->onOrientationChanged({entity, world});
     }
 }

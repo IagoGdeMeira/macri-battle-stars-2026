@@ -8,9 +8,9 @@ class StubHitboxLoader : public HitboxLoader
 {
 public:
     StubHitboxLoader(DataParser& parser, EntityFactory& factory) : HitboxLoader(parser, factory) {}
-
-    ControllerMap load(const DataNode& root, Entity parent) const override
-    { (void)root; (void)parent; return ControllerMap{}; }
+    
+    HitboxControllerComponent loadSingleState(const DataNode& stateNode, Entity parent) const override
+    { (void)stateNode; (void)parent; return HitboxControllerComponent{}; }
 };
 
 #endif // stub_hitbox_loader_h

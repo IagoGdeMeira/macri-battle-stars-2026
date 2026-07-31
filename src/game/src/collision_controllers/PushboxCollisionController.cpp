@@ -1,5 +1,7 @@
 #include "PushboxCollisionController.h"
 
+#include "CollisionUtils/CollisionUtils.h"
+
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/LocalTransform.h"
 #include "domain/components/OrientationComponent.h"
@@ -56,6 +58,7 @@ void PushboxCollisionController::onOrientationChanged(const ControllerParams& pa
         if (!comp.has<PushboxComponent>(childEntity)) continue;
 
         local.position.x = std::abs(local.position.x) * sign;
+        CollisionUtils::updateWorldTransform(params.world, childEntity, params.entity);
     }
 }
 
