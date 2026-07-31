@@ -17,13 +17,13 @@ public:
     HitboxLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
 
     using ControllerMap = std::unordered_map<StateId, HitboxControllerComponent, StateId::Hash>;
-    virtual ControllerMap load(const DataNode& root, Entity parent, bool facingLeft) const;
+    virtual ControllerMap load(const DataNode& root, Entity parent) const;
 
 private:
     DataParser& parser;
     EntityFactory& factory;
 
-    Entity createHitboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const;
+    Entity createHitboxFromNode(const DataNode& node, Entity parent) const;
 };
 
 #endif // hitbox_loader_h

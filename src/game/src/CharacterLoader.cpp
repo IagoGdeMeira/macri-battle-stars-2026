@@ -26,9 +26,8 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     this->addStateComponents(world, entity, machineId);
 
     comp.add<AnimationControllerComponent>(entity, this->buildAnimationController(def, *mapper));
-
-    bool facingLeft = false;
-    this->loadCollisionControllers(world, entity, def, facingLeft);
+    
+    this->loadCollisionControllers(world, entity, def);
 
     comp.add<AnimationComponent>(entity, this->buildInitialAnimation(entity, world));
 
@@ -89,24 +88,24 @@ AnimationComponent CharacterLoader::buildInitialAnimation(Entity entity, World& 
     return anim;
 }
 
-void CharacterLoader::loadCollisionControllers(World& world, Entity entity, const CharacterDefinition& def, bool facingLeft) const
+void CharacterLoader::loadCollisionControllers(World& world, Entity entity, const CharacterDefinition& def) const
 {
     if (def.collisionsPath.empty()) return;
 
     auto root = this->parser.parse(def.collisionsPath);
     auto& comp = world.components();
     
-    auto hitboxMap = this->hitboxLoader.load(*root, entity, facingLeft);
+    auto hitboxMap = this->hitboxLoader.load(*root, entity);
     HitboxControllerMapComponent hitboxMapComp;
     hitboxMapComp.map = std::move(hitboxMap);
     comp.add<HitboxControllerMapComponent>(entity, std::move(hitboxMapComp));
 
-    auto hurtboxMap = this->hurtboxLoader.load(*root, entity, facingLeft);
+    auto hurtboxMap = this->hurtboxLoader.load(*root, entity);
     HurtboxControllerMapComponent hurtboxMapComp;
     hurtboxMapComp.map = std::move(hurtboxMap);
     comp.add<HurtboxControllerMapComponent>(entity, std::move(hurtboxMapComp));
 
-    auto pushboxMap = this->pushboxLoader.load(*root, entity, facingLeft);
+    auto pushboxMap = this->pushboxLoader.load(*root, entity);
     PushboxControllerMapComponent pushboxMapComp;
     pushboxMapComp.map = std::move(pushboxMap);
     comp.add<PushboxControllerMapComponent>(entity, std::move(pushboxMapComp));

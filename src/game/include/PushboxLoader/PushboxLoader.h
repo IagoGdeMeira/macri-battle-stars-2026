@@ -18,13 +18,13 @@ public:
     PushboxLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
 
     using ControllerMap = std::unordered_map<StateId, PushboxControllerComponent, StateId::Hash>;
-    virtual ControllerMap load(const DataNode& root, Entity parent, bool facingLeft) const;
+    virtual ControllerMap load(const DataNode& root, Entity parent) const;
 
 private:
     DataParser& parser;
     EntityFactory& factory;
 
-    Entity createPushboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const;
+    Entity createPushboxFromNode(const DataNode& node, Entity parent) const;
     PushboxComponent::Type parsePushboxType(const std::string& typeStr) const;
 };
 

@@ -29,8 +29,7 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const R
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
-    this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{false});
     if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
@@ -46,8 +45,7 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const C
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
-    this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{false});
     if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
@@ -63,8 +61,7 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
-    this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{false});
     if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
@@ -80,8 +77,7 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
-    this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{false});
     if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
@@ -97,8 +93,7 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
-    this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{false});
     if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});
@@ -114,8 +109,7 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    float finalX = params.facingLeft ? -params.offset.x : params.offset.x;
-    this->addParentAndLocal(e, params.parent, {finalX, params.offset.y});
+    this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
     comp.add<ActiveComponent>(e, ActiveComponent{false});
     if (params.debug.enabled) comp.add<RenderComponent>(e, RenderComponent{params.debug.layer, params.debug.zIndex});

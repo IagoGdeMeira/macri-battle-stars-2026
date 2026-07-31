@@ -39,18 +39,18 @@ public:
     TextureLoader& texLoader() { return this->textureLoader; }
 
     struct HitboxChildParams
-    { Entity parent; const Position& offset; int damage; bool facingLeft; DebugConfig debug = {false, Color{255, 0, 0, 128}, 0, 20}; };
+    { Entity parent; const Position& offset; int damage; DebugConfig debug = {false, Color{255, 0, 0, 128}, 0, 20}; };
     Entity createHitboxChild(const HitboxChildParams& params, const Rectangle& rect);
     Entity createHitboxChild(const HitboxChildParams& params, const Circle& circle);
 
     struct HurtboxChildParams 
-    { Entity parent; const Position& offset; float damageMultiplier; bool facingLeft; DebugConfig debug = {false, Color{0, 255, 0, 128}, 0, 20};};
+    { Entity parent; const Position& offset; float damageMultiplier; DebugConfig debug = {false, Color{0, 255, 0, 128}, 0, 20};};
     Entity createHurtboxChild(const HurtboxChildParams& params, const Rectangle& rect);
     Entity createHurtboxChild(const HurtboxChildParams& params, const Circle& circle);
 
     struct PushboxChildParams
     {  
-        Entity parent; const Position& offset; PushboxComponent::Type type; float mass; float pushResistance; bool facingLeft;
+        Entity parent; const Position& offset; PushboxComponent::Type type; float mass; float pushResistance;
         DebugConfig debug = {false, Color{0, 0, 255, 128}, 0, 20};
     };
     Entity createPushboxChild(const PushboxChildParams& params, const Rectangle& rect);

@@ -10,7 +10,7 @@
 
 #include <stdexcept>
 
-HitboxLoader::ControllerMap HitboxLoader::load(const DataNode& root, Entity parent, bool facingLeft) const
+HitboxLoader::ControllerMap HitboxLoader::load(const DataNode& root, Entity parent) const
 {
     ControllerMap result;
 
@@ -30,7 +30,7 @@ HitboxLoader::ControllerMap HitboxLoader::load(const DataNode& root, Entity pare
 
             for (auto& hbNode : frameNode->getArray("hitboxes"))
             {
-                Entity hitbox = this->createHitboxFromNode(*hbNode, parent, facingLeft);
+                Entity hitbox = this->createHitboxFromNode(*hbNode, parent);
                 frame.hitboxes.push_back(hitbox);
             }
             controller.frames.push_back(std::move(frame));
@@ -40,7 +40,7 @@ HitboxLoader::ControllerMap HitboxLoader::load(const DataNode& root, Entity pare
     return result;
 }
 
-Entity HitboxLoader::createHitboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
+Entity HitboxLoader::createHitboxFromNode(const DataNode& node, Entity parent) const
 {
     LOG_DEBUG("HitboxLoader: node has 'position'={}, has 'size'={}, has 'debug'={}",
         node.has("position"), node.has("size"), node.has("debug"));
@@ -62,14 +62,14 @@ Entity HitboxLoader::createHitboxFromNode(const DataNode& node, Entity parent, b
             static_cast<int>(debug.color.r), static_cast<int>(debug.color.g),
             static_cast<int>(debug.color.b), static_cast<int>(debug.color.a));
         return this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
-            parent, offset, damage, facingLeft, debug}, rect);
+            parent, offset, damage, debug}, rect);
     }
     if (type == "circle")
     {
         Circle circle = DataUtils::parseCircle(node);
         LOG_DEBUG("HitboxLoader: parsed circle radius={} offset=({},{})", circle.radius, offset.x, offset.y);
         return this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
-            parent, offset, damage, facingLeft, debug}, circle);
+            parent, offset, damage, debug}, circle);
     }
 
     throw std::runtime_error("Invalid hitbox type: " + type);

@@ -17,13 +17,13 @@ public:
     HurtboxLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
 
     using ControllerMap = std::unordered_map<StateId, HurtboxControllerComponent, StateId::Hash>;
-    virtual ControllerMap load(const DataNode& root, Entity parent, bool facingLeft) const;
+    virtual ControllerMap load(const DataNode& root, Entity parent) const;
 
 private:
     DataParser& parser;
     EntityFactory& factory;
 
-    Entity createHurtboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const;
+    Entity createHurtboxFromNode(const DataNode& node, Entity parent) const;
 };
 
 #endif // hurtbox_loader_h

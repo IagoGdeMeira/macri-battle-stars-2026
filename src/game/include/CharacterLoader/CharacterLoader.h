@@ -71,7 +71,7 @@ private:
     AnimationControllerComponent buildAnimationController(const CharacterDefinition& def, const StateIdMapper& mapper) const;
     AnimationComponent buildInitialAnimation(Entity entity, World& world) const;
 
-    void loadCollisionControllers(World& world, Entity entity, const CharacterDefinition& def, bool facingLeft) const;
+    void loadCollisionControllers(World& world, Entity entity, const CharacterDefinition& def) const;
 };
 
 #endif // character_loader_h

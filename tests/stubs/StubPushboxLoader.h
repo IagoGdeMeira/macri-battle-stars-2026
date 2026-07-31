@@ -9,8 +9,8 @@ class StubPushboxLoader : public PushboxLoader
 public:
     StubPushboxLoader(DataParser& parser, EntityFactory& factory) : PushboxLoader(parser, factory) {}
 
-    ControllerMap load(const DataNode& root, Entity parent, bool facingLeft) const override
-    { (void)root; (void)parent; (void)facingLeft; return ControllerMap{}; }
+    ControllerMap load(const DataNode& root, Entity parent) const override
+    { (void)root; (void)parent; return ControllerMap{}; }
 };
 
 #endif // stub_pushbox_loader_h

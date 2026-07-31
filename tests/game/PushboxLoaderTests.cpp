@@ -116,7 +116,7 @@ TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader loads a single state with 
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent, false);
+    auto controllerMap = this->loader->load(*root, parent);
 
     REQUIRE(controllerMap.size() == 1);
     auto it = controllerMap.find(StateId::Idle);
@@ -159,7 +159,7 @@ TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader loads a single state with 
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent, false);
+    auto controllerMap = this->loader->load(*root, parent);
 
     REQUIRE(controllerMap.size() == 1);
     auto it = controllerMap.find(StateId::Idle);
@@ -199,7 +199,7 @@ TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader handles multiple frames in
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent, false);
+    auto controllerMap = this->loader->load(*root, parent);
 
     REQUIRE(controllerMap.size() == 1);
     auto it = controllerMap.find(StateId::Idle);
@@ -239,7 +239,7 @@ TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader handles multiple states", 
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent, false);
+    auto controllerMap = this->loader->load(*root, parent);
 
     REQUIRE(controllerMap.size() == 2);
     REQUIRE(controllerMap.find(StateId::Idle) != controllerMap.end());
@@ -279,7 +279,7 @@ TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader throws on unknown pushbox 
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    REQUIRE_THROWS_AS(this->loader->load(*root, parent, false), std::runtime_error);
+    REQUIRE_THROWS_AS(this->loader->load(*root, parent), std::runtime_error);
 }
 
 TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader handles empty pushbox list", "[unit][pushbox_loader]")
@@ -299,7 +299,7 @@ TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader handles empty pushbox list
     root->setArray("states", std::move(states));
 
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->load(*root, parent, false);
+    auto controllerMap = this->loader->load(*root, parent);
 
     REQUIRE(controllerMap.size() == 1);
     auto it = controllerMap.find(StateId::Idle);

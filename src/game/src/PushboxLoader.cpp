@@ -10,7 +10,7 @@
 
 #include <stdexcept>
 
-PushboxLoader::ControllerMap PushboxLoader::load(const DataNode& root, Entity parent, bool facingLeft) const
+PushboxLoader::ControllerMap PushboxLoader::load(const DataNode& root, Entity parent) const
 {
     ControllerMap result;
 
@@ -30,7 +30,7 @@ PushboxLoader::ControllerMap PushboxLoader::load(const DataNode& root, Entity pa
 
             for (auto& hbNode : frameNode->getArray("pushboxes"))
             {
-                Entity hitbox = this->createPushboxFromNode(*hbNode, parent, facingLeft);
+                Entity hitbox = this->createPushboxFromNode(*hbNode, parent);
                 frame.pushboxes.push_back(hitbox);
             }
             controller.frames.push_back(std::move(frame));
@@ -40,7 +40,7 @@ PushboxLoader::ControllerMap PushboxLoader::load(const DataNode& root, Entity pa
     return result;
 }
 
-Entity PushboxLoader::createPushboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
+Entity PushboxLoader::createPushboxFromNode(const DataNode& node, Entity parent) const
 {
     LOG_DEBUG("PushboxLoader: node has 'position'={}, has 'size'={}, has 'debug'={}",
         node.has("position"), node.has("size"), node.has("debug"));
@@ -64,14 +64,14 @@ Entity PushboxLoader::createPushboxFromNode(const DataNode& node, Entity parent,
            static_cast<int>(debug.color.r), static_cast<int>(debug.color.g),
            static_cast<int>(debug.color.b), static_cast<int>(debug.color.a));
         return this->factory.createPushboxChild(EntityFactory::PushboxChildParams{
-            parent, offset, pushType, mass, pushResistance, facingLeft, debug}, rect);
+            parent, offset, pushType, mass, pushResistance, debug}, rect);
     }
     if (type == "circle")
     {
         Circle circle = DataUtils::parseCircle(node);
         LOG_DEBUG("PushboxLoader: parsed circle radius={} offset=({},{})", circle.radius, offset.x, offset.y);
         return this->factory.createPushboxChild(EntityFactory::PushboxChildParams{
-            parent, offset, pushType, mass, pushResistance, facingLeft, debug}, circle);
+            parent, offset, pushType, mass, pushResistance, debug}, circle);
     }
 
     throw std::runtime_error("Invalid pushbox type: " + type);

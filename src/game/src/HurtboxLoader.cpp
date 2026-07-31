@@ -10,7 +10,7 @@
 
 #include <stdexcept>
 
-HurtboxLoader::ControllerMap HurtboxLoader::load(const DataNode& root, Entity parent, bool facingLeft) const
+HurtboxLoader::ControllerMap HurtboxLoader::load(const DataNode& root, Entity parent) const
 {
     ControllerMap result;
 
@@ -30,7 +30,7 @@ HurtboxLoader::ControllerMap HurtboxLoader::load(const DataNode& root, Entity pa
 
             for (auto& hbNode : frameNode->getArray("hurtboxes"))
             {
-                Entity hurtbox = this->createHurtboxFromNode(*hbNode, parent, facingLeft);
+                Entity hurtbox = this->createHurtboxFromNode(*hbNode, parent);
                 frame.hurtboxes.push_back(hurtbox);
             }
             controller.frames.push_back(std::move(frame));
@@ -40,7 +40,7 @@ HurtboxLoader::ControllerMap HurtboxLoader::load(const DataNode& root, Entity pa
     return result;
 }
 
-Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent, bool facingLeft) const
+Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent) const
 {
     LOG_DEBUG("HurtboxLoader: node has 'position'={}, has 'size'={}, has 'debug'={}",
         node.has("position"), node.has("size"), node.has("debug"));
@@ -62,14 +62,14 @@ Entity HurtboxLoader::createHurtboxFromNode(const DataNode& node, Entity parent,
             static_cast<int>(debug.color.r), static_cast<int>(debug.color.g),
             static_cast<int>(debug.color.b), static_cast<int>(debug.color.a));
         return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
-            parent, offset, damageMultiplier, facingLeft, debug}, rect);
+            parent, offset, damageMultiplier, debug}, rect);
     }
     if (type == "circle")
     {
         Circle circle = DataUtils::parseCircle(node);
         LOG_DEBUG("HurtboxLoader: parsed circle radius={} offset=({},{})", circle.radius, offset.x, offset.y);
         return this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
-            parent, offset, damageMultiplier, facingLeft, debug}, circle);
+            parent, offset, damageMultiplier, debug}, circle);
     }
 
     throw std::runtime_error("Invalid hurtbox type: " + type);
