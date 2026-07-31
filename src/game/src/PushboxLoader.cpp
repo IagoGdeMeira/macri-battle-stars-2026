@@ -20,7 +20,7 @@ PushboxControllerComponent PushboxLoader::loadSingleState(const DataNode& stateN
         PushboxControllerComponent::Frame frame;
         frame.duration = frameNode->getFloat("duration", 0.f);
 
-        for (auto& hbNode : frameNode->getArray("hitboxes"))
+        for (auto& hbNode : frameNode->getArray("pushboxes"))
         {
             Entity pushbox = this->createPushboxFromNode(*hbNode, parent);
             frame.pushboxes.push_back(pushbox);

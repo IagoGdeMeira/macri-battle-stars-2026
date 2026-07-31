@@ -48,7 +48,7 @@ void PushboxCollisionController::onOrientationChanged(const ControllerParams& pa
     Orientation orient = comp.get<OrientationComponent>(params.entity).direction;
     float sign = (orient == Orientation::Right) ? 1.0f : -1.0f;
 
-    LOG_DEBUG("HurtboxCollisionController::onOrientationChanged: entity {} orientation={} sign={}",
+    LOG_DEBUG("PushboxCollisionController::onOrientationChanged: entity {} orientation={} sign={}",
         params.entity.id, (orient == Orientation::Right ? "Right" : "Left"), sign);
 
     auto view = View<LocalTransform, ParentComponent>(comp);

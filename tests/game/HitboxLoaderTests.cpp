@@ -55,10 +55,9 @@ public:
     std::unique_ptr<EntityFactory> factory;
     std::unique_ptr<HitboxLoader> loader;
 
-    std::unique_ptr<StubDataNode> createStateNode(const std::string& name, bool loop)
+    std::unique_ptr<StubDataNode> createStateNode(bool loop)
     {
         auto state = std::make_unique<StubDataNode>();
-        state->setString("name", name);
         state->setBool("loop", loop);
         return state;
     }
@@ -89,9 +88,7 @@ public:
 
 TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader loads a single state with rectangle hitbox", "[unit][hitbox_loader]")
 {
-    auto root = std::make_unique<StubDataNode>();
-
-    auto state = this->createStateNode("Idle", false);
+    auto state = this->createStateNode(false);
     auto frame = this->createFrameNode(0.1f);
     auto hitbox = this->createHitboxNode("rectangle", 10.f, 5.f, 20.f, 30.f, 5);
 
@@ -103,18 +100,9 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader loads a single state with re
     frames.push_back(std::move(frame));
     state->setArray("frames", std::move(frames));
 
-    std::vector<std::unique_ptr<DataNode>> states;
-    states.push_back(std::move(state));
-    root->setArray("states", std::move(states));
-
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->loadSingleState(*state, parent);
+    auto controller = this->loader->loadSingleState(*state, parent);
 
-    REQUIRE(controllerMap.size() == 1);
-    auto it = controllerMap.find(StateId::Idle);
-    REQUIRE(it != controllerMap.end());
-
-    const auto& controller = it->second;
     REQUIRE(controller.frames.size() == 1);
     REQUIRE(controller.frames[0].duration == 0.1f);
     REQUIRE(controller.frames[0].hitboxes.size() == 1);
@@ -129,9 +117,7 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader loads a single state with re
 
 TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader loads a single state with circle hitbox", "[unit][hitbox_loader]")
 {
-    auto root = std::make_unique<StubDataNode>();
-
-    auto state = this->createStateNode("Idle", false);
+    auto state = this->createStateNode(false);
     auto frame = this->createFrameNode(0.15f);
     auto hitbox = this->createHitboxNode("circle", 0.f, 0.f, 15.f, 0.f, 10);
 
@@ -143,18 +129,9 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader loads a single state with ci
     frames.push_back(std::move(frame));
     state->setArray("frames", std::move(frames));
 
-    std::vector<std::unique_ptr<DataNode>> states;
-    states.push_back(std::move(state));
-    root->setArray("states", std::move(states));
-
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->loadSingleState(*state, parent);
+    auto controller = this->loader->loadSingleState(*state, parent);
 
-    REQUIRE(controllerMap.size() == 1);
-    auto it = controllerMap.find(StateId::Idle);
-    REQUIRE(it != controllerMap.end());
-
-    const auto& controller = it->second;
     REQUIRE(controller.frames.size() == 1);
     REQUIRE(controller.frames[0].duration == 0.15f);
     REQUIRE(controller.frames[0].hitboxes.size() == 1);
@@ -168,9 +145,7 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader loads a single state with ci
 
 TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader handles multiple frames in a state", "[unit][hitbox_loader]")
 {
-    auto root = std::make_unique<StubDataNode>();
-
-    auto state = this->createStateNode("Idle", true);
+    auto state = this->createStateNode(true);
 
     std::vector<std::unique_ptr<DataNode>> frames;
     for (int i = 0; i < 3; ++i)
@@ -182,71 +157,17 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader handles multiple frames in a
     }
     state->setArray("frames", std::move(frames));
 
-    std::vector<std::unique_ptr<DataNode>> states;
-    states.push_back(std::move(state));
-    root->setArray("states", std::move(states));
-
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->loadSingleState(*state, parent);
+    auto controller = this->loader->loadSingleState(*state, parent);
 
-    REQUIRE(controllerMap.size() == 1);
-    auto it = controllerMap.find(StateId::Idle);
-    REQUIRE(it != controllerMap.end());
-
-    const auto& controller = it->second;
     REQUIRE(controller.frames.size() == 3);
     REQUIRE(controller.loop == true);
     for (const auto& frame : controller.frames) REQUIRE(frame.duration == 0.05f);
 }
 
-TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader handles multiple states", "[unit][hitbox_loader]")
-{
-    auto root = std::make_unique<StubDataNode>();
-
-    std::vector<std::unique_ptr<DataNode>> states;
-
-    auto idleState = this->createStateNode("Idle", false);
-    auto idleFrame = this->createFrameNode(0.2f);
-    idleFrame->setArray("hitboxes", {});
-    std::vector<std::unique_ptr<DataNode>> idleFrames;
-    idleFrames.push_back(std::move(idleFrame));
-    idleState->setArray("frames", std::move(idleFrames));
-    states.push_back(std::move(idleState));
-
-    auto punchState = this->createStateNode("Punching", false);
-    auto punchFrame = this->createFrameNode(0.1f);
-    auto hitbox = this->createHitboxNode("rectangle", 10.f, 0.f, 20.f, 20.f, 5);
-    std::vector<std::unique_ptr<DataNode>> punchHitboxes;
-    punchHitboxes.push_back(std::move(hitbox));
-    punchFrame->setArray("hitboxes", std::move(punchHitboxes));
-    std::vector<std::unique_ptr<DataNode>> punchFrames;
-    punchFrames.push_back(std::move(punchFrame));
-    punchState->setArray("frames", std::move(punchFrames));
-    states.push_back(std::move(punchState));
-
-    root->setArray("states", std::move(states));
-
-    Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->loadSingleState(*idleState, parent);
-
-    REQUIRE(controllerMap.size() == 2);
-    REQUIRE(controllerMap.find(StateId::Idle) != controllerMap.end());
-    REQUIRE(controllerMap.find(StateId::Punching) != controllerMap.end());
-
-    const auto& idleController = controllerMap[StateId::Idle];
-    REQUIRE(idleController.frames.size() == 1);
-    REQUIRE(idleController.frames[0].hitboxes.empty());
-
-    const auto& punchController = controllerMap[StateId::Punching];
-    REQUIRE(punchController.frames.size() == 1);
-    REQUIRE(punchController.frames[0].hitboxes.size() == 1);
-}
-
 TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader throws on unknown hitbox type", "[unit][hitbox_loader]")
 {
-    auto root = std::make_unique<StubDataNode>();
-
-    auto state = this->createStateNode("Idle", false);
+    auto state = this->createStateNode(false);
     auto frame = this->createFrameNode(0.1f);
 
     auto hitbox = std::make_unique<StubDataNode>();
@@ -262,19 +183,13 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader throws on unknown hitbox typ
     frames.push_back(std::move(frame));
     state->setArray("frames", std::move(frames));
 
-    std::vector<std::unique_ptr<DataNode>> states;
-    states.push_back(std::move(state));
-    root->setArray("states", std::move(states));
-
     Entity parent = this->world.entities().create();
-    REQUIRE_THROWS_AS(this->loader->load(*root, parent), std::runtime_error);
+    REQUIRE_THROWS_AS(this->loader->loadSingleState(*state, parent), std::runtime_error);
 }
 
 TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader handles empty hitbox list", "[unit][hitbox_loader]")
 {
-    auto root = std::make_unique<StubDataNode>();
-
-    auto state = this->createStateNode("Idle", false);
+    auto state = this->createStateNode(false);
     auto frame = this->createFrameNode(0.2f);
     frame->setArray("hitboxes", {});
 
@@ -282,18 +197,9 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader handles empty hitbox list", 
     frames.push_back(std::move(frame));
     state->setArray("frames", std::move(frames));
 
-    std::vector<std::unique_ptr<DataNode>> states;
-    states.push_back(std::move(state));
-    root->setArray("states", std::move(states));
-
     Entity parent = this->world.entities().create();
-    auto controllerMap = this->loader->loadSingleState(*state, parent);
+    auto controller = this->loader->loadSingleState(*state, parent);
 
-    REQUIRE(controllerMap.size() == 1);
-    auto it = controllerMap.find(StateId::Idle);
-    REQUIRE(it != controllerMap.end());
-
-    const auto& controller = it->second;
     REQUIRE(controller.frames.size() == 1);
     REQUIRE(controller.frames[0].hitboxes.empty());
 }
