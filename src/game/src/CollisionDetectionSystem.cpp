@@ -6,7 +6,6 @@
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -52,7 +51,6 @@ void CollisionDetectionSystem::updateAABBs(UpdateContext& ctx)
     }
 
     this->insertionSortAABBs();
-    LOG_DEBUG("CollisionDetectionSystem: collected {} AABBs", this->aabbs.size());
 }
 
 void CollisionDetectionSystem::insertionSortAABBs()
@@ -90,5 +88,4 @@ void CollisionDetectionSystem::sweepAndPrune(std::vector<ICollisionDetection::Co
             outPairs.push_back({a.entity, b.entity});
         }
     }
-    LOG_DEBUG("CollisionDetectionSystem: found {} collision pairs", outPairs.size());
 }

@@ -3,8 +3,6 @@
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
-
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 void HurtboxControllerSystem::update(UpdateContext& ctx)
@@ -15,14 +13,9 @@ void HurtboxControllerSystem::update(UpdateContext& ctx)
     {
         if (controller.frames.empty()) continue;
 
-        if (!controller.initialized)
+        if (!controller.initialized) for (Entity e : controller.frames[controller.currentFrame].hurtboxes)
         {
-            for (Entity e : controller.frames[controller.currentFrame].hurtboxes) if (comp.has<ActiveComponent>(e))
-            {
-                comp.get<ActiveComponent>(e).active = true;
-                LOG_DEBUG("HurtboxControllerSystem: entity {} frame {} activated child {}",
-                    entity.id, controller.currentFrame, e.id);
-            }
+            if (comp.has<ActiveComponent>(e)) comp.get<ActiveComponent>(e).active = true;
             controller.initialized = true;
         }
 
@@ -32,11 +25,7 @@ void HurtboxControllerSystem::update(UpdateContext& ctx)
         if (controller.elapsedTime < currentFrame.duration) continue;
         
         for (Entity e : currentFrame.hurtboxes) if (comp.has<ActiveComponent>(e))
-        {
-            comp.get<ActiveComponent>(e).active = false;
-            LOG_DEBUG("HurtboxControllerSystem: entity {} frame {} deactivated child {}",
-                entity.id, controller.currentFrame, e.id);
-        }
+        { comp.get<ActiveComponent>(e).active = false; }
 
         controller.elapsedTime = 0.f;
         controller.currentFrame++;
@@ -48,10 +37,6 @@ void HurtboxControllerSystem::update(UpdateContext& ctx)
 
         auto& newFrame = controller.frames[controller.currentFrame];
         for (Entity e : newFrame.hurtboxes) if (comp.has<ActiveComponent>(e))
-        {
-            comp.get<ActiveComponent>(e).active = true;
-            LOG_DEBUG("HurtboxControllerSystem: entity {} advanced to frame {} activated child {}",
-                entity.id, controller.currentFrame, e.id);
-        }
+        { comp.get<ActiveComponent>(e).active = true; }
     }
 }

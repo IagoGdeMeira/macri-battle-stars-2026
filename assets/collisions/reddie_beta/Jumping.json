@@ -6,7 +6,7 @@
             "hitboxes": [],
             "hurtboxes": [
                 {
-                    "type": "rectangle",
+                    "shape": "rectangle",
                     "position": { "x": 0, "y": 0 },
                     "size": { "width": 60, "height": 130 },
                     "damageMultiplier": 1.0,
@@ -15,7 +15,7 @@
             ],
             "pushboxes": [
                 {
-                    "type": "rectangle",
+                    "shape": "rectangle",
                     "position": { "x": 0, "y": 118.5 },
                     "size": { "width": 60, "height": 130 },
                     "pushboxType": "dynamic",
@@ -30,7 +30,7 @@
             "hitboxes": [],
             "hurtboxes": [
                 {
-                    "type": "rectangle",
+                    "shape": "rectangle",
                     "position": { "x": 0, "y": 0 },
                     "size": { "width": 60, "height": 130 },
                     "damageMultiplier": 1.0,
@@ -39,7 +39,7 @@
             ],
             "pushboxes": [
                 {
-                    "type": "rectangle",
+                    "shape": "rectangle",
                     "position": { "x": 0, "y": 118.5 },
                     "size": { "width": 60, "height": 130 },
                     "pushboxType": "dynamic",
@@ -54,7 +54,7 @@
             "hitboxes": [],
             "hurtboxes": [
                 {
-                    "type": "rectangle",
+                    "shape": "rectangle",
                     "position": { "x": 0, "y": 0 },
                     "size": { "width": 60, "height": 130 },
                     "damageMultiplier": 1.0,
@@ -63,7 +63,7 @@
             ],
             "pushboxes": [
                 {
-                    "type": "rectangle",
+                    "shape": "rectangle",
                     "position": { "x": 0, "y": 118.5 },
                     "size": { "width": 60, "height": 130 },
                     "pushboxType": "dynamic",

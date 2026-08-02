@@ -44,7 +44,6 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
     auto& comp = ctx.world.components();
 
     Entity rootDyn = comp.has<ParentComponent>(dyn) ? comp.get<ParentComponent>(dyn).parent : dyn;
-    Entity rootSta = comp.has<ParentComponent>(sta) ? comp.get<ParentComponent>(sta).parent : sta;
 
     auto dynHandler = CollisionHandlerFactory::createForEntity(ctx, {dyn, std::nullopt});
     auto staHandler = CollisionHandlerFactory::createForEntity(ctx, {sta, std::nullopt});

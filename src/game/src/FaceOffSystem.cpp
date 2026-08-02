@@ -18,7 +18,6 @@ void FaceOffSystem::update(UpdateContext& ctx)
     auto view = View<TransformComponent, PlayerComponent, OrientationComponent>(comp);
 
     std::vector<PlayerInfo> players;
-
     for (auto [entity, transform, p_, o_] : view) players.push_back({entity, transform.position.x});
 
     if (players.size() < 2) return;

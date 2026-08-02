@@ -69,18 +69,18 @@ public:
         return frame;
     }
 
-    std::unique_ptr<StubDataNode> createHurtboxNode(const std::string& type, float x, float y, float width, float height, float damageMultiplier)
+    std::unique_ptr<StubDataNode> createHurtboxNode(const std::string& shape, float x, float y, float width, float height, float damageMultiplier)
     {
         auto node = std::make_unique<StubDataNode>();
-        node->setString("type", type);
+        node->setString("shape", shape);
         node->setFloat("x", x);
         node->setFloat("y", y);
-        if (type == "rectangle")
+        if (shape == "rectangle")
         {
             node->setFloat("width", width);
             node->setFloat("height", height);
         }
-        else if (type == "circle") node->setFloat("radius", width);
+        else if (shape == "circle") node->setFloat("radius", width);
         node->setFloat("damageMultiplier", damageMultiplier);
         return node;
     }
@@ -169,7 +169,7 @@ TEST_CASE_METHOD(HurtboxLoaderFixture, "HurtboxLoader throws on unknown hurtbox 
     auto frame = this->createFrameNode(0.1f);
 
     auto hurtbox = std::make_unique<StubDataNode>();
-    hurtbox->setString("type", "polygon");
+    hurtbox->setString("shape", "polygon");
     hurtbox->setFloat("x", 0.f);
     hurtbox->setFloat("y", 0.f);
 

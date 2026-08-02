@@ -3,7 +3,6 @@
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -17,11 +16,7 @@ void HitboxControllerSystem::update(UpdateContext& ctx)
         if (!controller.initialized)
         {
             for (Entity e : controller.frames[controller.currentFrame].hitboxes) if (comp.has<ActiveComponent>(e))
-            {
-                comp.get<ActiveComponent>(e).active = true;
-                LOG_DEBUG("HitboxControllerSystem: entity {} frame {} activated child {}",
-                    entity.id, controller.currentFrame, e.id);
-            }
+            { comp.get<ActiveComponent>(e).active = true; }
             controller.initialized = true;
         }
 
@@ -31,11 +26,7 @@ void HitboxControllerSystem::update(UpdateContext& ctx)
         if (controller.elapsedTime < currentFrame.duration) continue;
         
         for (Entity e : currentFrame.hitboxes) if (comp.has<ActiveComponent>(e))
-        {
-            comp.get<ActiveComponent>(e).active = false;
-            LOG_DEBUG("HitboxControllerSystem: entity {} frame {} deactivated child {}",
-                entity.id, controller.currentFrame, e.id);
-        }
+        { comp.get<ActiveComponent>(e).active = false; }
 
         controller.elapsedTime = 0.f;
         controller.currentFrame++;
@@ -47,10 +38,6 @@ void HitboxControllerSystem::update(UpdateContext& ctx)
 
         auto& newFrame = controller.frames[controller.currentFrame];
         for (Entity e : newFrame.hitboxes) if (comp.has<ActiveComponent>(e))
-        {
-            comp.get<ActiveComponent>(e).active = true;
-            LOG_DEBUG("HitboxControllerSystem: entity {} advanced to frame {} activated child {}",
-                entity.id, controller.currentFrame, e.id);
-        }
+        { comp.get<ActiveComponent>(e).active = true; }
     }
 }

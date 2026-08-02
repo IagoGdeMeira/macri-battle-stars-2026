@@ -1,57 +1,38 @@
 #include "DataUtils/DataUtils.h"
 
-#include "domain/utils/Logger/Logger.h"
-
 Position DataUtils::parsePosition(const DataNode& node, const Position& defaultValue)
 {
-    if (!node.has("x") || !node.has("y"))
-    {
-        LOG_DEBUG("DataUtils::parsePosition: missing x or y, returning default");
-        return defaultValue;
-    }
+    if (!node.has("x") || !node.has("y")) return defaultValue;
+    
     Position pos;
     pos.x = node.getFloat("x", defaultValue.x);
     pos.y = node.getFloat("y", defaultValue.y);
-    LOG_DEBUG("DataUtils::parsePosition: x={} y={}", pos.x, pos.y);
     return pos;
 }
 
 Dimension2D DataUtils::parseSize(const DataNode& node, const Dimension2D& defaultValue)
 {
-    if (!node.has("width") || !node.has("height"))
-    {
-        LOG_DEBUG("DataUtils::parseSize: missing width or height, returning default");
-        return defaultValue;
-    }
+    if (!node.has("width") || !node.has("height")) return defaultValue;
+    
     Dimension2D size;
     size.width  = node.getFloat("width",  defaultValue.width);
     size.height = node.getFloat("height", defaultValue.height);
-    LOG_DEBUG("DataUtils::parseSize: width={} height={}", size.width, size.height);
     return size;
 }
 
 Rectangle DataUtils::parseRect(const DataNode& node, const Rectangle& defaultValue)
 {
-    if (!node.has("position") || !node.has("size"))
-    {
-        LOG_DEBUG("DataUtils::parseRect: missing position or size, returning default");
-        return defaultValue;
-    }
+    if (!node.has("position") || !node.has("size")) return defaultValue;
 
     auto posNode    = node.getObject("position");
     auto sizeNode   = node.getObject("size");
-
-    if (!posNode || !sizeNode)
-    {
-        LOG_DEBUG("DataUtils::parseRect: null position or size node, returning default");
-        return defaultValue;
-    }
+    
+    if (!posNode || !sizeNode) return defaultValue;
 
     Rectangle rect;
     rect.position   = DataUtils::parsePosition(*posNode, defaultValue.position);
     rect.size       = DataUtils::parseSize(*sizeNode, defaultValue.size);
 
-    LOG_DEBUG("DataUtils::parseRect: result size=({},{})", rect.size.width, rect.size.height);
     return rect;
 }
 
@@ -121,11 +102,6 @@ DebugConfig DataUtils::parseDebug(const DataNode& node, const DebugConfig& defau
     config.layer   = debugNode->getInt("layer", defaultConfig.layer);
     config.zIndex  = debugNode->getInt("zIndex", defaultConfig.zIndex);
     config.filled  = debugNode->getBool("filled", defaultConfig.filled);
-
-    LOG_DEBUG("DataUtils::parseDebug: enabled={} color=({},{},{},{})",
-        config.enabled,
-        static_cast<int>(config.color.r), static_cast<int>(config.color.g),
-        static_cast<int>(config.color.b), static_cast<int>(config.color.a));
     return config;
 }
 

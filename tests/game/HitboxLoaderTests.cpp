@@ -69,18 +69,18 @@ public:
         return frame;
     }
 
-    std::unique_ptr<StubDataNode> createHitboxNode(const std::string& type, float x, float y, float width, float height, int damage)
+    std::unique_ptr<StubDataNode> createHitboxNode(const std::string& shape, float x, float y, float width, float height, int damage)
     {
         auto node = std::make_unique<StubDataNode>();
-        node->setString("type", type);
+        node->setString("shape", shape);
         node->setFloat("x", x);
         node->setFloat("y", y);
-        if (type == "rectangle")
+        if (shape == "rectangle")
         {
             node->setFloat("width", width);
             node->setFloat("height", height);
         }
-        else if (type == "circle") node->setFloat("radius", width);
+        else if (shape == "circle") node->setFloat("radius", width);
         node->setInt("damage", damage);
         return node;
     }
@@ -171,7 +171,7 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader throws on unknown hitbox typ
     auto frame = this->createFrameNode(0.1f);
 
     auto hitbox = std::make_unique<StubDataNode>();
-    hitbox->setString("type", "polygon");
+    hitbox->setString("shape", "polygon");
     hitbox->setFloat("x", 0.f);
     hitbox->setFloat("y", 0.f);
 

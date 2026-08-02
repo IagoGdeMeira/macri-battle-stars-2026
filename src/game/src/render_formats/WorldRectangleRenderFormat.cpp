@@ -8,7 +8,6 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
@@ -18,11 +17,10 @@ void WorldRectangleRenderFormat::render(RenderContext& ctx)
     auto& comp = ctx.world.components();
     
     auto view = View<RectangleShapeComponent, TransformComponent>(comp);
-    LOG_DEBUG("WorldRectangleRenderFormat: found {} entities", view.size());
     
     int activeEntities = 0;
-    for (auto [entity, shape, transform] : view) if (!comp.has<ActiveComponent>(entity) || comp.get<ActiveComponent>(entity).active) activeEntities++;
-    LOG_DEBUG("WorldRectangleRenderFormat: {} active entities", activeEntities);
+    for (auto [entity, shape, transform] : view)
+    { if (!comp.has<ActiveComponent>(entity) || comp.get<ActiveComponent>(entity).active) activeEntities++; }
 
     size_t order = 0;
 
@@ -33,19 +31,10 @@ void WorldRectangleRenderFormat::render(RenderContext& ctx)
         float width = shape.rect.size.width * std::abs(transform.scale.x);
         float height = shape.rect.size.height * std::abs(transform.scale.y);
         
-        LOG_DEBUG("  entity {} rawSize=({},{}) scale=({},{}) finalSize=({},{})",
-            entity.id, shape.rect.size.width, shape.rect.size.height,
-            transform.scale.x, transform.scale.y, width, height);
-        
         if (width <= 0.f || height <= 0.f) continue;
 
         DrawRectangleCommand cmd = this->buildRectangleCommand(entity, ctx.world, order++);
-        LOG_DEBUG("  entity {} pos=({},{}) size=({},{}) filled={} color=({},{},{},{}) cmdRect=({},{},{},{})",
-            entity.id, transform.position.x, transform.position.y,
-            shape.rect.size.width, shape.rect.size.height, shape.filled,
-            static_cast<int>(shape.color.r), static_cast<int>(shape.color.g),
-            static_cast<int>(shape.color.b), static_cast<int>(shape.color.a),
-            cmd.rect.position.x, cmd.rect.position.y, cmd.rect.size.width, cmd.rect.size.height);
+
         if (comp.has<VisualEffectsComponent>(entity))
         {
             const auto& fx = comp.get<VisualEffectsComponent>(entity);

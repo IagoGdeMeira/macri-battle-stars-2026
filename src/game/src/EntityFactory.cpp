@@ -18,7 +18,6 @@
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
-#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/StateId/StateId.h"
 
 #include "engine/include/ResourceManager/ResourceManager.h"
@@ -310,9 +309,6 @@ void EntityFactory::addDebugVisual(Entity entity, const Rectangle& rect, const D
     shape.layer     = debug.layer;
     shape.zIndex    = debug.zIndex;
     comp.add<RectangleShapeComponent>(entity, std::move(shape));
-    
-    LOG_DEBUG("EntityFactory::addDebugVisual (rect): entity {} size=({},{})",
-        entity.id, rect.size.width, rect.size.height);
 }
 
 void EntityFactory::addDebugVisual(Entity entity, const Circle& circle, const DebugConfig& debug)

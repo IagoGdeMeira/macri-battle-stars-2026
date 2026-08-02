@@ -69,7 +69,7 @@ public:
     }
 
     std::unique_ptr<StubDataNode> createPushboxNode(
-        const std::string& type,
+        const std::string& shape,
         float x, float y,
         float width, float height,
         const std::string& pushboxType,
@@ -77,15 +77,15 @@ public:
         float pushResistance
     ) {
         auto node = std::make_unique<StubDataNode>();
-        node->setString("type", type);
+        node->setString("shape", shape);
         node->setFloat("x", x);
         node->setFloat("y", y);
-        if (type == "rectangle")
+        if (shape == "rectangle")
         {
             node->setFloat("width", width);
             node->setFloat("height", height);
         }
-        else if (type == "circle") node->setFloat("radius", width);
+        else if (shape == "circle") node->setFloat("radius", width);
         
         node->setString("pushboxType", pushboxType);
         node->setFloat("mass", mass);
@@ -183,7 +183,7 @@ TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader throws on unknown pushbox 
     auto frame = this->createFrameNode(0.1f);
 
     auto pushbox = std::make_unique<StubDataNode>();
-    pushbox->setString("type", "polygon");
+    pushbox->setString("shape", "polygon");
     pushbox->setFloat("x", 0.f);
     pushbox->setFloat("y", 0.f);
 
