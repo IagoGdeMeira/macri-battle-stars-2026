@@ -137,27 +137,35 @@ public:
         return root;
     }
 
-    std::unique_ptr<StubDataNode> makeAnimationNode() const
+    std::unique_ptr<StubDataNode> makeAnimationNode()
     {
-        auto root = std::make_unique<StubDataNode>();
-        auto anim = std::make_unique<StubDataNode>();
-        anim->setString("state", "Idle");
-        anim->setFloat("frameDuration", 0.1f);
-        anim->setBool("loop", true);
         auto frame = std::make_unique<StubDataNode>();
         frame->setInt("x", 0);
         frame->setInt("y", 0);
         frame->setInt("width", 64);
         frame->setInt("height", 96);
+
+        auto idleAnim = std::make_unique<StubDataNode>();
+        idleAnim->setFloat("frameDuration", 0.1f);
+        idleAnim->setBool("loop", true);
         std::vector<std::unique_ptr<DataNode>> frames;
         frames.push_back(std::move(frame));
-        anim->setArray("frames", std::move(frames));
-        std::vector<std::unique_ptr<DataNode>> animations;
-        animations.push_back(std::move(anim));
-        root->setArray("animations", std::move(animations));
+        idleAnim->setArray("frames", std::move(frames));
+
+        this->parser.registerNode("idle_anim.json", std::move(idleAnim));
+
+        auto entry = std::make_unique<StubDataNode>();
+        entry->setString("name", "Idle");
+        entry->setString("path", "idle_anim.json");
+
+        auto root = std::make_unique<StubDataNode>();
+        std::vector<std::unique_ptr<DataNode>> states;
+        states.push_back(std::move(entry));
+        root->setArray("states", std::move(states));
+
         return root;
     }
-
+    
     std::unique_ptr<StubDataNode> makeFSMNode() const
     {
         auto root = std::make_unique<StubDataNode>();

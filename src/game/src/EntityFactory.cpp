@@ -1,5 +1,7 @@
 #include "EntityFactory/EntityFactory.h"
 
+#include "StateIdMapper/StateIdMapper.h"
+
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
@@ -226,7 +228,8 @@ Entity EntityFactory::createBackgroundAnimated(const BackgroundParams& params, c
     this->addSprite(e, texturePath);
 
     AnimationControllerComponent controller;
-    controller.animations = this->animLoader.load(animationPath);
+    StateIdMapper defaultMapper;
+    controller.animations = this->animLoader.loadFromIndex(animationPath, defaultMapper);
     controller.currentState = StateId::Idle;
     comp.add<AnimationControllerComponent>(e, std::move(controller));
 

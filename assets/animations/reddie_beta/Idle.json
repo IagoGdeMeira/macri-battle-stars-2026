@@ -1,0 +1,10 @@
+{
+    "frameDuration": 0.12,
+    "loop": true,
+    "frames": [
+        { "x": 915, "y": 0, "width": 183, "height": 367 },
+        { "x": 1098, "y": 0, "width": 183, "height": 367 },
+        { "x": 1281, "y": 0, "width": 183, "height": 367 },
+        { "x": 1098, "y": 0, "width": 183, "height": 367 }
+    ]
+}

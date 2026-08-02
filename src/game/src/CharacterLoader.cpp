@@ -69,7 +69,7 @@ void CharacterLoader::addStateComponents(World& world, Entity entity, uint32_t m
 AnimationControllerComponent CharacterLoader::buildAnimationController(const CharacterDefinition& def, const StateIdMapper& mapper) const
 {
     AnimationControllerComponent controller;
-    controller.animations = this->animLoader.load(def.animationsPath, mapper);
+    controller.animations = this->animLoader.loadFromIndex(def.animationsPath, mapper);
     controller.currentState = StateId::Idle;
     return controller;
 }

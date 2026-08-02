@@ -2,12 +2,8 @@
 #define animation_loader_h
 
 #include "domain/value_objects/Animation/AnimationSet.h"
-#include "domain/value_objects/StateId/StateId.h"
 
 #include "engine/include/DataParser/DataParser.h"
-
-#include <memory>
-#include <unordered_map>
 
 class StateIdMapper;
 
@@ -15,12 +11,10 @@ class AnimationLoader
 {
 public:
     AnimationLoader(DataParser& parser) : parser(parser) {}
-
-    virtual AnimationSet load(const std::string& path) const;
-    virtual AnimationSet load(const std::string& path, const StateIdMapper& mapper) const;
+    virtual AnimationSet loadFromIndex(const std::string& indexPath, const StateIdMapper& mapper) const;
 
 private:
     DataParser& parser;
 };
 
-#endif // animation_loader_h
+#endif

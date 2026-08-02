@@ -71,7 +71,7 @@ TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
 }
 
 TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
-    "StaticPushboxResolutionSystem pushes a dynamic entity out of a static collider along the Y axis",
+    "StaticPushboxResolutionSystem ignores static colliders below dynamic entity (ground)",
     "[unit][static_pushbox_resolution_system]"
 ) {
     const Entity dynamicEntity = this->createRect(0.f, 0.f, PushboxComponent::Type::Dynamic, 0.f, 6.f);
@@ -84,8 +84,8 @@ TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
     const auto& dynamicTransform = comp.get<TransformComponent>(dynamicEntity);
     const auto& velocity = comp.get<VelocityComponent>(dynamicEntity);
 
-    REQUIRE(dynamicTransform.position.y == Catch::Approx(-3.f));
-    REQUIRE(velocity.velocity.y == 0.f);
+    REQUIRE(dynamicTransform.position.y == Catch::Approx(0.f));
+    REQUIRE(velocity.velocity.y == 6.f);
 }
 
 TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture, "StaticPushboxResolutionSystem moves root entity when dynamic collider is a child",

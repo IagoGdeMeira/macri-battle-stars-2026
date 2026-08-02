@@ -1,12 +1,12 @@
 {
     "states": [
-        { "name": "Idle", "path": "assets/collisions/reddie_beta/Idle.json" },
-        { "name": "Running", "path": "assets/collisions/reddie_beta/Running.json" },
-        { "name": "Crouching", "path": "assets/collisions/reddie_beta/Crouching.json" },
-        { "name": "Jumping", "path": "assets/collisions/reddie_beta/Jumping.json" },
-        { "name": "Falling", "path": "assets/collisions/reddie_beta/Falling.json" },
-        { "name": "Punching", "path": "assets/collisions/reddie_beta/Punching.json" },
-        { "name": "Kicking", "path": "assets/collisions/reddie_beta/Kicking.json" },
-        { "name": "Blocking", "path": "assets/collisions/reddie_beta/Blocking.json" }
+        { "name": "Blocking",   "path": "assets/collisions/reddie_beta/Blocking.json" },
+        { "name": "Crouching",  "path": "assets/collisions/reddie_beta/Crouching.json" },
+        { "name": "Falling",    "path": "assets/collisions/reddie_beta/Falling.json" },
+        { "name": "Idle",       "path": "assets/collisions/reddie_beta/Idle.json" },
+        { "name": "Jumping",    "path": "assets/collisions/reddie_beta/Jumping.json" },
+        { "name": "Kicking",    "path": "assets/collisions/reddie_beta/Kicking.json" },
+        { "name": "Punching",   "path": "assets/collisions/reddie_beta/Punching.json" },
+        { "name": "Running",    "path": "assets/collisions/reddie_beta/Running.json" }
     ]
 }

@@ -6,27 +6,25 @@
 
 #include <stdexcept>
 
-AnimationSet AnimationLoader::load(const std::string& path) const
+AnimationSet AnimationLoader::loadFromIndex(const std::string& indexPath, const StateIdMapper& mapper) const
 {
-    StateIdMapper mapper;
-    return this->load(path, mapper);
-}
-
-AnimationSet AnimationLoader::load(const std::string& path, const StateIdMapper& mapper) const
-{
-    auto root = parser.parse(path);
+    auto indexRoot = this->parser.parse(indexPath);
     AnimationSet set;
 
-    for (auto& node : root->getArray("animations"))
+    for (auto& entry : indexRoot->getArray("states"))
     {
-        std::string stateStr = node->getString("state");
-        StateId state = mapper.fromString(stateStr);
-        if (state == StateId::Unknown) throw std::runtime_error("Invalid state in animation: " + stateStr);
+        std::string stateName = entry->getString("name");
+        std::string filePath = entry->getString("path");
+        StateId stateId = mapper.fromString(stateName);
+        if (stateId == StateId::Unknown) throw std::runtime_error("Invalid state in animation index: " + stateName);
+
+        auto animRoot = this->parser.parse(filePath);
 
         Animation anim;
-        anim.frameDuration = node->getFloat("frameDuration");
-        anim.loop = node->getBool("loop");
-        for (auto& fnode : node->getArray("frames"))
+        anim.frameDuration = animRoot->getFloat("frameDuration", 0.1f);
+        anim.loop = animRoot->getBool("loop", true);
+
+        for (auto& fnode : animRoot->getArray("frames"))
         {
             Animation::Frame frame;
             frame.x = fnode->getInt("x");
@@ -36,13 +34,16 @@ AnimationSet AnimationLoader::load(const std::string& path, const StateIdMapper&
             anim.frames.push_back(frame);
         }
 
-        std::string direction = node->getString("direction", "Right");
-        if (direction == "Left")
+        std::string direction = entry->getString("direction", "Right");
+        bool asymmetric = entry->getBool("asymmetric", false);
+
+        if (asymmetric)
         {
-            set.left[state] = std::move(anim);
             set.symmetric = false;
+            if (direction == "Left") set.left[stateId] = std::move(anim);
+            else set.right[stateId] = std::move(anim);
         }
-        else set.right[state] = std::move(anim);
+        else set.right[stateId] = std::move(anim);
     }
     return set;
 }

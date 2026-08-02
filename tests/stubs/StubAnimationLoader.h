@@ -16,8 +16,8 @@ public:
 
     StubAnimationLoader() : AnimationLoader(this->dummyParser) {}
 
-    AnimationSet load(const std::string& path) const override
-    { (void)path; return AnimationSet{}; }
+    AnimationSet loadFromIndex(const std::string& indexPath, const StateIdMapper& mapper) const override
+    { (void)indexPath; (void)mapper; return AnimationSet{}; }
 
 private:
     StubDataParser dummyParser;

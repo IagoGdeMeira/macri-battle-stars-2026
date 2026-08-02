@@ -73,29 +73,6 @@ public:
         return root;
     }
 
-    std::unique_ptr<StubDataNode> makeAnimationRoot() const
-    {
-        auto frame = std::make_unique<StubDataNode>();
-        frame->setInt("x", 0);
-        frame->setInt("y", 0);
-        frame->setInt("width", 64);
-        frame->setInt("height", 96);
-
-        auto anim = std::make_unique<StubDataNode>();
-        anim->setString("state", "Idle");
-        anim->setFloat("frameDuration", 0.12f);
-        anim->setBool("loop", true);
-        std::vector<std::unique_ptr<DataNode>> frames;
-        frames.push_back(std::move(frame));
-        anim->setArray("frames", std::move(frames));
-
-        auto root = std::make_unique<StubDataNode>();
-        std::vector<std::unique_ptr<DataNode>> animations;
-        animations.push_back(std::move(anim));
-        root->setArray("animations", std::move(animations));
-        return root;
-    }
-
     std::unique_ptr<StubDataNode> makeStateMachineRoot() const
     {
         auto trans = std::make_unique<StubDataNode>();
@@ -118,9 +95,32 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 ) {
     StubDataParser defParser, animParser, fsmParser, collParser;
     defParser.registerNode("assets/characters/fighter_01.json", this->makeDefinitionRoot());
-    animParser.registerNode("assets/animations/fighter_01.json", this->makeAnimationRoot());
     fsmParser.registerNode("assets/fsm/fighter_01.json", this->makeStateMachineRoot());
     collParser.registerNode("assets/collisions/fighter_01.json", this->makeCollisionsRoot());
+
+    auto idleFrame = std::make_unique<StubDataNode>();
+    idleFrame->setInt("x", 0);
+    idleFrame->setInt("y", 0);
+    idleFrame->setInt("width", 64);
+    idleFrame->setInt("height", 96);
+
+    auto idleAnimNode = std::make_unique<StubDataNode>();
+    idleAnimNode->setFloat("frameDuration", 0.12f);
+    idleAnimNode->setBool("loop", true);
+    std::vector<std::unique_ptr<DataNode>> idleFrames;
+    idleFrames.push_back(std::move(idleFrame));
+    idleAnimNode->setArray("frames", std::move(idleFrames));
+    animParser.registerNode("idle_anim.json", std::move(idleAnimNode));
+
+    auto animEntry = std::make_unique<StubDataNode>();
+    animEntry->setString("name", "Idle");
+    animEntry->setString("path", "idle_anim.json");
+
+    auto animIndexRoot = std::make_unique<StubDataNode>();
+    std::vector<std::unique_ptr<DataNode>> animStates;
+    animStates.push_back(std::move(animEntry));
+    animIndexRoot->setArray("states", std::move(animStates));
+    animParser.registerNode("assets/animations/fighter_01.json", std::move(animIndexRoot));
 
     CharacterDefinitionLoader defLoader(defParser);
     AnimationLoader animLoader(animParser);
@@ -209,6 +209,8 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
 TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states per character definition",
     "[integration][character_loader]"
 ) {
+    StubDataParser animParser, collParser, fsmParser, defParser;
+
     auto defRoot = std::make_unique<StubDataNode>();
     defRoot->setString("id", "fighter_custom");
     defRoot->setString("texture", "assets/sprites/fighter.png");
@@ -223,22 +225,46 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     customStates.push_back(std::move(customStateNode));
     defRoot->setArray("customStates", std::move(customStates));
 
-    auto frame = std::make_unique<StubDataNode>();
-    frame->setInt("x", 0);
-    frame->setInt("y", 0);
-    frame->setInt("width", 64);
-    frame->setInt("height", 96);
-    auto animCustom = std::make_unique<StubDataNode>();
-    animCustom->setString("state", "PowerCharge");
-    animCustom->setFloat("frameDuration", 0.2f);
-    animCustom->setBool("loop", false);
-    std::vector<std::unique_ptr<DataNode>> frames;
-    frames.push_back(std::move(frame));
-    animCustom->setArray("frames", std::move(frames));
-    auto animRoot = std::make_unique<StubDataNode>();
-    std::vector<std::unique_ptr<DataNode>> animations;
-    animations.push_back(std::move(animCustom));
-    animRoot->setArray("animations", std::move(animations));
+    defParser.registerNode("def.json", std::move(defRoot));  // <-- CORREÇÃO
+
+    auto idleFrame = std::make_unique<StubDataNode>();
+    idleFrame->setInt("x", 0); idleFrame->setInt("y", 0);
+    idleFrame->setInt("width", 64); idleFrame->setInt("height", 96);
+
+    auto idleAnimNode = std::make_unique<StubDataNode>();
+    idleAnimNode->setFloat("frameDuration", 0.1f);
+    idleAnimNode->setBool("loop", true);
+    std::vector<std::unique_ptr<DataNode>> idleFrames;
+    idleFrames.push_back(std::move(idleFrame));
+    idleAnimNode->setArray("frames", std::move(idleFrames));
+    animParser.registerNode("idle_anim.json", std::move(idleAnimNode));
+
+    auto pcFrame = std::make_unique<StubDataNode>();
+    pcFrame->setInt("x", 0); pcFrame->setInt("y", 0);
+    pcFrame->setInt("width", 64); pcFrame->setInt("height", 96);
+
+    auto pcAnimNode = std::make_unique<StubDataNode>();
+    pcAnimNode->setFloat("frameDuration", 0.2f);
+    pcAnimNode->setBool("loop", false);
+    std::vector<std::unique_ptr<DataNode>> pcFrames;
+    pcFrames.push_back(std::move(pcFrame));
+    pcAnimNode->setArray("frames", std::move(pcFrames));
+    animParser.registerNode("powercharge_anim.json", std::move(pcAnimNode));
+
+    auto idxRoot = std::make_unique<StubDataNode>();
+    std::vector<std::unique_ptr<DataNode>> states;
+    auto entryIdle = std::make_unique<StubDataNode>();
+    entryIdle->setString("name", "Idle");
+    entryIdle->setString("path", "idle_anim.json");
+    states.push_back(std::move(entryIdle));
+
+    auto entryPC = std::make_unique<StubDataNode>();
+    entryPC->setString("name", "PowerCharge");
+    entryPC->setString("path", "powercharge_anim.json");
+    states.push_back(std::move(entryPC));
+
+    idxRoot->setArray("states", std::move(states));
+    animParser.registerNode("assets/animations/fighter_custom.json", std::move(idxRoot));
 
     auto trans = std::make_unique<StubDataNode>();
     trans->setString("from", "Idle");
@@ -248,13 +274,9 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     std::vector<std::unique_ptr<DataNode>> transitions;
     transitions.push_back(std::move(trans));
     fsmRoot->setArray("transitions", std::move(transitions));
+    fsmParser.registerNode("assets/fsm/fighter_custom.json", std::move(fsmRoot));
 
     auto collRoot = this->makeEmptyCollisionsRoot();
-
-    StubDataParser defParser, animParser, fsmParser, collParser;
-    defParser.registerNode("def.json", std::move(defRoot));
-    animParser.registerNode("assets/animations/fighter_custom.json", std::move(animRoot));
-    fsmParser.registerNode("assets/fsm/fighter_custom.json", std::move(fsmRoot));
     collParser.registerNode("assets/collisions/fighter_custom.json", std::move(collRoot));
 
     CharacterDefinitionLoader defLoader(defParser);

@@ -16,76 +16,80 @@ class AnimationLoaderFixture
 public:
     StubDataParser parser;
 
-    AnimationLoaderFixture() { this->parser.registerNode("assets/animations/fighter.json", this->makeAnimationsRoot()); }
+    void registerIndexEntry(
+        const std::string& indexPath, const std::string& stateName, const std::string& stateFilePath, std::unique_ptr<StubDataNode> animNode
+    ) {
+        auto indexRoot = std::make_unique<StubDataNode>();
+        std::vector<std::unique_ptr<DataNode>> statesArray;
 
-    std::unique_ptr<StubDataNode> makeAnimationsRoot() const
-    {
-        auto frameA = std::make_unique<StubDataNode>();
-        frameA->setInt("x", 0);
-        frameA->setInt("y", 0);
-        frameA->setInt("width", 16);
-        frameA->setInt("height", 24);
+        auto entry = std::make_unique<StubDataNode>();
+        entry->setString("name", stateName);
+        entry->setString("path", stateFilePath);
+        statesArray.push_back(std::move(entry));
 
-        auto frameB = std::make_unique<StubDataNode>();
-        frameB->setInt("x", 16);
-        frameB->setInt("y", 0);
-        frameB->setInt("width", 16);
-        frameB->setInt("height", 24);
-
-        auto idleAnimation = std::make_unique<StubDataNode>();
-        idleAnimation->setString("state", "Idle");
-        idleAnimation->setFloat("frameDuration", 0.08f);
-        idleAnimation->setBool("loop", true);
-
-        std::vector<std::unique_ptr<DataNode>> idleFrames;
-        idleFrames.push_back(std::move(frameA));
-        idleFrames.push_back(std::move(frameB));
-        idleAnimation->setArray("frames", std::move(idleFrames));
-
-        auto rootNode = std::make_unique<StubDataNode>();
-        std::vector<std::unique_ptr<DataNode>> animations;
-        animations.push_back(std::move(idleAnimation));
-        rootNode->setArray("animations", std::move(animations));
-
-        return rootNode;
+        indexRoot->setArray("states", std::move(statesArray));
+        this->parser.registerNode(indexPath, std::move(indexRoot));
+        this->parser.registerNode(stateFilePath, std::move(animNode));
     }
 
-    std::unique_ptr<StubDataNode> makeBadAnimationsRoot() const
+    void registerIndexMultiple(
+        const std::string& indexPath, std::vector<std::tuple<std::string, std::string, std::unique_ptr<StubDataNode>>> entries
+    ) {
+        auto indexRoot = std::make_unique<StubDataNode>();
+        std::vector<std::unique_ptr<DataNode>> statesArray;
+
+        for (auto& [stateName, filePath, animNode] : entries)
+        {
+            auto entry = std::make_unique<StubDataNode>();
+            entry->setString("name", stateName);
+            entry->setString("path", filePath);
+            statesArray.push_back(std::move(entry));
+            this->parser.registerNode(filePath, std::move(animNode));
+        }
+
+        indexRoot->setArray("states", std::move(statesArray));
+        this->parser.registerNode(indexPath, std::move(indexRoot));
+    }
+
+    std::unique_ptr<StubDataNode> makeAnimationNode(
+        float frameDuration, bool loop, std::vector<std::unique_ptr<DataNode>> frames
+    ) {
+        auto animNode = std::make_unique<StubDataNode>();
+        animNode->setFloat("frameDuration", frameDuration);
+        animNode->setBool("loop", loop);
+        animNode->setArray("frames", std::move(frames));
+        return animNode;
+    }
+
+    std::unique_ptr<StubDataNode> makeFrame(int x, int y, int w, int h)
     {
-        auto animation = std::make_unique<StubDataNode>();
-        animation->setString("state", "NonExistentState");
-        animation->setFloat("frameDuration", 0.1f);
-        animation->setBool("loop", true);
-
         auto frame = std::make_unique<StubDataNode>();
-        frame->setInt("x", 0);
-        frame->setInt("y", 0);
-        frame->setInt("width", 16);
-        frame->setInt("height", 16);
-
-        std::vector<std::unique_ptr<DataNode>> frames;
-        frames.push_back(std::move(frame));
-        animation->setArray("frames", std::move(frames));
-
-        auto rootNode = std::make_unique<StubDataNode>();
-        std::vector<std::unique_ptr<DataNode>> animations;
-        animations.push_back(std::move(animation));
-        rootNode->setArray("animations", std::move(animations));
-
-        return rootNode;
+        frame->setInt("x", x);
+        frame->setInt("y", y);
+        frame->setInt("width", w);
+        frame->setInt("height", h);
+        return frame;
     }
 };
 
-TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader parses mapped states and frames",
-    "[unit][animation_loader]"
-) {
+TEST_CASE_METHOD(AnimationLoaderFixture, "loadFromIndex loads a single state from an index",
+    "[unit][animation_loader]")
+{
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(this->makeFrame(0, 0, 16, 24));
+    frames.push_back(this->makeFrame(16, 0, 16, 24));
+    auto animNode = this->makeAnimationNode(0.08f, true, std::move(frames));
+
+    this->registerIndexEntry("assets/animations/index.json", "Idle", "idle.json", std::move(animNode));
+
     AnimationLoader loader(this->parser);
-    const auto animations = loader.load("assets/animations/fighter.json");
+    StateIdMapper mapper;
+    auto set = loader.loadFromIndex("assets/animations/index.json", mapper);
 
-    REQUIRE(animations.right.size() == 1);
-    REQUIRE(animations.right.contains(StateId::Idle));
+    REQUIRE(set.right.size() == 1);
+    REQUIRE(set.right.contains(StateId::Idle));
 
-    const auto& idle = animations.right.at(StateId::Idle);
+    const auto& idle = set.right.at(StateId::Idle);
     REQUIRE(idle.frameDuration == 0.08f);
     REQUIRE(idle.loop == true);
     REQUIRE(idle.frames.size() == 2);
@@ -99,80 +103,80 @@ TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader parses mapped states a
     REQUIRE(idle.frames[1].height == 24);
 }
 
-TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader rejects unknown state names",
-    "[unit][animation_loader]"
-) {
-    StubDataParser localParser;
-    localParser.registerNode("assets/animations/bad.json", this->makeBadAnimationsRoot());
-    AnimationLoader loader(localParser);
-    REQUIRE_THROWS(loader.load("assets/animations/bad.json"));
+TEST_CASE_METHOD(AnimationLoaderFixture, "loadFromIndex handles multiple states",
+    "[unit][animation_loader]")
+{
+    std::vector<std::unique_ptr<DataNode>> idleFrames;
+    idleFrames.push_back(this->makeFrame(0, 0, 10, 10));
+    auto idleAnim = this->makeAnimationNode(0.1f, false, std::move(idleFrames));
+
+    std::vector<std::unique_ptr<DataNode>> runFrames;
+    runFrames.push_back(this->makeFrame(10, 0, 20, 20));
+    auto runAnim = this->makeAnimationNode(0.15f, true, std::move(runFrames));
+
+    std::vector<std::tuple<std::string, std::string, std::unique_ptr<StubDataNode>>> entries;
+    entries.emplace_back("Idle", "idle.json", std::move(idleAnim));
+    entries.emplace_back("Running", "run.json", std::move(runAnim));
+
+    this->registerIndexMultiple("index.json", std::move(entries));
+
+    AnimationLoader loader(this->parser);
+    StateIdMapper mapper;
+    auto set = loader.loadFromIndex("index.json", mapper);
+
+    REQUIRE(set.right.size() == 2);
+    REQUIRE(set.right.contains(StateId::Idle));
+    REQUIRE(set.right.contains(StateId::Running));
+    REQUIRE(set.right.at(StateId::Idle).frames.size() == 1);
+    REQUIRE(set.right.at(StateId::Running).frames.size() == 1);
+    REQUIRE(set.symmetric == true);
 }
 
-TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader resolves custom state names with mapper",
-    "[unit][animation_loader]"
-) {
-    auto frame = std::make_unique<StubDataNode>();
-    frame->setInt("x", 0);
-    frame->setInt("y", 0);
-    frame->setInt("width", 32);
-    frame->setInt("height", 32);
-
-    auto animation = std::make_unique<StubDataNode>();
-    animation->setString("state", "PowerCharge");
-    animation->setFloat("frameDuration", 0.2f);
-    animation->setBool("loop", false);
-
+TEST_CASE_METHOD(AnimationLoaderFixture, "loadFromIndex throws on unknown state",
+    "[unit][animation_loader]")
+{
     std::vector<std::unique_ptr<DataNode>> frames;
-    frames.push_back(std::move(frame));
-    animation->setArray("frames", std::move(frames));
+    frames.push_back(this->makeFrame(0, 0, 16, 16));
+    auto animNode = this->makeAnimationNode(0.05f, false, std::move(frames));
 
-    auto rootNode = std::make_unique<StubDataNode>();
-    std::vector<std::unique_ptr<DataNode>> animations;
-    animations.push_back(std::move(animation));
-    rootNode->setArray("animations", std::move(animations));
+    this->registerIndexEntry("index.json", "NonExistentState", "bad.json", std::move(animNode));
 
-    StubDataParser localParser;
-    localParser.registerNode("assets/animations/custom.json", std::move(rootNode));
-    AnimationLoader loader(localParser);
-
+    AnimationLoader loader(this->parser);
     StateIdMapper mapper;
-    const auto customState = mapper.addCustomMapping("PowerCharge");
-
-    const auto loaded = loader.load("assets/animations/custom.json", mapper);
-
-    REQUIRE(loaded.right.size() == 1);
-    REQUIRE(loaded.right.contains(customState));
-    REQUIRE(loaded.right.at(customState).frameDuration == 0.2f);
-    REQUIRE(loaded.right.at(customState).loop == false);
+    REQUIRE_THROWS_AS(loader.loadFromIndex("index.json", mapper), std::runtime_error);
 }
 
-TEST_CASE_METHOD(AnimationLoaderFixture, "AnimationLoader with mapper rejects unmapped custom state",
-    "[unit][animation_loader]"
-) {
-    auto frame = std::make_unique<StubDataNode>();
-    frame->setInt("x", 0);
-    frame->setInt("y", 0);
-    frame->setInt("width", 16);
-    frame->setInt("height", 16);
-
-    auto animation = std::make_unique<StubDataNode>();
-    animation->setString("state", "PowerCharge");
-    animation->setFloat("frameDuration", 0.1f);
-    animation->setBool("loop", true);
+TEST_CASE_METHOD(AnimationLoaderFixture, "loadFromIndex resolves custom state names with mapper",
+    "[unit][animation_loader]")
+{
+    StateIdMapper mapper;
+    const auto powerChargeId = mapper.addCustomMapping("PowerCharge");
 
     std::vector<std::unique_ptr<DataNode>> frames;
-    frames.push_back(std::move(frame));
-    animation->setArray("frames", std::move(frames));
+    frames.push_back(this->makeFrame(0, 0, 32, 32));
+    auto animNode = this->makeAnimationNode(0.2f, false, std::move(frames));
 
-    auto rootNode = std::make_unique<StubDataNode>();
-    std::vector<std::unique_ptr<DataNode>> animations;
-    animations.push_back(std::move(animation));
-    rootNode->setArray("animations", std::move(animations));
+    this->registerIndexEntry("index.json", "PowerCharge", "power_charge.json", std::move(animNode));
 
-    StubDataParser localParser;
-    localParser.registerNode("assets/animations/custom_bad.json", std::move(rootNode));
-    AnimationLoader loader(localParser);
+    AnimationLoader loader(this->parser);
+    auto set = loader.loadFromIndex("index.json", mapper);
 
+    REQUIRE(set.right.size() == 1);
+    REQUIRE(set.right.contains(powerChargeId));
+    REQUIRE(set.right.at(powerChargeId).frameDuration == 0.2f);
+    REQUIRE(set.right.at(powerChargeId).loop == false);
+}
+
+TEST_CASE_METHOD(AnimationLoaderFixture, "loadFromIndex with mapper throws on unmapped custom state",
+    "[unit][animation_loader]")
+{
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(this->makeFrame(0, 0, 16, 16));
+    auto animNode = this->makeAnimationNode(0.1f, true, std::move(frames));
+
+    this->registerIndexEntry("index.json", "PowerCharge", "power_charge.json", std::move(animNode));
+
+    AnimationLoader loader(this->parser);
     StateIdMapper mapper;
-    REQUIRE_THROWS_AS(loader.load("assets/animations/custom_bad.json", mapper), std::runtime_error);
+    REQUIRE_THROWS_AS(loader.loadFromIndex("index.json", mapper), std::runtime_error);
 }
