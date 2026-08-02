@@ -47,12 +47,12 @@ public:
         context{ this->world, this->bus }
     {
         auto& comp = this->world.components();
+        comp.registerComponent<AnimationControllerComponent>();
+        comp.registerComponent<OrientationComponent>();
+        comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<RenderComponent>();
         comp.registerComponent<SpriteComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<RenderComponent>();
-        comp.registerComponent<OrientationComponent>();
-        comp.registerComponent<AnimationControllerComponent>();
-        comp.registerComponent<ParallaxComponent>();
         comp.registerComponent<VisualEffectsComponent>();
 
         this->camera.setPosition(50.f, 20.f);

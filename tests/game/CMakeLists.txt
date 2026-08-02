@@ -7,6 +7,9 @@ add_executable(game_tests
     collision_detections/RectCircleCollisionDetectionTests.cpp
     collision_detections/RectRectCollisionDetectionTests.cpp
 
+    collision_handlers/CircleCollisionHandlerTests.cpp
+    collision_handlers/RectangleCollisionHandlerTests.cpp
+
     drawers/UIDrawerTests.cpp
     drawers/WorldDrawerTests.cpp
 

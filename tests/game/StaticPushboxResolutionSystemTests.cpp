@@ -1,5 +1,7 @@
 #include "game/include/StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
 
+#include "domain/components/CircleColliderComponent.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxComponent.h"
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -21,9 +23,11 @@ public:
     StaticPushboxResolutionSystemFixture() : system(this->bus), context { this->world, this->bus, this->commandBuffer, 0.f }
     {
         auto& comp = this->world.components();
-        comp.registerComponent<TransformComponent>();
-        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<CircleColliderComponent>();
+        comp.registerComponent<ParentComponent>();
         comp.registerComponent<PushboxComponent>();
+        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<TransformComponent>();
         comp.registerComponent<VelocityComponent>();
     }
 
@@ -82,4 +86,36 @@ TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
 
     REQUIRE(dynamicTransform.position.y == Catch::Approx(-3.f));
     REQUIRE(velocity.velocity.y == 0.f);
+}
+
+TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture, "StaticPushboxResolutionSystem moves root entity when dynamic collider is a child",
+    "[unit][static_pushbox_resolution_system]")
+{
+    auto& comp = this->world.components();
+    comp.registerComponent<ParentComponent>();
+
+    Entity root = this->world.entities().create();
+    comp.add<TransformComponent>(root, TransformComponent{0.f, 0.f});
+    comp.add<VelocityComponent>(root, VelocityComponent{4.f, 0.f});
+
+    Entity child = this->world.entities().create();
+    comp.add<ParentComponent>(child, ParentComponent{root});
+    comp.add<TransformComponent>(child, TransformComponent{});
+    comp.add<RectangleColliderComponent>(child, RectangleColliderComponent{4.f, 4.f});
+    comp.add<PushboxComponent>(child, PushboxComponent{PushboxComponent::Type::Dynamic, 1.f, 1.f});
+
+    Entity staticEntity = this->createRect(2.f, 0.f, PushboxComponent::Type::Static, 0.f, 0.f);
+
+    comp.get<TransformComponent>(child).position = {1.f, 0.f};
+
+    this->bus.emit<CollisionEvent>(CollisionEvent{ child, staticEntity });
+    this->system.update(this->context);
+
+    const auto& rootTrans = comp.get<TransformComponent>(root);
+    REQUIRE(rootTrans.position.x == Catch::Approx(-3.f));
+
+    const auto& childTrans = comp.get<TransformComponent>(child);
+    REQUIRE(childTrans.position.x == Catch::Approx(1.f));
+
+    REQUIRE(comp.get<VelocityComponent>(root).velocity.x == 0.f);
 }

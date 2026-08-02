@@ -16,8 +16,8 @@
             "pushboxes": [
                 {
                     "type": "rectangle",
-                    "position": { "x": 0, "y": 118.5 },
-                    "size": { "width": 60, "height": 130 },
+                    "position": { "x": -10, "y": 150 },
+                    "size": { "width": 130, "height": 60 },
                     "pushboxType": "dynamic",
                     "mass": 1.0,
                     "pushResistance": 1.0,

@@ -23,8 +23,8 @@ public:
     std::unique_ptr<StubDataNode> makeSizeNode(float w, float h) const
     {
         auto sizeNode = std::make_unique<StubDataNode>();
-        sizeNode->setFloat("w", w);
-        sizeNode->setFloat("h", h);
+        sizeNode->setFloat("width", w);
+        sizeNode->setFloat("height", h);
         return sizeNode;
     }
 

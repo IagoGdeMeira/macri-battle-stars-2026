@@ -17,11 +17,7 @@ public:
     void addDetector(std::unique_ptr<ICollisionDetection> detector) { this->detectors.push_back(std::move(detector)); }
 
 private:
-    struct EntityAABB
-    {
-        Entity entity;
-        float minX, maxX, minY, maxY;
-    };
+    struct EntityAABB { Entity entity; float minX = 0.f, maxX = 0.f, minY = 0.f, maxY = 0.f; };
 
     int updateInterval = 2;
     int frameCounter = 0;

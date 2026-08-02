@@ -127,8 +127,8 @@ public:
         root->setString("texture", "assets/sprites/fighter.png");
 
         auto sizeNode = std::make_unique<StubDataNode>();
-        sizeNode->setFloat("w", 64.f);
-        sizeNode->setFloat("h", 96.f);
+        sizeNode->setFloat("width", 64.f);
+        sizeNode->setFloat("height", 96.f);
         root->setObject("spriteSize", std::move(sizeNode));
         root->setString("animations", "fake_animations.json");
         root->setString("stateMachine", "fake_fsm.json");

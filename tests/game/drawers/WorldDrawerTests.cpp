@@ -5,6 +5,7 @@
 #include "StubTextureFactory.h"
 #include "StubTextureLoader.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/OrientationComponent.h"
@@ -52,14 +53,15 @@ public:
     {
         this->resourceManager.clearCache();
         auto& comp = this->world.components();
-        comp.registerComponent<TransformComponent>();
-        comp.registerComponent<SpriteComponent>();
-        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<ActiveComponent>();
+        comp.registerComponent<AnimationControllerComponent>();
+        comp.registerComponent<CircleShapeComponent>();
+        comp.registerComponent<OrientationComponent>();
         comp.registerComponent<ParallaxComponent>();
         comp.registerComponent<RectangleShapeComponent>();
-        comp.registerComponent<CircleShapeComponent>();
-        comp.registerComponent<AnimationControllerComponent>();
-        comp.registerComponent<OrientationComponent>();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<SpriteComponent>();
+        comp.registerComponent<TransformComponent>();
         comp.registerComponent<VisualEffectsComponent>();
     }
 

@@ -5,6 +5,7 @@
 #include "domain/components/HitboxControllerMapComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
 #include "domain/components/HurtboxControllerMapComponent.h"
+#include "domain/components/OrientationComponent.h"
 #include "domain/components/PushboxControllerComponent.h"
 #include "domain/components/PushboxControllerMapComponent.h"
 #include "domain/components/StateComponent.h"
@@ -27,14 +28,15 @@ public:
     CollisionControllerSystemFixture()
     {
         auto& comp = this->world.components();
+        comp.registerComponent<ActiveComponent>();
         comp.registerComponent<HitboxControllerMapComponent>();
         comp.registerComponent<HitboxControllerComponent>();
         comp.registerComponent<HurtboxControllerMapComponent>();
         comp.registerComponent<HurtboxControllerComponent>();
+        comp.registerComponent<OrientationComponent>();
         comp.registerComponent<PushboxControllerMapComponent>();
         comp.registerComponent<PushboxControllerComponent>();
         comp.registerComponent<StateComponent>();
-        comp.registerComponent<ActiveComponent>();
 
         this->system.addController(std::make_unique<HitboxCollisionController>());
         this->system.addController(std::make_unique<HurtboxCollisionController>());

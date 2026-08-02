@@ -43,23 +43,23 @@ public:
             this->world, this->resourceManager, this->textureLoader, this->animLoader})
     {
         auto& comp = this->world.components();
-        comp.registerComponent<TransformComponent>();
-        comp.registerComponent<ParentComponent>();
-        comp.registerComponent<LocalTransform>();
-        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<ActiveComponent>();
+        comp.registerComponent<AnimationComponent>();
+        comp.registerComponent<AnimationControllerComponent>();
         comp.registerComponent<CircleColliderComponent>();
-        comp.registerComponent<PushboxComponent>();
-        comp.registerComponent<SpriteComponent>();
-        comp.registerComponent<RenderComponent>();
-        comp.registerComponent<ParallaxComponent>();
-        comp.registerComponent<LifetimeComponent>();
+        comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<HitboxComponent>();
         comp.registerComponent<HurtboxComponent>();
+        comp.registerComponent<LifetimeComponent>();
+        comp.registerComponent<LocalTransform>();
+        comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<ParentComponent>();
+        comp.registerComponent<PushboxComponent>();
+        comp.registerComponent<RectangleColliderComponent>();
         comp.registerComponent<RectangleShapeComponent>();
-        comp.registerComponent<CircleShapeComponent>();
-        comp.registerComponent<AnimationControllerComponent>();
-        comp.registerComponent<AnimationComponent>();
-        comp.registerComponent<ActiveComponent>();
+        comp.registerComponent<RenderComponent>();
+        comp.registerComponent<SpriteComponent>();
+        comp.registerComponent<TransformComponent>();
     }
 
     World world;
@@ -246,7 +246,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createHitboxChild() with 
     int damage = 10;
 
     Entity hitbox = this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
-        parent, offset, damage, false}, rect);
+        parent, offset, damage}, rect);
 
     auto& comp = this->world.components();
     REQUIRE(comp.has<ParentComponent>(hitbox));
@@ -263,7 +263,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createHitboxChild() with 
     REQUIRE(hit.damage == 10);
 }
 
-TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createHitboxChild() with circle and facingLeft inverts offset.x",
+TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createHitboxChild() with circle uses offset directly",
     "[unit][entity_factory]"
 ) {
     Entity parent = this->world.entities().create();
@@ -272,11 +272,11 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createHitboxChild() with 
     int damage = 5;
 
     Entity hitbox = this->factory.createHitboxChild(EntityFactory::HitboxChildParams{
-        parent, offset, damage, true}, circle);
+        parent, offset, damage}, circle);
 
     auto& comp = this->world.components();
     const auto& local = comp.get<LocalTransform>(hitbox);
-    REQUIRE(local.position.x == 5.f);
+    REQUIRE(local.position.x == -5.f);
     REQUIRE(local.position.y == 10.f);
 }
 
@@ -289,7 +289,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createHurtboxChild() adds
     float multiplier = 1.5f;
 
     Entity hurtbox = this->factory.createHurtboxChild(EntityFactory::HurtboxChildParams{
-        parent, offset, multiplier, false}, rect);
+        parent, offset, multiplier}, rect);
 
     auto& comp = this->world.components();
     REQUIRE(comp.has<HurtboxComponent>(hurtbox));
@@ -308,7 +308,7 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createPushboxChild() adds
     float pushResistance = 0.2f;
 
     Entity pushbox = this->factory.createPushboxChild(EntityFactory::PushboxChildParams{
-        parent, offset, type, mass, pushResistance, false}, circle);
+        parent, offset, type, mass, pushResistance}, circle);
 
     auto& comp = this->world.components();
     REQUIRE(comp.has<PushboxComponent>(pushbox));

@@ -44,6 +44,10 @@ void HurtboxCollisionController::onOrientationChanged(const ControllerParams& pa
 {
     auto& comp = params.world.components();
     if (!comp.has<OrientationComponent>(params.entity)) return;
+    if (!comp.has<HurtboxControllerComponent>(params.entity)) return;
+
+    auto& controller = comp.get<HurtboxControllerComponent>(params.entity);
+    if (controller.frames.empty() || !controller.initialized) return;
 
     Orientation orient = comp.get<OrientationComponent>(params.entity).direction;
     float sign = (orient == Orientation::Right) ? 1.0f : -1.0f;
@@ -51,14 +55,12 @@ void HurtboxCollisionController::onOrientationChanged(const ControllerParams& pa
     LOG_DEBUG("HurtboxCollisionController::onOrientationChanged: entity {} orientation={} sign={}",
         params.entity.id, (orient == Orientation::Right ? "Right" : "Left"), sign);
 
-    auto view = View<LocalTransform, ParentComponent>(comp);
-    for (auto [childEntity, local, parent] : view)
+    for (Entity child : controller.frames[controller.currentFrame].hurtboxes)
     {
-        if (parent.parent != params.entity) continue;
-        if (!comp.has<HurtboxComponent>(childEntity)) continue;
-
-        local.position.x = std::abs(local.position.x) * sign;
-        CollisionUtils::updateWorldTransform(params.world, childEntity, params.entity);
+        if (!comp.has<LocalTransform>(child) || !comp.has<HurtboxComponent>(child)) continue;
+        auto& local = comp.get<LocalTransform>(child);
+        local.position.x *= sign;
+        CollisionUtils::updateWorldTransform(params.world, child, params.entity);
     }
 }
 

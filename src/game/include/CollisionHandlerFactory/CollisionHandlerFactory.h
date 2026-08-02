@@ -8,9 +8,7 @@
 class CollisionHandlerFactory
 {
 public:
-    static std::unique_ptr<ICollisionHandler> createForEntity(
-        UpdateContext& ctx, ICollisionHandler::EntityParams params
-    );
+    static std::unique_ptr<ICollisionHandler> createForEntity(UpdateContext& ctx, ICollisionHandler::EntityParams params);
 };
 
 #endif // collision_handler_factory_h

@@ -1,8 +1,13 @@
 #include "game/collision_controllers/HitboxCollisionController.h"
 
 #include "domain/components/ActiveComponent.h"
+#include "domain/components/HitboxComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
 #include "domain/components/HitboxControllerMapComponent.h"
+#include "domain/components/LocalTransform.h"
+#include "domain/components/OrientationComponent.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -146,4 +151,100 @@ TEST_CASE_METHOD(HitboxCollisionControllerFixture, "remove deactivates current f
 
     REQUIRE_FALSE(comp.has<HitboxControllerComponent>(entity));
     REQUIRE(comp.get<ActiveComponent>(child).active == false);
+}
+
+TEST_CASE_METHOD(HitboxCollisionControllerFixture, "onOrientationChanged inverts LocalTransform.x for active frame hitboxes",
+    "[unit][hitbox_collision_controller]")
+{
+    auto& comp = this->world.components();
+    comp.registerComponent<TransformComponent>();
+    comp.registerComponent<LocalTransform>();
+    comp.registerComponent<ParentComponent>();
+    comp.registerComponent<HitboxComponent>();
+    comp.registerComponent<OrientationComponent>();
+
+    Entity parent = this->world.entities().create();
+    comp.add<TransformComponent>(parent, TransformComponent{100.f, 200.f});
+    comp.add<OrientationComponent>(parent, OrientationComponent{Orientation::Left}); // sign = -1
+
+    Entity child = this->world.entities().create();
+    comp.add<LocalTransform>(child, LocalTransform{{30.f, 10.f}});
+    comp.add<ParentComponent>(child, ParentComponent{parent});
+    comp.add<TransformComponent>(child, TransformComponent{});
+    comp.add<HitboxComponent>(child, HitboxComponent{});
+
+    HitboxControllerComponent ctrl;
+    ctrl.frames = {{ {child}, 0.1f }};
+    ctrl.initialized = true;
+    comp.add<HitboxControllerComponent>(parent, std::move(ctrl));
+
+    ICollisionController::ControllerParams params{parent, this->world};
+    this->controller.onOrientationChanged(params);
+
+    const auto& local = comp.get<LocalTransform>(child);
+    REQUIRE(local.position.x == -30.f);
+}
+
+TEST_CASE_METHOD(HitboxCollisionControllerFixture, "onOrientationChanged does nothing without controller component",
+    "[unit][hitbox_collision_controller]")
+{
+    auto& comp = this->world.components();
+    comp.registerComponent<OrientationComponent>();
+    Entity parent = this->world.entities().create();
+    comp.add<OrientationComponent>(parent, OrientationComponent{Orientation::Left});
+
+    ICollisionController::ControllerParams params{parent, this->world};
+    REQUIRE_NOTHROW(this->controller.onOrientationChanged(params));
+}
+
+TEST_CASE_METHOD(HitboxCollisionControllerFixture, "onOrientationChanged does nothing if controller not initialized",
+    "[unit][hitbox_collision_controller]")
+{
+    auto& comp = this->world.components();
+    comp.registerComponent<OrientationComponent>();
+    Entity parent = this->world.entities().create();
+    comp.add<OrientationComponent>(parent, OrientationComponent{Orientation::Left});
+    comp.add<HitboxControllerComponent>(parent, HitboxControllerComponent{});
+
+    ICollisionController::ControllerParams params{parent, this->world};
+    REQUIRE_NOTHROW(this->controller.onOrientationChanged(params));
+}
+
+TEST_CASE_METHOD(HitboxCollisionControllerFixture, "onOrientationChanged only affects current frame entities",
+    "[unit][hitbox_collision_controller]")
+{
+    auto& comp = this->world.components();
+    comp.registerComponent<TransformComponent>();
+    comp.registerComponent<LocalTransform>();
+    comp.registerComponent<ParentComponent>();
+    comp.registerComponent<HitboxComponent>();
+    comp.registerComponent<OrientationComponent>();
+
+    Entity parent = this->world.entities().create();
+    comp.add<TransformComponent>(parent, TransformComponent{});
+    comp.add<OrientationComponent>(parent, OrientationComponent{Orientation::Right});
+
+    Entity child1 = this->world.entities().create();
+    comp.add<LocalTransform>(child1, LocalTransform{{10.f, 0.f}});
+    comp.add<ParentComponent>(child1, ParentComponent{parent});
+    comp.add<TransformComponent>(child1, TransformComponent{});
+    comp.add<HitboxComponent>(child1, HitboxComponent{});
+
+    Entity child2 = this->world.entities().create();
+    comp.add<LocalTransform>(child2, LocalTransform{{20.f, 0.f}});
+    comp.add<ParentComponent>(child2, ParentComponent{parent});
+    comp.add<TransformComponent>(child2, TransformComponent{});
+    comp.add<HitboxComponent>(child2, HitboxComponent{});
+
+    HitboxControllerComponent ctrl;
+    ctrl.frames = {{{child1}, 0.1f}, {{child2}, 0.1f}};
+    ctrl.currentFrame = 0;
+    ctrl.initialized = true;
+    comp.add<HitboxControllerComponent>(parent, std::move(ctrl));
+
+    ICollisionController::ControllerParams params{parent, this->world};
+    this->controller.onOrientationChanged(params);
+
+    REQUIRE(comp.get<LocalTransform>(child1).position.x == 10.f);
+    REQUIRE(comp.get<LocalTransform>(child2).position.x == 20.f);
 }

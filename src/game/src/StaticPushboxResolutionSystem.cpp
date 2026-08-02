@@ -4,9 +4,10 @@
 #include "CollisionHandlerFactory/CollisionHandlerFactory.h"
 #include "ICollisionHandler/ICollisionHandler.h"
 
-#include "domain/components/TransformComponent.h"
-#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxComponent.h"
+#include "domain/components/RectangleColliderComponent.h"
+#include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -40,26 +41,28 @@ void StaticPushboxResolutionSystem::update(UpdateContext& ctx)
 
 void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, Entity dyn, Entity sta)
 {
+    auto& comp = ctx.world.components();
+
+    Entity rootDyn = comp.has<ParentComponent>(dyn) ? comp.get<ParentComponent>(dyn).parent : dyn;
+    Entity rootSta = comp.has<ParentComponent>(sta) ? comp.get<ParentComponent>(sta).parent : sta;
+
     auto dynHandler = CollisionHandlerFactory::createForEntity(ctx, {dyn, std::nullopt});
     auto staHandler = CollisionHandlerFactory::createForEntity(ctx, {sta, std::nullopt});
     if (!dynHandler || !staHandler) return;
 
     AABB dynAABB = dynHandler->getAABB(ctx, {dyn, std::nullopt});
     AABB staAABB = staHandler->getAABB(ctx, {sta, std::nullopt});
-    AABB overlap
-    {
+    AABB overlap {
         dynAABB.right - staAABB.left, staAABB.right - dynAABB.left,
         dynAABB.bottom - staAABB.top, staAABB.bottom - dynAABB.top
     };
 
-    Position minOverlap{ std::min(overlap.right, overlap.left), std::min(overlap.bottom, overlap.top) };
+    Position minOverlap { std::min(overlap.right, overlap.left), std::min(overlap.bottom, overlap.top) };
 
-    TransformComponent& dynTrans = dynHandler->getTransform(ctx, {dyn, std::nullopt});
+    TransformComponent& dynTrans = dynHandler->getTransform(ctx, {rootDyn, std::nullopt});
 
     const Position dynCenter{(dynAABB.left + dynAABB.right) * 0.5f, (dynAABB.top + dynAABB.bottom) * 0.5f};
     const Position staCenter{(staAABB.left + staAABB.right) * 0.5f, (staAABB.top + staAABB.bottom) * 0.5f};
-
-    auto& comp = ctx.world.components();
 
     if (minOverlap.x < minOverlap.y)
     {
@@ -67,7 +70,7 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
         if (dynCenter.x < staCenter.x) dynTrans.position.x -= sep;
         else dynTrans.position.x += sep;
 
-        if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).velocity.x = 0.f;
+        if (comp.has<VelocityComponent>(rootDyn)) comp.get<VelocityComponent>(rootDyn).velocity.x = 0.f;
     }
     else
     {
@@ -75,15 +78,15 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
         if (dynCenter.y < staCenter.y)
         {
             dynTrans.position.y -= sep;
-            if (!comp.has<VelocityComponent>(dyn)) return;
+            if (!comp.has<VelocityComponent>(rootDyn)) return;
             
-            auto& vel = comp.get<VelocityComponent>(dyn);
+            auto& vel = comp.get<VelocityComponent>(rootDyn);
             if (vel.velocity.y > 0.f) vel.velocity.y = 0.f;
         }
         else
         {
             dynTrans.position.y += sep;
-            if (comp.has<VelocityComponent>(dyn)) comp.get<VelocityComponent>(dyn).velocity.y = 0.f;
+            if (comp.has<VelocityComponent>(rootDyn)) comp.get<VelocityComponent>(rootDyn).velocity.y = 0.f;
         }
     }
 }

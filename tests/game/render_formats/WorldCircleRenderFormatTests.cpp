@@ -2,6 +2,7 @@
 
 #include "StubRenderer.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -30,6 +31,7 @@ public:
     WorldCircleRenderFormatFixture() : format(this->renderer, this->camera), context { this->world, this->bus }
     {
         auto& comp = this->world.components();
+        comp.registerComponent<ActiveComponent>();
         comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<TransformComponent>();

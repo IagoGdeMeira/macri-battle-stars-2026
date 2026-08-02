@@ -29,11 +29,11 @@ TEST_CASE("DataUtils::parsePosition returns default when missing", "[unit][data_
     REQUIRE(result.y == def.y);
 }
 
-TEST_CASE("DataUtils::parseSize reads w and h", "[unit][data_utils]")
+TEST_CASE("DataUtils::parseSize reads width and height", "[unit][data_utils]")
 {
     StubDataNode node;
-    node.setFloat("w", 10.f);
-    node.setFloat("h", 20.f);
+    node.setFloat("width", 10.f);
+    node.setFloat("height", 20.f);
 
     Dimension2D result = DataUtils::parseSize(node, {0.f, 0.f});
 
@@ -51,8 +51,8 @@ TEST_CASE("DataUtils::parseRect reads nested position and size", "[unit][data_ut
     node.setObject("position", std::move(pos));
 
     auto size = std::make_unique<StubDataNode>();
-    size->setFloat("w", 7.f);
-    size->setFloat("h", 8.f);
+    size->setFloat("width", 7.f);
+    size->setFloat("height", 8.f);
     node.setObject("size", std::move(size));
 
     Rectangle def{{0.f, 0.f}, {0.f, 0.f}};
@@ -168,15 +168,15 @@ TEST_CASE("DataUtils::setPosition sets x and y", "[unit][data_utils]")
     REQUIRE(node.getFloat("y") == 2.25f);
 }
 
-TEST_CASE("DataUtils::setSize sets w and h", "[unit][data_utils]")
+TEST_CASE("DataUtils::setSize sets width and height", "[unit][data_utils]")
 {
     StubDataNode node;
 
     Dimension2D size{10.f, 20.f};
     DataUtils::setSize(node, size);
 
-    REQUIRE(node.getFloat("w") == 10.f);
-    REQUIRE(node.getFloat("h") == 20.f);
+    REQUIRE(node.getFloat("width") == 10.f);
+    REQUIRE(node.getFloat("height") == 20.f);
 }
 
 TEST_CASE("DataUtils::setRect sets nested position and size", "[unit][data_utils]")
@@ -195,8 +195,8 @@ TEST_CASE("DataUtils::setRect sets nested position and size", "[unit][data_utils
 
     auto sizeNode = node.getObject("size");
     REQUIRE(sizeNode != nullptr);
-    REQUIRE(sizeNode->getFloat("w") == 7.f);
-    REQUIRE(sizeNode->getFloat("h") == 8.f);
+    REQUIRE(sizeNode->getFloat("width") == 7.f);
+    REQUIRE(sizeNode->getFloat("height") == 8.f);
 }
 
 TEST_CASE("DataUtils::setColor sets RGBA values", "[unit][data_utils]")

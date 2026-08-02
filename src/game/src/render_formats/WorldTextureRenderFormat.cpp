@@ -36,6 +36,13 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
         }
 
         DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++, sprite.cachedTexture);
+        
+        if (comp.has<VisualEffectsComponent>(entity))
+        {
+            const auto& fx = comp.get<VisualEffectsComponent>(entity);
+            for (auto& effect : fx.textureEffects) effect(this->batch, cmd);
+        }
+        
         this->batch.add(cmd);
     }
     this->batch.submit(this->renderer);

@@ -78,8 +78,8 @@ public:
     std::unique_ptr<StubDataNode> makeRect(float x, float y, float width, float height) const
     {
         auto size = std::make_unique<StubDataNode>();
-        size->setFloat("w", width);
-        size->setFloat("h", height);
+        size->setFloat("width", width);
+        size->setFloat("height", height);
         auto position = std::make_unique<StubDataNode>();
         position->setFloat("x", x);
         position->setFloat("y", y);

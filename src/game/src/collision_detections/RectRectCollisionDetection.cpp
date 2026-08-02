@@ -37,15 +37,13 @@ bool RectRectCollisionDetection::rectToRect(Entity a, Entity b, UpdateContext& c
     const auto& rb = comp.get<RectangleColliderComponent>(b);
 
     auto& posA = ta.position;
-    const AABB rectABounds
-    {
+    const AABB rectABounds {
         posA.x - ra.size.width * 0.5f, posA.x + ra.size.width * 0.5f,
         posA.y - ra.size.height * 0.5f, posA.y + ra.size.height * 0.5f
     };
 
     auto& posB = tb.position;
-    const AABB rectBBounds
-    {
+    const AABB rectBBounds {
         posB.x - rb.size.width * 0.5f, posB.x + rb.size.width * 0.5f,
         posB.y - rb.size.height * 0.5f, posB.y + rb.size.height * 0.5f
     };

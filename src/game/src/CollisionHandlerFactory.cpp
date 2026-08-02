@@ -8,17 +8,17 @@
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
-std::unique_ptr<ICollisionHandler> CollisionHandlerFactory::createForEntity(
-    UpdateContext& ctx, ICollisionHandler::EntityParams params
-) {
+std::unique_ptr<ICollisionHandler> CollisionHandlerFactory::createForEntity(UpdateContext& ctx, ICollisionHandler::EntityParams params)
+{
     auto& comp = ctx.world.components();
 
-    if (comp.has<RectangleColliderComponent>(params.preferred) ||
-        (params.fallback.has_value() && comp.has<RectangleColliderComponent>(*params.fallback)))
+    using RectColComp = RectangleColliderComponent;
+    using CircColComp = CircleColliderComponent;
+
+    if (comp.has<RectColComp>(params.preferred) || (params.fallback.has_value() && comp.has<RectColComp>(*params.fallback)))
     { return std::make_unique<RectangleCollisionHandler>(); }
 
-    if (comp.has<CircleColliderComponent>(params.preferred) ||
-        (params.fallback.has_value() && comp.has<CircleColliderComponent>(*params.fallback)))
+    if (comp.has<CircColComp>(params.preferred) || (params.fallback.has_value() && comp.has<CircColComp>(*params.fallback)))
     { return std::make_unique<CircleCollisionHandler>(); }
 
     return nullptr;

@@ -48,14 +48,12 @@ bool RectCircleCollisionDetection::rectToCircle(Entity rect, Entity circle, Upda
     auto& size = rectCollider.size;
 
     auto& posA = trect.position;
-    AABB rectBounds
-    {
+    AABB rectBounds {
         posA.x - size.width * 0.5f, posA.x + size.width * 0.5f,
         posA.y - size.height * 0.5f, posA.y + size.height * 0.5f
     };
 
-    Position closest =
-    {
+    Position closest {
         std::max(rectBounds.left, std::min(tcircle.position.x, rectBounds.right)),
         std::max(rectBounds.top, std::min(tcircle.position.y, rectBounds.bottom))
     };

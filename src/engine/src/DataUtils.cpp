@@ -137,8 +137,8 @@ void DataUtils::setPosition(DataNode& node, const Position& pos)
 
 void DataUtils::setSize(DataNode& node, const Dimension2D& size)
 {
-    node.setFloat("w", size.width);
-    node.setFloat("h", size.height);
+    node.setFloat("width", size.width);
+    node.setFloat("height", size.height);
 }
 
 void DataUtils::setRect(DataNode& node, const Rectangle& rect)

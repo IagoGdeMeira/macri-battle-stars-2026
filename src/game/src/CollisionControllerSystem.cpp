@@ -34,7 +34,11 @@ void CollisionControllerSystem::update(UpdateContext& ctx)
     auto& comp = world.components();
 
     for (const auto& e : this->stateChangedEvents) for (auto& controller : this->controllers)
-    { if (controller->hasMapComponent({e.entity, world})) controller->apply({e.entity, world}, e.current); }
+    {
+        if (!controller->hasMapComponent({e.entity, world})) continue;
+        controller->apply({e.entity, world}, e.current);
+        controller->onOrientationChanged({e.entity, world});
+    }
     this->stateChangedEvents.clear();
 
     for (const auto& e : this->orientationChangedEvents) for (auto& controller : this->controllers)
