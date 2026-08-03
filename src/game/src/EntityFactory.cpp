@@ -5,6 +5,7 @@
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/CircleColliderComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/HitboxComponent.h"
@@ -251,6 +252,10 @@ void EntityFactory::addParentAndLocal(Entity entity, Entity parent, const Positi
     auto& comp = this->world.components();
     comp.add<ParentComponent>(entity, ParentComponent{parent});
     comp.add<LocalTransform>(entity, LocalTransform{localPos});
+
+    if (!comp.has<ChildrenComponent>(parent)) comp.add<ChildrenComponent>(parent, ChildrenComponent{});
+    auto& childrenComp = comp.get<ChildrenComponent>(parent);
+    childrenComp.children.push_back(entity);
 }
 
 void EntityFactory::addRender(Entity entity, int layer, int zIndex)

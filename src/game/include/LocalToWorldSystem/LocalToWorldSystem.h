@@ -1,6 +1,8 @@
 #ifndef local_to_world_system_h
 #define local_to_world_system_h
 
+#include "domain/include/Entity/Entity.h"
+
 #include "engine/include/System/System.h"
 
 struct TransformComponent;
