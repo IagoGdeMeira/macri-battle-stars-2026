@@ -49,7 +49,13 @@ public:
             }
             this->batch.add(cmd);
         }
-        this->batch.submit(this->renderer);
+    }
+
+    std::vector<const DrawCommand*> collectCommands() const override
+    {
+        std::vector<const DrawCommand*> cmds;
+        for (const auto& cmd : this->batch.getCommands()) cmds.push_back(&cmd);
+        return cmds;
     }
 
 private:

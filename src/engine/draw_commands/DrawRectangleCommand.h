@@ -14,8 +14,6 @@ struct DrawRectangleCommand : public DrawCommand
     Rectangle rect;
     Color color = Color::WHITE();
     bool filled = false;
-    int layer = 0, zIndex = 0;
-    size_t order = 0;
     BlendMode blend = BlendMode::Normal;
 
     std::type_index type() const override { return typeid(DrawRectangleCommand); }

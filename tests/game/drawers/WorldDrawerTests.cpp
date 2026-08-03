@@ -274,7 +274,7 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes",
     REQUIRE(this->renderer.calls.drawCircleFilled == 0);
     REQUIRE(this->renderer.lastCircle.position.x == 420.f);
     REQUIRE(this->renderer.lastCircle.position.y == 340.f);
-    REQUIRE(this->renderer.lastCircle.radius == 42.f);
+    REQUIRE(this->renderer.lastCircle.radius == 21.f);
     REQUIRE(this->renderer.lastColor.r == 9);
     REQUIRE(this->renderer.lastColor.g == 8);
     REQUIRE(this->renderer.lastColor.b == 7);

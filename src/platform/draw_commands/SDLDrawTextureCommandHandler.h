@@ -4,6 +4,7 @@
 #include "SDLTexture/SDLTexture.h"
 #include "engine/draw_commands/DrawTextureCommand.h"
 #include "engine/include/IDrawCommandHandler/IDrawCommandHandler.h"
+
 #include <cmath>
 #include <SDL.h>
 

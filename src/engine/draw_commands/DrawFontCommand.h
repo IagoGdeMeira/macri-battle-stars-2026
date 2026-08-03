@@ -17,8 +17,6 @@ struct DrawFontCommand : public DrawCommand
     Rectangle dest;
     float fontSize = 12.f;
     Color color = Color::WHITE();
-    int layer = 0, zIndex = 0;
-    size_t order = 0;
 
     std::type_index type() const override { return typeid(DrawFontCommand); }
 };

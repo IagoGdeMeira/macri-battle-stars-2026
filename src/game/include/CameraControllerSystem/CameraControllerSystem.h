@@ -26,7 +26,6 @@ public:
     };
 
     CameraControllerSystem(Config&& cfg);
-
     void update(UpdateContext& ctx) override;
 
 private:

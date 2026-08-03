@@ -17,6 +17,8 @@ public:
 
     virtual void submit(Renderer& renderer) = 0;
 
+    const std::vector<CommandType>& getCommands() const { return this->commands; }
+
 protected:
     std::vector<CommandType> commands;
 

@@ -4,6 +4,7 @@
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -28,13 +29,12 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     auto playerBounds = this->computePlayerBounds(ctx);
     if (playerBounds.left > playerBounds.right || playerBounds.top > playerBounds.bottom) return;
 
-    float boxWidth = std::max(playerBounds.right - playerBounds.left, 1.f);
+    float boxWidth  = std::max(playerBounds.right - playerBounds.left, 1.f);
     float boxHeight = std::max(playerBounds.bottom - playerBounds.top, 1.f);
 
-    float zoomX = this->viewSize.width / boxWidth;
+    float zoomX = this->viewSize.width  / boxWidth;
     float zoomY = this->viewSize.height / boxHeight;
     float targetZoom = std::min(zoomX, zoomY);
-
     float finalZoom = std::clamp(targetZoom, this->minZoom, this->maxZoom);
 
     Position center {
@@ -42,43 +42,51 @@ void CameraControllerSystem::update(UpdateContext& ctx)
         (playerBounds.top + playerBounds.bottom) * 0.5f + this->verticalOffset
     };
 
-    Position clampedPos = this->computeClampedCameraPosition(center, finalZoom);
+    Position targetPos = this->computeClampedCameraPosition(center, finalZoom);
 
-    const float currentZoom = this->camera.getZoom();
-    const Position currentPos = this->camera.getPosition();
+    // Interpolação suave (lerp)
+    const float smoothFactor = 0.12f; // Ajuste entre 0.05 (muito suave) e 1.0 (instantâneo)
+    Position currentPos = this->camera.getPosition();
+    float currentZoom = this->camera.getZoom();
 
-    bool needsZoomUpdate =
-        std::abs(finalZoom - currentZoom) > this->epsilon ||
-        std::abs(clampedPos.x - currentPos.x) > this->epsilon ||
-        std::abs(clampedPos.y - currentPos.y) > this->epsilon;
+    float newZoom = currentZoom + (finalZoom - currentZoom) * smoothFactor;
+    Position newPos = {
+        currentPos.x + (targetPos.x - currentPos.x) * smoothFactor,
+        currentPos.y + (targetPos.y - currentPos.y) * smoothFactor
+    };
 
-    if (needsZoomUpdate)
+    // Atualiza apenas se houver mudança significativa
+    if (std::abs(newZoom - currentZoom) > this->epsilon ||
+        std::abs(newPos.x - currentPos.x) > this->epsilon ||
+        std::abs(newPos.y - currentPos.y) > this->epsilon)
     {
-        this->camera.setPosition(clampedPos.x, clampedPos.y);
-        this->camera.setZoom(finalZoom);
+        this->camera.setPosition(newPos.x, newPos.y);
+        this->camera.setZoom(newZoom);
     }
 }
 
 AABB CameraControllerSystem::computePlayerBounds(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();
-
     auto view = View<TransformComponent, PlayerComponent>(comp);
+    
+    // Log de depuração
+    size_t count = 0;
+    for (auto [entity, transform, player] : view) { ++count; }
+    LOG_DEBUG("CameraControllerSystem: {} players found", count);
+
     if (view.begin() == view.end()) return {limits::max(), limits::lowest(), limits::max(), limits::lowest()};
 
     AABB playerBounds = {limits::max(), limits::lowest(), limits::max(), limits::lowest()};
-
     for (auto [entity, transform, player] : view)
     {
         auto& pos = transform.position;
-
         Dimension2D halfSize {16.f, 16.f};
         if (comp.has<SpriteComponent>(entity))
         {
             const auto& sprite = comp.get<SpriteComponent>(entity);
             halfSize = {sprite.size.width * 0.5f, sprite.size.height * 0.5f};
         }
-
         playerBounds.left   = std::min(playerBounds.left, pos.x - halfSize.width);
         playerBounds.top    = std::min(playerBounds.top, pos.y - halfSize.height);
         playerBounds.right  = std::max(playerBounds.right, pos.x + halfSize.width);
@@ -89,6 +97,9 @@ AABB CameraControllerSystem::computePlayerBounds(UpdateContext& ctx)
     playerBounds.top    -= this->padding;
     playerBounds.right  += this->padding;
     playerBounds.bottom += this->padding;
+
+    LOG_DEBUG("CameraControllerSystem: bounds left={}, right={}, top={}, bottom={}",
+        playerBounds.left, playerBounds.right, playerBounds.top, playerBounds.bottom);
 
     return playerBounds;
 }

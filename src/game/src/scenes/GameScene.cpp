@@ -283,7 +283,7 @@ void GameScene::addSystems()
     systems.addSystem<CameraControllerSystem>(CameraControllerSystem::Config{
         .camera             = *this->camera,
         .window             = this->window,
-        .minZoom            = 0.8f,
+        .minZoom            = 0.85f,
         .maxZoom            = 1.f,
         .padding            = 30.f,
         .verticalOffset     = -70.f,
@@ -291,4 +291,8 @@ void GameScene::addSystems()
         .viewSize           = GameConstants::VIRTUAL_SIZE,
         .applyZoomToSize    = true,
     });
+
+    LOG_DEBUG("World bounds: left={}, right={}, top={}, bottom={}",
+        mapComp.worldBounds.left, mapComp.worldBounds.right,
+        mapComp.worldBounds.top, mapComp.worldBounds.bottom);
 }

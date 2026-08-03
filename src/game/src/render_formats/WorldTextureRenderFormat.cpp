@@ -21,20 +21,26 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
     size_t order = 0;
     for (auto [entity, sprite, transform, render] : view)
     {
-        if (!sprite.cachedTexture) sprite.cachedTexture = this->resourceManager.load<Texture>(this->textureLoader, sprite.texturePath);
+        if (!sprite.cachedTexture)
+        { sprite.cachedTexture = this->resourceManager.load<Texture>(this->textureLoader, sprite.texturePath); }
+        
         if (!sprite.cachedTexture) continue;
 
         DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++, sprite.cachedTexture);
-        
         if (comp.has<VisualEffectsComponent>(entity))
         {
             const auto& fx = comp.get<VisualEffectsComponent>(entity);
             for (auto& effect : fx.textureEffects) effect(this->batch, cmd);
         }
-        
         this->batch.add(cmd);
     }
-    this->batch.submit(this->renderer);
+}
+
+std::vector<const DrawCommand*> WorldTextureRenderFormat::collectCommands() const
+{
+    std::vector<const DrawCommand*> cmds;
+    for (const auto& cmd : this->batch.getCommands()) cmds.push_back(&cmd);
+    return cmds;
 }
 
 DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(

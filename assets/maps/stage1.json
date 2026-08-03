@@ -1,23 +1,45 @@
 {
-	"name": "Test Stage",
-	"floor": { "y": 400, "texture": "assets/sprites/test_stage_floor.png", "width": 2000, "height": 50 },
-  	"walls": [ { "x": 100, "y": 300, "width": 50, "height": 150 } ],
-  	"spawnPoints": [ { "playerId": 0, "x": 1200 }, { "playerId": 1, "x": 800 } ],
-  	"gravity": 980,
-  	"floorFriction": 5,
-  	"airFriction": 2,
-  	"backgroundLayers": [
-		{
-			"texture": "assets/sprites/test_stage_background_1.png",
-			"parallaxFactor": { "x": 0.5, "y": 0.2 },
-			"zIndex": -2,
-			"repeatX": true
-		},
-		{
-			"texture": "assets/sprites/test_stage_background_2.png",
-			"parallaxFactor": { "x": 0.3, "y": 0.1 },
-			"zIndex": -3,
-			"repeatX": true
-		}
-  	]
+    "name": "Test Stage",
+    "floor": { "y": 400 },
+    "gravity": 980,
+    "floorFriction": 5,
+    "airFriction": 2,
+    "worldBounds": {
+        "left": 0,
+        "right": 2000,
+        "top": -200,
+        "bottom": 500
+    },
+    "spawnPoints": [
+        { "playerId": 0, "x": 800 },
+        { "playerId": 1, "x": 1200 }
+    ],
+    "backgroundLayers": [
+        {
+            "type": "rectangle",
+            "color": { "r": 255, "g": 0, "b": 0, "a": 255 },
+			"position": { "x": 0, "y": 0 },
+            "size": { "width": 2000, "height": 600 },
+			"parallaxFactor": { "x": 2, "y": 1 },
+            "layer": -10
+        },
+        {
+            "type": "texture",
+            "texture": "assets/sprites/test_stage_floor.png",
+            "parallaxFactor": { "x": 0, "y": -2.5 },
+            "layer": 0
+        }
+    ],
+    "collisions": [
+        {
+            "type": "rectangle",
+            "position": { "x": 0, "y": 400 },
+            "size": { "width": 2000, "height": 50 }
+        },
+        {
+            "type": "rectangle",
+            "position": { "x": 100, "y": 250 },
+            "size": { "width": 50, "height": 150 }
+        }
+    ]
 }

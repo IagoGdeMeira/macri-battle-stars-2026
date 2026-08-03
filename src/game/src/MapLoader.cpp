@@ -3,6 +3,7 @@
 #include "EntityFactory/EntityFactory.h"
 
 #include "domain/components/ParentComponent.h"
+#include "domain/components/PushboxComponent.h"
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -12,6 +13,7 @@
 
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
+#include "engine/utils/DataUtils/DataUtils.h"
 
 #include <cstdint>
 
@@ -24,9 +26,9 @@ Entity MapLoader::load(World& world, const std::string& path)
     MapComponent mapComp = this->parseMapComponent(root);
     comp.add<MapComponent>(mapEntity, std::move(mapComp));
     comp.add<TransformComponent>(mapEntity, TransformComponent{0.f, 0.f});
+
     this->createBackgrounds(root, mapEntity);
-    this->createFloor(root, mapEntity, world);
-    this->createWalls(root, mapEntity);
+    this->createCollisionGeometry(root, mapEntity);
 
     return mapEntity;
 }
@@ -39,22 +41,22 @@ MapComponent MapLoader::parseMapComponent(const std::unique_ptr<DataNode>& root)
     mapComp.floorFriction = root->getFloat("floorFriction", 5.f);
     mapComp.airFriction = root->getFloat("airFriction", 2.f);
 
-    auto floorNode = root->getObject("floor");
-    mapComp.floorY = floorNode->getFloat("y");
+    if (root->has("floor"))
+    {
+        auto floorNode = root->getObject("floor");
+        mapComp.floorY = floorNode->getFloat("y");
+    }
+    else mapComp.floorY = 400.f;
 
     if (root->has("worldBounds"))
     {
         auto boundsNode = root->getObject("worldBounds");
-        mapComp.worldBounds = {
-            boundsNode->getFloat("left"), boundsNode->getFloat("right"),
-            boundsNode->getFloat("top"), boundsNode->getFloat("bottom")
-        };
+        mapComp.worldBounds = DataUtils::parseAABB(*boundsNode, {0.f, 2000.f, -200.f, 500.f});
     }
     else
     {
-        float floorH = floorNode->getFloat("height", 50.f);
-        float floorW = floorNode->getFloat("width", 800.f);
-        mapComp.worldBounds = { 0.f, floorW, -200.f, mapComp.floorY + floorH + 50.f };
+        float floorW = root->has("floor") ? root->getObject("floor")->getFloat("width", 800.f) : 800.f;
+        mapComp.worldBounds = { 0.f, floorW, -200.f, mapComp.floorY + 50.f + 50.f };
     }
 
     if (root->has("spawnPoints")) for (auto& sp : root->getArray("spawnPoints"))
@@ -74,69 +76,84 @@ void MapLoader::createBackgrounds(const std::unique_ptr<DataNode>& root, Entity 
 
     for (auto& layer : root->getArray("backgroundLayers"))
     {
-        std::string tex = layer->getString("texture");
-        auto parallaxNode = layer->getObject("parallaxFactor");
-        Position parallax {
-            parallaxNode ? parallaxNode->getFloat("x", 1.f) : 1.f,
-            parallaxNode ? parallaxNode->getFloat("y", 1.f) : 1.f
-        };
-        int zIndex = layer->getInt("zIndex", 0);
-
-        EntityFactory::BackgroundParams params{parallax, zIndex, mapEntity};
-        this->factory.createBackgroundSprite(params, tex);
+        std::string type = layer->getString("type", "texture");
+        if (type == "rectangle")        this->createBackgroundRectangle(layer, mapEntity);
+        else if (type == "circle")      this->createBackgroundCircle(layer, mapEntity);
+        else if (type == "animated")    this->createBackgroundAnimated(layer, mapEntity);
+        else this->createBackgroundTexture(layer, mapEntity);
     }
 }
 
-void MapLoader::createFloor(const std::unique_ptr<DataNode>& root, Entity mapEntity, World& world)
+void MapLoader::createBackgroundTexture(const std::unique_ptr<DataNode>& layer, Entity mapEntity)
 {
-    auto floorNode = root->getObject("floor");
-    float floorW = floorNode->getFloat("width");
-    float floorH = floorNode->getFloat("height", 50.f);
-    std::string floorTex = floorNode->getString("texture", "");
-    float floorY = floorNode->getFloat("y");
+    std::string tex = layer->getString("texture");
+    auto parallaxNode = layer->getObject("parallaxFactor");
+    Position parallax {
+        parallaxNode ? parallaxNode->getFloat("x", 1.f) : 1.f,
+        parallaxNode ? parallaxNode->getFloat("y", 1.f) : 1.f
+    };
+    int zIndex = layer->getInt("zIndex", 0);
 
-    Position localPos = { floorW * 0.5f, floorY };
-    Dimension2D size = { floorW, floorH };
-
-    auto& fac = this->factory;
-    Entity floorEntity = fac.createStaticEntity(EntityFactory::StaticEntityParams{
-        localPos, mapEntity}, Rectangle{Position{0.f, 0.f}, size});
-
-    auto& comp = world.components();
-    if (!floorTex.empty())
-    {
-        auto texture = fac.resources().load<Texture>(fac.texLoader(), floorTex);
-        SpriteComponent sprite;
-        sprite.texturePath = floorTex;
-        sprite.cachedTexture = texture;
-        sprite.size = size;
-        sprite.useSourceRect = false;
-
-        comp.add<SpriteComponent>(floorEntity, std::move(sprite));
-        comp.add<RenderComponent>(floorEntity, RenderComponent{0, 0});
-    }
-
-    LOG_DEBUG("MapLoader::createFloor: floor entity {} hasSprite={} hasRender={} pos=({},{})",
-        floorEntity.id,
-        comp.has<SpriteComponent>(floorEntity),
-        comp.has<RenderComponent>(floorEntity),
-        localPos.x, localPos.y);
+    this->factory.createBackgroundSprite(EntityFactory::BackgroundParams{parallax, zIndex, mapEntity}, tex);
 }
 
-void MapLoader::createWalls(const std::unique_ptr<DataNode>& root, Entity mapEntity)
+void MapLoader::createBackgroundRectangle(const std::unique_ptr<DataNode>& layer, Entity mapEntity)
 {
-    if (!root->has("walls")) return;
+    Color color = DataUtils::parseColor(*layer->getObject("color"), Color::WHITE());
+    Rectangle rect = DataUtils::parseRect(*layer, {{0.f, 0.f}, {100.f, 100.f}});
+    int zIndex = layer->getInt("zIndex", -1);
 
-    for (auto& wall : root->getArray("walls"))
+    this->factory.createBackgroundRectangle(EntityFactory::BackgroundParams{
+        {1.0f, 1.0f}, zIndex, mapEntity}, rect, color, true);
+}
+
+void MapLoader::createBackgroundCircle(const std::unique_ptr<DataNode>& layer, Entity mapEntity)
+{
+    Color color = DataUtils::parseColor(*layer->getObject("color"), Color::WHITE());
+    Circle circle = DataUtils::parseCircle(*layer, {{0.f, 0.f}, 10.f});
+    int zIndex = layer->getInt("zIndex", -1);
+
+    this->factory.createBackgroundCircle(EntityFactory::BackgroundParams{
+        {1.0f, 1.0f}, zIndex, mapEntity}, circle, color, true);
+}
+
+void MapLoader::createBackgroundAnimated(const std::unique_ptr<DataNode>& layer, Entity mapEntity)
+{
+    std::string tex = layer->getString("texture");
+    std::string anim = layer->getString("animation");
+    auto parallaxNode = layer->getObject("parallaxFactor");
+    Position parallax {
+        parallaxNode ? parallaxNode->getFloat("x", 1.f) : 1.f,
+        parallaxNode ? parallaxNode->getFloat("y", 1.f) : 1.f
+    };
+    int zIndex = layer->getInt("zIndex", 0);
+
+    this->factory.createBackgroundAnimated(EntityFactory::BackgroundParams{
+        parallax, zIndex, mapEntity}, tex, anim);
+}
+
+void MapLoader::createCollisionGeometry(const std::unique_ptr<DataNode>& root, Entity mapEntity)
+{
+    if (!root->has("collisions")) return;
+
+    for (auto& collNode : root->getArray("collisions"))
     {
-        float x = wall->getFloat("x");
-        float y = wall->getFloat("y");
-        float w = wall->getFloat("width");
-        float h = wall->getFloat("height");
-
-        Position pos = { x + w * 0.5f, y + h * 0.5f };
-        Rectangle rect{Position{0.f, 0.f}, Dimension2D{w, h}};
-
-        this->factory.createStaticEntity(EntityFactory::StaticEntityParams{pos, mapEntity}, rect);
+        std::string type = collNode->getString("type", "rectangle");
+        if (type == "rectangle")
+        {
+            Rectangle rect = DataUtils::parseRect(*collNode, {{0.f, 0.f}, {0.f, 0.f}});
+            Position center {
+                rect.position.x + rect.size.width * 0.5f,
+                rect.position.y + rect.size.height * 0.5f
+            };
+            this->factory.createStaticEntity(EntityFactory::StaticEntityParams{
+                center, mapEntity, {true, Color{128,128,128,128}, 0, 0} }, rect);
+        }
+        else if (type == "circle")
+        {
+            Circle circle = DataUtils::parseCircle(*collNode, {{0.f, 0.f}, 0.f});
+            this->factory.createStaticEntity(EntityFactory::StaticEntityParams{
+                circle.position, mapEntity, {true, Color{128,128,128,128}, 0, 0}}, circle);
+        }
     }
 }

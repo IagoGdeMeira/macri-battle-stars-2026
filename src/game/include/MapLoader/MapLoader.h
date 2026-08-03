@@ -21,8 +21,12 @@ private:
 
     MapComponent parseMapComponent(const std::unique_ptr<DataNode>& root);
     void createBackgrounds(const std::unique_ptr<DataNode>& root, Entity mapEntity);
-    void createFloor(const std::unique_ptr<DataNode>& root, Entity mapEntity, World& world);
-    void createWalls(const std::unique_ptr<DataNode>& root, Entity mapEntity);
+    void createCollisionGeometry(const std::unique_ptr<DataNode>& root, Entity mapEntity);
+
+    void createBackgroundTexture(const std::unique_ptr<DataNode>& layer, Entity mapEntity);
+    void createBackgroundRectangle(const std::unique_ptr<DataNode>& layer, Entity mapEntity);
+    void createBackgroundCircle(const std::unique_ptr<DataNode>& layer, Entity mapEntity);
+    void createBackgroundAnimated(const std::unique_ptr<DataNode>& layer, Entity mapEntity);
 };
 
 #endif // map_loader_h

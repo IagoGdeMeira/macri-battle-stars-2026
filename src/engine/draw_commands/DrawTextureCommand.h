@@ -21,9 +21,7 @@ struct DrawTextureCommand : public DrawCommand
     bool flipX = false, flipY = false;
     Color tint = Color::WHITE();
     BlendMode blend = BlendMode::Normal;
-    int layer = 0, zIndex = 0;
-    size_t order = 0;
-
+    
     std::type_index type() const override { return typeid(DrawTextureCommand); }
 };
 

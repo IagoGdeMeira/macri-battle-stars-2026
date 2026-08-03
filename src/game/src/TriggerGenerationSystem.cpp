@@ -18,12 +18,14 @@ void TriggerGenerationSystem::processInputTriggers(UpdateContext& ctx)
 
     for (auto [entity, input, player] : view)
     {
-        LOG_DEBUG("TriggerGenerationSystem: processing entity {} player {}", entity.id, player.id);
+        // LOG_DEBUG("TriggerGenerationSystem: processing entity {} player {}", entity.id, player.id);
 
         for (const auto& [action, state] : input.actions)
         {
+            /*
             LOG_DEBUG("TriggerGenerationSystem: entity {} player {} action {} pressed={}",
                 entity.id, player.id, InputMapper::actionToString(action), state.pressed);
+            */
             if (!state.pressed) continue;
 
             auto it = this->context.bindings.find(action);
@@ -31,8 +33,10 @@ void TriggerGenerationSystem::processInputTriggers(UpdateContext& ctx)
 
             for (auto trigger : it->second)
             {
+                /*
                 LOG_DEBUG("TriggerGenerationSystem: player {} action {} -> trigger {}",
                     player.id, InputMapper::actionToString(action), static_cast<int>(trigger));
+                */
                 this->bus.emit<TriggerEvent>(TriggerEvent{ entity, trigger });
             }
         }

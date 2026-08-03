@@ -20,7 +20,11 @@ SDLRenderer::SDLRenderer(SDL_Window* window)
 
 SDLRenderer::~SDLRenderer() { if (this->renderer) SDL_DestroyRenderer(this->renderer); }
 
-void SDLRenderer::clear() { SDL_RenderClear(this->renderer); }
+void SDLRenderer::clear()
+{
+    SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(this->renderer);
+}
 
 void SDLRenderer::present() { SDL_RenderPresent(this->renderer); }
 

@@ -61,7 +61,9 @@ void Engine::run()
         }
         auto t3 = hrclock::now();
 
+        if (this->renderer) this->renderer->clear();
         this->sceneManager->render();
+        
         auto t4 = hrclock::now();
 
         if (this->renderer) this->renderer->present();

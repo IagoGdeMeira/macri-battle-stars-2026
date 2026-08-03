@@ -3,6 +3,7 @@
 
 #include "engine/draw_commands/DrawRectangleCommand.h"
 #include "engine/include/IDrawCommandHandler/IDrawCommandHandler.h"
+
 #include <cmath>
 #include <SDL.h>
 

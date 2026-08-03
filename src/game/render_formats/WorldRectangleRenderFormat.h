@@ -16,6 +16,8 @@ class WorldRectangleRenderFormat : public IRenderFormat
 public:
     WorldRectangleRenderFormat(Renderer& renderer, Camera2D& camera) : renderer(renderer), camera(camera) {}
     void render(RenderContext& ctx) override;
+    
+    std::vector<const DrawCommand*> collectCommands() const override;
 
 private:
     Renderer& renderer;

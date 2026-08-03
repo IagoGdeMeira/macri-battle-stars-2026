@@ -31,6 +31,7 @@ public:
         textureLoader(cfg.textureLoader) {}
 
     void render(RenderContext& ctx) override;
+    std::vector<const DrawCommand*> collectCommands() const override;
 
 private:
     Renderer& renderer;
