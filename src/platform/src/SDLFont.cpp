@@ -27,12 +27,6 @@ TTF_Font* SDLFont::getFontWithSize(int size) const
     return newFont;
 }
 
-int SDLFont::queryMetric(int size, int (TTF_Font::*metricFunc)() const) const
-{
-    TTF_Font* font = this->getFontWithSize(size);
-    return (font->*metricFunc)();
-}
-
 int SDLFont::getAscent(int size) const { return TTF_FontAscent(this->getFontWithSize(size)); }
 
 int SDLFont::getDescent(int size) const { return std::abs(TTF_FontDescent(this->getFontWithSize(size))); }

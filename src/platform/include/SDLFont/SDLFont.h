@@ -23,8 +23,6 @@ private:
     std::string path;
     TTF_Font* baseFont;
     mutable std::unordered_map<int, TTF_Font*> sizeCache;
-
-    int queryMetric(int size, int (TTF_Font::*metricFunc)() const) const;
 };
 
 #endif // sdl_font_h

@@ -7,6 +7,7 @@
 #include "AnimationComponent.h"
 #include "AnimationControllerComponent.h"
 #include "BoxModel.h"
+#include "ChildrenComponent.h"
 #include "CircleColliderComponent.h"
 #include "CircleShapeComponent.h"
 #include "FlexContainer.h"

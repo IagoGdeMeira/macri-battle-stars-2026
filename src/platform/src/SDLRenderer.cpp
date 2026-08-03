@@ -1,16 +1,14 @@
 #include "SDLRenderer/SDLRenderer.h"
 
-#include "domain/utils/Logger/Logger.h"
-
-#include <SDL_image.h>
+#include "SDLDrawCircleCommandHandler.h"
+#include "SDLDrawFontCommandHandler.h"
+#include "SDLDrawRectangleCommandHandler.h"
+#include "SDLDrawTextureCommandHandler.h"
 
 SDLRenderer::SDLRenderer(SDL_Window* window)
 {
     this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!this->renderer) this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    
-    SDL_RendererInfo info;
-    SDL_GetRendererInfo(this->renderer, &info);
 
     this->registerHandler<DrawTextureCommand>(std::make_unique<SDLDrawTextureCommandHandler>(this->renderer));
     this->registerHandler<DrawFontCommand>(std::make_unique<SDLDrawFontCommandHandler>(this->renderer));
@@ -35,9 +33,3 @@ void SDLRenderer::setViewport(const Viewport& viewport)
 }
 
 void SDLRenderer::setScale(const Position& scale) { SDL_RenderSetScale(this->renderer, scale.x, scale.y); }
-
-void SDLRenderer::draw(const DrawCommand& command)
-{
-    auto it = this->handlers.find(command.type());
-    if (it != this->handlers.end()) it->second->execute(command);
-}

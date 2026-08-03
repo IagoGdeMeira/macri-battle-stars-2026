@@ -1,9 +1,8 @@
 #include "LocalToWorldSystem/LocalToWorldSystem.h"
 
-#include "domain/components/CircleShapeComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
-#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/utils/Logger/Logger.h"
@@ -14,38 +13,38 @@
 
 void LocalToWorldSystem::update(UpdateContext& ctx)
 {
-    auto& comp = ctx.world.components();
-    auto view = View<TransformComponent, LocalTransform, ParentComponent>(comp);
-    for (auto [entity, transform, local, parent] : view)
-    {
-        if (!comp.has<TransformComponent>(parent.parent)) continue;
-        const auto& parentTransform = comp.get<TransformComponent>(parent.parent);
-        this->applyParentTransform({transform, parentTransform, local});
-    }
+    auto comp = ctx.world.components();
+    auto view = View<TransformComponent>(comp);
+
+    for (auto [entity, transform] : view) if (!comp.has<ParentComponent>(entity))
+    { LocalToWorldSystem::updateTransformRecursive(ctx, entity, transform); }
 }
 
-float LocalToWorldSystem::rotateLocalX(const LocalTransform& local, float cosR, float sinR)
-{ return local.position.x * cosR - local.position.y * sinR; }
-
-float LocalToWorldSystem::rotateLocalY(const LocalTransform& local, float cosR, float sinR)
-{ return local.position.x * sinR + local.position.y * cosR; }
-
-void LocalToWorldSystem::applyParentTransform(const ParentParams& params)
+void LocalToWorldSystem::updateTransformRecursive(UpdateContext& ctx, Entity parent, const TransformComponent& parentTrans)
 {
-    auto& transform = params.transform;
-    const auto& local = params.local;
-    const auto& parentTrans = params.parentTrans;
+    auto comp = ctx.world.components();
 
-    float cosR = std::cos(parentTrans.rotation);
-    float sinR = std::sin(parentTrans.rotation);
+    auto& childrenComp = comp.get<ChildrenComponent>(parent);
+    if (childrenComp.children.empty()) return;
 
-    float rotatedX = LocalToWorldSystem::rotateLocalX(local, cosR, sinR);
-    float rotatedY = LocalToWorldSystem::rotateLocalY(local, cosR, sinR);
+    for (Entity child : childrenComp.children)
+    {
+        if (!comp.has<TransformComponent>(child) || !comp.has<LocalTransform>(child)) continue;
+        
+        auto& childTrans = comp.get<TransformComponent>(child);
+        auto& childLocal = comp.get<LocalTransform>(child);
+        
+        float rad = parentTrans.rotation * (3.14159265f / 180.f);
+        float cosA = std::cos(rad), sinA = std::sin(rad);
 
-    auto& parentPos = parentTrans.position;
-    auto& parentScale = parentTrans.scale;
-    transform.position.x = parentPos.x + rotatedX * parentScale.x;
-    transform.position.y = parentPos.y + rotatedY * parentScale.y;
-    transform.rotation = parentTrans.rotation + local.rotation;
-    transform.scale = { parentScale.x * local.scale.x, parentScale.y * local.scale.y };
+        float rotatedX = childLocal.position.x * cosA - childLocal.position.y * sinA;
+        float rotatedY = childLocal.position.x * sinA + childLocal.position.y * cosA;
+
+        childTrans.position.x = parentTrans.position.x + rotatedX * parentTrans.scale.x;
+        childTrans.position.y = parentTrans.position.y + rotatedY * parentTrans.scale.y;
+        childTrans.rotation = parentTrans.rotation + childLocal.rotation;
+        childTrans.scale = { parentTrans.scale.x * childLocal.scale.x, parentTrans.scale.y * childLocal.scale.y };
+
+        LocalToWorldSystem::updateTransformRecursive(ctx, child, childTrans);
+    }
 }

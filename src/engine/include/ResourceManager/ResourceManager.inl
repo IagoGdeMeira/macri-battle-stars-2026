@@ -10,12 +10,13 @@ std::shared_ptr<T> ResourceManager::load(ResourceLoader<T>& loader, const std::s
 {
     auto key = this->makeKey<T>(path);
 
+    std::lock_guard<std::mutex> lock(this->mutex);
+
     auto it = this->resources.find(key);
-    if (it != this->resources.end()) if (auto existing = it->second.lock())
-    { return std::static_pointer_cast<T>(existing); }
-    
+    if (it != this->resources.end()) if (auto existing = it->second.lock()) return std::static_pointer_cast<T>(existing);
+
     auto resource = this->sync.load(loader, path);
-    this->resources[key] = resource;
+    if (resource) this->resources[key] = resource;
 
     return resource;
 }
@@ -25,57 +26,55 @@ std::future<std::shared_ptr<T>> ResourceManager::loadAsync(ResourceLoader<T>& lo
 {
     auto key = this->makeKey<T>(path);
 
-    {
-        std::lock_guard<std::mutex> lock(this->mutex);
+    std::lock_guard<std::mutex> lock(this->mutex);
 
-        auto it = this->resources.find(key);
-        if (it != this->resources.end()) if (auto existing = it->second.lock())
-        { return this->makeReadyFuture(std::static_pointer_cast<T>(existing)); }
-
-        auto itLoading = this->loading.find(key);
-        if (itLoading != this->loading.end()) return this->wrapFuture<T>(itLoading->second);
+    auto it = this->resources.find(key);
+    if (it != this->resources.end()) if (auto existing = it->second.lock())
+    {  
+        std::promise<std::shared_ptr<T>> promise;
+        promise.set_value(std::static_pointer_cast<T>(existing));
+        return promise.get_future();
     }
 
-    auto task = std::make_shared<std::packaged_task<std::shared_ptr<T>()>>(
-        [&loader, path]() { return loader.load(path); });
-    auto future = task->get_future();
-    auto sharedFuture = future.share();
+    auto itLoading = this->loading.find(key);
+    if (itLoading != this->loading.end()) return this->wrapFuture<T>(itLoading->second);
 
-    auto erasedFuture = std::shared_future<std::shared_ptr<void>>(
-        std::async(std::launch::deferred, [sharedFuture]()
-        { return std::static_pointer_cast<void>(sharedFuture.get()); }));
-
-    {
-        std::lock_guard<std::mutex> lock(this->mutex);
-        this->loading[key] = erasedFuture;
-    }
+    auto promise = std::make_shared<std::promise<std::shared_ptr<void>>>();
+    auto sharedFuture = promise->get_future().share();
+    this->loading[key] = sharedFuture;
 
     auto currentVersion = this->version.load();
 
-    this->async.enqueueTask([task]() { (*task)(); });
-
-    return std::async(std::launch::deferred, [this, key, sharedFuture, currentVersion]()
+    this->async.enqueueTask([this, &loader, path, key, promise, currentVersion]()
     {
-        auto resource = sharedFuture.get();
+        auto resource = loader.load(path);
+
         {
-            std::lock_guard<std::mutex> lock(this->mutex);
-            if (this->version.load() == currentVersion) this->resources[key] = resource;
+            std::lock_guard<std::mutex> lk(this->mutex);
+            if (this->version.load() == currentVersion && resource) this->resources[key] = resource;
             this->loading.erase(key);
         }
-        return resource;
+
+        promise->set_value(resource);
     });
+
+    return this->wrapFuture<T>(sharedFuture);
 }
 
 template<typename T>
-std::string ResourceManager::makeKey(const std::string& path)
-{ return std::string(typeid(T).name()) + ":" + path; }
-
-template<typename T>
-std::future<std::shared_ptr<T>> ResourceManager::makeReadyFuture(std::shared_ptr<T> resource)
-{ return std::async(std::launch::deferred, [resource]() { return resource; }); }
+std::string ResourceManager::makeKey(const std::string& path) { return std::string(typeid(T).name()) + ":" + path; }
 
 template<typename T>
 std::future<std::shared_ptr<T>> ResourceManager::wrapFuture(std::shared_future<std::shared_ptr<void>> future)
-{ return std::async(std::launch::deferred, [future]() { return std::static_pointer_cast<T>(future.get()); }); }
+{
+    auto promise = std::make_shared<std::promise<std::shared_ptr<T>>>();
+
+    this->async.enqueueTask([future, promise]() mutable {
+        auto rawVoid = future.get();
+        promise->set_value(std::static_pointer_cast<T>(rawVoid));
+    });
+
+    return promise->get_future();
+}
 
 #endif // resource_manager_inl

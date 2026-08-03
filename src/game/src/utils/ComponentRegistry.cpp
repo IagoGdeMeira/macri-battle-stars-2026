@@ -11,6 +11,7 @@ void ComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<AnimationComponent>();
     comp.registerComponent<AnimationControllerComponent>();
     comp.registerComponent<BoxModel>();
+    comp.registerComponent<ChildrenComponent>();
     comp.registerComponent<CircleColliderComponent>();
     comp.registerComponent<CircleShapeComponent>();
     comp.registerComponent<FlexContainer>();

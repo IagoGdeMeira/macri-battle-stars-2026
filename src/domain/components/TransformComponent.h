@@ -3,10 +3,6 @@
 
 #include "Geometry/Geometry.h"
 
-struct TransformComponent
-{
-    Position position {0.f, 0.f}, scale {1.f, 1.f};
-    float rotation = 0.f;
-};
+struct TransformComponent { Position position {0.f, 0.f}, scale {1.f, 1.f}; float rotation = 0.f; };
 
 #endif // transform_component_h

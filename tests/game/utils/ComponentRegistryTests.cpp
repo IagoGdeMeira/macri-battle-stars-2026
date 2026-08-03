@@ -17,6 +17,7 @@ TEST_CASE("ComponentRegistry registers every game component", "[unit][component_
     REQUIRE(comp.storage<AnimationComponent>() != nullptr);
     REQUIRE(comp.storage<AnimationControllerComponent>() != nullptr);
     REQUIRE(comp.storage<BoxModel>() != nullptr);
+    REQUIRE(comp.storage<ChildrenComponent>() != nullptr);
     REQUIRE(comp.storage<CircleColliderComponent>() != nullptr);
     REQUIRE(comp.storage<CircleShapeComponent>() != nullptr);
     REQUIRE(comp.storage<FlexContainer>() != nullptr);

@@ -16,7 +16,7 @@
 class ResourceManager
 {
 public:
-    ResourceManager(ThreadPool& pool) : async(pool) {}
+    explicit ResourceManager(ThreadPool& pool) : async(pool) {}
 
     template<typename T>
     std::shared_ptr<T> load(ResourceLoader<T>& loader, const std::string& path);
@@ -25,6 +25,7 @@ public:
     std::future<std::shared_ptr<T>> loadAsync(ResourceLoader<T>& loader, const std::string& path);
 
     virtual void clearCache();
+    void sweep();
 
 private:
     std::atomic<uint64_t> version{0};
@@ -37,9 +38,6 @@ private:
 
     template<typename T>
     std::string makeKey(const std::string& path);
-
-    template<typename T>
-    std::future<std::shared_ptr<T>> makeReadyFuture(std::shared_ptr<T> resource);
 
     template<typename T>
     std::future<std::shared_ptr<T>> wrapFuture(std::shared_future<std::shared_ptr<void>> future);
