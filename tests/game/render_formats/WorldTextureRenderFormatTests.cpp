@@ -9,13 +9,14 @@
 #include "domain/components/ParallaxComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/SpriteComponent.h"
+#include "domain/components/TextureEffectsComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/ThreadPool/ThreadPool.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
 #include <catch2/catch_approx.hpp>
@@ -52,8 +53,8 @@ public:
         comp.registerComponent<ParallaxComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<SpriteComponent>();
+        comp.registerComponent<TextureEffectsComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<VisualEffectsComponent>();
 
         this->camera.setPosition(50.f, 20.f);
         this->camera.setZoom(2.f);
@@ -81,28 +82,32 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
     animationController.animations.symmetric = true;
     comp.add<AnimationControllerComponent>(entity, animationController);
 
-    VisualEffectsComponent fx;
-    fx.textureEffects.push_back([](DrawTextureBatch& batch, DrawTextureCommand& cmd) 
-    {
-        DrawTextureCommand echo = cmd;
-        echo.tint = Color {1, 2, 3, 255};
-        echo.dest.position.x += 3.f;
-        batch.add(echo);
+    TextureEffectsComponent fx;
+    fx.effects.push_back([](void* q, void* c) {
+        auto& queue = *static_cast<RenderQueue*>(q);
+        auto& cmd = *static_cast<DrawTextureCommand*>(c);
+        auto echo = std::make_unique<DrawTextureCommand>(cmd);
+        echo->tint = Color {1, 2, 3, 255};
+        echo->dest.position.x += 3.f;
+        queue.add(std::move(echo));
     });
-    comp.add<VisualEffectsComponent>(entity, fx);
+    comp.add<TextureEffectsComponent>(entity, fx);
 
-    this->format.render(this->context);
+    RenderQueue queue;
+    this->format.render(this->context, queue);
+    queue.submit(this->renderer);
 
     REQUIRE(this->renderer.textureCalls.size() == 2);
 
     const auto& effectCmd = this->renderer.textureCalls[0];
-    REQUIRE(effectCmd.tint == Color {1, 2, 3, 255});
-    REQUIRE(effectCmd.dest.position.x == Catch::Approx(538.f));
+    const auto& baseCmd   = this->renderer.textureCalls[1];
 
-    const auto& baseCmd = this->renderer.textureCalls[1];
+    REQUIRE(effectCmd.tint == Color {1, 2, 3, 255});
+    REQUIRE(effectCmd.dest.position.x == Catch::Approx(463.f));
+
     REQUIRE(baseCmd.texture != nullptr);
-    REQUIRE(baseCmd.dest.position.x == Catch::Approx(535.f));
-    REQUIRE(baseCmd.dest.position.y == Catch::Approx(410.f));
+    REQUIRE(baseCmd.dest.position.x == Catch::Approx(460.f));
+    REQUIRE(baseCmd.dest.position.y == Catch::Approx(350.f));
     REQUIRE(baseCmd.dest.size.width == Catch::Approx(30.f));
     REQUIRE(baseCmd.dest.size.height == Catch::Approx(20.f));
     REQUIRE(baseCmd.rotation == Catch::Approx(30.f));
@@ -133,7 +138,9 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat skip
     });
     comp.add<RenderComponent>(entity, RenderComponent { 0, 0 });
 
-    this->format.render(this->context);
+    RenderQueue queue;
+    this->format.render(this->context, queue);
+    queue.submit(this->renderer);
 
     REQUIRE(this->renderer.textureCalls.empty());
 }
@@ -158,7 +165,9 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat resp
     animationController.animations.symmetric = false;
     comp.add<AnimationControllerComponent>(entity, animationController);
 
-    this->format.render(this->context);
+    RenderQueue queue;
+    this->format.render(this->context, queue);
+    queue.submit(this->renderer);
 
     REQUIRE(this->renderer.textureCalls.size() == 1);
     REQUIRE(this->renderer.textureCalls[0].flipX == false);

@@ -7,6 +7,7 @@
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/CircleColliderComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/HitboxComponent.h"
@@ -46,6 +47,7 @@ public:
         comp.registerComponent<ActiveComponent>();
         comp.registerComponent<AnimationComponent>();
         comp.registerComponent<AnimationControllerComponent>();
+        comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<CircleColliderComponent>();
         comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<HitboxComponent>();

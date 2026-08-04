@@ -19,8 +19,9 @@ CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
     maxZoom(cfg.maxZoom),
     padding(cfg.padding),
     verticalOffset(cfg.verticalOffset),
-    epsilon(cfg.epsilon),
     bounds(cfg.bounds),
+    epsilon(cfg.epsilon),
+    smoothFactor(cfg.smoothFactor),
     viewSize(cfg.viewSize)
 { this->camera.setApplyZoomToSize(cfg.applyZoomToSize); }
 
@@ -29,13 +30,10 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     auto playerBounds = this->computePlayerBounds(ctx);
     if (playerBounds.left > playerBounds.right || playerBounds.top > playerBounds.bottom) return;
 
-    float boxWidth  = std::max(playerBounds.right - playerBounds.left, 1.f);
-    float boxHeight = std::max(playerBounds.bottom - playerBounds.top, 1.f);
-
-    float zoomX = this->viewSize.width  / boxWidth;
-    float zoomY = this->viewSize.height / boxHeight;
-    float targetZoom = std::min(zoomX, zoomY);
-    float finalZoom = std::clamp(targetZoom, this->minZoom, this->maxZoom);
+    float boxWidth      = std::max(playerBounds.right - playerBounds.left, 1.f);
+    float boxHeight     = std::max(playerBounds.bottom - playerBounds.top, 1.f);
+    float targetZoom    = std::min(this->viewSize.width  / boxWidth, this->viewSize.height / boxHeight);
+    float finalZoom     = std::clamp(targetZoom, this->minZoom, this->maxZoom);
 
     Position center {
         (playerBounds.left + playerBounds.right) * 0.5f,
@@ -44,18 +42,15 @@ void CameraControllerSystem::update(UpdateContext& ctx)
 
     Position targetPos = this->computeClampedCameraPosition(center, finalZoom);
 
-    // Interpolação suave (lerp)
-    const float smoothFactor = 0.12f; // Ajuste entre 0.05 (muito suave) e 1.0 (instantâneo)
     Position currentPos = this->camera.getPosition();
     float currentZoom = this->camera.getZoom();
 
-    float newZoom = currentZoom + (finalZoom - currentZoom) * smoothFactor;
-    Position newPos = {
-        currentPos.x + (targetPos.x - currentPos.x) * smoothFactor,
-        currentPos.y + (targetPos.y - currentPos.y) * smoothFactor
+    float newZoom = currentZoom + (finalZoom - currentZoom) * this->smoothFactor;
+    Position newPos {
+        currentPos.x + (targetPos.x - currentPos.x) * this->smoothFactor,
+        currentPos.y + (targetPos.y - currentPos.y) * this->smoothFactor
     };
 
-    // Atualiza apenas se houver mudança significativa
     if (std::abs(newZoom - currentZoom) > this->epsilon ||
         std::abs(newPos.x - currentPos.x) > this->epsilon ||
         std::abs(newPos.y - currentPos.y) > this->epsilon)
@@ -70,7 +65,6 @@ AABB CameraControllerSystem::computePlayerBounds(UpdateContext& ctx)
     auto& comp = ctx.world.components();
     auto view = View<TransformComponent, PlayerComponent>(comp);
     
-    // Log de depuração
     size_t count = 0;
     for (auto [entity, transform, player] : view) { ++count; }
     LOG_DEBUG("CameraControllerSystem: {} players found", count);

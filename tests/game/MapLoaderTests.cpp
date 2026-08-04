@@ -8,6 +8,7 @@
 #include "StubRenderer.h"
 #include "StubWindow.h"
 
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/CircleColliderComponent.h"
 #include "domain/components/HitboxComponent.h"
 #include "domain/components/HurtboxComponent.h"
@@ -49,6 +50,7 @@ public:
     MapLoaderFixture()
     {
         auto& comp = this->world.components();
+        comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<CircleColliderComponent>();
         comp.registerComponent<HitboxComponent>();
         comp.registerComponent<HurtboxComponent>();
@@ -77,16 +79,6 @@ public:
         return layer;
     }
 
-    std::unique_ptr<StubDataNode> makeWall() const
-    {
-        auto wall = std::make_unique<StubDataNode>();
-        wall->setFloat("x", 10.f);
-        wall->setFloat("y", 20.f);
-        wall->setFloat("width", 640.f);
-        wall->setFloat("height", 48.f);
-        return wall;
-    }
-
     std::unique_ptr<StubDataNode> makeSpawnPoint() const
     {
         auto spawn = std::make_unique<StubDataNode>();
@@ -99,7 +91,7 @@ public:
     {
         auto root = std::make_unique<StubDataNode>();
         root->setString("name", "Dojo");
-
+        
         auto floor = std::make_unique<StubDataNode>();
         floor->setFloat("y", 420.f);
         floor->setString("texture", "assets/maps/floor.png");
@@ -119,16 +111,52 @@ public:
         root->setObject("worldBounds", std::move(bounds));
 
         std::vector<std::unique_ptr<DataNode>> backgrounds;
-        backgrounds.push_back(this->makeBackgroundLayer());
-        root->setArray("backgroundLayers", std::move(backgrounds));
 
-        std::vector<std::unique_ptr<DataNode>> walls;
-        walls.push_back(this->makeWall());
-        root->setArray("walls", std::move(walls));
+        backgrounds.push_back(this->makeBackgroundLayer());
+
+        auto floorVisual = std::make_unique<StubDataNode>();
+        floorVisual->setString("type", "texture");
+        floorVisual->setString("texture", "assets/maps/floor.png");
+        auto floorParallax = std::make_unique<StubDataNode>();
+        floorParallax->setFloat("x", 1.f);
+        floorParallax->setFloat("y", 1.f);
+        floorVisual->setObject("parallaxFactor", std::move(floorParallax));
+        floorVisual->setInt("zIndex", 0);
+        backgrounds.push_back(std::move(floorVisual));
+
+        root->setArray("backgroundLayers", std::move(backgrounds));
 
         std::vector<std::unique_ptr<DataNode>> spawnPoints;
         spawnPoints.push_back(this->makeSpawnPoint());
         root->setArray("spawnPoints", std::move(spawnPoints));
+
+        std::vector<std::unique_ptr<DataNode>> collisions;
+
+        auto floorColl = std::make_unique<StubDataNode>();
+        floorColl->setString("type", "rectangle");
+        auto floorPos = std::make_unique<StubDataNode>();
+        floorPos->setFloat("x", 0.f);
+        floorPos->setFloat("y", 420.f);
+        floorColl->setObject("position", std::move(floorPos));
+        auto floorSize = std::make_unique<StubDataNode>();
+        floorSize->setFloat("width", 1280.f);
+        floorSize->setFloat("height", 64.f);
+        floorColl->setObject("size", std::move(floorSize));
+        collisions.push_back(std::move(floorColl));
+
+        auto wallColl = std::make_unique<StubDataNode>();
+        wallColl->setString("type", "rectangle");
+        auto wallPos = std::make_unique<StubDataNode>();
+        wallPos->setFloat("x", 10.f);
+        wallPos->setFloat("y", 20.f);
+        wallColl->setObject("position", std::move(wallPos));
+        auto wallSize = std::make_unique<StubDataNode>();
+        wallSize->setFloat("width", 640.f);
+        wallSize->setFloat("height", 48.f);
+        wallColl->setObject("size", std::move(wallSize));
+        collisions.push_back(std::move(wallColl));
+
+        root->setArray("collisions", std::move(collisions));
 
         return root;
     }
@@ -159,22 +187,26 @@ TEST_CASE_METHOD(MapLoaderFixture, "MapLoader parses map data and creates map en
     auto parentView = View<ParentComponent>(comp);
 
     bool foundBackground = false;
-    bool foundFloor = false;
+    bool foundFloorVisual = false;
     int rectColliderCount = 0;
 
     for (auto [entity, parent] : parentView)
     {
         if (parent.parent != mapEntity || !comp.has<SpriteComponent>(entity)) continue;
 
-        if (comp.has<ParallaxComponent>(entity)) foundBackground = true;
-        if (comp.has<RectangleColliderComponent>(entity)) foundFloor = true;
+        if (comp.has<ParallaxComponent>(entity))
+        {
+            const auto& p = comp.get<ParallaxComponent>(entity);
+            if (p.factor.x == Catch::Approx(1.f) && p.factor.y == Catch::Approx(1.f)) foundFloorVisual = true;
+            else foundBackground = true; 
+        }
     }
 
-    for (auto &&item : View<RectangleColliderComponent>(comp)) (void)item, ++rectColliderCount;
-    
+    for (auto&& item : View<RectangleColliderComponent>(comp)) (void)item, ++rectColliderCount;
+
     REQUIRE(rectColliderCount >= 2);
     REQUIRE(foundBackground);
-    REQUIRE(foundFloor);
+    REQUIRE(foundFloorVisual);
 }
 
 TEST_CASE_METHOD(MapLoaderFixture, "MapLoader applies parallax factors from JSON correctly",

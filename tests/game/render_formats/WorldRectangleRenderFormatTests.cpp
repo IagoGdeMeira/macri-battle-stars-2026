@@ -4,18 +4,19 @@
 
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/CircleShapeComponent.h"
+#include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
+#include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-
 #include <memory>
 #include <vector>
 
@@ -27,9 +28,10 @@ public:
         auto& comp = this->world.components();
         comp.registerComponent<ActiveComponent>();
         comp.registerComponent<CircleShapeComponent>();
+        comp.registerComponent<RectangleEffectsComponent>();
         comp.registerComponent<RectangleShapeComponent>();
+        comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<VisualEffectsComponent>();
 
         this->camera.setPosition(5.f, 0.f);
         this->camera.setZoom(2.f);
@@ -54,31 +56,36 @@ TEST_CASE_METHOD(WorldRectangleRenderFormatFixture, "WorldRectangleRenderFormat 
     comp.add<RectangleShapeComponent>(entity, RectangleShapeComponent{rect, Color{100, 150, 200, 255}, true, 0});
     comp.add<TransformComponent>(entity, TransformComponent{Position{20.f, 10.f}, Position{-2.f, 3.f}, 0.f});
 
-    VisualEffectsComponent fx;
-    fx.rectangleEffects.push_back([](DrawRectangleBatch& batch, DrawRectangleCommand& cmd) {
-        DrawRectangleCommand outline = cmd;
-        outline.filled = false;
-        outline.color = Color { 7, 8, 9, 255 };
-        batch.add(outline);
+    RectangleEffectsComponent fx;
+    fx.effects.push_back([](void* q, void* c) {
+        auto& queue = *static_cast<RenderQueue*>(q);
+        auto& cmd = *static_cast<DrawRectangleCommand*>(c);
+        auto outline = std::make_unique<DrawRectangleCommand>(cmd);
+        outline->filled = false;
+        outline->color = Color { 7, 8, 9, 255 };
+        queue.add(std::move(outline));
     });
-    comp.add<VisualEffectsComponent>(entity, fx);
+    comp.add<RectangleEffectsComponent>(entity, fx);
 
-    this->format.render(this->context);
+    RenderQueue queue;
+    this->format.render(this->context, queue);
+    queue.submit(this->renderer);
 
     REQUIRE(this->renderer.rectangleCalls.size() == 2);
 
-    const auto& effectCmd = this->renderer.rectangleCalls[0];
-    REQUIRE(effectCmd.filled == false);
-    REQUIRE(effectCmd.color == Color { 7, 8, 9, 255 });
-
     const auto& baseCmd = this->renderer.rectangleCalls[1];
-    REQUIRE(baseCmd.rect.position.x == Catch::Approx(420.f));
-    REQUIRE(baseCmd.rect.position.y == Catch::Approx(314.f));
+    const auto& effectCmd = this->renderer.rectangleCalls[0];
+
+    REQUIRE(baseCmd.rect.position.x == Catch::Approx(405.f));
+    REQUIRE(baseCmd.rect.position.y == Catch::Approx(304.f));
     REQUIRE(baseCmd.rect.size.width == Catch::Approx(20.f));
     REQUIRE(baseCmd.rect.size.height == Catch::Approx(12.f));
     REQUIRE(baseCmd.filled == true);
     REQUIRE(baseCmd.color == Color { 100, 150, 200, 255 });
     REQUIRE(baseCmd.order == 0);
+
+    REQUIRE(effectCmd.filled == false);
+    REQUIRE(effectCmd.color == Color { 7, 8, 9, 255 });
 }
 
 TEST_CASE_METHOD(WorldRectangleRenderFormatFixture, "WorldRectangleRenderFormat filters non-rectangle and null shapes",
@@ -96,7 +103,9 @@ TEST_CASE_METHOD(WorldRectangleRenderFormatFixture, "WorldRectangleRenderFormat 
     comp.add<CircleShapeComponent>(circleEntity, CircleShapeComponent{circle, Color::WHITE(), false, 0});
     comp.add<TransformComponent>(circleEntity, TransformComponent{Position{2.f, 3.f}, Position{1.f, 1.f}, 0.f});
 
-    this->format.render(this->context);
+    RenderQueue queue;
+    this->format.render(this->context, queue);
+    queue.submit(this->renderer);
 
     REQUIRE(this->renderer.rectangleCalls.empty());
 }

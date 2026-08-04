@@ -21,9 +21,9 @@ public:
     CameraControllerSystemFixture() : ctx { this->world, this->bus, this->commandBuffer, 0.016f }
     {
         auto& comp = this->world.components();
-        comp.registerComponent<TransformComponent>();
         comp.registerComponent<PlayerComponent>();
         comp.registerComponent<SpriteComponent>();
+        comp.registerComponent<TransformComponent>();
     }
 
     World world;
@@ -69,6 +69,7 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem keeps ca
         .maxZoom        = 1.5f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
+        .smoothFactor   = 1.f,
     });
 
     this->camera.setPosition(12.f, -8.f);
@@ -93,7 +94,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem centers 
         .maxZoom        = 1.5f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -116,7 +118,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps c
         .maxZoom        = 1.5f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -138,7 +141,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem uses Spr
         .maxZoom        = 2.0f,
         .padding        = 0.f,
         .verticalOffset = 0.f,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -161,7 +165,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem applies 
         .maxZoom        = 2.0f,
         .padding        = padding,
         .verticalOffset = 0.f,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -184,7 +189,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem handles 
         .maxZoom        = 2.0f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -206,7 +212,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem uses fal
         .maxZoom        = 2.0f,
         .padding        = 0.f,
         .verticalOffset = 0.f,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -227,6 +234,7 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem handles 
         .maxZoom        = 2.0f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -248,7 +256,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem clamps w
         .maxZoom        = 2.0f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -272,7 +281,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem vertical
         .maxZoom        = 2.f,
         .padding        = padding,
         .verticalOffset = offset,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -296,7 +306,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem vertical
         .maxZoom        = 2.f,
         .padding        = padding,
         .verticalOffset = offset,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -319,7 +330,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem vertical
         .maxZoom        = 2.f,
         .padding        = padding,
         .verticalOffset = offset,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -342,7 +354,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem vertical
         .maxZoom        = 2.f,
         .padding        = padding,
         .verticalOffset = offset,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -365,7 +378,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem vertical
         .maxZoom        = 2.f,
         .padding        = padding,
         .verticalOffset = offset,
-        .bounds         = bounds
+        .bounds         = bounds,
+        .smoothFactor   = 1.f
     });
 
     system.update(this->ctx);
@@ -388,7 +402,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem does not
         .maxZoom        = 1.5f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
-        .epsilon        = 0.01f
+        .epsilon        = 0.01f,
+        .smoothFactor   = 1.f
     });
 
     this->camera.setPosition(100.f, 200.f);
@@ -410,10 +425,11 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem updates 
         .camera         = this->camera,
         .window         = this->window,
         .minZoom        = 0.8f,
-        .maxZoom        = 2.0f,
+        .maxZoom        = 2.f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
-        .epsilon        = 0.01f
+        .epsilon        = 0.01f,
+        .smoothFactor   = 1.f
     });
 
     this->camera.setPosition(0.f, 0.f);
@@ -442,7 +458,8 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem respects
         .maxZoom        = 1.5f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
-        .epsilon        = customEpsilon
+        .epsilon        = customEpsilon,
+        .smoothFactor   = 1.f
     });
 
     this->camera.setPosition(100.f, 200.f);
@@ -467,10 +484,11 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem updates 
         .camera         = this->camera,
         .window         = this->window,
         .minZoom        = 0.8f,
-        .maxZoom        = 2.0f,
+        .maxZoom        = 2.f,
         .padding        = 50.f,
         .verticalOffset = 0.f,
-        .epsilon        = 0.01f
+        .epsilon        = 0.01f,
+        .smoothFactor   = 1.f
     });
 
     this->camera.setPosition(100.f, 200.f);
@@ -482,5 +500,57 @@ TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem updates 
 
     REQUIRE(this->camera.getPosition().x != Catch::Approx(100.f));
     REQUIRE(this->camera.getPosition().y != Catch::Approx(200.f));
+    REQUIRE(this->camera.getZoom() == Catch::Approx(2.0f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem applies smoothFactor correctly",
+    "[unit][camera_controller_system]"
+) {
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .epsilon        = 0.01f,
+        .smoothFactor   = 0.5f
+    });
+
+    this->camera.setPosition(100.f, 200.f);
+    this->camera.setZoom(1.5f);
+
+    this->createPlayer(300.f, 400.f, 32.f, 64.f);
+
+    system.update(this->ctx);
+
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(200.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(300.f));
+    REQUIRE(this->camera.getZoom() == Catch::Approx(1.75f));
+}
+
+TEST_CASE_METHOD(CameraControllerSystemFixture, "CameraControllerSystem smoothFactor of 1.0 results in immediate camera update",
+    "[unit][camera_controller_system]"
+) {
+    CameraControllerSystem system(CameraControllerSystem::Config{
+        .camera         = this->camera,
+        .window         = this->window,
+        .minZoom        = 0.8f,
+        .maxZoom        = 2.f,
+        .padding        = 50.f,
+        .verticalOffset = 0.f,
+        .epsilon        = 0.01f,
+        .smoothFactor   = 1.f
+    });
+
+    this->camera.setPosition(100.f, 200.f);
+    this->camera.setZoom(1.5f);
+
+    this->createPlayer(300.f, 400.f, 32.f, 64.f);
+
+    system.update(this->ctx);
+
+    REQUIRE(this->camera.getPosition().x == Catch::Approx(300.f));
+    REQUIRE(this->camera.getPosition().y == Catch::Approx(400.f));
     REQUIRE(this->camera.getZoom() == Catch::Approx(2.0f));
 }

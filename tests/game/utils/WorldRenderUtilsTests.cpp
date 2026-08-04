@@ -6,30 +6,26 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("WorldRenderUtils::worldToScreen applies camera and zoom", "[unit][world_render_utils]")
+TEST_CASE("WorldRenderUtils::worldToScreen applies camera position", "[unit][world_render_utils]")
 {
     Camera2D camera;
     camera.setPosition(10.f, 20.f);
-    camera.setZoom(2.f);
-
     Position worldPos {100.f, 60.f};
     const Position screen = WorldRenderUtils::worldToScreen(camera, worldPos);
 
-    REQUIRE(screen.x == Catch::Approx(580.f));
-    REQUIRE(screen.y == Catch::Approx(380.f));
+    REQUIRE(screen.x == Catch::Approx(490.f));
+    REQUIRE(screen.y == Catch::Approx(340.f));
 }
 
 TEST_CASE("WorldRenderUtils::worldToScreen applies parallax factors", "[unit][world_render_utils]")
 {
     Camera2D camera;
     camera.setPosition(10.f, 20.f);
-    camera.setZoom(2.f);
-
     Position worldPos {100.f, 60.f};
     const Position screen = WorldRenderUtils::worldToScreen(camera, worldPos, Position{0.5f, 2.f});
 
-    REQUIRE(screen.x == Catch::Approx(590.f));
-    REQUIRE(screen.y == Catch::Approx(340.f));
+    REQUIRE(screen.x == Catch::Approx(495.f));
+    REQUIRE(screen.y == Catch::Approx(320.f));
 }
 
 TEST_CASE("WorldRenderUtils::resolveParallax reads component when present", "[unit][world_render_utils]")

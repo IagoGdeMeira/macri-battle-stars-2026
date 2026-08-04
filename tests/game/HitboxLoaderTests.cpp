@@ -7,6 +7,7 @@
 #include "StubTextureLoader.h"
 
 #include "domain/components/ActiveComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/CircleColliderComponent.h"
 #include "domain/components/HitboxComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
@@ -36,14 +37,15 @@ public:
         loader(std::make_unique<HitboxLoader>(this->parser, *this->factory))
     {
         auto& comp = this->world.components();
-        comp.registerComponent<TransformComponent>();
-        comp.registerComponent<ParentComponent>();
-        comp.registerComponent<LocalTransform>();
-        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<ActiveComponent>();
+        comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<CircleColliderComponent>();
         comp.registerComponent<HitboxComponent>();
-        comp.registerComponent<ActiveComponent>();
         comp.registerComponent<HitboxControllerComponent>();
+        comp.registerComponent<LocalTransform>();
+        comp.registerComponent<ParentComponent>();
+        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<TransformComponent>();
     }
 
     World world;

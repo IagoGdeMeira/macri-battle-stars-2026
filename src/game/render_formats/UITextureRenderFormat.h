@@ -53,4 +53,4 @@ private:
     Renderer& renderer;
 };
 
-#endif
+#endif // ui_texture_render_format_h

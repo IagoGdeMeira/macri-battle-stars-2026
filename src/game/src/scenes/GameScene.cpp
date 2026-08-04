@@ -322,6 +322,7 @@ void GameScene::addSystems()
         .padding            = 30.f,
         .verticalOffset     = -70.f,
         .bounds             = mapComp.worldBounds,
+        .smoothFactor       = 0.12f,
         .viewSize           = GameConstants::VIRTUAL_SIZE,
         .applyZoomToSize    = true,
     });

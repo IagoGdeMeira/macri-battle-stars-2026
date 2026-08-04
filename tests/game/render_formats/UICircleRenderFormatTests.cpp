@@ -2,12 +2,13 @@
 
 #include "StubRenderer.h"
 
+#include "domain/components/CircleEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/UITransform.h"
-#include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
@@ -27,9 +28,9 @@ public:
     UICircleRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& comp = this->world.components();
-        comp.registerComponent<UITransform>();
+        comp.registerComponent<CircleEffectsComponent>();
         comp.registerComponent<RenderComponent>();
-        comp.registerComponent<VisualEffectsComponent>();
+        comp.registerComponent<UITransform>();
     }
 };
 
@@ -45,26 +46,25 @@ TEST_CASE_METHOD(UICircleRenderFormatFixture, "UICircleRenderFormat submits base
     comp.add<UITransform>(entity, transform);
     comp.add<RenderComponent>(entity, RenderComponent { 8, 2 });
 
-    VisualEffectsComponent fx;
-    fx.circleEffects.push_back([](DrawCircleBatch& batch, DrawCircleCommand& cmd) {
-        DrawCircleCommand halo = cmd;
-        halo.filled = true;
-        halo.color = Color {7, 6, 5, 4};
-        halo.circle.radius += 1.f;
-        batch.add(halo);
+    CircleEffectsComponent fx;
+    fx.effects.push_back([](void* q, void* c) {
+        auto& queue = *static_cast<RenderQueue*>(q);
+        auto& cmd = *static_cast<DrawCircleCommand*>(c);
+        auto halo = std::make_unique<DrawCircleCommand>(cmd);
+        halo->filled = true;
+        halo->color = Color {7, 6, 5, 4};
+        halo->circle.radius += 1.f;
+        queue.add(std::move(halo));
     });
-    comp.add<VisualEffectsComponent>(entity, fx);
+    comp.add<CircleEffectsComponent>(entity, fx);
 
-    this->format.render(this->context);
+    RenderQueue queue;
+    this->format.render(this->context, queue);
+    queue.submit(this->renderer);
 
     REQUIRE(this->renderer.circleCalls.size() == 2);
 
-    const auto& effectCmd = this->renderer.circleCalls[0];
-    REQUIRE(effectCmd.filled == true);
-    REQUIRE(effectCmd.color == Color {7, 6, 5, 4});
-    REQUIRE(effectCmd.circle.radius == Catch::Approx(11.f));
-
-    const auto& baseCmd = this->renderer.circleCalls[1];
+    const auto& baseCmd = this->renderer.circleCalls[0];
     REQUIRE(baseCmd.circle.position.x == Catch::Approx(25.f));
     REQUIRE(baseCmd.circle.position.y == Catch::Approx(30.f));
     REQUIRE(baseCmd.circle.radius == Catch::Approx(10.f));
@@ -73,4 +73,9 @@ TEST_CASE_METHOD(UICircleRenderFormatFixture, "UICircleRenderFormat submits base
     REQUIRE(baseCmd.layer == 8);
     REQUIRE(baseCmd.zIndex == 2);
     REQUIRE(baseCmd.order == 0);
+
+    const auto& effectCmd = this->renderer.circleCalls[1];
+    REQUIRE(effectCmd.filled == true);
+    REQUIRE(effectCmd.color == Color {7, 6, 5, 4});
+    REQUIRE(effectCmd.circle.radius == Catch::Approx(11.f));
 }

@@ -3,13 +3,15 @@
 #include "StubRenderer.h"
 
 #include "domain/components/ActiveComponent.h"
+#include "domain/components/CircleEffectsComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
+#include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
@@ -32,10 +34,11 @@ public:
     {
         auto& comp = this->world.components();
         comp.registerComponent<ActiveComponent>();
+        comp.registerComponent<CircleEffectsComponent>();
         comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<RectangleShapeComponent>();
+        comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<VisualEffectsComponent>();
 
         this->camera.setPosition(10.f, 5.f);
         this->camera.setZoom(2.f);
@@ -53,30 +56,35 @@ TEST_CASE_METHOD(WorldCircleRenderFormatFixture, "WorldCircleRenderFormat submit
     comp.add<CircleShapeComponent>(entity, CircleShapeComponent{circle, Color{10, 20, 30, 255}, false, 0});
     comp.add<TransformComponent>(entity, TransformComponent{Position{30.f, 20.f}, Position{-2.f, 3.f}, 0.f});
 
-    VisualEffectsComponent fx;
-    fx.circleEffects.push_back([](DrawCircleBatch& batch, DrawCircleCommand& cmd) {
-        DrawCircleCommand aura = cmd;
-        aura.circle.radius += 2.f;
-        aura.filled = true;
-        batch.add(aura);
+    CircleEffectsComponent fx;
+    fx.effects.push_back([](void* q, void* c) {
+        auto& queue = *static_cast<RenderQueue*>(q);
+        auto& cmd = *static_cast<DrawCircleCommand*>(c);
+        auto aura = std::make_unique<DrawCircleCommand>(cmd);
+        aura->circle.radius += 2.f;
+        aura->filled = true;
+        queue.add(std::move(aura));
     });
-    comp.add<VisualEffectsComponent>(entity, fx);
+    comp.add<CircleEffectsComponent>(entity, fx);
 
-    this->format.render(this->context);
+    RenderQueue queue;
+    this->format.render(this->context, queue);
+    queue.submit(this->renderer);
 
     REQUIRE(this->renderer.circleCalls.size() == 2);
 
     const auto& effectCmd = this->renderer.circleCalls[0];
-    REQUIRE(effectCmd.circle.radius == Catch::Approx(17.f));
-    REQUIRE(effectCmd.filled == true);
+    const auto& baseCmd   = this->renderer.circleCalls[1];
 
-    const auto& baseCmd = this->renderer.circleCalls[1];
-    REQUIRE(baseCmd.circle.position.x == Catch::Approx(440.f));
-    REQUIRE(baseCmd.circle.position.y == Catch::Approx(330.f));
+    REQUIRE(baseCmd.circle.position.x == Catch::Approx(420.f));
+    REQUIRE(baseCmd.circle.position.y == Catch::Approx(315.f));
     REQUIRE(baseCmd.circle.radius == Catch::Approx(15.f));
     REQUIRE(baseCmd.color == Color { 10, 20, 30, 255 });
     REQUIRE(baseCmd.filled == false);
     REQUIRE(baseCmd.order == 0);
+
+    REQUIRE(effectCmd.circle.radius == Catch::Approx(17.f));
+    REQUIRE(effectCmd.filled == true);
 }
 
 TEST_CASE_METHOD(WorldCircleRenderFormatFixture, "WorldCircleRenderFormat filters non-circle and null shapes",
@@ -94,7 +102,9 @@ TEST_CASE_METHOD(WorldCircleRenderFormatFixture, "WorldCircleRenderFormat filter
     comp.add<RectangleShapeComponent>(rectangleEntity, RectangleShapeComponent{rect, Color::WHITE(), false, 0});
     comp.add<TransformComponent>(rectangleEntity, TransformComponent{Position{2.f, 3.f}, Position{1.f, 1.f}, 0.f});
 
-    this->format.render(this->context);
+    RenderQueue queue;
+    this->format.render(this->context, queue);
+    queue.submit(this->renderer);
 
     REQUIRE(this->renderer.circleCalls.empty());
 }

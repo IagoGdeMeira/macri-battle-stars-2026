@@ -7,14 +7,16 @@
 
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/CircleEffectsComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/ParallaxComponent.h"
-#include "domain/components/RenderComponent.h"
+#include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
+#include "domain/components/RenderComponent.h"
 #include "domain/components/SpriteComponent.h"
+#include "domain/components/TextureEffectsComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/World/World.h"
 #include "domain/value_objects/Color/Color.h"
 
@@ -55,14 +57,16 @@ public:
         auto& comp = this->world.components();
         comp.registerComponent<ActiveComponent>();
         comp.registerComponent<AnimationControllerComponent>();
+        comp.registerComponent<CircleEffectsComponent>();
         comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<OrientationComponent>();
         comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<RectangleEffectsComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<SpriteComponent>();
+        comp.registerComponent<TextureEffectsComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<VisualEffectsComponent>();
     }
 
     GameSettings makeSettings()
@@ -170,8 +174,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.calls.drawTexture == 1);
-    REQUIRE(this->renderer.lastDraw.x == 399);
-    REQUIRE(this->renderer.lastDraw.y == 318);
+    REQUIRE(this->renderer.lastDraw.x == 394);
+    REQUIRE(this->renderer.lastDraw.y == 308);
     REQUIRE(this->renderer.lastDraw.width == 32);
     REQUIRE(this->renderer.lastDraw.height == 24);
     REQUIRE(this->renderer.lastDraw.rotation == 0.f);
@@ -272,8 +276,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes",
 
     REQUIRE(this->renderer.calls.drawCircleOutline == 1);
     REQUIRE(this->renderer.calls.drawCircleFilled == 0);
-    REQUIRE(this->renderer.lastCircle.position.x == 420.f);
-    REQUIRE(this->renderer.lastCircle.position.y == 340.f);
+    REQUIRE(this->renderer.lastCircle.position.x == 410.f);
+    REQUIRE(this->renderer.lastCircle.position.y == 320.f);
     REQUIRE(this->renderer.lastCircle.radius == 21.f);
     REQUIRE(this->renderer.lastColor.r == 9);
     REQUIRE(this->renderer.lastColor.g == 8);

@@ -1,10 +1,13 @@
 #include "game/drawers/UIDrawer/UIDrawer.h"
 
+#include "domain/components/CircleEffectsComponent.h"
+#include "domain/components/FontEffectsComponent.h"
+#include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
+#include "domain/components/TextureEffectsComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/components/UITransform.h"
-#include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
@@ -36,7 +39,10 @@ public:
         comp.registerComponent<UISpriteComponent>();
         comp.registerComponent<UITextComponent>();
         comp.registerComponent<UITransform>();
-        comp.registerComponent<VisualEffectsComponent>();
+        comp.registerComponent<CircleEffectsComponent>();
+        comp.registerComponent<FontEffectsComponent>();
+        comp.registerComponent<RectangleEffectsComponent>();
+        comp.registerComponent<TextureEffectsComponent>();
     }
 
     Entity createSpriteEntity(const Rectangle& rect, std::shared_ptr<Texture> texture)

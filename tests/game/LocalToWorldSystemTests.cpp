@@ -1,5 +1,6 @@
 #include "game/include/LocalToWorldSystem/LocalToWorldSystem.h"
 
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -17,9 +18,10 @@ public:
     LocalToWorldSystemFixture() : context{ this->world, this->bus, this->commandBuffer, 0.016f }
     {
         auto& comp = this->world.components();
-        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<LocalTransform>();
         comp.registerComponent<ParentComponent>();
+        comp.registerComponent<TransformComponent>();
     }
 
 protected:
@@ -43,6 +45,7 @@ TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates world tr
     comp.add<TransformComponent>(child, TransformComponent{0.f, 0.f, 1.f, 1.f, 0.f});
     comp.add<LocalTransform>(child, LocalTransform{3.5f, -2.f, 1.5f, 2.f, 0.25f});
     comp.add<ParentComponent>(child, ParentComponent{parent});
+    comp.add<ChildrenComponent>(parent, ChildrenComponent{ {child} });
 
     this->system.update(this->context);
 
@@ -98,6 +101,9 @@ TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates each chi
     comp.add<TransformComponent>(childB, TransformComponent{0.f, 0.f, 1.f, 1.f, 0.f});
     comp.add<LocalTransform>(childB, LocalTransform{-5.f, -8.f, 1.f, 1.f, 0.f});
     comp.add<ParentComponent>(childB, ParentComponent{ parentB });
+
+    comp.add<ChildrenComponent>(parentA, ChildrenComponent{ {childA} });
+    comp.add<ChildrenComponent>(parentB, ChildrenComponent{ {childB} });
 
     this->system.update(this->context);
 

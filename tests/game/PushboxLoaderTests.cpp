@@ -7,6 +7,7 @@
 #include "StubTextureLoader.h"
 
 #include "domain/components/ActiveComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/CircleColliderComponent.h"
 #include "domain/components/PushboxComponent.h"
 #include "domain/components/PushboxControllerComponent.h"
@@ -35,14 +36,15 @@ public:
         loader(std::make_unique<PushboxLoader>(this->parser, *this->factory))
     {
         auto& comp = this->world.components();
-        comp.registerComponent<TransformComponent>();
-        comp.registerComponent<ParentComponent>();
-        comp.registerComponent<LocalTransform>();
-        comp.registerComponent<RectangleColliderComponent>();
-        comp.registerComponent<CircleColliderComponent>();
-        comp.registerComponent<PushboxComponent>();
         comp.registerComponent<ActiveComponent>();
+        comp.registerComponent<ChildrenComponent>();
+        comp.registerComponent<CircleColliderComponent>();
+        comp.registerComponent<LocalTransform>();
+        comp.registerComponent<ParentComponent>();
+        comp.registerComponent<PushboxComponent>();
         comp.registerComponent<PushboxControllerComponent>();
+        comp.registerComponent<RectangleColliderComponent>();
+        comp.registerComponent<TransformComponent>();
     }
 
     World world;

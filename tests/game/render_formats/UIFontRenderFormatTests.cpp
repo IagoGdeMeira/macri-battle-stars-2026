@@ -3,13 +3,14 @@
 #include "StubFont.h"
 #include "StubRenderer.h"
 
+#include "domain/components/FontEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/components/UITransform.h"
-#include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
@@ -30,10 +31,10 @@ public:
     UIFontRenderFormatFixture() : format(this->renderer), context { this->world, this->bus }
     {
         auto& comp = this->world.components();
+        comp.registerComponent<FontEffectsComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<UITextComponent>();
         comp.registerComponent<UITransform>();
-        comp.registerComponent<VisualEffectsComponent>();
     }
 };
 
@@ -58,24 +59,24 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
     comp.add<UITextComponent>(entity, text);
     comp.add<RenderComponent>(entity, RenderComponent { 4, 1 });
 
-    VisualEffectsComponent fx;
-    fx.fontEffects.push_back([](DrawFontBatch& batch, DrawFontCommand& cmd) {
-        DrawFontCommand outline = cmd;
-        outline.color = Color {1, 2, 3, 4};
-        outline.dest.position.y += 2.f;
-        batch.add(outline);
+    FontEffectsComponent fx;
+    fx.effects.push_back([](void* q, void* c) {
+        auto& queue = *static_cast<RenderQueue*>(q);
+        auto& cmd = *static_cast<DrawFontCommand*>(c);
+        auto outline = std::make_unique<DrawFontCommand>(cmd);
+        outline->color = Color {1, 2, 3, 4};
+        outline->dest.position.y += 2.f;
+        queue.add(std::move(outline));
     });
-    comp.add<VisualEffectsComponent>(entity, fx);
+    comp.add<FontEffectsComponent>(entity, fx);
 
-    this->format.render(this->context);
+    RenderQueue queue;
+    this->format.render(this->context, queue);
+    queue.submit(this->renderer);
 
     REQUIRE(this->renderer.fontCalls.size() == 2);
 
-    const auto& effectCmd = this->renderer.fontCalls[0];
-    REQUIRE(effectCmd.color == Color { 1, 2, 3, 4 });
-    REQUIRE(effectCmd.dest.position.y == Catch::Approx(52.f));
-
-    const auto& baseCmd = this->renderer.fontCalls[1];
+    const auto& baseCmd = this->renderer.fontCalls[0];
     REQUIRE(baseCmd.font == font.get());
     REQUIRE(baseCmd.text == "Play");
     REQUIRE(baseCmd.dest.position.x == Catch::Approx(30.f));
@@ -85,4 +86,8 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
     REQUIRE(baseCmd.layer == 4);
     REQUIRE(baseCmd.zIndex == 1);
     REQUIRE(baseCmd.order == 0);
+
+    const auto& effectCmd = this->renderer.fontCalls[1];
+    REQUIRE(effectCmd.color == Color { 1, 2, 3, 4 });
+    REQUIRE(effectCmd.dest.position.y == Catch::Approx(52.f));
 }
