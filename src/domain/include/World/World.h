@@ -16,6 +16,8 @@ public:
     ComponentManager& components() { return this->componentManager; }
     const ComponentManager& components() const { return this->componentManager; }
 
+    void clear() { this->entityManager.clear(); this->componentManager.clear(); }    
+
 private:
     EntityManager entityManager;
     ComponentManager componentManager;

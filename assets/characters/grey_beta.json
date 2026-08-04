@@ -1,6 +1,6 @@
 {
-    "id": "reddie_beta",
-    "texture": "assets/sprites/reddie_beta.png",
+    "id": "grey_beta",
+    "texture": "assets/sprites/grey_beta.png",
     "spriteSize": { "width": 183, "height": 367 },
     "animations": "assets/animations/reddie_beta_animations.json",
     "stateMachine": "assets/fsm/reddie_beta_fsm.json",

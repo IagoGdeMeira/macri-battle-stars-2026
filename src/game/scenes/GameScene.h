@@ -49,12 +49,18 @@ public:
     };
 
     explicit GameScene(Config&& cfg);
+
     void init() override;
+    void update(float deltaTime) override;
     void render() override;
+
+    void onExit() override;
 
     Scene::UpdatePolicy getUpdatePolicy() const override { return Scene::UpdatePolicy::WhenTop; }
 
 private:
+    float sweepTimer = 0.f;
+
     EventBus& eventBus;
     SceneManager& sceneManager;
     Renderer& renderer;

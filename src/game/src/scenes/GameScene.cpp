@@ -133,10 +133,44 @@ void GameScene::init()
     });
 }
 
+void GameScene::update(float deltaTime)
+{
+    Scene::update(deltaTime);
+
+    this->sweepTimer += deltaTime;
+    if (this->sweepTimer >= 5.f)
+    {
+        this->resourceManager.sweep();
+        this->sweepTimer = 0.f;
+    }
+}
+
 void GameScene::render()
 {
     RenderContext ctx{ this->world(), this->eventBus };
     this->worldDrawer->draw(ctx);
+}
+
+void GameScene::onExit()
+{
+    this->inputContext.reset();
+    this->camera.reset();
+    this->characterLoader.reset();
+    this->worldDrawer.reset();
+    this->entityFactory.reset();
+    this->charDefLoader.reset();
+    this->animLoader.reset();
+    this->fsmLoader.reset();
+    this->stateMachineRegistry.reset();
+
+    this->hitboxLoader.reset();
+    this->hurtboxLoader.reset();
+    this->pushboxLoader.reset();
+
+    this->mapRoot = Entity{0};
+    
+    this->world().clear();
+    this->resourceManager.sweep();
 }
 
 void GameScene::loadInputContext(const std::string& path)

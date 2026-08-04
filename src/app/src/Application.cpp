@@ -88,7 +88,7 @@ void Application::setupInitialScene()
     this->engine->setSceneManager(*this->sceneManager);
 
     GameScene::Config cfg;
-    cfg.playerSlots = {{0, GameConstants::DEFAULT_CHARACTER_DEF_PATH}, {1, GameConstants::DEFAULT_CHARACTER_DEF_PATH}};
+    cfg.playerSlots = {{0, GameConstants::DEFAULT_CHARACTER_DEF_PATH}, {1, "assets/characters/grey_beta.json"}};
     cfg.mapPath             = GameConstants::DEFAULT_MAP_PATH;
     cfg.inputBindingsPath   = GameConstants::DEFAULT_INPUT_BINDINGS_PATH;
     cfg.combosPath          = GameConstants::DEFAULT_COMBOS_PATH;
