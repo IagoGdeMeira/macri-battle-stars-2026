@@ -17,7 +17,6 @@ target_sources(engine
 
 target_include_directories(engine
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/draw_batches
         ${CMAKE_CURRENT_SOURCE_DIR}/draw_commands
         ${CMAKE_CURRENT_SOURCE_DIR}/events
         ${CMAKE_CURRENT_SOURCE_DIR}/include

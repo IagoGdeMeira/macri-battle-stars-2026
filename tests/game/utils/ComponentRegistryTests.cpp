@@ -19,9 +19,11 @@ TEST_CASE("ComponentRegistry registers every game component", "[unit][component_
     REQUIRE(comp.storage<BoxModel>() != nullptr);
     REQUIRE(comp.storage<ChildrenComponent>() != nullptr);
     REQUIRE(comp.storage<CircleColliderComponent>() != nullptr);
+    REQUIRE(comp.storage<CircleEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<CircleShapeComponent>() != nullptr);
     REQUIRE(comp.storage<FlexContainer>() != nullptr);
     REQUIRE(comp.storage<FlexItem>() != nullptr);
+    REQUIRE(comp.storage<FontEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<GravityComponent>() != nullptr);
     REQUIRE(comp.storage<GroundedComponent>() != nullptr);
     REQUIRE(comp.storage<HealthComponent>() != nullptr);
@@ -47,12 +49,14 @@ TEST_CASE("ComponentRegistry registers every game component", "[unit][component_
     REQUIRE(comp.storage<PushboxControllerComponent>() != nullptr);
     REQUIRE(comp.storage<PushboxControllerMapComponent>() != nullptr);
     REQUIRE(comp.storage<RectangleColliderComponent>() != nullptr);
+    REQUIRE(comp.storage<RectangleEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<RectangleShapeComponent>() != nullptr);
     REQUIRE(comp.storage<RenderComponent>() != nullptr);
     REQUIRE(comp.storage<ShadowComponent>() != nullptr);
     REQUIRE(comp.storage<SpriteComponent>() != nullptr);
     REQUIRE(comp.storage<StateComponent>() != nullptr);
     REQUIRE(comp.storage<StateMachineComponent>() != nullptr);
+    REQUIRE(comp.storage<TextureEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<TransformComponent>() != nullptr);
     REQUIRE(comp.storage<UIActionComponent>() != nullptr);
     REQUIRE(comp.storage<UIFocusable>() != nullptr);
@@ -60,7 +64,6 @@ TEST_CASE("ComponentRegistry registers every game component", "[unit][component_
     REQUIRE(comp.storage<UITextComponent>() != nullptr);
     REQUIRE(comp.storage<UITransform>() != nullptr);
     REQUIRE(comp.storage<VelocityComponent>() != nullptr);
-    REQUIRE(comp.storage<VisualEffectsComponent>() != nullptr);
 }
 
 TEST_CASE("ComponentRegistry can be invoked more than once safely", "[unit][component_registry]")

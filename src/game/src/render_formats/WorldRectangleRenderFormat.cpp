@@ -4,16 +4,15 @@
 
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/TransformComponent.h"
+#include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
-#include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
-void WorldRectangleRenderFormat::render(RenderContext& ctx)
+void WorldRectangleRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
 {
-    this->batch.clear();
     auto& comp = ctx.world.components();
     auto view = View<RectangleShapeComponent, TransformComponent>(comp);
     size_t order = 0;
@@ -27,20 +26,15 @@ void WorldRectangleRenderFormat::render(RenderContext& ctx)
         if (width <= 0.f || height <= 0.f) continue;
 
         DrawRectangleCommand cmd = this->buildRectangleCommand(entity, ctx.world, order++);
-        if (comp.has<VisualEffectsComponent>(entity))
-        {
-            const auto& fx = comp.get<VisualEffectsComponent>(entity);
-            for (auto& effect : fx.rectangleEffects) effect(this->batch, cmd);
-        }
-        this->batch.add(cmd);
-    }
-}
 
-std::vector<const DrawCommand*> WorldRectangleRenderFormat::collectCommands() const
-{
-    std::vector<const DrawCommand*> cmds;
-    for (const auto& cmd : this->batch.getCommands()) cmds.push_back(&cmd);
-    return cmds;
+        if (comp.has<RectangleEffectsComponent>(entity))
+        {
+            const auto& fx = comp.get<RectangleEffectsComponent>(entity);
+            for (auto& effect : fx.effects) effect(&queue, &cmd);
+        }
+
+        queue.emplace<DrawRectangleCommand>(std::move(cmd));
+    }
 }
 
 DrawRectangleCommand WorldRectangleRenderFormat::buildRectangleCommand(Entity& entity, World& world, size_t order) const

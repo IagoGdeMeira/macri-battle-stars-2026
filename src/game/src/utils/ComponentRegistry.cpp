@@ -13,9 +13,11 @@ void ComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<BoxModel>();
     comp.registerComponent<ChildrenComponent>();
     comp.registerComponent<CircleColliderComponent>();
+    comp.registerComponent<CircleEffectsComponent>();
     comp.registerComponent<CircleShapeComponent>();
     comp.registerComponent<FlexContainer>();
     comp.registerComponent<FlexItem>();
+    comp.registerComponent<FontEffectsComponent>();
     comp.registerComponent<GravityComponent>();
     comp.registerComponent<GroundedComponent>();
     comp.registerComponent<HealthComponent>();
@@ -41,12 +43,14 @@ void ComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<PushboxControllerComponent>();
     comp.registerComponent<PushboxControllerMapComponent>();
     comp.registerComponent<RectangleColliderComponent>();
+    comp.registerComponent<RectangleEffectsComponent>();
     comp.registerComponent<RectangleShapeComponent>();
     comp.registerComponent<RenderComponent>();
     comp.registerComponent<ShadowComponent>();
     comp.registerComponent<SpriteComponent>();
     comp.registerComponent<StateComponent>();
     comp.registerComponent<StateMachineComponent>();
+    comp.registerComponent<TextureEffectsComponent>();
     comp.registerComponent<TransformComponent>();
     comp.registerComponent<UIActionComponent>();
     comp.registerComponent<UIFocusable>();
@@ -54,5 +58,4 @@ void ComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<UITextComponent>();
     comp.registerComponent<UITransform>();
     comp.registerComponent<VelocityComponent>();
-    comp.registerComponent<VisualEffectsComponent>();
 }

@@ -22,12 +22,9 @@ public:
 
     void submit(Renderer& renderer)
     {
-        std::stable_sort(
-            this->commands.begin(),
-            this->commands.end(),
+        std::stable_sort(this->commands.begin(), this->commands.end(),
             [](const std::unique_ptr<DrawCommand>& a, const std::unique_ptr<DrawCommand>& b)
-            { return a->getSortKey() < b->getSortKey(); }
-        );
+            { return a->getSortKey() < b->getSortKey(); });
 
         for (const auto& cmd : this->commands) renderer.draw(*cmd);
         this->clear();

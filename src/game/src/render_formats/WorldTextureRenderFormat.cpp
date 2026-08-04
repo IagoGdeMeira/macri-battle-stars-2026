@@ -7,14 +7,13 @@
 #include "domain/components/RenderComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/VisualEffectsComponent.h"
+#include "domain/components/TextureEffectsComponent.h"
 #include "domain/resources/Texture/Texture.h"
 
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
-void WorldTextureRenderFormat::render(RenderContext& ctx)
+void WorldTextureRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
 {
-    this->batch.clear();
     auto& comp = ctx.world.components();
     auto view = View<SpriteComponent, TransformComponent, RenderComponent>(comp);
 
@@ -23,24 +22,18 @@ void WorldTextureRenderFormat::render(RenderContext& ctx)
     {
         if (!sprite.cachedTexture)
         { sprite.cachedTexture = this->resourceManager.load<Texture>(this->textureLoader, sprite.texturePath); }
-        
+
         if (!sprite.cachedTexture) continue;
-
         DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++, sprite.cachedTexture);
-        if (comp.has<VisualEffectsComponent>(entity))
-        {
-            const auto& fx = comp.get<VisualEffectsComponent>(entity);
-            for (auto& effect : fx.textureEffects) effect(this->batch, cmd);
-        }
-        this->batch.add(cmd);
-    }
-}
 
-std::vector<const DrawCommand*> WorldTextureRenderFormat::collectCommands() const
-{
-    std::vector<const DrawCommand*> cmds;
-    for (const auto& cmd : this->batch.getCommands()) cmds.push_back(&cmd);
-    return cmds;
+        if (comp.has<TextureEffectsComponent>(entity))
+        {
+            const auto& fx = comp.get<TextureEffectsComponent>(entity);
+            for (auto& effect : fx.effects) effect(&queue, &cmd);
+        }
+
+        queue.emplace<DrawTextureCommand>(std::move(cmd));
+    }
 }
 
 DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
@@ -62,7 +55,7 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
     cmd.dest.position = screenPos;
     cmd.rotation = transform.rotation;
     WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
-    
+
     if (comp.has<OrientationComponent>(entity))
     {
         bool symmetric = comp.has<AnimationControllerComponent>(entity)

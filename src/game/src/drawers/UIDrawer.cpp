@@ -24,19 +24,21 @@ UIDrawer::UIDrawer(EventBus& bus, Renderer& renderer, GameSettings& settings) :
 void UIDrawer::draw(RenderContext& ctx)
 {
     this->renderer.setViewport(this->uiViewport);
-    for (auto& format : this->formats) format->render(ctx);
+
+    RenderQueue queue;
+    for (auto& format : this->formats) format->render(ctx, queue);
+    queue.submit(this->renderer);
 }
 
 void UIDrawer::recalculateViewport()
 {
     const Dimension2D& winSize = this->settings.screen.size;
-    const float scale = std::min(winSize.width / this->vSize.width, winSize.height / this->vSize.height);
 
+    const float scale = std::min(winSize.width / this->vSize.width, winSize.height / this->vSize.height);
     const Dimension2D& viewSize = { this->vSize.width * scale, this->vSize.height * scale };
     const Position offset = {(winSize.width - viewSize.width) * 0.5f, (winSize.height - viewSize.height) * 0.5f};
 
-    this->uiViewport =
-    {
+    this->uiViewport = {
         static_cast<int>(offset.x), static_cast<int>(offset.y),
         static_cast<int>(viewSize.width), static_cast<int>(viewSize.height)
     };

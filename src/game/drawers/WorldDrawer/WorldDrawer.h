@@ -8,6 +8,7 @@
 #include "engine/include/Drawer/Drawer.h"
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/Renderer/Renderer.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 #include "engine/value_objects/Camera2D/Camera2D.h"
 #include "engine/value_objects/GameConstants/GameConstants.h"
 #include "engine/value_objects/GameSettings/GameSettings.h"

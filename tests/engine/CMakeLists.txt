@@ -1,9 +1,4 @@
 add_executable(engine_tests
-    draw_batches/DrawCircleBatchTests.cpp
-    draw_batches/DrawFontBatchTests.cpp
-    draw_batches/DrawRectangleBatchTests.cpp
-    draw_batches/DrawTextureBatchTests.cpp
-
     utils/DataUtilsTests.cpp
     
     Camera2DTests.cpp

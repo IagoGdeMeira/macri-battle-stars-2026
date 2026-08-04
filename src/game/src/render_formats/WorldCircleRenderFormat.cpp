@@ -3,17 +3,16 @@
 #include "WorldRenderUtils/WorldRenderUtils.h"
 
 #include "domain/components/ActiveComponent.h"
+#include "domain/components/CircleEffectsComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/RenderComponent.h"
-#include "domain/components/VisualEffectsComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
-void WorldCircleRenderFormat::render(RenderContext& ctx)
+void WorldCircleRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
 {
-    this->batch.clear();
     auto& comp = ctx.world.components();
     auto view = View<CircleShapeComponent, TransformComponent>(comp);
     size_t order = 0;
@@ -24,20 +23,15 @@ void WorldCircleRenderFormat::render(RenderContext& ctx)
         if (shape.circle.radius <= 0.f) continue;
 
         DrawCircleCommand cmd = this->buildCircleCommand(entity, ctx.world, order++);
-        if (comp.has<VisualEffectsComponent>(entity))
-        {
-            const auto& fx = comp.get<VisualEffectsComponent>(entity);
-            for (auto& effect : fx.circleEffects) effect(this->batch, cmd);
-        }
-        this->batch.add(cmd);
-    }
-}
 
-std::vector<const DrawCommand*> WorldCircleRenderFormat::collectCommands() const
-{
-    std::vector<const DrawCommand*> cmds;
-    for (const auto& cmd : this->batch.getCommands()) cmds.push_back(&cmd);
-    return cmds;
+        if (comp.has<CircleEffectsComponent>(entity))
+        {
+            const auto& fx = comp.get<CircleEffectsComponent>(entity);
+            for (auto& effect : fx.effects) effect(&queue, &cmd);
+        }
+
+        queue.emplace<DrawCircleCommand>(std::move(cmd));
+    }
 }
 
 DrawCircleCommand WorldCircleRenderFormat::buildCircleCommand(Entity& entity, World& world, size_t order) const

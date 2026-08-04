@@ -6,7 +6,6 @@
 #include "domain/include/Entity/Entity.h"
 #include "domain/include/World/World.h"
 
-#include "engine/draw_batches/DrawTextureBatch.h"
 #include "engine/draw_commands/DrawTextureCommand.h"
 #include "engine/include/Renderer/Renderer.h"
 #include "engine/include/ResourceManager/ResourceManager.h"
@@ -30,15 +29,13 @@ public:
         resourceManager(cfg.resourceManager),
         textureLoader(cfg.textureLoader) {}
 
-    void render(RenderContext& ctx) override;
-    std::vector<const DrawCommand*> collectCommands() const override;
+    void render(RenderContext& ctx, RenderQueue& queue) override;
 
 private:
     Renderer& renderer;
     Camera2D& camera;
     ResourceManager& resourceManager;
     TextureLoader& textureLoader;
-    DrawTextureBatch batch;
 
     DrawTextureCommand buildTextureCommand(Entity& entity, World& world, size_t order, std::shared_ptr<Texture> texture) const;
 };

@@ -7,7 +7,6 @@ class ComponentRegistry
 {
 public:
     ComponentRegistry() = delete;
-
     static void registerAll(ComponentManager& comp);
 };
 
