@@ -2,24 +2,18 @@
 
 #include "StubRenderer.h"
 
-#include "engine/draw_batches/DrawFontBatch.h"
 #include "engine/include/Renderer/Renderer.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
 
-class TestDrawFontBatch : public DrawFontBatch
-{
-public:
-    void submit(Renderer& renderer) override { DrawFontBatch::submit(renderer); }
-};
-
 class ShadowFontEffectFixture
 {
 public:
     StubRenderer renderer;
-    TestDrawFontBatch batch;
+    RenderQueue queue;
 };
 
 TEST_CASE_METHOD(ShadowFontEffectFixture, "ShadowFontEffect adds offset font command",
@@ -35,8 +29,8 @@ TEST_CASE_METHOD(ShadowFontEffectFixture, "ShadowFontEffect adds offset font com
     base.color = Color::WHITE();
 
     ShadowFontEffect effect(config);
-    effect.apply(this->batch, base);
-    this->batch.submit(this->renderer);
+    effect.apply(this->queue, base);
+    this->queue.submit(this->renderer);
 
     REQUIRE(this->renderer.fontCalls.size() == 1);
     REQUIRE(this->renderer.fontCalls[0].color == config.color);

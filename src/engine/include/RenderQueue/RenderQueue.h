@@ -20,6 +20,8 @@ public:
         return *ptr;
     }
 
+    void add(std::unique_ptr<DrawCommand> cmd) { this->commands.push_back(std::move(cmd)); }
+
     void submit(Renderer& renderer)
     {
         std::stable_sort(this->commands.begin(), this->commands.end(),

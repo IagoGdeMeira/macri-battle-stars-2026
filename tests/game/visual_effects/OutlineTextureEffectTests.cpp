@@ -2,8 +2,8 @@
 
 #include "StubRenderer.h"
 
-#include "engine/draw_batches/DrawTextureBatch.h"
 #include "engine/include/Renderer/Renderer.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
@@ -12,7 +12,7 @@ class OutlineTextureEffectFixture
 {
 public:
     StubRenderer renderer;
-    DrawTextureBatch batch;
+    RenderQueue queue;
 };
 
 TEST_CASE_METHOD(OutlineTextureEffectFixture, "OutlineTextureEffect adds 8 outline texture commands",
@@ -28,8 +28,8 @@ TEST_CASE_METHOD(OutlineTextureEffectFixture, "OutlineTextureEffect adds 8 outli
     base.tint = Color::WHITE();
 
     OutlineTextureEffect effect(config);
-    effect.apply(this->batch, base);
-    this->batch.submit(this->renderer);
+    effect.apply(this->queue, base);
+    this->queue.submit(this->renderer);
 
     REQUIRE(this->renderer.textureCalls.size() == 8);
 

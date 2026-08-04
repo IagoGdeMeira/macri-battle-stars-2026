@@ -5,21 +5,21 @@
 
 #include "domain/components/ShadowComponent.h"
 
-#include "engine/draw_batches/DrawTextureBatch.h"
+#include "engine/draw_commands/DrawTextureCommand.h"
 
-class ShadowTextureEffect : public IVisualEffect<DrawTextureBatch, DrawTextureCommand>
+class ShadowTextureEffect : public IVisualEffect<DrawTextureCommand>
 {
 public:
     explicit ShadowTextureEffect(const ShadowComponent& config) : config(config) {}
 
-    void apply(DrawTextureBatch& batch, const DrawTextureCommand& base) const override
+    void apply(RenderQueue& queue, const DrawTextureCommand& base) const override
     {
         if (!this->config.enabled) return;
-        DrawTextureCommand cmd = base;
-        cmd.tint = this->config.color;
-        cmd.dest.position.x += this->config.offset.x;
-        cmd.dest.position.y += this->config.offset.y;
-        batch.add(cmd);
+        auto cmd = std::make_unique<DrawTextureCommand>(base);
+        cmd->tint = this->config.color;
+        cmd->dest.position.x += this->config.offset.x;
+        cmd->dest.position.y += this->config.offset.y;
+        queue.add(std::move(cmd));
     }
 
 private:

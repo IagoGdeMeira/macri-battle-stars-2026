@@ -2,23 +2,17 @@
 
 #include "StubRenderer.h"
 
-#include "engine/draw_batches/DrawFontBatch.h"
 #include "engine/include/Renderer/Renderer.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
-
-class TestDrawFontBatch : public DrawFontBatch
-{
-public:
-    void submit(Renderer& renderer) override { DrawFontBatch::submit(renderer); }
-};
 
 class OutlineFontEffectFixture
 {
 public:
     StubRenderer renderer;
-    TestDrawFontBatch batch;
+    RenderQueue queue;
 };
 
 TEST_CASE_METHOD(OutlineFontEffectFixture, "OutlineFontEffect adds 8 outline font commands",
@@ -34,8 +28,8 @@ TEST_CASE_METHOD(OutlineFontEffectFixture, "OutlineFontEffect adds 8 outline fon
     base.color = Color::WHITE();
 
     OutlineFontEffect effect(config);
-    effect.apply(this->batch, base);
-    this->batch.submit(this->renderer);
+    effect.apply(this->queue, base);
+    this->queue.submit(this->renderer);
 
     REQUIRE(this->renderer.fontCalls.size() == 8);
 

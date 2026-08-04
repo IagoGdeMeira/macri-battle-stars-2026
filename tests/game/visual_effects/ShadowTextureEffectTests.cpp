@@ -2,8 +2,8 @@
 
 #include "StubRenderer.h"
 
-#include "engine/draw_batches/DrawTextureBatch.h"
 #include "engine/include/Renderer/Renderer.h"
+#include "engine/include/RenderQueue/RenderQueue.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -13,7 +13,7 @@ class ShadowTextureEffectFixture
 {
 public:
     StubRenderer renderer;
-    DrawTextureBatch batch;
+    RenderQueue queue;
 };
 
 TEST_CASE_METHOD(ShadowTextureEffectFixture, "ShadowTextureEffect adds offset texture command",
@@ -29,8 +29,8 @@ TEST_CASE_METHOD(ShadowTextureEffectFixture, "ShadowTextureEffect adds offset te
     base.tint = Color::WHITE();
 
     ShadowTextureEffect effect(config);
-    effect.apply(this->batch, base);
-    this->batch.submit(this->renderer);
+    effect.apply(this->queue, base);
+    this->queue.submit(this->renderer);
 
     REQUIRE(this->renderer.textureCalls.size() == 1);
     REQUIRE(this->renderer.textureCalls[0].tint == config.color);
