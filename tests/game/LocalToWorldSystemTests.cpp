@@ -2,6 +2,7 @@
 
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/LocalTransform.h"
+#include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
@@ -20,6 +21,7 @@ public:
         auto& comp = this->world.components();
         comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<LocalTransform>();
+        comp.registerComponent<OrientationComponent>();
         comp.registerComponent<ParentComponent>();
         comp.registerComponent<TransformComponent>();
     }
@@ -33,8 +35,8 @@ protected:
 };
 
 TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates world transform from parent and local transform",
-    "[unit][local_to_world_system]"
-) {
+    "[unit][local_to_world_system]")
+{
     auto& comp = this->world.components();
     auto& entities = this->world.entities();
 
@@ -58,8 +60,8 @@ TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates world tr
 }
 
 TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem keeps child unchanged when parent has no TransformComponent",
-    "[unit][local_to_world_system]"
-) {
+    "[unit][local_to_world_system]")
+{
     auto& comp = this->world.components();
     auto& entities = this->world.entities();
 
@@ -81,8 +83,8 @@ TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem keeps child unch
 }
 
 TEST_CASE_METHOD(LocalToWorldSystemFixture, "LocalToWorldSystem updates each child with its respective parent",
-    "[unit][local_to_world_system]"
-) {
+    "[unit][local_to_world_system]")
+{
     auto& comp = this->world.components();
     auto& entities = this->world.entities();
 

@@ -10,6 +10,7 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
 
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 class PushboxCollisionControllerFixture
@@ -104,7 +105,7 @@ TEST_CASE_METHOD(PushboxCollisionControllerFixture, "remove deactivates current 
     REQUIRE(comp.get<ActiveComponent>(child).active == false);
 }
 
-TEST_CASE_METHOD(PushboxCollisionControllerFixture, "onOrientationChanged inverts LocalTransform.x for active frame pushboxes",
+TEST_CASE_METHOD(PushboxCollisionControllerFixture, "onOrientationChanged inverts pushbox position for active frame",
     "[unit][pushbox_collision_controller]")
 {
     auto& comp = this->world.components();
@@ -132,8 +133,9 @@ TEST_CASE_METHOD(PushboxCollisionControllerFixture, "onOrientationChanged invert
     ICollisionController::ControllerParams params{parent, this->world};
     this->controller.onOrientationChanged(params);
 
-    const auto& local = comp.get<LocalTransform>(child);
-    REQUIRE(local.position.x == -30.f);
+    const auto& childT = comp.get<TransformComponent>(child);
+    REQUIRE(childT.position.x == Catch::Approx(70.f));
+    REQUIRE(childT.position.y == Catch::Approx(210.f));
 }
 
 TEST_CASE_METHOD(PushboxCollisionControllerFixture, "onOrientationChanged does nothing without controller component",
@@ -196,6 +198,11 @@ TEST_CASE_METHOD(PushboxCollisionControllerFixture, "onOrientationChanged only a
     ICollisionController::ControllerParams params{parent, this->world};
     this->controller.onOrientationChanged(params);
 
-    REQUIRE(comp.get<LocalTransform>(child1).position.x == 10.f);
-    REQUIRE(comp.get<LocalTransform>(child2).position.x == 20.f);
+    const auto& child1T = comp.get<TransformComponent>(child1);
+    REQUIRE(child1T.position.x == Catch::Approx(10.f));
+    REQUIRE(child1T.position.y == Catch::Approx(0.f));
+
+    const auto& child2T = comp.get<TransformComponent>(child2);
+    REQUIRE(child2T.position.x == Catch::Approx(0.f));
+    REQUIRE(child2T.position.y == Catch::Approx(0.f));
 }

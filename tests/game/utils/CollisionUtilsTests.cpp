@@ -1,6 +1,7 @@
 #include "game/utils/CollisionUtils/CollisionUtils.h"
 
 #include "domain/components/LocalTransform.h"
+#include "domain/components/OrientationComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
 
@@ -16,14 +17,14 @@ public:
         auto& comp = this->world.components();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<LocalTransform>();
+        comp.registerComponent<OrientationComponent>();
     }
 
 protected:
     World world;
 };
 
-TEST_CASE_METHOD(CollisionUtilsFixture,
-    "CollisionUtils::updateWorldTransform applies simple translation without rotation or scale",
+TEST_CASE_METHOD(CollisionUtilsFixture, "CollisionUtils::updateWorldTransform applies simple translation without rotation or scale",
     "[unit][collision_utils]")
 {
     auto& comp = this->world.components();
@@ -185,8 +186,7 @@ TEST_CASE_METHOD(CollisionUtilsFixture, "CollisionUtils::updateWorldTransform in
     REQUIRE(childT.scale.y == Catch::Approx(3.0f));
 }
 
-TEST_CASE_METHOD(CollisionUtilsFixture,
-    "CollisionUtils::updateWorldTransform returns early when child lacks LocalTransform",
+TEST_CASE_METHOD(CollisionUtilsFixture, "CollisionUtils::updateWorldTransform returns early when child lacks LocalTransform",
     "[unit][collision_utils]")
 {
     auto& comp = this->world.components();
@@ -206,8 +206,7 @@ TEST_CASE_METHOD(CollisionUtilsFixture,
     REQUIRE(childT.position.y == Catch::Approx(88.f));
 }
 
-TEST_CASE_METHOD(CollisionUtilsFixture,
-    "CollisionUtils::updateWorldTransform returns early when parent lacks TransformComponent",
+TEST_CASE_METHOD(CollisionUtilsFixture, "CollisionUtils::updateWorldTransform returns early when parent lacks TransformComponent",
     "[unit][collision_utils]")
 {
     auto& comp = this->world.components();
