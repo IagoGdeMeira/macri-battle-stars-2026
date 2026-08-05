@@ -11,7 +11,6 @@
 #include "domain/components/PushboxControllerMapComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
-#include "domain/utils/Logger/Logger.h"
 
 bool PushboxCollisionController::hasMapComponent(const ControllerParams& params) const
 { return params.world.components().has<PushboxControllerMapComponent>(params.entity); }
@@ -34,7 +33,7 @@ void PushboxCollisionController::remove(const ControllerParams& params)
 {
     auto& comp = params.world.components();
     if (!comp.has<PushboxControllerComponent>(params.entity)) return;
-    
+
     auto& controller = comp.get<PushboxControllerComponent>(params.entity);
     this->deactivateCurrentFrame(controller, params.world);
     comp.remove<PushboxControllerComponent>(params.entity);
@@ -49,17 +48,9 @@ void PushboxCollisionController::onOrientationChanged(const ControllerParams& pa
     auto& controller = comp.get<PushboxControllerComponent>(params.entity);
     if (controller.frames.empty() || !controller.initialized) return;
 
-    Orientation orient = comp.get<OrientationComponent>(params.entity).direction;
-    float sign = (orient == Orientation::Right) ? 1.0f : -1.0f;
-
-    LOG_DEBUG("PushboxCollisionController::onOrientationChanged: entity {} orientation={} sign={}",
-        params.entity.id, (orient == Orientation::Right ? "Right" : "Left"), sign);
-
     for (Entity child : controller.frames[controller.currentFrame].pushboxes)
     {
         if (!comp.has<LocalTransform>(child) || !comp.has<PushboxComponent>(child)) continue;
-        auto& local = comp.get<LocalTransform>(child);
-        local.position.x *= sign;
         CollisionUtils::updateWorldTransform(params.world, child, params.entity);
     }
 }
@@ -77,8 +68,8 @@ void PushboxCollisionController::deactivateCurrentFrame(PushboxControllerCompone
 {
     if (controller.frames.empty() || !controller.initialized) return;
     auto& comp = world.components();
-    for (Entity e : controller.frames[controller.currentFrame].pushboxes)
-    { if (comp.has<ActiveComponent>(e)) comp.get<ActiveComponent>(e).active = false; }
+    for (Entity e : controller.frames[controller.currentFrame].pushboxes) if (comp.has<ActiveComponent>(e))
+    { comp.get<ActiveComponent>(e).active = false; }
 }
 
 void PushboxCollisionController::applyController(Entity entity, const PushboxControllerComponent& newController, World& world)

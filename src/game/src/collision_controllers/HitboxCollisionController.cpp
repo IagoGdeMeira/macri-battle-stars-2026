@@ -11,7 +11,6 @@
 #include "domain/components/ParentComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
-#include "domain/utils/Logger/Logger.h"
 
 bool HitboxCollisionController::hasMapComponent(const ControllerParams& params) const
 { return params.world.components().has<HitboxControllerMapComponent>(params.entity); }
@@ -49,17 +48,9 @@ void HitboxCollisionController::onOrientationChanged(const ControllerParams& par
     auto& controller = comp.get<HitboxControllerComponent>(params.entity);
     if (controller.frames.empty() || !controller.initialized) return;
 
-    Orientation orient = comp.get<OrientationComponent>(params.entity).direction;
-    float sign = (orient == Orientation::Right) ? 1.0f : -1.0f;
-
-    LOG_DEBUG("HitboxCollisionController::onOrientationChanged: entity {} orientation={} sign={}",
-        params.entity.id, (orient == Orientation::Right ? "Right" : "Left"), sign);
-
     for (Entity child : controller.frames[controller.currentFrame].hitboxes)
     {
         if (!comp.has<LocalTransform>(child) || !comp.has<HitboxComponent>(child)) continue;
-        auto& local = comp.get<LocalTransform>(child);
-        local.position.x *= sign;
         CollisionUtils::updateWorldTransform(params.world, child, params.entity);
     }
 }

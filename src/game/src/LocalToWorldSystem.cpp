@@ -2,6 +2,7 @@
 
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/LocalTransform.h"
+#include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
@@ -27,18 +28,28 @@ void LocalToWorldSystem::updateTransformRecursive(UpdateContext& ctx, Entity par
     auto& childrenComp = comp.get<ChildrenComponent>(parent);
     if (childrenComp.children.empty()) return;
 
+    float orientSign = 1.f;
+    if (comp.has<OrientationComponent>(parent))
+    {
+        Orientation orient = comp.get<OrientationComponent>(parent).direction;
+        orientSign = (orient == Orientation::Right) ? 1.f : -1.f;
+    }
+
     for (Entity child : childrenComp.children)
     {
         if (!comp.has<TransformComponent>(child) || !comp.has<LocalTransform>(child)) continue;
-        
+
         auto& childTrans = comp.get<TransformComponent>(child);
         auto& childLocal = comp.get<LocalTransform>(child);
-        
+
         float rad = parentTrans.rotation * (3.14159265f / 180.f);
         float cosA = std::cos(rad), sinA = std::sin(rad);
 
-        float rotatedX = childLocal.position.x * cosA - childLocal.position.y * sinA;
-        float rotatedY = childLocal.position.x * sinA + childLocal.position.y * cosA;
+        float localX = childLocal.position.x * orientSign;
+        float localY = childLocal.position.y;
+
+        float rotatedX = localX * cosA - localY * sinA;
+        float rotatedY = localX * sinA + localY * cosA;
 
         childTrans.position.x = parentTrans.position.x + rotatedX * parentTrans.scale.x;
         childTrans.position.y = parentTrans.position.y + rotatedY * parentTrans.scale.y;
