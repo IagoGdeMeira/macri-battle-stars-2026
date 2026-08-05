@@ -28,7 +28,11 @@ CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
     auto playerBounds = this->computePlayerBounds(ctx);
-    if (playerBounds.left > playerBounds.right || playerBounds.top > playerBounds.bottom) return;
+    if (playerBounds.left > playerBounds.right || playerBounds.top > playerBounds.bottom)
+    {
+        LOG_DEBUG("CameraControllerSystem: no valid player bounds, skipping update");
+        return;
+    }
 
     float boxWidth      = std::max(playerBounds.right - playerBounds.left, 1.f);
     float boxHeight     = std::max(playerBounds.bottom - playerBounds.top, 1.f);
@@ -39,6 +43,10 @@ void CameraControllerSystem::update(UpdateContext& ctx)
         (playerBounds.left + playerBounds.right) * 0.5f,
         (playerBounds.top + playerBounds.bottom) * 0.5f + this->verticalOffset
     };
+
+    LOG_DEBUG("CameraControllerSystem: bounds l={:.1f} r={:.1f} t={:.1f} b={:.1f} center=({:.1f}, {:.1f}) targetZoom={:.3f} finalZoom={:.3f}",
+        playerBounds.left, playerBounds.right, playerBounds.top, playerBounds.bottom,
+        center.x, center.y, targetZoom, finalZoom);
 
     Position targetPos = this->computeClampedCameraPosition(center, finalZoom);
 
@@ -57,6 +65,8 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     {
         this->camera.setPosition(newPos.x, newPos.y);
         this->camera.setZoom(newZoom);
+        LOG_DEBUG("CameraControllerSystem: updating camera to pos=({:.1f}, {:.1f}) zoom={:.3f}",
+            newPos.x, newPos.y, newZoom);
     }
 }
 
@@ -81,18 +91,30 @@ AABB CameraControllerSystem::computePlayerBounds(UpdateContext& ctx)
             const auto& sprite = comp.get<SpriteComponent>(entity);
             halfSize = {sprite.size.width * 0.5f, sprite.size.height * 0.5f};
         }
-        playerBounds.left   = std::min(playerBounds.left, pos.x - halfSize.width);
-        playerBounds.top    = std::min(playerBounds.top, pos.y - halfSize.height);
-        playerBounds.right  = std::max(playerBounds.right, pos.x + halfSize.width);
-        playerBounds.bottom = std::max(playerBounds.bottom, pos.y + halfSize.height);
+
+        float left   = pos.x - halfSize.width;
+        float right  = pos.x + halfSize.width;
+        float top    = pos.y - halfSize.height;
+        float bottom = pos.y + halfSize.height;
+
+        LOG_DEBUG("CameraControllerSystem: player entity {} pos=({:.1f}, {:.1f}) halfSize=({:.1f}, {:.1f}) l={:.1f} r={:.1f} t={:.1f} b={:.1f}",
+            entity.id, pos.x, pos.y, halfSize.width, halfSize.height, left, right, top, bottom);
+
+        playerBounds.left   = std::min(playerBounds.left, left);
+        playerBounds.top    = std::min(playerBounds.top, top);
+        playerBounds.right  = std::max(playerBounds.right, right);
+        playerBounds.bottom = std::max(playerBounds.bottom, bottom);
     }
+
+    LOG_DEBUG("CameraControllerSystem: raw bounds (before padding) l={:.1f} r={:.1f} t={:.1f} b={:.1f}",
+        playerBounds.left, playerBounds.right, playerBounds.top, playerBounds.bottom);
 
     playerBounds.left   -= this->padding;
     playerBounds.top    -= this->padding;
     playerBounds.right  += this->padding;
     playerBounds.bottom += this->padding;
 
-    LOG_DEBUG("CameraControllerSystem: bounds left={}, right={}, top={}, bottom={}",
+    LOG_DEBUG("CameraControllerSystem: final bounds (after padding) l={:.1f} r={:.1f} t={:.1f} b={:.1f}",
         playerBounds.left, playerBounds.right, playerBounds.top, playerBounds.bottom);
 
     return playerBounds;
