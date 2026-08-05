@@ -44,7 +44,7 @@ public:
             if (comp.has<TextureEffectsComponent>(entity))
             {
                 const auto& fx = comp.get<TextureEffectsComponent>(entity);
-                for (auto& effect : fx.effects) effect(&queue, &cmd);
+                for (auto& effect : fx.effects) if (effect) effect(&queue, &cmd);
             }
         }
     }

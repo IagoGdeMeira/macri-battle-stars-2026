@@ -14,9 +14,10 @@
 void WorldRectangleRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
 {
     auto& comp = ctx.world.components();
+    
     auto view = View<RectangleShapeComponent, TransformComponent>(comp);
-    size_t order = 0;
 
+    size_t order = 0;
     for (auto [entity, shape, transform] : view)
     {
         if (comp.has<ActiveComponent>(entity) && !comp.get<ActiveComponent>(entity).active) continue;
@@ -30,7 +31,7 @@ void WorldRectangleRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
         if (comp.has<RectangleEffectsComponent>(entity))
         {
             const auto& fx = comp.get<RectangleEffectsComponent>(entity);
-            for (auto& effect : fx.effects) effect(&queue, &cmd);
+            for (auto& effect : fx.effects) if (effect) effect(&queue, &cmd);
         }
 
         queue.emplace<DrawRectangleCommand>(std::move(cmd));
@@ -43,8 +44,7 @@ DrawRectangleCommand WorldRectangleRenderFormat::buildRectangleCommand(Entity& e
     const auto& transform = comp.get<TransformComponent>(entity);
     const auto& shape = comp.get<RectangleShapeComponent>(entity);
 
-    int layer = 0;
-    int zIndex = 0;
+    int layer = 0, zIndex = 0;
     if (comp.has<RenderComponent>(entity))
     {
         const auto& render = comp.get<RenderComponent>(entity);

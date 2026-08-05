@@ -41,7 +41,7 @@ public:
             if (comp.has<CircleEffectsComponent>(entity))
             {
                 const auto& fx = comp.get<CircleEffectsComponent>(entity);
-                for (auto& effect : fx.effects) effect(&queue, &cmd);
+                for (auto& effect : fx.effects) if (effect) effect(&queue, &cmd);
             }
         }
     }

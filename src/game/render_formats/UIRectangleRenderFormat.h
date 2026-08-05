@@ -37,7 +37,7 @@ public:
             if (comp.has<RectangleEffectsComponent>(entity))
             {
                 const auto& fx = comp.get<RectangleEffectsComponent>(entity);
-                for (auto& effect : fx.effects) effect(&queue, &cmd);
+                for (auto& effect : fx.effects) if (effect) effect(&queue, &cmd);
             }
         }
     }

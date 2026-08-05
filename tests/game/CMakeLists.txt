@@ -34,6 +34,7 @@ add_executable(game_tests
     ui_actions/NavigateToTitleActionTests.cpp
     ui_actions/QuitActionTests.cpp
 
+    utils/CollisionUtilsTests.cpp
     utils/ComponentRegistryTests.cpp
     utils/WorldRenderUtilsTests.cpp
 

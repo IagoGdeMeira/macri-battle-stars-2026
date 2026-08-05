@@ -9,14 +9,13 @@
 
 void CollisionUtils::updateWorldTransform(World& world, Entity child, Entity parent)
 {
-    auto &comp = world.components();
-    if (!comp.has<LocalTransform>(child) || !comp.has<TransformComponent>(child) ||
-        !comp.has<TransformComponent>(parent))
-        return;
+    auto& comp = world.components();
+    if (!comp.has<LocalTransform>(child) || !comp.has<TransformComponent>(child)) return;
+    if (!comp.has<TransformComponent>(parent)) return;
 
-    const auto &local = comp.get<LocalTransform>(child);
-    auto &childTransform = comp.get<TransformComponent>(child);
-    const auto &parentTransform = comp.get<TransformComponent>(parent);
+    const auto& local = comp.get<LocalTransform>(child);
+    auto& childTransform = comp.get<TransformComponent>(child);
+    const auto& parentTransform = comp.get<TransformComponent>(parent);
 
     float cosR = std::cos(parentTransform.rotation);
     float sinR = std::sin(parentTransform.rotation);

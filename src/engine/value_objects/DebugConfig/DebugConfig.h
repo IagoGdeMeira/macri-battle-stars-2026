@@ -7,7 +7,7 @@ struct DebugConfig
 {
     bool enabled = false;
     Color color = Color::WHITE();
-    int zIndex = 0, layer = 0;
+    int layer = 0, zIndex = 20;
     bool filled = true;
 };
 

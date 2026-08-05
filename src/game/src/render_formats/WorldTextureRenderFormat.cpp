@@ -15,6 +15,7 @@
 void WorldTextureRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
 {
     auto& comp = ctx.world.components();
+    
     auto view = View<SpriteComponent, TransformComponent, RenderComponent>(comp);
 
     size_t order = 0;
@@ -29,7 +30,7 @@ void WorldTextureRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
         if (comp.has<TextureEffectsComponent>(entity))
         {
             const auto& fx = comp.get<TextureEffectsComponent>(entity);
-            for (auto& effect : fx.effects) effect(&queue, &cmd);
+            for (auto& effect : fx.effects) if (effect) effect(&queue, &cmd);
         }
 
         queue.emplace<DrawTextureCommand>(std::move(cmd));

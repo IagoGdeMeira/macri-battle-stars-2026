@@ -14,9 +14,10 @@
 void WorldCircleRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
 {
     auto& comp = ctx.world.components();
+    
     auto view = View<CircleShapeComponent, TransformComponent>(comp);
-    size_t order = 0;
 
+    size_t order = 0;
     for (auto [entity, shape, transform] : view)
     {
         if (comp.has<ActiveComponent>(entity) && !comp.get<ActiveComponent>(entity).active) continue;
@@ -27,7 +28,7 @@ void WorldCircleRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
         if (comp.has<CircleEffectsComponent>(entity))
         {
             const auto& fx = comp.get<CircleEffectsComponent>(entity);
-            for (auto& effect : fx.effects) effect(&queue, &cmd);
+            for (auto& effect : fx.effects) if (effect) effect(&queue, &cmd);
         }
 
         queue.emplace<DrawCircleCommand>(std::move(cmd));
@@ -40,8 +41,7 @@ DrawCircleCommand WorldCircleRenderFormat::buildCircleCommand(Entity& entity, Wo
     const auto& transform = comp.get<TransformComponent>(entity);
     const auto& shape = comp.get<CircleShapeComponent>(entity);
 
-    int layer = 0;
-    int zIndex = 0;
+    int layer = 0, zIndex = 0;
     if (comp.has<RenderComponent>(entity))
     {
         const auto& render = comp.get<RenderComponent>(entity);
