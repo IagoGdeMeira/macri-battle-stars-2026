@@ -35,3 +35,17 @@ std::string Logger::currentTimestamp()
     ss << "." << std::setfill('0') << std::setw(3) << ms.count();
     return ss.str();
 }
+
+void Logger::parseFormatSpec(std::ostream& out, const std::string& spec)
+{
+    if (spec.size() >= 3 && spec[0] == ':' && spec[1] == '.')
+    {
+        std::string digits = spec.substr(2, spec.size() - 3);
+        try
+        {
+            int prec = std::stoi(digits);
+            out << std::fixed << std::setprecision(prec);
+        }
+        catch (...) { }
+    }
+}

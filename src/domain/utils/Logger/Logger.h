@@ -49,6 +49,8 @@ private:
     
     template<typename T, typename... Args>
     static void format(std::ostream& out, std::string_view format, T&& value, Args&&... args);
+
+    static void parseFormatSpec(std::ostream& out, const std::string& spec);
 };
 
 #define LOG_DEBUG(...)   Logger::debug(__VA_ARGS__)

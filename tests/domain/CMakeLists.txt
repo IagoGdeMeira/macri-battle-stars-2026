@@ -1,4 +1,6 @@
 add_executable(domain_tests
+    utils/LoggerTests.cpp
+
     ComponentManagerTests.cpp
     ComponentStorageTests.cpp
     EntityManagerTests.cpp
