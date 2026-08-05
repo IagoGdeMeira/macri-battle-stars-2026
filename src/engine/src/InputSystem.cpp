@@ -7,7 +7,6 @@
 #include "domain/components/InputComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include <map>
 
@@ -35,40 +34,17 @@ void InputSystem::processDigitalEvents(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();
 
-    for (const auto& e : this->digitalEvents)
-    {
-        this->sourceStates[e.playerId][e.source] = e.pressed;
-        LOG_DEBUG("InputSystem: digital event player={} source={} pressed={}",
-            e.playerId, InputMapper::sourceToString(e.source), e.pressed);
-    }
-
-    LOG_DEBUG("InputSystem: sourceStates after applying events:");
-    for (const auto& [pid, states] : this->sourceStates)
-    {
-        LOG_DEBUG("  player {} has {} entries", pid, states.size());
-        for (const auto& [src, pressed] : states)
-            LOG_DEBUG("    {} = {}", InputMapper::sourceToString(src), pressed);
-    }
+    for (const auto& e : this->digitalEvents) this->sourceStates[e.playerId][e.source] = e.pressed;
 
     auto digitalView = View<InputComponent, PlayerComponent>(comp);
     for (auto [entity, input, player] : digitalView)
     {
-        LOG_DEBUG("InputSystem: player {} entity {}", player.id, entity.id);
-
         auto bindingIt = this->context.bindings.find(player.id);
-        if (bindingIt == this->context.bindings.end())
-        {
-            LOG_WARN("InputSystem: no binding found for player {}, skipping", player.id);
-            continue;
-        }
+        if (bindingIt == this->context.bindings.end()) continue;
 
         auto& binding = bindingIt->second;
         auto& playerSources = this->sourceStates[player.id];
         auto& previousSources = this->previousSourceStates[player.id];
-
-        LOG_DEBUG("InputSystem: player {} playerSources has {} entries", player.id, playerSources.size());
-        for (const auto& [src, pressed] : playerSources) LOG_DEBUG("    {} = {}",
-            InputMapper::sourceToString(src), pressed);
 
         std::map<InputAction, bool> actionPressed;
 
@@ -89,10 +65,6 @@ void InputSystem::processDigitalEvents(UpdateContext& ctx)
         }
 
         for (auto& [action, state] : input.actions) if (state.pressed) state.heldTime += ctx.deltaTime;
-
-        LOG_DEBUG("InputSystem: player {} final actions after mapping:", player.id);
-        for (const auto& [action, state] : input.actions) LOG_DEBUG("  {} pressed={} heldTime={:.3f}",
-            InputMapper::actionToString(action), state.pressed, state.heldTime);
 
         previousSources = playerSources;
     }

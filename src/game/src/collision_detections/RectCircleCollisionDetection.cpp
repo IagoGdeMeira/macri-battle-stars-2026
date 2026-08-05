@@ -6,7 +6,6 @@
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
 #include "engine/include/EventBus/EventBus.h"

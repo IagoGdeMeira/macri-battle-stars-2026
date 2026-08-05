@@ -8,7 +8,6 @@
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/InputAction/InputAction.h"
 #include "domain/value_objects/TriggerId/TriggerId.h"
 
@@ -24,8 +23,6 @@ void JumpSystem::update(UpdateContext& ctx)
         if (comp.has<HitstopComponent>(entity) && comp.get<HitstopComponent>(entity).frozen) continue;
 
         bool jumpPressed = this->hasInputAction(input, InputAction::Jump);
-        LOG_DEBUG("JumpSystem: player {} entity {} onGround={} jumpPressed={}",
-            player.id, entity.id, grounded.onGround, jumpPressed);
 
         if (!grounded.onGround || !jumpPressed) continue;
 

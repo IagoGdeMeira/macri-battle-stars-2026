@@ -9,7 +9,6 @@
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
@@ -104,7 +103,7 @@ void MapLoader::createBackgroundRectangle(const std::unique_ptr<DataNode>& layer
     int zIndex = layer->getInt("zIndex", -1);
 
     this->factory.createBackgroundRectangle(EntityFactory::BackgroundParams{
-        {1.0f, 1.0f}, zIndex, mapEntity}, rect, color, true);
+        {1.f, 1.f}, zIndex, mapEntity}, rect, color, true);
 }
 
 void MapLoader::createBackgroundCircle(const std::unique_ptr<DataNode>& layer, Entity mapEntity)
@@ -114,7 +113,7 @@ void MapLoader::createBackgroundCircle(const std::unique_ptr<DataNode>& layer, E
     int zIndex = layer->getInt("zIndex", -1);
 
     this->factory.createBackgroundCircle(EntityFactory::BackgroundParams{
-        {1.0f, 1.0f}, zIndex, mapEntity}, circle, color, true);
+        {1.f, 1.f}, zIndex, mapEntity}, circle, color, true);
 }
 
 void MapLoader::createBackgroundAnimated(const std::unique_ptr<DataNode>& layer, Entity mapEntity)

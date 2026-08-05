@@ -8,7 +8,6 @@
 #include "domain/include/View/View.h"
 #include "domain/value_objects/InputAction/InputAction.h"
 #include "domain/value_objects/TriggerId/TriggerId.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/include/InputMapper/InputMapper.h"
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -25,22 +24,12 @@ void CrouchSystem::update(UpdateContext& ctx)
 
         if (crouchPressed != entityCrouching)
         {
-            bool grounded = this->isGrounded(ctx, entity);
-
             if (crouchPressed)
             {
-                if (grounded)
-                {
-                    LOG_DEBUG("CrouchSystem: player {} action Crouch -> Crouched (grounded)", player.id);
-                    this->bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Crouched });
-                }
-                else LOG_DEBUG("CrouchSystem: player {} crouch pressed but not grounded – ignored", player.id);
+                bool grounded = this->isGrounded(ctx, entity);
+                if (grounded) this->bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::Crouched });
             }
-            else
-            {
-                LOG_DEBUG("CrouchSystem: player {} action Crouch -> CrouchReleased", player.id);
-                this->bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::CrouchReleased });
-            }
+            else this->bus.emit<TriggerEvent>(TriggerEvent{ entity, TriggerId::CrouchReleased });
         }
         this->wasCrouching[entity] = crouchPressed;
     }

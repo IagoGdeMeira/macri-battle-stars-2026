@@ -4,7 +4,6 @@
 #include "domain/components/AnimationControllerComponent.h"
 #include "domain/components/OrientationComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 

@@ -6,7 +6,6 @@
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 

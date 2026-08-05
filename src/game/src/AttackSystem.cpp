@@ -7,7 +7,6 @@
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/StateComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/StateId/StateId.h"
 
 #include "engine/include/InputMapper/InputMapper.h"
@@ -23,8 +22,6 @@ void AttackSystem::update(UpdateContext& ctx)
         if (!this->canAttack(ctx, entity)) continue;
         if (!this->hasInputAction(input, this->action)) continue;
 
-        LOG_DEBUG("AttackSystem: player {} attack action {} -> trigger {}",
-            player.id, InputMapper::actionToString(this->action), static_cast<int>(this->trigger));
         this->bus.emit<TriggerEvent>(TriggerEvent{entity, this->trigger});
     }
 }

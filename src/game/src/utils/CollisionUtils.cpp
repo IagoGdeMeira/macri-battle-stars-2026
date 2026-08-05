@@ -4,7 +4,6 @@
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include <cmath>
 

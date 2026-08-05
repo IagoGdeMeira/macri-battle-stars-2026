@@ -3,7 +3,6 @@
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
