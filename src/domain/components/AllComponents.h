@@ -26,6 +26,7 @@
 #include "HurtboxControllerMapComponent.h"
 #include "InputBufferComponent.h"
 #include "InputComponent.h"
+#include "JumpComponent.h"
 #include "KnockbackComponent.h"
 #include "LifetimeComponent.h"
 #include "LocalTransform.h"

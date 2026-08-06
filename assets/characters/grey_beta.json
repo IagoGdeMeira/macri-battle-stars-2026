@@ -6,5 +6,6 @@
     "stateMachine": "assets/fsm/reddie_beta_fsm.json",
     "combos": "assets/combos/default_combos.json",
     "collisions": "assets/collisions/reddie_beta_collisions.json",
+    "jumpImpulse": -4000,
     "customStates": []
 }

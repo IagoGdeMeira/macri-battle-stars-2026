@@ -22,6 +22,7 @@ CharacterDefinition CharacterDefinitionLoader::load(const std::string& path) con
     def.stateMachinePath = root->getString("stateMachine", "");
     def.combosPath = root->getString("combos", "");
     def.collisionsPath = root->getString("collisions", "");
+    def.jumpImpulse = root->getFloat("jumpImpulse", -600.f);
 
     if (root->has("customStates")) for (auto& node : root->getArray("customStates"))
     {

@@ -19,9 +19,9 @@ public:
     HitboxCollisionControllerFixture()
     {
         auto& comp = this->world.components();
-        comp.registerComponent<HitboxControllerMapComponent>();
-        comp.registerComponent<HitboxControllerComponent>();
         comp.registerComponent<ActiveComponent>();
+        comp.registerComponent<HitboxControllerComponent>();
+        comp.registerComponent<HitboxControllerMapComponent>();
     }
 
     World world;

@@ -13,15 +13,16 @@
 
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
-#include "domain/components/SpriteComponent.h"
-#include "domain/components/StateComponent.h"
-#include "domain/components/StateMachineComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
 #include "domain/components/HitboxControllerMapComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
 #include "domain/components/HurtboxControllerMapComponent.h"
+#include "domain/components/JumpComponent.h"
 #include "domain/components/PushboxControllerComponent.h"
 #include "domain/components/PushboxControllerMapComponent.h"
+#include "domain/components/SpriteComponent.h"
+#include "domain/components/StateComponent.h"
+#include "domain/components/StateMachineComponent.h"
 #include "domain/include/World/World.h"
 #include "domain/value_objects/StateId/StateId.h"
 
@@ -38,6 +39,7 @@
 #include "game/include/StateIdMapper/StateIdMapper.h"
 #include "game/include/StateMachineLoader/StateMachineLoader.h"
 
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <string>
@@ -70,6 +72,7 @@ public:
         root->setString("animations", "assets/animations/fighter_01.json");
         root->setString("stateMachine", "assets/fsm/fighter_01.json");
         root->setString("collisions", "assets/collisions/fighter_01.json");
+        root->setFloat("jumpImpulse", -650.f);
         return root;
     }
 
@@ -160,6 +163,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     comp.registerComponent<StateMachineComponent>();
     comp.registerComponent<AnimationControllerComponent>();
     comp.registerComponent<AnimationComponent>();
+    comp.registerComponent<JumpComponent>();
     comp.registerComponent<HitboxControllerMapComponent>();
     comp.registerComponent<HurtboxControllerMapComponent>();
     comp.registerComponent<PushboxControllerMapComponent>();
@@ -174,6 +178,10 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(comp.has<StateMachineComponent>(entity));
     REQUIRE(comp.has<AnimationControllerComponent>(entity));
     REQUIRE(comp.has<AnimationComponent>(entity));
+    REQUIRE(comp.has<JumpComponent>(entity));
+
+    const auto& jumpComp = comp.get<JumpComponent>(entity);
+    REQUIRE(jumpComp.jumpImpulse == Catch::Approx(-650.f));
 
     const auto& sprite = comp.get<SpriteComponent>(entity);
     REQUIRE(sprite.texturePath == "assets/sprites/fighter.png");
@@ -218,6 +226,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     defRoot->setString("animations", "assets/animations/fighter_custom.json");
     defRoot->setString("stateMachine", "assets/fsm/fighter_custom.json");
     defRoot->setString("collisions", "assets/collisions/fighter_custom.json");
+    defRoot->setFloat("jumpImpulse", -600.f);
 
     auto customStateNode = std::make_unique<StubDataNode>();
     customStateNode->setString("", "PowerCharge");
@@ -225,7 +234,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     customStates.push_back(std::move(customStateNode));
     defRoot->setArray("customStates", std::move(customStates));
 
-    defParser.registerNode("def.json", std::move(defRoot));  // <-- CORREÇÃO
+    defParser.registerNode("def.json", std::move(defRoot));
 
     auto idleFrame = std::make_unique<StubDataNode>();
     idleFrame->setInt("x", 0); idleFrame->setInt("y", 0);
@@ -316,6 +325,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     comp.registerComponent<StateMachineComponent>();
     comp.registerComponent<AnimationControllerComponent>();
     comp.registerComponent<AnimationComponent>();
+    comp.registerComponent<JumpComponent>();
     comp.registerComponent<HitboxControllerMapComponent>();
     comp.registerComponent<HurtboxControllerMapComponent>();
     comp.registerComponent<PushboxControllerMapComponent>();
@@ -324,6 +334,8 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     comp.registerComponent<PushboxControllerComponent>();
 
     const auto entity = loader.create(world, "def.json");
+
+    REQUIRE(comp.has<JumpComponent>(entity));
 
     uint32_t machineId = comp.get<StateMachineComponent>(entity).machineId;
     const StateMachine* machine = registry.getMachine(machineId);

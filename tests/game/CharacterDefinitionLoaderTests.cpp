@@ -3,6 +3,7 @@
 #include "StubDataNode.h"
 #include "StubDataParser.h"
 
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <stdexcept>
@@ -44,8 +45,7 @@ public:
     }
 };
 
-TEST_CASE_METHOD(CharacterDefinitionLoaderFixture,
-    "CharacterDefinitionLoader parses required and optional fields",
+TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader parses required and optional fields",
     "[unit][character_definition_loader]"
 ) {
     CharacterDefinitionLoader loader(this->parser);
@@ -59,6 +59,7 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture,
     REQUIRE(def.stateMachinePath == "assets/fsm/fighter.json");
     REQUIRE(def.combosPath == "assets/combos/fighter.json");
     REQUIRE(def.collisionsPath == "assets/collisions/fighter.json");
+    REQUIRE(def.jumpImpulse == Catch::Approx(-600.f));
 }
 
 TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader handles missing size", 
@@ -94,8 +95,19 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader re
     REQUIRE_THROWS_AS(loader.load("test.json"), std::runtime_error);
 }
 
-TEST_CASE_METHOD(CharacterDefinitionLoaderFixture,
-    "CharacterDefinitionLoader parses custom states when present",
+TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader parses custom jump impulse when present",
+    "[unit][character_definition_loader]"
+) {
+    auto rootNode = this->makeDefinitionRoot(false);
+    rootNode->setFloat("jumpImpulse", -700.f);
+    StubDataParser localParser;
+    localParser.registerNode("test.json", std::move(rootNode));
+    CharacterDefinitionLoader loader(localParser);
+    const auto def = loader.load("test.json");
+    REQUIRE(def.jumpImpulse == Catch::Approx(-700.f));
+}
+
+TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader parses custom states when present",
     "[unit][character_definition_loader]"
 ) {
     auto customState = std::make_unique<StubDataNode>();
@@ -117,8 +129,7 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture,
     REQUIRE(def.customStates[0] == "PowerCharge");
 }
 
-TEST_CASE_METHOD(CharacterDefinitionLoaderFixture,
-    "CharacterDefinitionLoader rejects custom states that collide with base states",
+TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader rejects custom states that collide with base states",
     "[unit][character_definition_loader]"
 ) {
     auto customState = std::make_unique<StubDataNode>();

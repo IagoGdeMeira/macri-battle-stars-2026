@@ -3,6 +3,7 @@
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/HitstopComponent.h"
 #include "domain/components/InputComponent.h"
+#include "domain/components/JumpComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/value_objects/InputAction/InputAction.h"
@@ -30,6 +31,7 @@ public:
         comp.registerComponent<GroundedComponent>();
         comp.registerComponent<HitstopComponent>();
         comp.registerComponent<InputComponent>();
+        comp.registerComponent<JumpComponent>();
         comp.registerComponent<PlayerComponent>();
         comp.registerComponent<VelocityComponent>();
     }

@@ -7,6 +7,7 @@
 #include "domain/components/HitboxControllerMapComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
 #include "domain/components/HurtboxControllerMapComponent.h"
+#include "domain/components/JumpComponent.h"
 #include "domain/components/PushboxControllerComponent.h"
 #include "domain/components/PushboxControllerMapComponent.h"
 #include "domain/components/SpriteComponent.h"
@@ -30,6 +31,7 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     this->loadCollisionControllers(world, entity, def);
 
     comp.add<AnimationComponent>(entity, this->buildInitialAnimation(entity, world));
+    comp.add<JumpComponent>(entity, JumpComponent{ def.jumpImpulse });
 
     return entity;
 }

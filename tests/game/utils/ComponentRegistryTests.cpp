@@ -36,6 +36,7 @@ TEST_CASE("ComponentRegistry registers every game component", "[unit][component_
     REQUIRE(comp.storage<HurtboxControllerMapComponent>() != nullptr);
     REQUIRE(comp.storage<InputBufferComponent>() != nullptr);
     REQUIRE(comp.storage<InputComponent>() != nullptr);
+    REQUIRE(comp.storage<JumpComponent>() != nullptr);
     REQUIRE(comp.storage<KnockbackComponent>() != nullptr);
     REQUIRE(comp.storage<LifetimeComponent>() != nullptr);
     REQUIRE(comp.storage<LocalTransform>() != nullptr);

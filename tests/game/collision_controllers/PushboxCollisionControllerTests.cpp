@@ -19,9 +19,9 @@ public:
     PushboxCollisionControllerFixture()
     {
         auto& comp = this->world.components();
-        comp.registerComponent<PushboxControllerMapComponent>();
-        comp.registerComponent<PushboxControllerComponent>();
         comp.registerComponent<ActiveComponent>();
+        comp.registerComponent<PushboxControllerComponent>();
+        comp.registerComponent<PushboxControllerMapComponent>();
     }
 
     World world;

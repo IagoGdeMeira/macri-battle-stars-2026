@@ -5,6 +5,7 @@
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/HitstopComponent.h"
 #include "domain/components/InputComponent.h"
+#include "domain/components/JumpComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/include/View/View.h"
@@ -23,10 +24,12 @@ void JumpSystem::update(UpdateContext& ctx)
         if (comp.has<HitstopComponent>(entity) && comp.get<HitstopComponent>(entity).frozen) continue;
 
         bool jumpPressed = this->hasInputAction(input, InputAction::Jump);
-
         if (!grounded.onGround || !jumpPressed) continue;
 
-        velocity.velocity.y = this->jumpImpulse;
+        float impulse = this->jumpImpulse;
+        if (comp.has<JumpComponent>(entity)) impulse += comp.get<JumpComponent>(entity).jumpImpulse;
+
+        velocity.velocity.y = impulse;
         this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Jump});
     }
 }

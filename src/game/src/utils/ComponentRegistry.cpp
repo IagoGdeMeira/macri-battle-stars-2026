@@ -30,6 +30,7 @@ void ComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<HurtboxControllerMapComponent>();
     comp.registerComponent<InputBufferComponent>();
     comp.registerComponent<InputComponent>();
+    comp.registerComponent<JumpComponent>();
     comp.registerComponent<KnockbackComponent>();
     comp.registerComponent<LifetimeComponent>();
     comp.registerComponent<LocalTransform>();

@@ -12,6 +12,7 @@ struct CharacterDefinition
 
     Dimension2D spriteSize {0.f, 0.f};
     std::string texturePath, animationsPath, stateMachinePath, combosPath, collisionsPath;
+    float jumpImpulse = -600.f;
     
     std::vector<std::string> customStates;
 };
