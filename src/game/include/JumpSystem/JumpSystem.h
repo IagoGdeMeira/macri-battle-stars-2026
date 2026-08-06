@@ -21,7 +21,7 @@ private:
 
     bool hasInputAction(InputComponent& input, InputAction action) const;
     void startJump(JumpComponent& jump, VelocityComponent& velocity, Entity entity);
-    void applyJumpForce(JumpComponent& jump, VelocityComponent& velocity, float deltaTime, bool jumpHeld);
+    void applyJumpForce(JumpComponent& jump, VelocityComponent& velocity, float deltaTime, bool jumpHeld, Entity entity);
     void stopJump(JumpComponent& jump);
 };
 

@@ -1,5 +1,7 @@
 #include "JumpSystem/JumpSystem.h"
+
 #include "TriggerEvent.h"
+
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/HitstopComponent.h"
 #include "domain/components/InputComponent.h"
@@ -7,6 +9,7 @@
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/include/View/View.h"
+#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/InputAction/InputAction.h"
 #include "domain/value_objects/TriggerId/TriggerId.h"
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -26,7 +29,7 @@ void JumpSystem::update(UpdateContext& ctx)
 
         if (jump.isJumping)
         {
-            this->applyJumpForce(jump, velocity, ctx.deltaTime, jumpPressed);
+            this->applyJumpForce(jump, velocity, ctx.deltaTime, jumpPressed, entity);
             if (!jumpPressed || jump.timer >= jump.maxTime) this->stopJump(jump);
         }
     }
@@ -46,12 +49,15 @@ void JumpSystem::startJump(JumpComponent& jump, VelocityComponent& velocity, Ent
     this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Jump});
 }
 
-void JumpSystem::applyJumpForce(JumpComponent& jump, VelocityComponent& velocity, float deltaTime, bool jumpHeld)
+void JumpSystem::applyJumpForce(JumpComponent& jump, VelocityComponent& velocity, float deltaTime, bool jumpHeld, Entity entity)
 {
     if (!jumpHeld || jump.timer >= jump.maxTime) return;
 
     velocity.velocity.y -= jump.force * deltaTime;
-    jump.timer += deltaTime;    
+    jump.timer += deltaTime;
+
+    LOG_DEBUG("Jump force applied: entity={}, force={}, dt={:.4f}, velY={:.2f}", 
+        entity.id, jump.force, deltaTime, velocity.velocity.y);
 }
 
 void JumpSystem::stopJump(JumpComponent& jump) { jump.isJumping = false; }

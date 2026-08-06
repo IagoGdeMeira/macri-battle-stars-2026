@@ -13,6 +13,7 @@
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/StateComponent.h"
 #include "domain/components/StateMachineComponent.h"
+#include "domain/utils/Logger/Logger.h"
 
 Entity CharacterLoader::create(World& world, const std::string& path) const
 {
@@ -39,6 +40,9 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
         .gravityScaleDesc   = def.jump.gravityScaleDesc,
         .fastFallMultiplier = def.jump.fastFallMultiplier
     });
+
+    LOG_DEBUG("JumpComponent loaded: force={}, maxTime={}, asc={}, desc={}",
+        def.jump.force, def.jump.maxTime, def.jump.gravityScaleAsc, def.jump.gravityScaleDesc);
 
     return entity;
 }
