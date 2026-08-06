@@ -64,6 +64,13 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
         cmd.flipX = symmetric ? (comp.get<OrientationComponent>(entity).direction == Orientation::Left) : false;
     }
 
+    float oldWidth  = cmd.dest.size.width;
+    float oldHeight = cmd.dest.size.height;
+    cmd.dest.size.width  *= this->camera.getZoom();
+    cmd.dest.size.height *= this->camera.getZoom();
+    cmd.dest.position.x -= (cmd.dest.size.width  - oldWidth)  * 0.5f;
+    cmd.dest.position.y -= (cmd.dest.size.height - oldHeight) * 0.5f;
+
     cmd.layer = render.layer;
     cmd.zIndex = render.zIndex;
     cmd.order = order;

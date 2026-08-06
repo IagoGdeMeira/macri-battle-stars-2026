@@ -76,10 +76,10 @@ TEST_CASE_METHOD(WorldRectangleRenderFormatFixture, "WorldRectangleRenderFormat 
     const auto& baseCmd = this->renderer.rectangleCalls[1];
     const auto& effectCmd = this->renderer.rectangleCalls[0];
 
-    REQUIRE(baseCmd.rect.position.x == Catch::Approx(405.f));
-    REQUIRE(baseCmd.rect.position.y == Catch::Approx(304.f));
-    REQUIRE(baseCmd.rect.size.width == Catch::Approx(20.f));
-    REQUIRE(baseCmd.rect.size.height == Catch::Approx(12.f));
+    REQUIRE(baseCmd.rect.position.x == Catch::Approx(410.f));
+    REQUIRE(baseCmd.rect.position.y == Catch::Approx(308.f));
+    REQUIRE(baseCmd.rect.size.width == Catch::Approx(40.f));
+    REQUIRE(baseCmd.rect.size.height == Catch::Approx(24.f));
     REQUIRE(baseCmd.filled == true);
     REQUIRE(baseCmd.color == Color { 100, 150, 200, 255 });
     REQUIRE(baseCmd.order == 0);

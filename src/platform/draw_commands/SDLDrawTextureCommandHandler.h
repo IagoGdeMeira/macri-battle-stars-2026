@@ -2,6 +2,7 @@
 #define sdl_draw_texture_command_handler_h
 
 #include "SDLTexture/SDLTexture.h"
+
 #include "engine/draw_commands/DrawTextureCommand.h"
 #include "engine/include/IDrawCommandHandler/IDrawCommandHandler.h"
 

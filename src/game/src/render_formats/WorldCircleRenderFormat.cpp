@@ -55,10 +55,11 @@ DrawCircleCommand WorldCircleRenderFormat::buildCircleCommand(Entity& entity, Wo
     DrawCircleCommand cmd;
     cmd.circle.position = screenPos;
     cmd.circle.radius = shape.circle.radius * std::max(std::abs(transform.scale.x), std::abs(transform.scale.y));
-    cmd.color = shape.color;
-    cmd.filled = shape.filled;
-    cmd.layer  = layer;
-    cmd.zIndex = zIndex;
-    cmd.order  = order;
+    cmd.circle.radius *= this->camera.getZoom();
+    cmd.color   = shape.color;
+    cmd.filled  = shape.filled;
+    cmd.layer   = layer;
+    cmd.zIndex  = zIndex;
+    cmd.order   = order;
     return cmd;
 }

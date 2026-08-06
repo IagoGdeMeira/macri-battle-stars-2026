@@ -2,11 +2,12 @@
 #define sdl_draw_font_command_handler_h
 
 #include "SDLFont/SDLFont.h"
+
 #include "engine/draw_commands/DrawFontCommand.h"
 #include "engine/include/IDrawCommandHandler/IDrawCommandHandler.h"
 
-#include <SDL_ttf.h>
 #include <cmath>
+#include <SDL_ttf.h>
 #include <string>
 #include <unordered_map>
 

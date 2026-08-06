@@ -318,7 +318,7 @@ void GameScene::addSystems()
         .camera             = *this->camera,
         .window             = this->window,
         .minZoom            = 0.85f,
-        .maxZoom            = 1.f,
+        .maxZoom            = 1.05f,
         .padding            = 30.f,
         .verticalOffset     = -70.f,
         .bounds             = mapComp.worldBounds,

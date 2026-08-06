@@ -4,7 +4,6 @@
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -22,33 +21,85 @@ CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
     bounds(cfg.bounds),
     epsilon(cfg.epsilon),
     smoothFactor(cfg.smoothFactor),
-    viewSize(cfg.viewSize)
+    viewSize(cfg.viewSize),
+    minMargin(cfg.minMargin),
+    favorBigPlayers(cfg.favorBigPlayers)
 { this->camera.setApplyZoomToSize(cfg.applyZoomToSize); }
 
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
-    auto playerBounds = this->computePlayerBounds(ctx);
-    if (playerBounds.left > playerBounds.right || playerBounds.top > playerBounds.bottom)
+    auto& comp = ctx.world.components();
+    auto view = View<TransformComponent, PlayerComponent>(comp);
+
+    size_t count = 0;
+    float leftmost = limits::max(), rightmost = limits::lowest();
+    float topmost = limits::max(), bottommost = limits::lowest();
+    std::vector<AABB> individualBounds;
+
+    for (auto [entity, transform, player] : view)
     {
-        LOG_DEBUG("CameraControllerSystem: no valid player bounds, skipping update");
-        return;
+        ++count;
+        auto& pos = transform.position;
+        Dimension2D halfSize {16.f, 16.f};
+        if (comp.has<SpriteComponent>(entity))
+        {
+            const auto& sprite = comp.get<SpriteComponent>(entity);
+            halfSize = {sprite.size.width * 0.5f, sprite.size.height * 0.5f};
+        }
+
+        float left   = pos.x - halfSize.width;
+        float right  = pos.x + halfSize.width;
+        float top    = pos.y - halfSize.height;
+        float bottom = pos.y + halfSize.height;
+
+        individualBounds.push_back({left, right, top, bottom});
+
+        leftmost   = std::min(leftmost, left);
+        rightmost  = std::max(rightmost, right);
+        topmost    = std::min(topmost, top);
+        bottommost = std::max(bottommost, bottom);
     }
 
-    float boxWidth      = std::max(playerBounds.right - playerBounds.left, 1.f);
-    float boxHeight     = std::max(playerBounds.bottom - playerBounds.top, 1.f);
-    float targetZoom    = std::min(this->viewSize.width  / boxWidth, this->viewSize.height / boxHeight);
-    float finalZoom     = std::clamp(targetZoom, this->minZoom, this->maxZoom);
+    if (count == 0) return;
 
-    Position center {
-        (playerBounds.left + playerBounds.right) * 0.5f,
-        (playerBounds.top + playerBounds.bottom) * 0.5f + this->verticalOffset
-    };
+    AABB totalBounds = {leftmost, rightmost, topmost, bottommost};
+    totalBounds.left   -= this->padding;
+    totalBounds.right  += this->padding;
+    totalBounds.top    -= this->padding;
+    totalBounds.bottom += this->padding;
 
-    LOG_DEBUG("CameraControllerSystem: bounds l={:.1f} r={:.1f} t={:.1f} b={:.1f} center=({:.1f}, {:.1f}) targetZoom={:.3f} finalZoom={:.3f}",
-        playerBounds.left, playerBounds.right, playerBounds.top, playerBounds.bottom,
-        center.x, center.y, targetZoom, finalZoom);
+    float boxWidth  = std::max(totalBounds.right - totalBounds.left, 1.f);
+    float boxHeight = std::max(totalBounds.bottom - totalBounds.top, 1.f);
+    float zoomX = this->viewSize.width  / boxWidth;
+    float zoomY = this->viewSize.height / boxHeight;
+    float targetZoom = std::min(zoomX, zoomY);
+    float finalZoom  = std::clamp(targetZoom, this->minZoom, this->maxZoom);
 
-    Position targetPos = this->computeClampedCameraPosition(center, finalZoom);
+    float geometricCenterX = (totalBounds.left + totalBounds.right) * 0.5f;
+    float geometricCenterY = (totalBounds.top + totalBounds.bottom) * 0.5f;
+
+    float halfWorldX = (this->viewSize.width  / finalZoom) * 0.5f;
+
+    float minCenterX = limits::lowest();
+    float maxCenterX = limits::max();
+    for (const auto& b : individualBounds)
+    {
+        float minC = b.left + halfWorldX + this->minMargin;
+        float maxC = b.right - halfWorldX - this->minMargin;
+        minCenterX = std::max(minCenterX, minC);
+        maxCenterX = std::min(maxCenterX, maxC);
+    }
+
+    float centerX;
+    if (minCenterX > maxCenterX) centerX = geometricCenterX;
+    else
+    {
+        float idealCenterX = geometricCenterX;
+        centerX = std::clamp(idealCenterX, minCenterX, maxCenterX);
+    }
+
+    float centerY = geometricCenterY + this->verticalOffset;
+    Position targetPos = this->computeClampedCameraPosition({centerX, centerY}, finalZoom);
 
     Position currentPos = this->camera.getPosition();
     float currentZoom = this->camera.getZoom();
@@ -65,80 +116,21 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     {
         this->camera.setPosition(newPos.x, newPos.y);
         this->camera.setZoom(newZoom);
-        LOG_DEBUG("CameraControllerSystem: updating camera to pos=({:.1f}, {:.1f}) zoom={:.3f}",
-            newPos.x, newPos.y, newZoom);
     }
 }
 
-AABB CameraControllerSystem::computePlayerBounds(UpdateContext& ctx)
+float CameraControllerSystem::selectZoom(const AABB& playerBounds) const
 {
-    auto& comp = ctx.world.components();
-    auto view = View<TransformComponent, PlayerComponent>(comp);
-    
-    size_t count = 0;
-    for (auto [entity, transform, player] : view) { ++count; }
-    LOG_DEBUG("CameraControllerSystem: {} players found", count);
-
-    if (view.begin() == view.end()) return {limits::max(), limits::lowest(), limits::max(), limits::lowest()};
-
-    AABB playerBounds = {limits::max(), limits::lowest(), limits::max(), limits::lowest()};
-    for (auto [entity, transform, player] : view)
-    {
-        auto& pos = transform.position;
-        Dimension2D halfSize {16.f, 16.f};
-        if (comp.has<SpriteComponent>(entity))
-        {
-            const auto& sprite = comp.get<SpriteComponent>(entity);
-            halfSize = {sprite.size.width * 0.5f, sprite.size.height * 0.5f};
-        }
-
-        float left   = pos.x - halfSize.width;
-        float right  = pos.x + halfSize.width;
-        float top    = pos.y - halfSize.height;
-        float bottom = pos.y + halfSize.height;
-
-        LOG_DEBUG("CameraControllerSystem: player entity {} pos=({:.1f}, {:.1f}) halfSize=({:.1f}, {:.1f}) l={:.1f} r={:.1f} t={:.1f} b={:.1f}",
-            entity.id, pos.x, pos.y, halfSize.width, halfSize.height, left, right, top, bottom);
-
-        playerBounds.left   = std::min(playerBounds.left, left);
-        playerBounds.top    = std::min(playerBounds.top, top);
-        playerBounds.right  = std::max(playerBounds.right, right);
-        playerBounds.bottom = std::max(playerBounds.bottom, bottom);
-    }
-
-    LOG_DEBUG("CameraControllerSystem: raw bounds (before padding) l={:.1f} r={:.1f} t={:.1f} b={:.1f}",
-        playerBounds.left, playerBounds.right, playerBounds.top, playerBounds.bottom);
-
-    playerBounds.left   -= this->padding;
-    playerBounds.top    -= this->padding;
-    playerBounds.right  += this->padding;
-    playerBounds.bottom += this->padding;
-
-    LOG_DEBUG("CameraControllerSystem: final bounds (after padding) l={:.1f} r={:.1f} t={:.1f} b={:.1f}",
-        playerBounds.left, playerBounds.right, playerBounds.top, playerBounds.bottom);
-
-    return playerBounds;
-}
-
-float CameraControllerSystem::computeTargetZoom(const AABB& playerBounds)
-{
-    float boxWidth = std::max(playerBounds.right - playerBounds.left, 1.f);
+    float boxWidth  = std::max(playerBounds.right - playerBounds.left, 1.f);
     float boxHeight = std::max(playerBounds.bottom - playerBounds.top, 1.f);
-
-    float zoomX = this->viewSize.width / boxWidth;
+    float zoomX = this->viewSize.width  / boxWidth;
     float zoomY = this->viewSize.height / boxHeight;
-    float targetZoom = std::min(zoomX, zoomY);
-
-    return std::clamp(targetZoom, this->minZoom, this->maxZoom);
+    return std::clamp(std::min(zoomX, zoomY), this->minZoom, this->maxZoom);
 }
 
 Position CameraControllerSystem::computeClampedCameraPosition(const Position& center, float targetZoom)
 {
-    Dimension2D halfScreen {
-        (this->viewSize.width / targetZoom) * 0.5f,
-        (this->viewSize.height / targetZoom) * 0.5f
-    };
-
+    Dimension2D halfScreen {(this->viewSize.width / targetZoom) * 0.5f, (this->viewSize.height / targetZoom) * 0.5f};
     float clampedX = center.x;
     float minClampX = this->bounds.left + halfScreen.width;
     float maxClampX = this->bounds.right - halfScreen.width;

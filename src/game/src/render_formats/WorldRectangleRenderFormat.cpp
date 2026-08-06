@@ -55,15 +55,18 @@ DrawRectangleCommand WorldRectangleRenderFormat::buildRectangleCommand(Entity& e
 
     Position screenPos = WorldRenderUtils::worldToScreen(this->camera, transform.position);
 
+    float w = shape.rect.size.width  * std::abs(transform.scale.x);
+    float h = shape.rect.size.height * std::abs(transform.scale.y);
+
     DrawRectangleCommand cmd;
-    cmd.rect.position.x = screenPos.x - (shape.rect.size.width * std::abs(transform.scale.x)) * 0.5f;
-    cmd.rect.position.y = screenPos.y - (shape.rect.size.height * std::abs(transform.scale.y)) * 0.5f;
-    cmd.rect.size.width  = shape.rect.size.width  * std::abs(transform.scale.x);
-    cmd.rect.size.height = shape.rect.size.height * std::abs(transform.scale.y);
-    cmd.color = shape.color;
-    cmd.filled = shape.filled;
-    cmd.layer  = layer;
-    cmd.zIndex = zIndex;
-    cmd.order  = order;
+    cmd.rect.size.width  = w * this->camera.getZoom();
+    cmd.rect.size.height = h * this->camera.getZoom();
+    cmd.rect.position.x  = screenPos.x - cmd.rect.size.width  * 0.5f;
+    cmd.rect.position.y  = screenPos.y - cmd.rect.size.height * 0.5f;
+    cmd.color   = shape.color;
+    cmd.filled  = shape.filled;
+    cmd.layer   = layer;
+    cmd.zIndex  = zIndex;
+    cmd.order   = order;
     return cmd;
 }

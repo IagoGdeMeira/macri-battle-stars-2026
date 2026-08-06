@@ -174,10 +174,10 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws sprite using transformed
     this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.calls.drawTexture == 1);
-    REQUIRE(this->renderer.lastDraw.x == 394);
-    REQUIRE(this->renderer.lastDraw.y == 308);
-    REQUIRE(this->renderer.lastDraw.width == 32);
-    REQUIRE(this->renderer.lastDraw.height == 24);
+    REQUIRE(this->renderer.lastDraw.x == 391);
+    REQUIRE(this->renderer.lastDraw.y == 312);
+    REQUIRE(this->renderer.lastDraw.width == 48);
+    REQUIRE(this->renderer.lastDraw.height == 36);
     REQUIRE(this->renderer.lastDraw.rotation == 0.f);
     REQUIRE(this->renderer.lastDraw.flipX == false);
     REQUIRE(this->renderer.lastDraw.flipY == false);
@@ -198,8 +198,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer forwards rotation and flip fla
     this->drawer.draw(this->context);
 
     REQUIRE(this->renderer.calls.drawTexture == 1);
-    REQUIRE(this->renderer.lastDraw.width == 32);
-    REQUIRE(this->renderer.lastDraw.height == 24);
+    REQUIRE(this->renderer.lastDraw.width == 48);
+    REQUIRE(this->renderer.lastDraw.height == 36);
     REQUIRE(this->renderer.lastDraw.rotation == 37.5f);
     REQUIRE(this->renderer.lastDraw.flipX == true);
     REQUIRE(this->renderer.lastDraw.flipY == true);
@@ -276,9 +276,9 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer draws outlined circle shapes",
 
     REQUIRE(this->renderer.calls.drawCircleOutline == 1);
     REQUIRE(this->renderer.calls.drawCircleFilled == 0);
-    REQUIRE(this->renderer.lastCircle.position.x == 410.f);
-    REQUIRE(this->renderer.lastCircle.position.y == 320.f);
-    REQUIRE(this->renderer.lastCircle.radius == 21.f);
+    REQUIRE(this->renderer.lastCircle.position.x == 420.f);
+    REQUIRE(this->renderer.lastCircle.position.y == 340.f);
+    REQUIRE(this->renderer.lastCircle.radius == 42.f);
     REQUIRE(this->renderer.lastColor.r == 9);
     REQUIRE(this->renderer.lastColor.g == 8);
     REQUIRE(this->renderer.lastColor.b == 7);
@@ -293,8 +293,8 @@ TEST_CASE_METHOD(WorldDrawerFixture, "WorldDrawer applies global scale from came
     REQUIRE(this->renderer.calls.setScale == 2);
 
     REQUIRE(this->renderer.scaleHistory.size() == 2);
-    REQUIRE(this->renderer.scaleHistory[0].x == Catch::Approx(2.7f));
-    REQUIRE(this->renderer.scaleHistory[0].y == Catch::Approx(2.7f));
+    REQUIRE(this->renderer.scaleHistory[0].x == Catch::Approx(1.8f));
+    REQUIRE(this->renderer.scaleHistory[0].y == Catch::Approx(1.8f));
     REQUIRE(this->renderer.scaleHistory[1].x == Catch::Approx(1.f));
     REQUIRE(this->renderer.scaleHistory[1].y == Catch::Approx(1.f));
 

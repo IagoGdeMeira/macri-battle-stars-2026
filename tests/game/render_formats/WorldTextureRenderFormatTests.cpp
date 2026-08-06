@@ -103,13 +103,13 @@ TEST_CASE_METHOD(WorldTextureRenderFormatFixture, "WorldTextureRenderFormat subm
     const auto& baseCmd   = this->renderer.textureCalls[1];
 
     REQUIRE(effectCmd.tint == Color {1, 2, 3, 255});
-    REQUIRE(effectCmd.dest.position.x == Catch::Approx(463.f));
+    REQUIRE(effectCmd.dest.position.x == Catch::Approx(523.f));
 
     REQUIRE(baseCmd.texture != nullptr);
-    REQUIRE(baseCmd.dest.position.x == Catch::Approx(460.f));
-    REQUIRE(baseCmd.dest.position.y == Catch::Approx(350.f));
-    REQUIRE(baseCmd.dest.size.width == Catch::Approx(30.f));
-    REQUIRE(baseCmd.dest.size.height == Catch::Approx(20.f));
+    REQUIRE(baseCmd.dest.position.x == Catch::Approx(520.f));
+    REQUIRE(baseCmd.dest.position.y == Catch::Approx(400.f));
+    REQUIRE(baseCmd.dest.size.width == Catch::Approx(60.f));
+    REQUIRE(baseCmd.dest.size.height == Catch::Approx(40.f));
     REQUIRE(baseCmd.rotation == Catch::Approx(30.f));
     REQUIRE(baseCmd.flipX == true);
     REQUIRE(baseCmd.flipY == false);

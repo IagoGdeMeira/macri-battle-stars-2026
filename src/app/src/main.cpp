@@ -9,7 +9,7 @@
 
 int main()
 {
-    Logger::setLevel(Logger::LogLevel::DEBUG);
+    Logger::setLevel(Logger::LogLevel::ERROR);
     try
     {
         Application app;

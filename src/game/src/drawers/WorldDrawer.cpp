@@ -34,8 +34,7 @@ void WorldDrawer::addFormat(std::unique_ptr<IRenderFormat> format) { this->forma
 void WorldDrawer::draw(RenderContext& ctx)
 {
     float viewportScale = static_cast<float>(this->worldViewport.width) / this->vSize.width;
-    float zoom = this->camera.getZoom();
-    float totalScale = viewportScale * zoom;
+    float totalScale = viewportScale;
 
     this->renderer.setViewport(this->worldViewport);
     this->renderer.setScale(Position{totalScale, totalScale});
