@@ -1,6 +1,8 @@
 #ifndef character_definition_h
 #define character_definition_h
 
+#include "JumpDefinition/JumpDefinition.h"
+
 #include "domain/value_objects/Geometry/Geometry.h"
 
 #include <string>
@@ -12,7 +14,8 @@ struct CharacterDefinition
 
     Dimension2D spriteSize {0.f, 0.f};
     std::string texturePath, animationsPath, stateMachinePath, combosPath, collisionsPath;
-    float jumpImpulse = -600.f;
+
+    JumpDefinition jump;
     
     std::vector<std::string> customStates;
 };

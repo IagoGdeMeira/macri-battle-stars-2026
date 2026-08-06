@@ -22,7 +22,16 @@ CharacterDefinition CharacterDefinitionLoader::load(const std::string& path) con
     def.stateMachinePath = root->getString("stateMachine", "");
     def.combosPath = root->getString("combos", "");
     def.collisionsPath = root->getString("collisions", "");
-    def.jumpImpulse = root->getFloat("jumpImpulse", -600.f);
+    
+    if (root->has("jump"))
+    {
+        auto jumpNode = root->getObject("jump");
+        def.jump.force = jumpNode->getFloat("force", 1500.f);
+        def.jump.maxTime = jumpNode->getFloat("maxTime", 0.2f);
+        def.jump.gravityScaleAsc = jumpNode->getFloat("gravityScaleAsc", 0.6f);
+        def.jump.gravityScaleDesc = jumpNode->getFloat("gravityScaleDesc", 1.8f);
+        def.jump.fastFallMultiplier = jumpNode->getFloat("fastFallMultiplier", 2.5f);
+    }
 
     if (root->has("customStates")) for (auto& node : root->getArray("customStates"))
     {

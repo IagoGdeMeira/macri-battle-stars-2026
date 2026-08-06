@@ -9,6 +9,7 @@
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -87,6 +88,7 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
         else dynTrans.position.x += sep;
 
         if (comp.has<VelocityComponent>(rootDyn)) comp.get<VelocityComponent>(rootDyn).velocity.x = 0.f;
+        LOG_DEBUG("StaticPushboxResolutionSystem: horizontal resolution, dyn={}, sep={:.1f}", rootDyn.id, sep);
     }
     else
     {
@@ -97,12 +99,20 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
             if (!comp.has<VelocityComponent>(rootDyn)) return;
             
             auto& vel = comp.get<VelocityComponent>(rootDyn);
-            if (vel.velocity.y > 0.f) vel.velocity.y = 0.f;
+            if (vel.velocity.y > 0.f)
+            {
+                vel.velocity.y = 0.f;
+                LOG_DEBUG("StaticPushboxResolutionSystem: vertical resolution (landing), dyn={}, sep={:.1f}, vel.y=0", rootDyn.id, sep);
+            }
         }
         else
         {
             dynTrans.position.y += sep;
-            if (comp.has<VelocityComponent>(rootDyn)) comp.get<VelocityComponent>(rootDyn).velocity.y = 0.f;
+            if (comp.has<VelocityComponent>(rootDyn))
+            {
+                comp.get<VelocityComponent>(rootDyn).velocity.y = 0.f;
+                LOG_DEBUG("StaticPushboxResolutionSystem: vertical resolution (ceiling), dyn={}, sep={:.1f}, vel.y=0", rootDyn.id, sep);
+            }
         }
     }
 }

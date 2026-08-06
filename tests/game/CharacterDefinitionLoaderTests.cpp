@@ -29,6 +29,18 @@ public:
         return sizeNode;
     }
 
+    struct JumpParams { float force = 1500.f, maxTime = 0.2f, gravityScaleAsc = 0.6f, gravityScaleDesc = 1.8f, fastFallMultiplier = 2.5f; };
+    std::unique_ptr<StubDataNode> makeJumpNode(const JumpParams& params = JumpParams{}) const
+    {
+        auto jumpNode = std::make_unique<StubDataNode>();
+        jumpNode->setFloat("force", params.force);
+        jumpNode->setFloat("maxTime", params.maxTime);
+        jumpNode->setFloat("gravityScaleAsc", params.gravityScaleAsc);
+        jumpNode->setFloat("gravityScaleDesc", params.gravityScaleDesc);
+        jumpNode->setFloat("fastFallMultiplier", params.fastFallMultiplier);
+        return jumpNode;
+    }
+
     std::unique_ptr<StubDataNode> makeDefinitionRoot(bool withCombos, bool withCollisions = false) const
     {
         auto rootNode = std::make_unique<StubDataNode>();
@@ -41,6 +53,7 @@ public:
         if (withCombos) rootNode->setString("combos", "assets/combos/fighter.json");
         if (withCollisions) rootNode->setString("collisions", "assets/collisions/fighter.json");
 
+        rootNode->setObject("jump", this->makeJumpNode());
         return rootNode;
     }
 };
@@ -59,7 +72,12 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader pa
     REQUIRE(def.stateMachinePath == "assets/fsm/fighter.json");
     REQUIRE(def.combosPath == "assets/combos/fighter.json");
     REQUIRE(def.collisionsPath == "assets/collisions/fighter.json");
-    REQUIRE(def.jumpImpulse == Catch::Approx(-600.f));
+
+    REQUIRE(def.jump.force == Catch::Approx(1500.f));
+    REQUIRE(def.jump.maxTime == Catch::Approx(0.2f));
+    REQUIRE(def.jump.gravityScaleAsc == Catch::Approx(0.6f));
+    REQUIRE(def.jump.gravityScaleDesc == Catch::Approx(1.8f));
+    REQUIRE(def.jump.fastFallMultiplier == Catch::Approx(2.5f));
 }
 
 TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader handles missing size", 
@@ -70,6 +88,7 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader ha
     rootNode->setString("texture", "assets/sprites/fighter.png");
     rootNode->setString("animations", "assets/animations/fighter.json");
     rootNode->setString("stateMachine", "assets/fsm/fighter.json");
+    rootNode->setObject("jump", this->makeJumpNode());
     StubDataParser localParser;
     localParser.registerNode("test.json", std::move(rootNode));
     CharacterDefinitionLoader loader(localParser);
@@ -87,24 +106,28 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader re
     rootNode->setObject("spriteSize", this->makeSizeNode(64.f, 96.f));
     rootNode->setString("animations", "assets/animations/fighter.json");
     rootNode->setString("stateMachine", "assets/fsm/fighter.json");
-
+    rootNode->setObject("jump", this->makeJumpNode());
     StubDataParser localParser;
     localParser.registerNode("test.json", std::move(rootNode));
     CharacterDefinitionLoader loader(localParser);
-
     REQUIRE_THROWS_AS(loader.load("test.json"), std::runtime_error);
 }
 
-TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader parses custom jump impulse when present",
+TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader parses custom jump values",
     "[unit][character_definition_loader]"
 ) {
     auto rootNode = this->makeDefinitionRoot(false);
-    rootNode->setFloat("jumpImpulse", -700.f);
+    rootNode->setObject("jump", this->makeJumpNode({ 2000.f, 0.3f, 0.8f, 2.0f, 3.0f }));
     StubDataParser localParser;
     localParser.registerNode("test.json", std::move(rootNode));
     CharacterDefinitionLoader loader(localParser);
     const auto def = loader.load("test.json");
-    REQUIRE(def.jumpImpulse == Catch::Approx(-700.f));
+
+    REQUIRE(def.jump.force == Catch::Approx(2000.f));
+    REQUIRE(def.jump.maxTime == Catch::Approx(0.3f));
+    REQUIRE(def.jump.gravityScaleAsc == Catch::Approx(0.8f));
+    REQUIRE(def.jump.gravityScaleDesc == Catch::Approx(2.0f));
+    REQUIRE(def.jump.fastFallMultiplier == Catch::Approx(3.0f));
 }
 
 TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader parses custom states when present",
@@ -112,17 +135,14 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader pa
 ) {
     auto customState = std::make_unique<StubDataNode>();
     customState->setString("", "PowerCharge");
-
     std::vector<std::unique_ptr<DataNode>> customStates;
     customStates.push_back(std::move(customState));
 
     auto rootNode = this->makeDefinitionRoot(false);
     rootNode->setArray("customStates", std::move(customStates));
-
     StubDataParser localParser;
     localParser.registerNode("test.json", std::move(rootNode));
     CharacterDefinitionLoader loader(localParser);
-
     const auto def = loader.load("test.json");
 
     REQUIRE(def.customStates.size() == 1);
@@ -134,16 +154,13 @@ TEST_CASE_METHOD(CharacterDefinitionLoaderFixture, "CharacterDefinitionLoader re
 ) {
     auto customState = std::make_unique<StubDataNode>();
     customState->setString("", "Idle");
-
     std::vector<std::unique_ptr<DataNode>> customStates;
     customStates.push_back(std::move(customState));
 
     auto rootNode = this->makeDefinitionRoot(false);
     rootNode->setArray("customStates", std::move(customStates));
-
     StubDataParser localParser;
     localParser.registerNode("test.json", std::move(rootNode));
     CharacterDefinitionLoader loader(localParser);
-
     REQUIRE_THROWS_AS(loader.load("test.json"), std::runtime_error);
 }

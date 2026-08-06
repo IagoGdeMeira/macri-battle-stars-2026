@@ -31,7 +31,14 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
     this->loadCollisionControllers(world, entity, def);
 
     comp.add<AnimationComponent>(entity, this->buildInitialAnimation(entity, world));
-    comp.add<JumpComponent>(entity, JumpComponent{ def.jumpImpulse });
+    comp.add<JumpComponent>(entity, JumpComponent{
+        .force              = def.jump.force,
+        .maxTime            = def.jump.maxTime,
+        .timer              = 0.f,
+        .gravityScaleAsc    = def.jump.gravityScaleAsc,
+        .gravityScaleDesc   = def.jump.gravityScaleDesc,
+        .fastFallMultiplier = def.jump.fastFallMultiplier
+    });
 
     return entity;
 }

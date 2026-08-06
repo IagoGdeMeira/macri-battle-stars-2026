@@ -56,6 +56,18 @@ public:
         return sizeNode;
     }
 
+    struct JumpParams { float force = 1500.f, maxTime = 0.2f, gravityScaleAsc = 0.6f, gravityScaleDesc = 1.8f, fastFallMultiplier = 2.5f; };
+    std::unique_ptr<StubDataNode> makeJumpNode(const JumpParams& params = JumpParams{}) const
+    {
+        auto jumpNode = std::make_unique<StubDataNode>();
+        jumpNode->setFloat("force", params.force);
+        jumpNode->setFloat("maxTime", params.maxTime);
+        jumpNode->setFloat("gravityScaleAsc", params.gravityScaleAsc);
+        jumpNode->setFloat("gravityScaleDesc", params.gravityScaleDesc);
+        jumpNode->setFloat("fastFallMultiplier", params.fastFallMultiplier);
+        return jumpNode;
+    }
+
     std::unique_ptr<StubDataNode> makeEmptyCollisionsRoot() const
     {
         auto root = std::make_unique<StubDataNode>();
@@ -72,7 +84,7 @@ public:
         root->setString("animations", "assets/animations/fighter_01.json");
         root->setString("stateMachine", "assets/fsm/fighter_01.json");
         root->setString("collisions", "assets/collisions/fighter_01.json");
-        root->setFloat("jumpImpulse", -650.f);
+        root->setObject("jump", this->makeJumpNode({1800.f, 0.25f, 0.7f, 1.9f, 2.2f}));
         return root;
     }
 
@@ -181,7 +193,11 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(comp.has<JumpComponent>(entity));
 
     const auto& jumpComp = comp.get<JumpComponent>(entity);
-    REQUIRE(jumpComp.jumpImpulse == Catch::Approx(-650.f));
+    REQUIRE(jumpComp.force == Catch::Approx(1800.f));
+    REQUIRE(jumpComp.maxTime == Catch::Approx(0.25f));
+    REQUIRE(jumpComp.gravityScaleAsc == Catch::Approx(0.7f));
+    REQUIRE(jumpComp.gravityScaleDesc == Catch::Approx(1.9f));
+    REQUIRE(jumpComp.fastFallMultiplier == Catch::Approx(2.2f));
 
     const auto& sprite = comp.get<SpriteComponent>(entity);
     REQUIRE(sprite.texturePath == "assets/sprites/fighter.png");
@@ -226,7 +242,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     defRoot->setString("animations", "assets/animations/fighter_custom.json");
     defRoot->setString("stateMachine", "assets/fsm/fighter_custom.json");
     defRoot->setString("collisions", "assets/collisions/fighter_custom.json");
-    defRoot->setFloat("jumpImpulse", -600.f);
+    defRoot->setObject("jump", this->makeJumpNode());  // valores padrão
 
     auto customStateNode = std::make_unique<StubDataNode>();
     customStateNode->setString("", "PowerCharge");

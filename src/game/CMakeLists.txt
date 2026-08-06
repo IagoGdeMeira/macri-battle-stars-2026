@@ -63,6 +63,7 @@ target_sources(game
         src/MapRoster.cpp
         src/MapRosterLoader.cpp
         src/MenuLoader.cpp
+        src/MovementSystem.cpp
         src/PushboxControllerSystem.cpp
         src/PushboxLoader.cpp
         src/StateMachineLoader.cpp

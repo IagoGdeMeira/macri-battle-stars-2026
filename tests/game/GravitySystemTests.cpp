@@ -3,6 +3,7 @@
 #include "domain/components/GravityComponent.h"
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/HitstopComponent.h"
+#include "domain/components/JumpComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/include/World/World.h"
 
@@ -22,6 +23,7 @@ public:
         comp.registerComponent<GravityComponent>();
         comp.registerComponent<GroundedComponent>();
         comp.registerComponent<HitstopComponent>();
+        comp.registerComponent<JumpComponent>();
         comp.registerComponent<VelocityComponent>();
     }
 

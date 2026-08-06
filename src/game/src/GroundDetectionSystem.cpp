@@ -10,6 +10,7 @@
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/Entity/Entity.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -26,7 +27,11 @@ void GroundDetectionSystem::update(UpdateContext& ctx)
     auto& comp = ctx.world.components();
 
     auto groundedView = View<GroundedComponent>(comp);
-    for (auto [entity, grounded] : groundedView) grounded.onGround = false;
+    for (auto [entity, grounded] : groundedView)
+    {
+        if (grounded.onGround) LOG_DEBUG("GroundDetectionSystem: resetting onGround for entity {}", entity.id);
+        grounded.onGround = false;
+    }
 
     for (const auto& [a, b] : collisions)
     {
@@ -54,6 +59,7 @@ void GroundDetectionSystem::processGroundCollision(UpdateContext& ctx, Entity st
 
     auto& comp = ctx.world.components();
     comp.get<GroundedComponent>(*owner).onGround = true;
+    LOG_DEBUG("GroundDetectionSystem: entity {} set onGround=true (static collision)", owner->id);
 }
 
 bool GroundDetectionSystem::isStandingOnGround(UpdateContext& ctx, Entity dynamicCollider, Entity staticEntity, Entity owner) const
