@@ -17,4 +17,4 @@ private:
     DataParser& parser;
 };
 
-#endif
+#endif // animation_loader_h

@@ -43,14 +43,15 @@ void AnimationStateSystem::update(UpdateContext& ctx)
         auto itRight = controller.animations.right.find(controller.currentState);
         const Animation* chosen = (itRight != controller.animations.right.end()) ? &itRight->second : nullptr;
 
-        if (chosen && comp.has<OrientationComponent>(entity))
+        if (comp.has<OrientationComponent>(entity))
         {
             const auto& orientation = comp.get<OrientationComponent>(entity);
-            if (orientation.direction != Orientation::Left) continue;
-            
-            auto& leftAnim = controller.animations.left;
-            auto itLeft = leftAnim.find(controller.currentState);
-            if (itLeft != leftAnim.end()) chosen = &itLeft->second;
+            if (orientation.direction == Orientation::Left)
+            {
+                auto& leftAnim = controller.animations.left;
+                auto itLeft = leftAnim.find(controller.currentState);
+                if (itLeft != leftAnim.end()) chosen = &itLeft->second;
+            }
         }
         if (!chosen) continue;
         
