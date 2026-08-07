@@ -18,6 +18,8 @@ public:
     PushboxLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
     virtual PushboxControllerComponent loadSingleState(const DataNode& stateNode, Entity parent) const;
 
+    virtual Entity createStaticPushbox(const DataNode& node, Entity parent) const;
+
 private:
     DataParser& parser;
     EntityFactory& factory;

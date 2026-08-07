@@ -8,6 +8,7 @@
 #include "StubRenderer.h"
 #include "StubWindow.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/CircleColliderComponent.h"
 #include "domain/components/HitboxComponent.h"
@@ -29,6 +30,7 @@
 #include "engine/include/TextureLoader/TextureLoader.h"
 
 #include "game/include/EntityFactory/EntityFactory.h"
+#include "game/include/PushboxLoader/PushboxLoader.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -46,10 +48,12 @@ public:
     TextureLoader textureLoader{this->textureFactory};
     EntityFactory entityFactory{{this->world, this->resourceManager, this->textureLoader, this->animationLoader}};
     StubDataParser parser;
+    PushboxLoader pushboxLoader{this->parser, this->entityFactory};
 
     MapLoaderFixture()
     {
         auto& comp = this->world.components();
+        comp.registerComponent<ActiveComponent>();
         comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<CircleColliderComponent>();
         comp.registerComponent<HitboxComponent>();
@@ -111,7 +115,6 @@ public:
         root->setObject("worldBounds", std::move(bounds));
 
         std::vector<std::unique_ptr<DataNode>> backgrounds;
-
         backgrounds.push_back(this->makeBackgroundLayer());
 
         auto floorVisual = std::make_unique<StubDataNode>();
@@ -133,7 +136,8 @@ public:
         std::vector<std::unique_ptr<DataNode>> collisions;
 
         auto floorColl = std::make_unique<StubDataNode>();
-        floorColl->setString("type", "rectangle");
+        floorColl->setString("shape", "rectangle");
+        floorColl->setString("pushboxType", "static");
         auto floorPos = std::make_unique<StubDataNode>();
         floorPos->setFloat("x", 0.f);
         floorPos->setFloat("y", 420.f);
@@ -145,7 +149,8 @@ public:
         collisions.push_back(std::move(floorColl));
 
         auto wallColl = std::make_unique<StubDataNode>();
-        wallColl->setString("type", "rectangle");
+        wallColl->setString("shape", "rectangle");
+        wallColl->setString("pushboxType", "static");
         auto wallPos = std::make_unique<StubDataNode>();
         wallPos->setFloat("x", 10.f);
         wallPos->setFloat("y", 20.f);
@@ -166,7 +171,7 @@ TEST_CASE_METHOD(MapLoaderFixture, "MapLoader parses map data and creates map en
 {
     this->parser.registerNode("assets/maps/dojo.json", this->makeMapRoot());
 
-    MapLoader loader(this->parser, this->entityFactory);
+    MapLoader loader(this->parser, this->entityFactory, this->pushboxLoader);
     Entity mapEntity = loader.load(this->world, "assets/maps/dojo.json");
 
     auto& comp = this->world.components();
@@ -194,12 +199,11 @@ TEST_CASE_METHOD(MapLoaderFixture, "MapLoader parses map data and creates map en
     {
         if (parent.parent != mapEntity || !comp.has<SpriteComponent>(entity)) continue;
 
-        if (comp.has<ParallaxComponent>(entity))
-        {
-            const auto& p = comp.get<ParallaxComponent>(entity);
-            if (p.factor.x == Catch::Approx(1.f) && p.factor.y == Catch::Approx(1.f)) foundFloorVisual = true;
-            else foundBackground = true; 
-        }
+        if (!comp.has<ParallaxComponent>(entity)) continue;
+        
+        const auto& p = comp.get<ParallaxComponent>(entity);
+        if (p.factor.x == Catch::Approx(1.f) && p.factor.y == Catch::Approx(1.f)) foundFloorVisual = true;
+        else foundBackground = true; 
     }
 
     for (auto&& item : View<RectangleColliderComponent>(comp)) (void)item, ++rectColliderCount;
@@ -214,7 +218,7 @@ TEST_CASE_METHOD(MapLoaderFixture, "MapLoader applies parallax factors from JSON
 ) {
     this->parser.registerNode("assets/maps/dojo.json", this->makeMapRoot());
 
-    MapLoader loader(this->parser, this->entityFactory);
+    MapLoader loader(this->parser, this->entityFactory, this->pushboxLoader);
     Entity mapEntity = loader.load(this->world, "assets/maps/dojo.json");
 
     auto& comp = this->world.components();

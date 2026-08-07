@@ -7,17 +7,21 @@
 #include "engine/include/DataParser/DataParser.h"
 
 class EntityFactory;
+class PushboxLoader;
 class World;
 
 class MapLoader
 {
 public:
-    MapLoader(DataParser& parser, EntityFactory& factory) : parser(parser), factory(factory) {}
+    MapLoader(DataParser& parser, EntityFactory& factory, PushboxLoader& pushboxLoader) :
+        parser(parser), factory(factory), pushboxLoader(pushboxLoader) {}
+
     Entity load(World& world, const std::string& path);
 
 private:
     DataParser& parser;
     EntityFactory& factory;
+    PushboxLoader& pushboxLoader;
 
     MapComponent parseMapComponent(const std::unique_ptr<DataNode>& root);
     void createBackgrounds(const std::unique_ptr<DataNode>& root, Entity mapEntity);

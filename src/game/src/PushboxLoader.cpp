@@ -2,6 +2,8 @@
 
 #include "EntityFactory/EntityFactory.h"
 
+#include "domain/components/ActiveComponent.h"
+#include "domain/include/World/World.h"
 #include "domain/value_objects/StateId/StateId.h"
 
 #include "engine/utils/DataUtils/DataUtils.h"
@@ -27,6 +29,14 @@ PushboxControllerComponent PushboxLoader::loadSingleState(const DataNode& stateN
         controller.frames.push_back(std::move(frame));
     }
     return controller;
+}
+
+Entity PushboxLoader::createStaticPushbox(const DataNode& node, Entity parent) const
+{
+    Entity e = this->createPushboxFromNode(node, parent);
+    auto& comp = this->factory.world().components();
+    comp.get<ActiveComponent>(e).active = true;
+    return e;
 }
 
 Entity PushboxLoader::createPushboxFromNode(const DataNode& node, Entity parent) const

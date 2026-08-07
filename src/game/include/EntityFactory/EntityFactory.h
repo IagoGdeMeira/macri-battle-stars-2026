@@ -30,13 +30,14 @@ public:
     };
 
     EntityFactory(const Config& cfg) :
-        world(cfg.world),
+        factoryWorld(cfg.world),
         resourceManager(cfg.resourceManager),
         textureLoader(cfg.textureLoader),
         animLoader(cfg.animationLoader) {}
 
     ResourceManager& resources() { return this->resourceManager; }
     TextureLoader& texLoader() { return this->textureLoader; }
+    World& world() { return this->factoryWorld; }
 
     struct HitboxChildParams
     { Entity parent; const Position& offset; int damage; DebugConfig debug = {false, Color{255, 0, 0, 128}, 0, 20}; };
@@ -55,10 +56,6 @@ public:
     };
     Entity createPushboxChild(const PushboxChildParams& params, const Rectangle& rect);
     Entity createPushboxChild(const PushboxChildParams& params, const Circle& circle);
-
-    struct StaticEntityParams { const Position& position; std::optional<Entity> parent; DebugConfig debug = {true, Color{128, 128, 128, 128}, 0, 20}; };
-    Entity createStaticEntity(const StaticEntityParams& params, const Rectangle& rect);
-    Entity createStaticEntity(const StaticEntityParams& params, const Circle& circle);
     
     Entity createEffectSprite(const std::string& texturePath, const Position& position, float duration);
     
@@ -69,7 +66,7 @@ public:
     Entity createBackgroundAnimated(const BackgroundParams& params, const std::string& texturePath, const std::string& animationPath);
 
 private:
-    World& world;
+    World& factoryWorld;
     ResourceManager& resourceManager;
     TextureLoader& textureLoader;
     AnimationLoader& animLoader;

@@ -193,7 +193,7 @@ void GameScene::setupInputAdapters()
 
 void GameScene::loadMap(const std::string& path)
 {
-    MapLoader mapLoader(this->parser, *this->entityFactory);
+    MapLoader mapLoader(this->parser, *this->entityFactory, *this->pushboxLoader);
     this->mapRoot = mapLoader.load(this->world(), path);
 }
 
@@ -288,13 +288,6 @@ void GameScene::addSystems()
     collisionDetect.addDetector(std::make_unique<RectCircleCollisionDetection>());
     collisionDetect.addDetector(std::make_unique<CircleCircleCollisionDetection>());
 
-    systems.addSystem<StaticPushboxResolutionSystem>(events);
-    systems.addSystem<DynamicPushboxResolutionSystem>(events);
-    systems.addSystem<GroundDetectionSystem>(events);
-    systems.addSystem<FrictionSystem>(mapComp.floorFriction);
-
-    systems.addSystem<DamageSystem>(events);
-
     auto& collisionCtrl = systems.addSystem<CollisionControllerSystem>(this->eventBus);
     collisionCtrl.addController(std::make_unique<HitboxCollisionController>());
     collisionCtrl.addController(std::make_unique<HurtboxCollisionController>());
@@ -303,6 +296,13 @@ void GameScene::addSystems()
     systems.addSystem<HitboxControllerSystem>();
     systems.addSystem<HurtboxControllerSystem>();
     systems.addSystem<PushboxControllerSystem>();
+
+    systems.addSystem<StaticPushboxResolutionSystem>(events);
+    systems.addSystem<DynamicPushboxResolutionSystem>(events);
+    systems.addSystem<GroundDetectionSystem>(events);
+    systems.addSystem<FrictionSystem>(mapComp.floorFriction);
+
+    systems.addSystem<DamageSystem>(events);
 
     systems.addSystem<CameraControllerSystem>(CameraControllerSystem::Config{
         .camera             = *this->camera,

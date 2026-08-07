@@ -37,7 +37,7 @@ public:
     }
 };
 
-TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem applies jump impulse and emits trigger when grounded",
+TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem applies jump force over time and emits trigger when grounded",
     "[integration][jump_system]"
 ) {
     const auto& updateDelay = JumpSystemFixture::UPDATE_DELAY;
@@ -50,11 +50,15 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem applies jump impulse and emits t
     grounded.onGround = true;
 
     VelocityComponent velocity;
+    JumpComponent jump;
+    jump.force = 420.f;
+    jump.maxTime = 0.5f;
 
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
     comp.add<GroundedComponent>(entity, grounded);
     comp.add<VelocityComponent>(entity, velocity);
+    comp.add<JumpComponent>(entity, jump);
     comp.add<PlayerComponent>(entity, PlayerComponent{1});
 
     std::vector<TriggerEvent> events;
@@ -64,7 +68,7 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem applies jump impulse and emits t
     this->scene.update(updateDelay);
 
     const auto& updatedVelocity = comp.get<VelocityComponent>(entity);
-    REQUIRE(updatedVelocity.velocity.y == Catch::Approx(-420.f));
+    REQUIRE(updatedVelocity.velocity.y == Catch::Approx(-6.72f).margin(0.01f));
     REQUIRE(events.size() == 1);
     REQUIRE(events[0].entity == entity);
     REQUIRE(events[0].trigger == TriggerId::Jump);
@@ -85,10 +89,14 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem ignores jump input when entity i
     VelocityComponent velocity;
     velocity.velocity.y = 25.f;
 
+    JumpComponent jump;
+    jump.force = 420.f;
+
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
     comp.add<GroundedComponent>(entity, grounded);
     comp.add<VelocityComponent>(entity, velocity);
+    comp.add<JumpComponent>(entity, jump);
     comp.add<PlayerComponent>(entity, PlayerComponent{2});
 
     int eventCount = 0;
@@ -119,10 +127,14 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem ignores jump input when entity i
 
     HitstopComponent hitstop{ .remaining = 1.f, .frozen = true };
 
+    JumpComponent jump;
+    jump.force = 420.f;
+
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
     comp.add<GroundedComponent>(entity, grounded);
     comp.add<VelocityComponent>(entity, velocity);
+    comp.add<JumpComponent>(entity, jump);
     comp.add<PlayerComponent>(entity, PlayerComponent{3});
     comp.add<HitstopComponent>(entity, hitstop);
 

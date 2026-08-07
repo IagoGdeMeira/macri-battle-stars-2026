@@ -28,8 +28,8 @@
 
 Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const Rectangle& rect)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
@@ -44,8 +44,8 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const R
 
 Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const Circle& circle)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
@@ -60,8 +60,8 @@ Entity EntityFactory::createHitboxChild(const HitboxChildParams& params, const C
 
 Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const Rectangle& rect)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
@@ -76,8 +76,8 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
 
 Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const Circle& circle)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
@@ -92,8 +92,8 @@ Entity EntityFactory::createHurtboxChild(const HurtboxChildParams& params, const
 
 Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const Rectangle& rect)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
@@ -108,8 +108,8 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
 
 Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const Circle& circle)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addParentAndLocal(e, params.parent, params.offset);
     comp.add<TransformComponent>(e, TransformComponent{});
@@ -122,53 +122,11 @@ Entity EntityFactory::createPushboxChild(const PushboxChildParams& params, const
     return e;
 }
 
-Entity EntityFactory::createStaticEntity(const StaticEntityParams& params, const Rectangle& rect)
-{
-    auto& comp = this->world.components();
-    auto& entities = this->world.entities();
-    Entity e = entities.create();
-
-    if (params.parent.has_value() && entities.isAlive(params.parent.value()))
-    {
-        Entity p = params.parent.value();
-        this->addParentAndLocal(e, p, {params.position.x, params.position.y});
-        comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
-    }
-    else comp.add<TransformComponent>(e, TransformComponent{params.position.x, params.position.y});
-
-    this->addCollider(e, rect);
-    comp.add<PushboxComponent>(e, PushboxComponent{PushboxComponent::Type::Static});
-
-    if (params.debug.enabled) this->addDebugVisual(e, rect, params.debug);
-    return e;
-}
-
-Entity EntityFactory::createStaticEntity(const StaticEntityParams& params, const Circle& circle)
-{
-    auto& comp = this->world.components();
-    auto& entities = this->world.entities();
-    Entity e = entities.create();
-
-    if (params.parent.has_value() && entities.isAlive(params.parent.value()))
-    {
-        Entity p = params.parent.value();
-        this->addParentAndLocal(e, p, {params.position.x, params.position.y});
-        comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
-    }
-    else comp.add<TransformComponent>(e, TransformComponent{params.position.x, params.position.y});
-
-    this->addCollider(e, circle);
-    comp.add<PushboxComponent>(e, PushboxComponent{PushboxComponent::Type::Static});
-
-    if (params.debug.enabled) this->addDebugVisual(e, circle, params.debug);
-    return e;
-}
-
 Entity EntityFactory::createEffectSprite(const std::string& texturePath, const Position& position, float duration)
 {
-    Entity e = this->world.entities().create();
+    Entity e = this->factoryWorld.entities().create();
     this->addSprite(e, texturePath);
-    auto& comp = this->world.components();
+    auto& comp = this->factoryWorld.components();
     comp.add<TransformComponent>(e, TransformComponent{position.x, position.y});
     comp.add<LifetimeComponent>(e, LifetimeComponent{duration});
     return e;
@@ -176,8 +134,8 @@ Entity EntityFactory::createEffectSprite(const std::string& texturePath, const P
 
 Entity EntityFactory::createBackgroundSprite(const BackgroundParams& params, const std::string& texturePath)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addSprite(e, texturePath);
     this->addRender(e, 0, params.zIndex);
@@ -190,8 +148,8 @@ Entity EntityFactory::createBackgroundSprite(const BackgroundParams& params, con
 
 Entity EntityFactory::createBackgroundRectangle(const BackgroundParams& params, const Rectangle& rect, const Color& color, bool filled)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addParentAndLocal(e, params.parent, {0.f, 0.f});
     comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
@@ -204,8 +162,8 @@ Entity EntityFactory::createBackgroundRectangle(const BackgroundParams& params, 
 
 Entity EntityFactory::createBackgroundCircle(const BackgroundParams& params, const Circle& circle, const Color& color, bool filled)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addParentAndLocal(e, params.parent, {0.f, 0.f});
     comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
@@ -218,8 +176,8 @@ Entity EntityFactory::createBackgroundCircle(const BackgroundParams& params, con
 
 Entity EntityFactory::createBackgroundAnimated(const BackgroundParams& params, const std::string& texturePath, const std::string& animationPath)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     this->addParentAndLocal(e, params.parent, {0.f, 0.f});
     comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
@@ -249,7 +207,7 @@ Entity EntityFactory::createBackgroundAnimated(const BackgroundParams& params, c
 
 void EntityFactory::addParentAndLocal(Entity entity, Entity parent, const Position& localPos)
 {
-    auto& comp = this->world.components();
+    auto& comp = this->factoryWorld.components();
     comp.add<ParentComponent>(entity, ParentComponent{parent});
     comp.add<LocalTransform>(entity, LocalTransform{localPos});
 
@@ -261,13 +219,13 @@ void EntityFactory::addParentAndLocal(Entity entity, Entity parent, const Positi
 void EntityFactory::addRender(Entity entity, int layer, int zIndex)
 {
     RenderComponent render{layer, zIndex};
-    this->world.components().add<RenderComponent>(entity, std::move(render));
+    this->factoryWorld.components().add<RenderComponent>(entity, std::move(render));
 }
 
 void EntityFactory::addParallax(Entity entity, const Position& factor)
 {
     ParallaxComponent parallax{factor};
-    this->world.components().add<ParallaxComponent>(entity, std::move(parallax));
+    this->factoryWorld.components().add<ParallaxComponent>(entity, std::move(parallax));
 }
 
 void EntityFactory::addSprite(Entity entity, const std::string& texturePath)
@@ -279,37 +237,37 @@ void EntityFactory::addSprite(Entity entity, const std::string& texturePath)
     sprite.size.width       = static_cast<float>(texture->getWidth());
     sprite.size.height      = static_cast<float>(texture->getHeight());
     sprite.useSourceRect    = false;
-    this->world.components().add<SpriteComponent>(entity, std::move(sprite));
+    this->factoryWorld.components().add<SpriteComponent>(entity, std::move(sprite));
 }
 
 void EntityFactory::addCircleShape(const ShapeParams& params, const Circle& circle)
 {
     CircleShapeComponent shape{circle, params.color, params.filled, params.layer};
-    this->world.components().add<CircleShapeComponent>(params.entity, std::move(shape));
+    this->factoryWorld.components().add<CircleShapeComponent>(params.entity, std::move(shape));
 }
 
 void EntityFactory::addRectangleShape(const ShapeParams& params, const Rectangle& rect)
 {
     RectangleShapeComponent shape{rect, params.color, params.filled, params.layer};
-    this->world.components().add<RectangleShapeComponent>(params.entity, std::move(shape));
+    this->factoryWorld.components().add<RectangleShapeComponent>(params.entity, std::move(shape));
 }
 
 void EntityFactory::addCollider(Entity entity, const Rectangle& rect)
 {
     RectangleColliderComponent collider{rect.size};
-    this->world.components().add<RectangleColliderComponent>(entity, std::move(collider));
+    this->factoryWorld.components().add<RectangleColliderComponent>(entity, std::move(collider));
 }
 
 void EntityFactory::addCollider(Entity entity, const Circle& circle)
 {
     CircleColliderComponent collider{circle.radius};
-    this->world.components().add<CircleColliderComponent>(entity, std::move(collider));
+    this->factoryWorld.components().add<CircleColliderComponent>(entity, std::move(collider));
 }
 
 void EntityFactory::addDebugVisual(Entity entity, const Rectangle& rect, const DebugConfig& debug)
 {
     if (!debug.enabled) return;
-    auto& comp = this->world.components();
+    auto& comp = this->factoryWorld.components();
     RectangleShapeComponent shape;
     shape.rect      = rect;
     shape.color     = debug.color;
@@ -322,7 +280,7 @@ void EntityFactory::addDebugVisual(Entity entity, const Rectangle& rect, const D
 void EntityFactory::addDebugVisual(Entity entity, const Circle& circle, const DebugConfig& debug)
 {
     if (!debug.enabled) return;
-    auto& comp = this->world.components();
+    auto& comp = this->factoryWorld.components();
     CircleShapeComponent shape;
     shape.circle    = circle;
     shape.color     = debug.color;

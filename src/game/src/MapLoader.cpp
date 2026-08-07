@@ -1,6 +1,7 @@
 #include "MapLoader/MapLoader.h"
 
 #include "EntityFactory/EntityFactory.h"
+#include "PushboxLoader/PushboxLoader.h"
 
 #include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxComponent.h"
@@ -137,22 +138,7 @@ void MapLoader::createCollisionGeometry(const std::unique_ptr<DataNode>& root, E
 
     for (auto& collNode : root->getArray("collisions"))
     {
-        std::string type = collNode->getString("type", "rectangle");
-        if (type == "rectangle")
-        {
-            Rectangle rect = DataUtils::parseRect(*collNode, {{0.f, 0.f}, {0.f, 0.f}});
-            Position center {
-                rect.position.x + rect.size.width * 0.5f,
-                rect.position.y + rect.size.height * 0.5f
-            };
-            this->factory.createStaticEntity(EntityFactory::StaticEntityParams{
-                center, mapEntity, {true, Color{128,128,128,128}, 0, 0} }, rect);
-        }
-        else if (type == "circle")
-        {
-            Circle circle = DataUtils::parseCircle(*collNode, {{0.f, 0.f}, 0.f});
-            this->factory.createStaticEntity(EntityFactory::StaticEntityParams{
-                circle.position, mapEntity, {true, Color{128,128,128,128}, 0, 0}}, circle);
-        }
+        if (!collNode->has("pushboxType")) const_cast<DataNode*>(collNode.get())->setString("pushboxType", "static");
+        this->pushboxLoader.createStaticPushbox(*collNode, mapEntity);
     }
 }

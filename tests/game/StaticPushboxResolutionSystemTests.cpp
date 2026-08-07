@@ -1,5 +1,6 @@
 #include "game/include/StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/CircleColliderComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxComponent.h"
@@ -23,6 +24,7 @@ public:
     StaticPushboxResolutionSystemFixture() : system(this->bus), context { this->world, this->bus, this->commandBuffer, 0.f }
     {
         auto& comp = this->world.components();
+        comp.registerComponent<ActiveComponent>();
         comp.registerComponent<CircleColliderComponent>();
         comp.registerComponent<ParentComponent>();
         comp.registerComponent<PushboxComponent>();
@@ -46,6 +48,7 @@ protected:
         comp.add<RectangleColliderComponent>(entity, RectangleColliderComponent{4.f, 4.f});
         comp.add<PushboxComponent>(entity, PushboxComponent{type, 1.f, 1.f});
         comp.add<VelocityComponent>(entity, VelocityComponent{vx, vy});
+        comp.add<ActiveComponent>(entity, ActiveComponent{true});
         return entity;
     }
 };
@@ -103,6 +106,7 @@ TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture, "StaticPushboxResolutionS
     comp.add<TransformComponent>(child, TransformComponent{});
     comp.add<RectangleColliderComponent>(child, RectangleColliderComponent{4.f, 4.f});
     comp.add<PushboxComponent>(child, PushboxComponent{PushboxComponent::Type::Dynamic, 1.f, 1.f});
+    comp.add<ActiveComponent>(child, ActiveComponent{true});
 
     Entity staticEntity = this->createRect(2.f, 0.f, PushboxComponent::Type::Static, 0.f, 0.f);
 
