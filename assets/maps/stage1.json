@@ -4,8 +4,8 @@
     "gravity": 980,
     "floorFriction": 5,
     "airFriction": 2,
-    "worldBounds": { "left": 0, "right": 2000, "top": -200, "bottom": 500 },
-    "spawnPoints": [ { "playerId": 0, "x": 800 }, { "playerId": 1, "x": 1200 } ],
+    "worldBounds": { "left": -1000, "right": 1000, "top": -200, "bottom": 500 },
+    "spawnPoints": [ { "playerId": 0, "x": -200 }, { "playerId": 1, "x": 200 } ],
     "backgroundLayers": [
         {
             "type": "rectangle",
@@ -27,13 +27,8 @@
             "shape": "rectangle",
             "pushboxType": "static",
             "position": { "x": 0, "y": 400 },
-            "size": { "width": 2000, "height": 50 }
-        },
-        {
-            "shape": "rectangle",
-            "pushboxType": "static",
-            "position": { "x": 100, "y": 250 },
-            "size": { "width": 50, "height": 150 }
+            "size": { "width": 5000, "height": 50 },
+            "debug": { "enabled": true, "color": { "r": 255, "g": 0, "b": 255, "a": 128 } }
         }
     ]
 }
