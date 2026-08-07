@@ -1,6 +1,7 @@
 #include "domain/utils/Logger/Logger.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <chrono>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -15,6 +16,9 @@ public:
 
         Logger::setTimestampEnabled(false);
         Logger::setLevel(Logger::LogLevel::DEBUG);
+        Logger::setThrottleEnabled(false);
+        Logger::setThrottleInterval(std::chrono::milliseconds{0});
+        Logger::clearThrottleCache();
     }
 
     ~LoggerTestFixture()
@@ -22,6 +26,9 @@ public:
         std::cout.rdbuf(this->originalBuffer);
         Logger::setTimestampEnabled(true);
         Logger::setLevel(Logger::LogLevel::DEBUG);
+        Logger::setThrottleEnabled(false);
+        Logger::setThrottleInterval(std::chrono::milliseconds{0});
+        Logger::clearThrottleCache();
     }
 
     std::string getOutput() const { return this->capture.str(); }
@@ -92,4 +99,60 @@ TEST_CASE_METHOD(LoggerTestFixture, "Logger does not break on missing placeholde
     LOG_DEBUG("Static message without placeholder");
     auto output = this->getOutput();
     REQUIRE(output.find("[DEBUG] Static message without placeholder") != std::string::npos);
+}
+
+TEST_CASE_METHOD(LoggerTestFixture, "Logger throttling suppresses repeated identical messages", "[unit][logger][throttle]")
+{
+    Logger::setThrottleEnabled(true);
+    Logger::setThrottleInterval(std::chrono::milliseconds(1000));
+
+    LOG_DEBUG("Repeated");
+    LOG_DEBUG("Repeated");
+    LOG_DEBUG("Repeated");
+
+    auto output = this->getOutput();
+    size_t first = output.find("[DEBUG] Repeated");
+    REQUIRE(first != std::string::npos);
+    REQUIRE(output.find("[DEBUG] Repeated", first + 1) == std::string::npos);
+}
+
+TEST_CASE_METHOD(LoggerTestFixture, "Logger throttling allows different messages", "[unit][logger][throttle]")
+{
+    Logger::setThrottleEnabled(true);
+    Logger::setThrottleInterval(std::chrono::milliseconds(1000));
+
+    LOG_DEBUG("Message A");
+    LOG_DEBUG("Message B");
+
+    auto output = this->getOutput();
+    REQUIRE(output.find("[DEBUG] Message A") != std::string::npos);
+    REQUIRE(output.find("[DEBUG] Message B") != std::string::npos);
+}
+
+TEST_CASE_METHOD(LoggerTestFixture, "Logger throttling can be disabled", "[unit][logger][throttle]")
+{
+    Logger::setThrottleEnabled(false);
+
+    LOG_DEBUG("Again");
+    LOG_DEBUG("Again");
+
+    auto output = this->getOutput();
+    size_t first = output.find("[DEBUG] Again");
+    REQUIRE(first != std::string::npos);
+    REQUIRE(output.find("[DEBUG] Again", first + 1) != std::string::npos);
+}
+
+TEST_CASE_METHOD(LoggerTestFixture, "Logger clearThrottleCache allows message to reappear", "[unit][logger][throttle]")
+{
+    Logger::setThrottleEnabled(true);
+    Logger::setThrottleInterval(std::chrono::milliseconds(1000));
+
+    LOG_DEBUG("Cached");
+    Logger::clearThrottleCache();
+    LOG_DEBUG("Cached");
+
+    auto output = this->getOutput();
+    size_t first = output.find("[DEBUG] Cached");
+    REQUIRE(first != std::string::npos);
+    REQUIRE(output.find("[DEBUG] Cached", first + 1) != std::string::npos);
 }

@@ -21,6 +21,10 @@ void JumpSystem::update(UpdateContext& ctx)
     auto view = View<InputComponent, VelocityComponent, GroundedComponent, PlayerComponent, JumpComponent>(comp);
     for (auto [entity, input, velocity, grounded, player, jump] : view)
     {
+        auto& vel = velocity.velocity;
+        LOG_DEBUG("JumpSystem: entity {} pre-update velY={:.2f}, onGround={}, isJumping={}",
+            entity.id, vel.y, grounded.onGround ? "true" : "false", jump.isJumping ? "true" : "false");
+
         if (comp.has<HitstopComponent>(entity) && comp.get<HitstopComponent>(entity).frozen) continue;
 
         bool jumpPressed = this->hasInputAction(input, InputAction::Jump);
@@ -30,7 +34,7 @@ void JumpSystem::update(UpdateContext& ctx)
         if (jump.isJumping)
         {
             this->applyJumpForce(jump, velocity, ctx.deltaTime, jumpPressed, entity);
-            if (!jumpPressed || jump.timer >= jump.maxTime) this->stopJump(jump);
+            if (!jumpPressed || jump.timer >= jump.maxTime) this->stopJump(jump, entity);
         }
     }
 }
@@ -43,9 +47,10 @@ bool JumpSystem::hasInputAction(InputComponent& input, InputAction action) const
 
 void JumpSystem::startJump(JumpComponent& jump, VelocityComponent& velocity, Entity entity)
 {
+    LOG_DEBUG("JumpSystem: startJump entity {}", entity.id);
     jump.isJumping = true;
     jump.timer = 0.f;
-    velocity.velocity.y = 0.f;
+    // velocity.velocity.y = 0.f;
     this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Jump});
 }
 
@@ -60,4 +65,8 @@ void JumpSystem::applyJumpForce(JumpComponent& jump, VelocityComponent& velocity
         entity.id, jump.force, deltaTime, velocity.velocity.y);
 }
 
-void JumpSystem::stopJump(JumpComponent& jump) { jump.isJumping = false; }
+void JumpSystem::stopJump(JumpComponent& jump, Entity entity)
+{
+    LOG_DEBUG("JumpSystem: stopJump entity {}", entity.id);
+    jump.isJumping = false;
+}

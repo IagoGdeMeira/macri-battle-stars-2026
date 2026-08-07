@@ -7,6 +7,8 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include <mutex>
 
 class Logger
 {
@@ -18,6 +20,12 @@ public:
 
     static void setTimestampEnabled(bool enabled) { Logger::timestampEnabled = enabled; }
     static bool isTimestampEnabled() { return Logger::timestampEnabled; }
+
+    static void setThrottleEnabled(bool enabled) { Logger::throttleEnabled = enabled; }
+    static bool isThrottleEnabled() { return Logger::throttleEnabled; }
+    static void setThrottleInterval(std::chrono::milliseconds interval) { Logger::throttleInterval = interval; }
+
+    static void clearThrottleCache();
 
     template<typename... Args>
     static void debug(std::string_view format, Args&&... args)
@@ -38,6 +46,10 @@ public:
 private:
     static Logger::LogLevel globalLevel;
     static bool timestampEnabled;
+    static bool throttleEnabled;
+    static std::chrono::milliseconds throttleInterval;
+    static std::unordered_map<std::string, std::chrono::steady_clock::time_point> lastLogTimes;
+    static std::mutex logMutex;
 
     template<typename... Args>
     static void log(Logger::LogLevel level, std::string_view format, Args&&... args);

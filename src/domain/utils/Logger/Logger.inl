@@ -11,12 +11,23 @@ void Logger::log(Logger::LogLevel level, std::string_view format, Args&&... args
 {
     if (level < Logger::globalLevel) return;
 
+    std::ostringstream formattedMsg;
+    Logger::format(formattedMsg, format, std::forward<Args>(args)...);
+    std::string message = formattedMsg.str();
+
+    if (Logger::throttleEnabled && Logger::throttleInterval.count() > 0)
+    {
+        std::lock_guard<std::mutex> lock(Logger::logMutex);
+        auto now = std::chrono::steady_clock::now();
+        auto it = Logger::lastLogTimes.find(message);
+        if (it != Logger::lastLogTimes.end() && (now - it->second) < Logger::throttleInterval) return;
+        Logger::lastLogTimes[message] = now;
+    }
+
     std::ostream& out = (level >= Logger::LogLevel::WARN) ? std::cerr : std::cout;
     if (Logger::timestampEnabled) out << "[" << Logger::currentTimestamp() << "] ";
-
     out << "[" << Logger::levelToString(level) << "] ";
-    Logger::format(out, format, std::forward<Args>(args)...);
-    out << std::endl;
+    out << message << std::endl;
 }
 
 template<typename T, typename... Args>

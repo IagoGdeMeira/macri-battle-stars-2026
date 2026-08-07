@@ -57,7 +57,6 @@
 #include "domain/components/StateComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/include/InputBindingLoader/InputBindingLoader.h"
 #include "engine/include/InputBufferSystem/InputBufferSystem.h"
@@ -249,15 +248,6 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     else transform.position.y = mapComp.floorY - 32.f;
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
-
-    LOG_DEBUG("GameScene: prepared player {} entity {} at ({}, {})",
-        slot.playerId, entity.id, transform.position.x, transform.position.y);
-
-    LOG_DEBUG("GameScene::preparePlayer: player {} entity {} completed. hasSprite={} hasRender={} pos=({},{})",
-        slot.playerId, entity.id,
-        comp.has<SpriteComponent>(entity),
-        comp.has<RenderComponent>(entity),
-        transform.position.x, transform.position.y);
 }
 
 void GameScene::addSystems()
@@ -283,9 +273,10 @@ void GameScene::addSystems()
     systems.addSystem<FaceOffSystem>(events);
 
     auto& mapComp = this->world().components().get<MapComponent>(this->mapRoot);
-    // systems.addSystem<AirFrictionSystem>(mapComp.airFriction);
-    systems.addSystem<GravitySystem>(mapComp.gravity);
+    systems.addSystem<AirFrictionSystem>(mapComp.airFriction);
+
     systems.addSystem<JumpSystem>(events, -4000.f);
+    systems.addSystem<GravitySystem>(mapComp.gravity);
     systems.addSystem<MovementSystem>();
     systems.addSystem<LocalToWorldSystem>();
 
@@ -297,9 +288,9 @@ void GameScene::addSystems()
     collisionDetect.addDetector(std::make_unique<RectCircleCollisionDetection>());
     collisionDetect.addDetector(std::make_unique<CircleCircleCollisionDetection>());
 
-    systems.addSystem<GroundDetectionSystem>(events);
     systems.addSystem<StaticPushboxResolutionSystem>(events);
     systems.addSystem<DynamicPushboxResolutionSystem>(events);
+    systems.addSystem<GroundDetectionSystem>(events);
     systems.addSystem<FrictionSystem>(mapComp.floorFriction);
 
     systems.addSystem<DamageSystem>(events);
@@ -325,8 +316,4 @@ void GameScene::addSystems()
         .viewSize           = GameConstants::VIRTUAL_SIZE,
         .applyZoomToSize    = true,
     });
-
-    LOG_DEBUG("World bounds: left={}, right={}, top={}, bottom={}",
-        mapComp.worldBounds.left, mapComp.worldBounds.right,
-        mapComp.worldBounds.top, mapComp.worldBounds.bottom);
 }

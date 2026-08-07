@@ -4,6 +4,7 @@
 #include "CollisionHandlerFactory/CollisionHandlerFactory.h"
 #include "ICollisionHandler/ICollisionHandler.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxComponent.h"
 #include "domain/components/RectangleColliderComponent.h"
@@ -26,6 +27,8 @@ void DynamicPushboxResolutionSystem::update(UpdateContext& ctx)
 
     for (const auto& [a, b] : this->collisions)
     {
+        if (comp.has<ActiveComponent>(a) && !comp.get<ActiveComponent>(a).active) continue;
+        if (comp.has<ActiveComponent>(b) && !comp.get<ActiveComponent>(b).active) continue;
         if (!comp.has<PushboxComponent>(a) || !comp.has<PushboxComponent>(b)) continue;
 
         auto& pushA = comp.get<PushboxComponent>(a);
@@ -33,6 +36,10 @@ void DynamicPushboxResolutionSystem::update(UpdateContext& ctx)
 
         using PushType = PushboxComponent::Type;
         if (pushA.type != PushType::Dynamic || pushB.type != PushType::Dynamic) continue;
+
+        Entity rootA = comp.has<ParentComponent>(a) ? comp.get<ParentComponent>(a).parent : a;
+        Entity rootB = comp.has<ParentComponent>(b) ? comp.get<ParentComponent>(b).parent : b;
+        if (rootA.id == rootB.id) continue;
 
         this->resolveDynamicCollision(ctx, a, b);
     }

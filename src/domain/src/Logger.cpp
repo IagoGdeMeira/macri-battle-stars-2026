@@ -5,6 +5,11 @@
 Logger::LogLevel Logger::globalLevel = Logger::LogLevel::DEBUG;
 bool Logger::timestampEnabled = true;
 
+bool Logger::throttleEnabled = false;
+std::chrono::milliseconds Logger::throttleInterval{0};
+std::unordered_map<std::string, std::chrono::steady_clock::time_point> Logger::lastLogTimes;
+std::mutex Logger::logMutex;
+
 std::string Logger::levelToString(Logger::LogLevel level)
 {
     switch (level)
@@ -38,14 +43,19 @@ std::string Logger::currentTimestamp()
 
 void Logger::parseFormatSpec(std::ostream& out, const std::string& spec)
 {
-    if (spec.size() >= 3 && spec[0] == ':' && spec[1] == '.')
+    if (spec.size() < 3 || spec[0] != ':' || spec[1] != '.') return;
+    
+    std::string digits = spec.substr(2, spec.size() - 3);
+    try
     {
-        std::string digits = spec.substr(2, spec.size() - 3);
-        try
-        {
-            int prec = std::stoi(digits);
-            out << std::fixed << std::setprecision(prec);
-        }
-        catch (...) { }
+        int prec = std::stoi(digits);
+        out << std::fixed << std::setprecision(prec);
     }
+    catch (...) { }
+}
+
+void Logger::clearThrottleCache()
+{
+    std::lock_guard<std::mutex> lock(Logger::logMutex);
+    Logger::lastLogTimes.clear();
 }

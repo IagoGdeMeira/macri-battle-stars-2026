@@ -4,12 +4,12 @@
 #include "CollisionHandlerFactory/CollisionHandlerFactory.h"
 #include "ICollisionHandler/ICollisionHandler.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxComponent.h"
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -27,6 +27,8 @@ void StaticPushboxResolutionSystem::update(UpdateContext& ctx)
 
     for (const auto& [a, b] : this->collisions)
     {
+        if (comp.has<ActiveComponent>(a) && !comp.get<ActiveComponent>(a).active) continue;
+        if (comp.has<ActiveComponent>(b) && !comp.get<ActiveComponent>(b).active) continue;
         if (!comp.has<PushboxComponent>(a) || !comp.has<PushboxComponent>(b)) continue;
 
         auto& pushA = comp.get<PushboxComponent>(a);
@@ -84,11 +86,11 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
     if (minOverlap.x < minOverlap.y)
     {
         float sep = minOverlap.x;
+
         if (dynCenter.x < staCenter.x) dynTrans.position.x -= sep;
         else dynTrans.position.x += sep;
 
         if (comp.has<VelocityComponent>(rootDyn)) comp.get<VelocityComponent>(rootDyn).velocity.x = 0.f;
-        LOG_DEBUG("StaticPushboxResolutionSystem: horizontal resolution, dyn={}, sep={:.1f}", rootDyn.id, sep);
     }
     else
     {
@@ -96,13 +98,10 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
         if (dynCenter.y < staCenter.y)
         {
             dynTrans.position.y -= sep;
-            if (!comp.has<VelocityComponent>(rootDyn)) return;
-            
-            auto& vel = comp.get<VelocityComponent>(rootDyn);
-            if (vel.velocity.y > 0.f)
+            if (comp.has<VelocityComponent>(rootDyn))
             {
-                vel.velocity.y = 0.f;
-                LOG_DEBUG("StaticPushboxResolutionSystem: vertical resolution (landing), dyn={}, sep={:.1f}, vel.y=0", rootDyn.id, sep);
+                auto& vel = comp.get<VelocityComponent>(rootDyn).velocity;
+                if (vel.y > 0.f) vel.y = 0.f;
             }
         }
         else
@@ -110,8 +109,8 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
             dynTrans.position.y += sep;
             if (comp.has<VelocityComponent>(rootDyn))
             {
-                comp.get<VelocityComponent>(rootDyn).velocity.y = 0.f;
-                LOG_DEBUG("StaticPushboxResolutionSystem: vertical resolution (ceiling), dyn={}, sep={:.1f}, vel.y=0", rootDyn.id, sep);
+                auto& vel = comp.get<VelocityComponent>(rootDyn).velocity;
+                vel.y = 0.f;
             }
         }
     }

@@ -4,6 +4,7 @@
 #include "CollisionHandlerFactory/CollisionHandlerFactory.h"
 #include "ICollisionHandler/ICollisionHandler.h"
 
+#include "domain/components/ActiveComponent.h"
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxComponent.h"
@@ -11,7 +12,6 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/include/Entity/Entity.h"
-#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -28,17 +28,12 @@ void GroundDetectionSystem::update(UpdateContext& ctx)
     auto& comp = ctx.world.components();
 
     auto groundedView = View<GroundedComponent>(comp);
-    for (auto [entity, grounded] : groundedView)
-    {
-        if (grounded.onGround)
-        {
-            grounded.onGround = false;
-            LOG_DEBUG("GroundDetectionSystem: entity {} onGround changed to false", entity.id);
-        }
-    }
-
+    for (auto [entity, grounded] : groundedView) grounded.onGround = false;
     for (const auto& [a, b] : collisions)
     {
+        if (comp.has<ActiveComponent>(a) && !comp.get<ActiveComponent>(a).active) continue;
+        if (comp.has<ActiveComponent>(b) && !comp.get<ActiveComponent>(b).active) continue;
+
         if (this->isStaticPushbox(ctx, a)) this->processGroundCollision(ctx, a, b);
         else if (this->isStaticPushbox(ctx, b)) this->processGroundCollision(ctx, b, a);
     }
@@ -50,7 +45,6 @@ bool GroundDetectionSystem::isStaticPushbox(UpdateContext& ctx, Entity entity) c
 {
     auto& comp = ctx.world.components();
     if (!comp.has<PushboxComponent>(entity)) return false;
-
     return comp.get<PushboxComponent>(entity).type == PushboxComponent::Type::Static;
 }
 
@@ -68,12 +62,7 @@ void GroundDetectionSystem::processGroundCollision(UpdateContext& ctx, Entity st
 
     if (!this->isStandingOnGround(ctx, dynamicCollider, staticEntity, *owner)) return;
 
-    auto& groundedComp = comp.get<GroundedComponent>(*owner);
-    if (!groundedComp.onGround)
-    {
-        groundedComp.onGround = true;
-        LOG_DEBUG("GroundDetectionSystem: entity {} onGround changed to true (static collision)", owner->id);
-    }
+    comp.get<GroundedComponent>(*owner).onGround = true;
 }
 
 bool GroundDetectionSystem::isStandingOnGround(UpdateContext& ctx, Entity dynamicCollider, Entity staticEntity, Entity owner) const

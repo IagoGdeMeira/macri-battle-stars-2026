@@ -10,6 +10,8 @@
 int main()
 {
     Logger::setLevel(Logger::LogLevel::DEBUG);
+    Logger::setThrottleEnabled(true);
+    Logger::setThrottleInterval(std::chrono::milliseconds(200));
     try
     {
         Application app;

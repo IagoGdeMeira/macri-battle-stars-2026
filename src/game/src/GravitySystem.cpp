@@ -2,6 +2,8 @@
 
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/HitstopComponent.h"
+#include "domain/components/JumpComponent.h"
+#include "domain/components/VelocityComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -28,7 +30,7 @@ float GravitySystem::computeGravityScale(const GravityComponent& gravity, const 
     if (jump)
     {
         if (velocityY < 0) scale *= jump->gravityScaleAsc;
-        else if (velocityY > 0)  scale *= jump->gravityScaleDesc; 
+        else if (velocityY > 0) scale *= jump->gravityScaleDesc; 
     }
     return scale;
 }
