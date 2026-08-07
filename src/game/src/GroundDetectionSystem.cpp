@@ -9,6 +9,7 @@
 #include "domain/components/PushboxComponent.h"
 #include "domain/components/RectangleColliderComponent.h"
 #include "domain/components/TransformComponent.h"
+#include "domain/components/VelocityComponent.h"
 #include "domain/include/Entity/Entity.h"
 #include "domain/utils/Logger/Logger.h"
 
@@ -29,8 +30,11 @@ void GroundDetectionSystem::update(UpdateContext& ctx)
     auto groundedView = View<GroundedComponent>(comp);
     for (auto [entity, grounded] : groundedView)
     {
-        if (grounded.onGround) LOG_DEBUG("GroundDetectionSystem: resetting onGround for entity {}", entity.id);
-        grounded.onGround = false;
+        if (grounded.onGround)
+        {
+            grounded.onGround = false;
+            LOG_DEBUG("GroundDetectionSystem: entity {} onGround changed to false", entity.id);
+        }
     }
 
     for (const auto& [a, b] : collisions)
@@ -55,11 +59,21 @@ void GroundDetectionSystem::processGroundCollision(UpdateContext& ctx, Entity st
     std::optional<Entity> owner = this->getGroundedOwner(ctx, dynamicCollider);
     if (!owner.has_value()) return;
 
+    auto& comp = ctx.world.components();
+    if (comp.has<VelocityComponent>(*owner))
+    {
+        const auto& vel = comp.get<VelocityComponent>(*owner);
+        if (vel.velocity.y < 0) return;
+    }
+
     if (!this->isStandingOnGround(ctx, dynamicCollider, staticEntity, *owner)) return;
 
-    auto& comp = ctx.world.components();
-    comp.get<GroundedComponent>(*owner).onGround = true;
-    LOG_DEBUG("GroundDetectionSystem: entity {} set onGround=true (static collision)", owner->id);
+    auto& groundedComp = comp.get<GroundedComponent>(*owner);
+    if (!groundedComp.onGround)
+    {
+        groundedComp.onGround = true;
+        LOG_DEBUG("GroundDetectionSystem: entity {} onGround changed to true (static collision)", owner->id);
+    }
 }
 
 bool GroundDetectionSystem::isStandingOnGround(UpdateContext& ctx, Entity dynamicCollider, Entity staticEntity, Entity owner) const

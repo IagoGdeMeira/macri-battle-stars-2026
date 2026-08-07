@@ -28,7 +28,7 @@ float GravitySystem::computeGravityScale(const GravityComponent& gravity, const 
     if (jump)
     {
         if (velocityY < 0) scale *= jump->gravityScaleAsc;
-        else scale *= jump->gravityScaleDesc;
+        else if (velocityY > 0)  scale *= jump->gravityScaleDesc; 
     }
     return scale;
 }
