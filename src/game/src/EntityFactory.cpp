@@ -140,7 +140,7 @@ Entity EntityFactory::createBackgroundSprite(const BackgroundParams& params, con
     this->addSprite(e, texturePath);
     this->addRender(e, 0, params.zIndex);
     this->addParallax(e, params.parallax);
-    this->addParentAndLocal(e, params.parent, {0.f, 0.f});
+    this->addParentAndLocal(e, params.parent, params.position);
     comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
 
     return e;
@@ -151,12 +151,12 @@ Entity EntityFactory::createBackgroundRectangle(const BackgroundParams& params, 
     Entity e = this->factoryWorld.entities().create();
     auto& comp = this->factoryWorld.components();
 
-    this->addParentAndLocal(e, params.parent, {0.f, 0.f});
-    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
-    this->addParallax(e, params.parallax);
-    this->addRender(e, 0, params.zIndex);
-
     this->addRectangleShape(ShapeParams{e, color, filled, 0}, rect);
+    this->addRender(e, 0, params.zIndex);
+    this->addParallax(e, params.parallax);
+    this->addParentAndLocal(e, params.parent, params.position);
+    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
+
     return e;
 }
 
@@ -165,12 +165,12 @@ Entity EntityFactory::createBackgroundCircle(const BackgroundParams& params, con
     Entity e = this->factoryWorld.entities().create();
     auto& comp = this->factoryWorld.components();
 
-    this->addParentAndLocal(e, params.parent, {0.f, 0.f});
-    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
-    this->addParallax(e, params.parallax);
-    this->addRender(e, 0, params.zIndex);
-
     this->addCircleShape(ShapeParams{e, color, filled, 0}, circle);
+    this->addRender(e, 0, params.zIndex);
+    this->addParallax(e, params.parallax);
+    this->addParentAndLocal(e, params.parent, params.position);
+    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
+
     return e;
 }
 
@@ -179,12 +179,11 @@ Entity EntityFactory::createBackgroundAnimated(const BackgroundParams& params, c
     Entity e = this->factoryWorld.entities().create();
     auto& comp = this->factoryWorld.components();
 
-    this->addParentAndLocal(e, params.parent, {0.f, 0.f});
-    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
-    this->addParallax(e, params.parallax);
-    this->addRender(e, 0, params.zIndex);
-
     this->addSprite(e, texturePath);
+    this->addRender(e, 0, params.zIndex);
+    this->addParallax(e, params.parallax);
+    this->addParentAndLocal(e, params.parent, params.position);
+    comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
 
     AnimationControllerComponent controller;
     StateIdMapper defaultMapper;

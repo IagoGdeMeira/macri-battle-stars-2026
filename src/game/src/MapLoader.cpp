@@ -76,60 +76,60 @@ void MapLoader::createBackgrounds(const std::unique_ptr<DataNode>& root, Entity 
 
     for (auto& layer : root->getArray("backgroundLayers"))
     {
+        BackgroundParams params{layer, mapEntity}; 
+        if (layer->has("parallaxFactor"))
+        {
+            auto parallaxNode = layer->getObject("parallaxFactor");
+            params.parallax = DataUtils::parsePosition(*parallaxNode, {1.f, 1.f});
+        }
+
+        if (layer->has("position"))
+        {
+            auto posNode = layer->getObject("position");
+            params.position = DataUtils::parsePosition(*posNode, {0.f, 0.f});
+        }
+
         std::string type = layer->getString("type", "texture");
-        if (type == "rectangle")        this->createBackgroundRectangle(layer, mapEntity);
-        else if (type == "circle")      this->createBackgroundCircle(layer, mapEntity);
-        else if (type == "animated")    this->createBackgroundAnimated(layer, mapEntity);
-        else this->createBackgroundTexture(layer, mapEntity);
+        if (type == "rectangle") this->createBackgroundRectangle(params);
+        else if (type == "circle") this->createBackgroundCircle(params);
+        else if (type == "animated") this->createBackgroundAnimated(params);
+        else this->createBackgroundTexture(params);
     }
 }
 
-void MapLoader::createBackgroundTexture(const std::unique_ptr<DataNode>& layer, Entity mapEntity)
+void MapLoader::createBackgroundTexture(const BackgroundParams& params)
 {
-    std::string tex = layer->getString("texture");
-    auto parallaxNode = layer->getObject("parallaxFactor");
-    Position parallax {
-        parallaxNode ? parallaxNode->getFloat("x", 1.f) : 1.f,
-        parallaxNode ? parallaxNode->getFloat("y", 1.f) : 1.f
-    };
-    int zIndex = layer->getInt("zIndex", 0);
-
-    this->factory.createBackgroundSprite(EntityFactory::BackgroundParams{parallax, zIndex, mapEntity}, tex);
+    std::string tex = params.layer->getString("texture");
+    int zIndex = params.layer->getInt("zIndex", 0);
+    this->factory.createBackgroundSprite(
+        EntityFactory::BackgroundParams{params.parallax, zIndex, params.mapEntity, params.position}, tex);
 }
 
-void MapLoader::createBackgroundRectangle(const std::unique_ptr<DataNode>& layer, Entity mapEntity)
+void MapLoader::createBackgroundRectangle(const BackgroundParams& params)
 {
-    Color color = DataUtils::parseColor(*layer->getObject("color"), Color::WHITE());
-    Rectangle rect = DataUtils::parseRect(*layer, {{0.f, 0.f}, {100.f, 100.f}});
-    int zIndex = layer->getInt("zIndex", -1);
-
+    Color color = DataUtils::parseColor(*params.layer->getObject("color"), Color::WHITE());
+    Rectangle rect = DataUtils::parseRect(*params.layer, {{0.f, 0.f}, {100.f, 100.f}});
+    int zIndex = params.layer->getInt("zIndex", -1);
     this->factory.createBackgroundRectangle(EntityFactory::BackgroundParams{
-        {1.f, 1.f}, zIndex, mapEntity}, rect, color, true);
+        params.parallax, zIndex, params.mapEntity, params.position}, rect, color, true);
 }
 
-void MapLoader::createBackgroundCircle(const std::unique_ptr<DataNode>& layer, Entity mapEntity)
+void MapLoader::createBackgroundCircle(const BackgroundParams& params)
 {
-    Color color = DataUtils::parseColor(*layer->getObject("color"), Color::WHITE());
-    Circle circle = DataUtils::parseCircle(*layer, {{0.f, 0.f}, 10.f});
-    int zIndex = layer->getInt("zIndex", -1);
-
+    Color color = DataUtils::parseColor(*params.layer->getObject("color"), Color::WHITE());
+    Circle circle = DataUtils::parseCircle(*params.layer, {{0.f, 0.f}, 10.f});
+    int zIndex = params.layer->getInt("zIndex", -1);
     this->factory.createBackgroundCircle(EntityFactory::BackgroundParams{
-        {1.f, 1.f}, zIndex, mapEntity}, circle, color, true);
+        params.parallax, zIndex, params.mapEntity, params.position}, circle, color, true);
 }
 
-void MapLoader::createBackgroundAnimated(const std::unique_ptr<DataNode>& layer, Entity mapEntity)
+void MapLoader::createBackgroundAnimated(const BackgroundParams& params)
 {
-    std::string tex = layer->getString("texture");
-    std::string anim = layer->getString("animation");
-    auto parallaxNode = layer->getObject("parallaxFactor");
-    Position parallax {
-        parallaxNode ? parallaxNode->getFloat("x", 1.f) : 1.f,
-        parallaxNode ? parallaxNode->getFloat("y", 1.f) : 1.f
-    };
-    int zIndex = layer->getInt("zIndex", 0);
-
+    std::string tex = params.layer->getString("texture");
+    std::string anim = params.layer->getString("animation");
+    int zIndex = params.layer->getInt("zIndex", 0);
     this->factory.createBackgroundAnimated(EntityFactory::BackgroundParams{
-        parallax, zIndex, mapEntity}, tex, anim);
+        params.parallax, zIndex, params.mapEntity, params.position}, tex, anim);
 }
 
 void MapLoader::createCollisionGeometry(const std::unique_ptr<DataNode>& root, Entity mapEntity)

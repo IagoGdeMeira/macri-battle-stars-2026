@@ -59,7 +59,7 @@ public:
     
     Entity createEffectSprite(const std::string& texturePath, const Position& position, float duration);
     
-    struct BackgroundParams { const Position& parallax; int zIndex; Entity parent; };
+    struct BackgroundParams { const Position& parallax; int zIndex; Entity parent; Position position{0, 0}; };
     Entity createBackgroundSprite(const BackgroundParams& params, const std::string& texturePath);
     Entity createBackgroundRectangle(const BackgroundParams& params, const Rectangle& rect, const Color& color, bool filled = true);
     Entity createBackgroundCircle(const BackgroundParams& params, const Circle& circle, const Color& color, bool filled = true);
