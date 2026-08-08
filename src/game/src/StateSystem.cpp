@@ -64,6 +64,7 @@ void StateSystem::processEntity(UpdateContext& ctx, Entity entity, const std::ve
     for (const auto& transition : machine->transitions)
     {
         if (transition.from != state.current) continue;
+        if (transition.triggers.empty()) continue;
         if (!this->conditionsAreValid(transition, cctx)) continue;
 
         bool matched = false;
@@ -71,12 +72,21 @@ void StateSystem::processEntity(UpdateContext& ctx, Entity entity, const std::ve
         { matched = true; break; }
 
         if (!matched) continue;
+        if (best && transition.priority <= bestPriority) continue;
+        
+        best = &transition;
+        bestPriority = transition.priority;
+    }
 
-        if (!best || transition.priority > bestPriority)
-        {
-            best = &transition;
-            bestPriority = transition.priority;
-        }
+    if (!best) for (const auto& transition : machine->transitions)
+    {
+        if (transition.from != state.current) continue;
+        if (!transition.triggers.empty()) continue;
+        if (!this->conditionsAreValid(transition, cctx)) continue;
+        if (best && transition.priority <= bestPriority) continue;
+
+        best = &transition;
+        bestPriority = transition.priority; 
     }
 
     if (best)

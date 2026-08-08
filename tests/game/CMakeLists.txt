@@ -29,6 +29,7 @@ add_executable(game_tests
     trigger_conditions/MinTimeConditionTests.cpp
     trigger_conditions/NotConditionTests.cpp
     trigger_conditions/VelocityAboveConditionTests.cpp
+    trigger_conditions/VerticalVelocityAboveConditionTests.cpp
 
     ui_actions/NavigateToSelectionActionTests.cpp
     ui_actions/NavigateToTitleActionTests.cpp

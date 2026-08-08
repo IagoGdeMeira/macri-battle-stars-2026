@@ -18,6 +18,8 @@ public:
     void update(UpdateContext& ctx) override;
 
 private:
+    EventBus& bus;
+    
     std::vector<CollisionEvent> collisions;
 
     bool isStaticPushbox(UpdateContext& ctx, Entity entity) const;

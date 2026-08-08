@@ -16,7 +16,7 @@ public:
 
 private:
     EventBus& bus;
-    std::unordered_map<Entity, bool, Entity::Hash> wasGrounded;
+    std::unordered_map<Entity, float, Entity::Hash> previousVelocityY;
 };
 
 #endif // fall_trigger_system_h

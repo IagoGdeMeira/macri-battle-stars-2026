@@ -4,6 +4,7 @@
 
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/PlayerComponent.h"
+#include "domain/components/VelocityComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/value_objects/TriggerId/TriggerId.h"
 
@@ -12,14 +13,18 @@
 void FallTriggerSystem::update(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();
-    auto view = View<GroundedComponent, PlayerComponent>(comp);
+    auto view = View<VelocityComponent, GroundedComponent, PlayerComponent>(comp);
 
-    for (auto [entity, grounded, player] : view)
+    for (auto [entity, velocity, grounded, player] : view)
     {
-        bool isGrounded = grounded.onGround;
-        bool entityGrounded = this->wasGrounded[entity];
+        if (grounded.onGround) continue;
 
-        if (entityGrounded && !isGrounded) this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Fall});
-        this->wasGrounded[entity] = isGrounded;
+        float currentVy = velocity.velocity.y;
+        float previousVy = this->previousVelocityY[entity];
+
+        if (previousVy <= 0.f && currentVy > 0.f)
+        { this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Fall}); }
+
+        this->previousVelocityY[entity] = currentVy;
     }
 }
