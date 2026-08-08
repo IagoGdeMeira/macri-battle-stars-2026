@@ -74,7 +74,7 @@ TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
 }
 
 TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
-    "StaticPushboxResolutionSystem ignores static colliders below dynamic entity (ground)",
+    "StaticPushboxResolutionSystem pushes dynamic entity down when static is above",
     "[unit][static_pushbox_resolution_system]"
 ) {
     const Entity dynamicEntity = this->createRect(0.f, 0.f, PushboxComponent::Type::Dynamic, 0.f, 6.f);
@@ -87,8 +87,26 @@ TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
     const auto& dynamicTransform = comp.get<TransformComponent>(dynamicEntity);
     const auto& velocity = comp.get<VelocityComponent>(dynamicEntity);
 
-    REQUIRE(dynamicTransform.position.y == Catch::Approx(0.f));
-    REQUIRE(velocity.velocity.y == 6.f);
+    REQUIRE(dynamicTransform.position.y == Catch::Approx(-3.f));
+    REQUIRE(velocity.velocity.y == 0.f);
+}
+
+TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture,
+    "StaticPushboxResolutionSystem pushes dynamic entity up when static is below (ground)",
+    "[unit][static_pushbox_resolution_system]")
+{
+    const Entity dynamicEntity = this->createRect(0.f, -1.f, PushboxComponent::Type::Dynamic, 0.f, 0.f);
+    const Entity staticEntity = this->createRect(0.f, 0.f, PushboxComponent::Type::Static, 0.f, 0.f);
+
+    this->bus.emit<CollisionEvent>(CollisionEvent{dynamicEntity, staticEntity});
+    this->system.update(this->context);
+
+    auto &comp = this->world.components();
+    const auto &dynamicTransform = comp.get<TransformComponent>(dynamicEntity);
+    const auto &velocity = comp.get<VelocityComponent>(dynamicEntity);
+
+    REQUIRE(dynamicTransform.position.y == Catch::Approx(-4.f));
+    REQUIRE(velocity.velocity.y == 0.f);
 }
 
 TEST_CASE_METHOD(StaticPushboxResolutionSystemFixture, "StaticPushboxResolutionSystem moves root entity when dynamic collider is a child",

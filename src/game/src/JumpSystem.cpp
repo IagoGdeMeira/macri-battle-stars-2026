@@ -17,25 +17,19 @@
 void JumpSystem::update(UpdateContext& ctx)
 {
     auto& comp = ctx.world.components();
-    
-    auto view = View<InputComponent, VelocityComponent, GroundedComponent, PlayerComponent, JumpComponent>(comp);
-    for (auto [entity, input, velocity, grounded, player, jump] : view)
-    {
-        auto& vel = velocity.velocity;
-        LOG_DEBUG("JumpSystem: entity {} pre-update velY={:.2f}, onGround={}, isJumping={}",
-            entity.id, vel.y, grounded.onGround ? "true" : "false", jump.isJumping ? "true" : "false");
 
+    auto view = View<InputComponent, VelocityComponent, GroundedComponent, JumpComponent>(comp);
+    for (auto [entity, input, velocity, grounded, jump] : view)
+    {
         if (comp.has<HitstopComponent>(entity) && comp.get<HitstopComponent>(entity).frozen) continue;
 
         bool jumpPressed = this->hasInputAction(input, InputAction::Jump);
+        if (grounded.onGround && jumpPressed && !jump.isJumping) this->startJump(jump, entity);
 
-        if (grounded.onGround && jumpPressed && !jump.isJumping) this->startJump(jump, velocity, entity);
-
-        if (jump.isJumping)
-        {
-            this->applyJumpForce(jump, velocity, ctx.deltaTime, jumpPressed, entity);
-            if (!jumpPressed || jump.timer >= jump.maxTime) this->stopJump(jump, entity);
-        }
+        if (!jump.isJumping) continue;
+        
+        this->applyJumpForce(jump, velocity, ctx.deltaTime, jumpPressed);
+        if (!jumpPressed || jump.timer >= jump.maxTime) this->stopJump(jump);
     }
 }
 
@@ -45,28 +39,19 @@ bool JumpSystem::hasInputAction(InputComponent& input, InputAction action) const
     return it != input.actions.end() && it->second.pressed;
 }
 
-void JumpSystem::startJump(JumpComponent& jump, VelocityComponent& velocity, Entity entity)
+void JumpSystem::startJump(JumpComponent& jump, Entity entity)
 {
-    LOG_DEBUG("JumpSystem: startJump entity {}", entity.id);
     jump.isJumping = true;
     jump.timer = 0.f;
-    // velocity.velocity.y = 0.f;
     this->bus.emit<TriggerEvent>(TriggerEvent{entity, TriggerId::Jump});
 }
 
-void JumpSystem::applyJumpForce(JumpComponent& jump, VelocityComponent& velocity, float deltaTime, bool jumpHeld, Entity entity)
+void JumpSystem::applyJumpForce(JumpComponent& jump, VelocityComponent& velocity, float deltaTime, bool jumpHeld)
 {
     if (!jumpHeld || jump.timer >= jump.maxTime) return;
 
     velocity.velocity.y -= jump.force * deltaTime;
     jump.timer += deltaTime;
-
-    LOG_DEBUG("Jump force applied: entity={}, force={}, dt={:.4f}, velY={:.2f}", 
-        entity.id, jump.force, deltaTime, velocity.velocity.y);
 }
 
-void JumpSystem::stopJump(JumpComponent& jump, Entity entity)
-{
-    LOG_DEBUG("JumpSystem: stopJump entity {}", entity.id);
-    jump.isJumping = false;
-}
+void JumpSystem::stopJump(JumpComponent& jump) { jump.isJumping = false; }

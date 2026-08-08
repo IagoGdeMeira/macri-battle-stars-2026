@@ -4,7 +4,6 @@
 #include "domain/components/HitstopComponent.h"
 #include "domain/components/InputComponent.h"
 #include "domain/components/JumpComponent.h"
-#include "domain/components/PlayerComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/value_objects/InputAction/InputAction.h"
 
@@ -32,7 +31,6 @@ public:
         comp.registerComponent<HitstopComponent>();
         comp.registerComponent<InputComponent>();
         comp.registerComponent<JumpComponent>();
-        comp.registerComponent<PlayerComponent>();
         comp.registerComponent<VelocityComponent>();
     }
 };
@@ -59,7 +57,6 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem applies jump force over time and
     comp.add<GroundedComponent>(entity, grounded);
     comp.add<VelocityComponent>(entity, velocity);
     comp.add<JumpComponent>(entity, jump);
-    comp.add<PlayerComponent>(entity, PlayerComponent{1});
 
     std::vector<TriggerEvent> events;
     this->bus.subscribe<TriggerEvent>([&](const TriggerEvent& event) { events.push_back(event); });
@@ -97,7 +94,6 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem ignores jump input when entity i
     comp.add<GroundedComponent>(entity, grounded);
     comp.add<VelocityComponent>(entity, velocity);
     comp.add<JumpComponent>(entity, jump);
-    comp.add<PlayerComponent>(entity, PlayerComponent{2});
 
     int eventCount = 0;
     this->bus.subscribe<TriggerEvent>([&](const TriggerEvent&) { ++eventCount; });
@@ -135,7 +131,6 @@ TEST_CASE_METHOD(JumpSystemFixture, "JumpSystem ignores jump input when entity i
     comp.add<GroundedComponent>(entity, grounded);
     comp.add<VelocityComponent>(entity, velocity);
     comp.add<JumpComponent>(entity, jump);
-    comp.add<PlayerComponent>(entity, PlayerComponent{3});
     comp.add<HitstopComponent>(entity, hitstop);
 
     int eventCount = 0;

@@ -18,7 +18,8 @@
         {
             "type": "texture",
             "texture": "assets/sprites/test_stage_floor.png",
-            "parallaxFactor": { "x": 0, "y": -2.5 },
+            "position": { "x": 0, "y": 2000 },
+            "parallaxFactor": { "x": 1, "y": 1 },
             "layer": 0
         }
     ],

@@ -7,7 +7,7 @@
     "combos": "assets/combos/default_combos.json",
     "collisions": "assets/collisions/reddie_beta_collisions.json",
     "jump": {
-        "force": 4000,
+        "force": 3200,
         "maxTime": 0.25,
         "gravityScaleAsc": 0.9,
         "gravityScaleDesc": 2.0,

@@ -12,6 +12,7 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/include/Entity/Entity.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -29,10 +30,16 @@ void GroundDetectionSystem::update(UpdateContext& ctx)
 
     auto groundedView = View<GroundedComponent>(comp);
     for (auto [entity, grounded] : groundedView) grounded.onGround = false;
-    for (const auto& [a, b] : collisions)
+    for (const auto& [a, b] : this->collisions)
     {
         if (comp.has<ActiveComponent>(a) && !comp.get<ActiveComponent>(a).active) continue;
         if (comp.has<ActiveComponent>(b) && !comp.get<ActiveComponent>(b).active) continue;
+
+        if (comp.has<ActiveComponent>(a)) LOG_DEBUG("GroundDetectionSystem: entity {} active={}",
+            a.id, comp.get<ActiveComponent>(a).active ? "true" : "false");
+
+        if (comp.has<ActiveComponent>(b)) LOG_DEBUG("GroundDetectionSystem: entity {} active={}",
+            b.id, comp.get<ActiveComponent>(b).active ? "true" : "false");
 
         if (this->isStaticPushbox(ctx, a)) this->processGroundCollision(ctx, a, b);
         else if (this->isStaticPushbox(ctx, b)) this->processGroundCollision(ctx, b, a);

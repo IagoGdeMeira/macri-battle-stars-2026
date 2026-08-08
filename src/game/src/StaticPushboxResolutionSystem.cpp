@@ -35,26 +35,8 @@ void StaticPushboxResolutionSystem::update(UpdateContext& ctx)
         auto& pushB = comp.get<PushboxComponent>(b);
 
         using Type = PushboxComponent::Type;
-        if (pushA.type == Type::Dynamic && pushB.type == Type::Static)
-        {
-            if (comp.has<TransformComponent>(a) && comp.has<TransformComponent>(b))
-            {
-                float dynY = comp.get<TransformComponent>(a).position.y;
-                float staY = comp.get<TransformComponent>(b).position.y;
-                if (staY > dynY) continue;
-            }
-            this->resolveStaticCollision(ctx, a, b);
-        }
-        else if (pushB.type == Type::Dynamic && pushA.type == Type::Static)
-        {
-            if (comp.has<TransformComponent>(a) && comp.has<TransformComponent>(b))
-            {
-                float staY = comp.get<TransformComponent>(a).position.y;
-                float dynY = comp.get<TransformComponent>(b).position.y;
-                if (staY > dynY) continue;
-            }
-            this->resolveStaticCollision(ctx, b, a);
-        }
+        if (pushA.type == Type::Dynamic && pushB.type == Type::Static) this->resolveStaticCollision(ctx, a, b);
+        else if (pushB.type == Type::Dynamic && pushA.type == Type::Static) this->resolveStaticCollision(ctx, b, a);
     }
     this->collisions.clear();
 }
@@ -86,11 +68,11 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
     if (minOverlap.x < minOverlap.y)
     {
         float sep = minOverlap.x;
-
         if (dynCenter.x < staCenter.x) dynTrans.position.x -= sep;
         else dynTrans.position.x += sep;
 
-        if (comp.has<VelocityComponent>(rootDyn)) comp.get<VelocityComponent>(rootDyn).velocity.x = 0.f;
+        if (comp.has<VelocityComponent>(rootDyn))
+            comp.get<VelocityComponent>(rootDyn).velocity.x = 0.f;
     }
     else
     {
@@ -107,11 +89,7 @@ void StaticPushboxResolutionSystem::resolveStaticCollision(UpdateContext& ctx, E
         else
         {
             dynTrans.position.y += sep;
-            if (comp.has<VelocityComponent>(rootDyn))
-            {
-                auto& vel = comp.get<VelocityComponent>(rootDyn).velocity;
-                vel.y = 0.f;
-            }
+            if (comp.has<VelocityComponent>(rootDyn)) comp.get<VelocityComponent>(rootDyn).velocity.y = 0.f;
         }
     }
 }

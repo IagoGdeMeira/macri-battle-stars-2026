@@ -20,9 +20,9 @@ private:
     float jumpImpulse;
 
     bool hasInputAction(InputComponent& input, InputAction action) const;
-    void startJump(JumpComponent& jump, VelocityComponent& velocity, Entity entity);
-    void applyJumpForce(JumpComponent& jump, VelocityComponent& velocity, float deltaTime, bool jumpHeld, Entity entity);
-    void stopJump(JumpComponent& jump, Entity entity);
+    void startJump(JumpComponent& jump, Entity entity);
+    void applyJumpForce(JumpComponent& jump, VelocityComponent& velocity, float deltaTime, bool jumpHeld);
+    void stopJump(JumpComponent& jump);
 };
 
 #endif // jump_system_h
