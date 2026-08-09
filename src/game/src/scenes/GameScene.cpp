@@ -46,6 +46,7 @@
 
 #include "domain/components/AirFrictionComponent.h"
 #include "domain/components/AnalogInputComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/GravityComponent.h"
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/InputBufferComponent.h"
@@ -229,8 +230,10 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     comp.add<AirFrictionComponent>(entity, AirFrictionComponent{});
     comp.add<GroundedComponent>(entity, GroundedComponent{});
     comp.add<RenderComponent>(entity, RenderComponent{ 0, 10 });
-    comp.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Right });
 
+    Orientation initialOrient = (slot.playerId == 0) ? Orientation::Right : Orientation::Left;
+    comp.add<OrientationComponent>(entity, OrientationComponent{initialOrient});
+    
     const auto& mapComp = comp.get<MapComponent>(this->mapRoot);
 
     float spawnX = 400.f;
@@ -240,12 +243,18 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     auto& transform = comp.get<TransformComponent>(entity);
     transform.position.x = spawnX;
 
-    if (comp.has<SpriteComponent>(entity))
+    float spriteHalfHeight = 32.f;
+    if (comp.has<ChildrenComponent>(entity))
     {
-        const auto& sprite = comp.get<SpriteComponent>(entity);
-        transform.position.y = mapComp.floorY - (sprite.size.height * 0.5f);
+        const auto& children = comp.get<ChildrenComponent>(entity).children;
+        for (Entity child : children) if (comp.has<SpriteComponent>(child))
+        {
+            const auto& sprite = comp.get<SpriteComponent>(child);
+            spriteHalfHeight = sprite.size.height * 0.5f;
+            break;
+        }
     }
-    else transform.position.y = mapComp.floorY - 32.f;
+    transform.position.y = mapComp.floorY - spriteHalfHeight;
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
 }

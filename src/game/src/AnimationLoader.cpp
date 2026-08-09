@@ -1,7 +1,5 @@
 #include "AnimationLoader/AnimationLoader.h"
-
 #include "StateIdMapper/StateIdMapper.h"
-
 #include <stdexcept>
 
 AnimationSet AnimationLoader::loadFromIndex(const std::string& indexPath, const StateIdMapper& mapper) const

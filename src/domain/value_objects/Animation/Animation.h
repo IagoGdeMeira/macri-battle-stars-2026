@@ -5,12 +5,36 @@
 
 struct Animation
 {
-    struct Frame { int x, y, width, height; };
+    struct Frame
+    {
+        int x, y, width, height;
+
+        bool operator==(const Frame& other) const
+        {
+            if (this == &other) return true;
+            if (this->x != other.x) return false;
+            if (this->y != other.y) return false;
+            if (this->width != other.width) return false;
+            if (this->height != other.height) return false;
+            return true;
+        }
+        bool operator!=(const Frame& other) const { return !(*this == other); }
+    };
 
     std::vector<Frame> frames;
 
     float frameDuration = 0.1f;
     bool loop = true;
+
+    bool operator==(const Animation& other) const
+    {
+        if (this == &other) return true;
+        if (this->frames != other.frames) return false;
+        if (this->frameDuration != other.frameDuration) return false;
+        if (this->loop != other.loop) return false;
+        return true;
+    }
+    bool operator!=(const Animation& other) const { return !(*this == other); }
 };
 
 #endif // animation_h

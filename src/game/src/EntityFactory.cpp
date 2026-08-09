@@ -21,6 +21,7 @@
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
+#include "domain/value_objects/Animation/Animation.h"
 #include "domain/value_objects/StateId/StateId.h"
 
 #include "engine/include/ResourceManager/ResourceManager.h"
@@ -176,6 +177,37 @@ Entity EntityFactory::createBackgroundCircle(const BackgroundParams& params, con
 
 Entity EntityFactory::createBackgroundAnimated(const BackgroundParams& params, const std::string& texturePath, const std::string& animationPath)
 {
+    Entity mainEntity = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
+
+    comp.add<TransformComponent>(mainEntity, TransformComponent{0.f, 0.f});
+    this->addParallax(mainEntity, params.parallax);
+    this->addParentAndLocal(mainEntity, params.parent, params.position);
+    comp.add<RenderComponent>(mainEntity, RenderComponent{0, params.zIndex});
+
+    AnimationControllerComponent controller;
+    StateIdMapper defaultMapper;
+    controller.animations   = this->animLoader.loadFromIndex(animationPath, defaultMapper);
+    controller.currentState = StateId::Idle;
+    comp.add<AnimationControllerComponent>(mainEntity, std::move(controller));
+
+    Entity visualEntity = this->factoryWorld.entities().create();
+    this->addSprite(visualEntity, texturePath);
+    comp.add<RenderComponent>(visualEntity, RenderComponent{0, 0});
+    this->addParentAndLocal(visualEntity, mainEntity, Position{0.f, 0.f});
+    comp.add<TransformComponent>(visualEntity, TransformComponent{});
+
+    AnimationComponent anim;
+    anim.currentState   = StateId::Idle;
+    anim.elapsedTime    = 0.f;
+    anim.currentFrame   = 0;
+    comp.add<AnimationComponent>(visualEntity, std::move(anim));
+
+    return mainEntity;
+}
+
+Entity EntityFactory::createSimpleBackgroundAnimated(const BackgroundParams& params, const std::string& texturePath, const Animation& animation)
+{
     Entity e = this->factoryWorld.entities().create();
     auto& comp = this->factoryWorld.components();
 
@@ -185,20 +217,10 @@ Entity EntityFactory::createBackgroundAnimated(const BackgroundParams& params, c
     this->addParentAndLocal(e, params.parent, params.position);
     comp.add<TransformComponent>(e, TransformComponent{0.f, 0.f});
 
-    AnimationControllerComponent controller;
-    StateIdMapper defaultMapper;
-    controller.animations = this->animLoader.loadFromIndex(animationPath, defaultMapper);
-    controller.currentState = StateId::Idle;
-    comp.add<AnimationControllerComponent>(e, std::move(controller));
-
     AnimationComponent anim;
-    anim.currentState   = StateId::Idle;
-    anim.elapsedTime    = 0.f;
-    anim.currentFrame   = 0;
-    
-    auto& anims = comp.get<AnimationControllerComponent>(e).animations;
-    auto it = anims.right.find(StateId::Idle);
-    if (it != anims.right.end()) anim.animation = it->second;
+    anim.currentAnimation   = animation;
+    anim.elapsedTime        = 0.f;
+    anim.currentFrame       = 0;
     comp.add<AnimationComponent>(e, std::move(anim));
 
     return e;

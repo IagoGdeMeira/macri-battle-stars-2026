@@ -8,30 +8,31 @@
 
 void AnimationSystem::update(UpdateContext& ctx)
 {
-    auto view = View<AnimationComponent, SpriteComponent>(ctx.world.components());
+    auto& comp = ctx.world.components();
+    auto view = View<AnimationComponent, SpriteComponent>(comp);
+
     for (auto [entity, anim, sprite] : view)
     {
-        if (anim.animation.frames.empty()) continue;
+        auto& frames = anim.currentAnimation.frames;
+        if (frames.empty()) continue;
 
         anim.elapsedTime += ctx.deltaTime;
-
-        const float frameDuration = anim.animation.frameDuration;
+        const float frameDuration = anim.currentAnimation.frameDuration;
+        
         while (anim.elapsedTime >= frameDuration)
         {
             anim.elapsedTime -= frameDuration;
             anim.currentFrame++;
-
-            if (anim.currentFrame < (int)anim.animation.frames.size()) continue;
+            if (anim.currentFrame < static_cast<int>(frames.size())) continue;
             
-            if (anim.animation.loop) anim.currentFrame = 0;
-            else anim.currentFrame = (int)anim.animation.frames.size() - 1;
+            if (anim.currentAnimation.loop) anim.currentFrame = 0;
+            else anim.currentFrame = static_cast<int>(frames.size()) - 1;
         }
 
-        const auto& frame = anim.animation.frames[anim.currentFrame];
-
+        const auto& frame = anim.currentAnimation.frames[anim.currentFrame];
         auto& pos = sprite.source.position;
         auto& size = sprite.source.size;
-
+        
         pos.x = static_cast<float>(frame.x);
         pos.y = static_cast<float>(frame.y);
         size.width = static_cast<float>(frame.width);

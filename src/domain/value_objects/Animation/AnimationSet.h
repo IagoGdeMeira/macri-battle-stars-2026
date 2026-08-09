@@ -8,8 +8,9 @@
 
 struct AnimationSet
 {
-    std::unordered_map<StateId, Animation, StateId::Hash> right;
-    std::unordered_map<StateId, Animation, StateId::Hash> left;
+    using AnimationMap = std::unordered_map<StateId, Animation, StateId::Hash>;
+    
+    AnimationMap right, left;
     bool symmetric = true;
 };
 

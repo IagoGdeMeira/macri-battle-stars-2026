@@ -2,7 +2,9 @@
 
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/OrientationComponent.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/events/OrientationChangedEvent.h"
 #include "domain/include/World/World.h"
 #include "domain/value_objects/Animation/Animation.h"
@@ -24,9 +26,29 @@ public:
         comp.registerComponent<AnimationComponent>();
         comp.registerComponent<AnimationControllerComponent>();
         comp.registerComponent<OrientationComponent>();
+        comp.registerComponent<ChildrenComponent>();
+        comp.registerComponent<ParentComponent>();
     }
 
     static Animation makeAnimation(int x) { return Animation{{{x, 0, 16, 16}}, 0.1f, true}; }
+
+    std::pair<Entity, Entity> createControlledEntity()
+    {
+        auto& comp = this->world.components();
+        auto& entities = this->world.entities();
+
+        Entity parent = entities.create();
+        comp.add<AnimationControllerComponent>(parent, AnimationControllerComponent{});
+
+        Entity child = entities.create();
+        comp.add<AnimationComponent>(child, AnimationComponent{});
+        comp.add<ParentComponent>(child, ParentComponent{parent});
+
+        if (!comp.has<ChildrenComponent>(parent)) comp.add<ChildrenComponent>(parent, ChildrenComponent{});
+        comp.get<ChildrenComponent>(parent).children.push_back(child);
+
+        return {parent, child};
+    }
 
 protected:
     World world;
@@ -39,59 +61,50 @@ protected:
 TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem applies pending state change and resets animation progress",
     "[integration][animation_state_system]"
 ) {
-    const auto entity = this->world.entities().create();
-
-    const Animation idleAnimation = this->makeAnimation(0);
-    const Animation runningAnimation = this->makeAnimation(16);
-
-    AnimationComponent animation;
-    animation.animation = idleAnimation;
-    animation.elapsedTime = 0.25f;
-    animation.currentFrame = 3;
-    animation.currentState = StateId::Idle;
-
-    AnimationControllerComponent controller;
-    controller.currentState = StateId::Idle;
-    controller.animations.right[StateId::Idle] = idleAnimation;
-    controller.animations.right[StateId::Running] = runningAnimation;
-
+    auto [parent, child] = this->createControlledEntity();
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, animation);
-    comp.add<AnimationControllerComponent>(entity, controller);
 
-    this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, StateId::Idle, StateId::Running });
+    Animation idleAnim = this->makeAnimation(0);
+    Animation runningAnim = this->makeAnimation(16);
+
+    auto& ctrl = comp.get<AnimationControllerComponent>(parent);
+    ctrl.animations.right[StateId::Idle] = idleAnim;
+    ctrl.animations.right[StateId::Running] = runningAnim;
+    ctrl.currentState = StateId::Idle;
+
+    auto& anim = comp.get<AnimationComponent>(child);
+    anim.currentState = StateId::Idle;
+    anim.elapsedTime = 0.25f;
+    anim.currentFrame = 3;
+    anim.currentAnimation = idleAnim;
+
+    this->bus.emit<StateChangedEvent>(StateChangedEvent{ parent, StateId::Idle, StateId::Running });
     this->system.update(this->context);
 
-    const auto& updatedAnimation = comp.get<AnimationComponent>(entity);
-    const auto& updatedController = comp.get<AnimationControllerComponent>(entity);
+    const auto& updatedAnim = comp.get<AnimationComponent>(child);
+    const auto& updatedCtrl = comp.get<AnimationControllerComponent>(parent);
 
-    REQUIRE(updatedController.currentState == StateId::Running);
-    REQUIRE(updatedAnimation.currentState == StateId::Running);
-    REQUIRE(updatedAnimation.currentFrame == 0);
-    REQUIRE(updatedAnimation.elapsedTime == 0.f);
-    REQUIRE(updatedAnimation.animation.frames.size() == 1);
-    REQUIRE(updatedAnimation.animation.frames[0].x == 16);
+    REQUIRE(updatedCtrl.currentState == StateId::Running);
+    REQUIRE(updatedAnim.currentState == StateId::Running);
+    REQUIRE(updatedAnim.currentFrame == 0);
+    REQUIRE(updatedAnim.elapsedTime == 0.f);
 }
 
-TEST_CASE_METHOD(AnimationStateSystemFixture,
-    "AnimationStateSystem ignores state change for entity without animation controller",
+TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem ignores state change for entity without animation controller",
     "[integration][animation_state_system]"
 ) {
-    const auto entity = this->world.entities().create();
-
-    AnimationComponent animation;
-    animation.animation = this->makeAnimation(0);
-    animation.elapsedTime = 0.4f;
-    animation.currentFrame = 2;
-    animation.currentState = StateId::Idle;
-
+    Entity standalone = this->world.entities().create();
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, animation);
+    AnimationComponent anim;
+    anim.currentState = StateId::Idle;
+    anim.elapsedTime = 0.4f;
+    anim.currentFrame = 2;
+    comp.add<AnimationComponent>(standalone, anim);
 
-    this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, StateId::Idle, StateId::Running });
+    this->bus.emit<StateChangedEvent>(StateChangedEvent{ standalone, StateId::Idle, StateId::Running });
     this->system.update(this->context);
 
-    const auto& unchanged = comp.get<AnimationComponent>(entity);
+    const auto& unchanged = comp.get<AnimationComponent>(standalone);
     REQUIRE(unchanged.currentState == StateId::Idle);
     REQUIRE(unchanged.currentFrame == 2);
     REQUIRE(unchanged.elapsedTime == 0.4f);
@@ -101,242 +114,212 @@ TEST_CASE_METHOD(AnimationStateSystemFixture,
     "AnimationStateSystem updates controller state but keeps animation when target state is not mapped",
     "[integration][animation_state_system]"
 ) {
-    const auto entity = this->world.entities().create();
-
-    const Animation idleAnimation = this->makeAnimation(0);
-
-    AnimationComponent animation;
-    animation.animation = idleAnimation;
-    animation.elapsedTime = 0.3f;
-    animation.currentFrame = 4;
-    animation.currentState = StateId::Idle;
-
-    AnimationControllerComponent controller;
-    controller.currentState = StateId::Idle;
-    controller.animations.right[StateId::Idle] = idleAnimation;
-
+    auto [parent, child] = this->createControlledEntity();
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, animation);
-    comp.add<AnimationControllerComponent>(entity, controller);
 
-    this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, StateId::Idle, StateId::Running });
+    Animation idleAnim = this->makeAnimation(0);
+    auto& ctrl = comp.get<AnimationControllerComponent>(parent);
+    ctrl.animations.right[StateId::Idle] = idleAnim;
+    ctrl.currentState = StateId::Idle;
+
+    auto& anim = comp.get<AnimationComponent>(child);
+    anim.currentState = StateId::Idle;
+    anim.currentFrame = 4;
+    anim.elapsedTime = 0.3f;
+    anim.currentAnimation = idleAnim;
+
+    this->bus.emit<StateChangedEvent>(StateChangedEvent{ parent, StateId::Idle, StateId::Running });
     this->system.update(this->context);
 
-    const auto& updatedAnimation = comp.get<AnimationComponent>(entity);
-    const auto& updatedController = comp.get<AnimationControllerComponent>(entity);
+    const auto& updatedAnim = comp.get<AnimationComponent>(child);
+    const auto& updatedCtrl = comp.get<AnimationControllerComponent>(parent);
 
-    REQUIRE(updatedController.currentState == StateId::Running);
-    REQUIRE(updatedAnimation.currentState == StateId::Idle);
-    REQUIRE(updatedAnimation.currentFrame == 4);
-    REQUIRE(updatedAnimation.elapsedTime == 0.3f);
-    REQUIRE(updatedAnimation.animation.frames[0].x == 0);
+    REQUIRE(updatedCtrl.currentState == StateId::Running);
+    REQUIRE(updatedAnim.currentState == StateId::Idle);
+    REQUIRE(updatedAnim.currentFrame == 4);
+    REQUIRE(updatedAnim.elapsedTime == 0.3f);
 }
 
 TEST_CASE_METHOD(AnimationStateSystemFixture,
     "AnimationStateSystem keeps progress when animation and controller are already in same state",
     "[integration][animation_state_system]"
 ) {
-    const auto entity = this->world.entities().create();
-
-    const Animation runningAnimation = this->makeAnimation(16);
-
-    AnimationComponent animation;
-    animation.animation = runningAnimation;
-    animation.elapsedTime = 0.35f;
-    animation.currentFrame = 5;
-    animation.currentState = StateId::Running;
-
-    AnimationControllerComponent controller;
-    controller.currentState = StateId::Running;
-    controller.animations.right[StateId::Running] = runningAnimation;
-
+    auto [parent, child] = this->createControlledEntity();
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, animation);
-    comp.add<AnimationControllerComponent>(entity, controller);
+
+    Animation runningAnim = this->makeAnimation(16);
+    auto& ctrl = comp.get<AnimationControllerComponent>(parent);
+    ctrl.animations.right[StateId::Running] = runningAnim;
+    ctrl.currentState = StateId::Running;
+
+    auto& anim = comp.get<AnimationComponent>(child);
+    anim.currentState = StateId::Running;
+    anim.currentFrame = 5;
+    anim.elapsedTime = 0.35f;
+    anim.currentAnimation = runningAnim;
 
     this->system.update(this->context);
 
-    const auto& unchanged = comp.get<AnimationComponent>(entity);
+    const auto& unchanged = comp.get<AnimationComponent>(child);
     REQUIRE(unchanged.currentState == StateId::Running);
     REQUIRE(unchanged.currentFrame == 5);
     REQUIRE(unchanged.elapsedTime == 0.35f);
-    REQUIRE(unchanged.animation.frames[0].x == 16);
 }
 
 TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem applies pending changes in order and uses last emitted state",
     "[integration][animation_state_system]"
 ) {
-    const auto entity = this->world.entities().create();
-
-    const Animation idleAnimation = this->makeAnimation(0);
-    const Animation runningAnimation = this->makeAnimation(16);
-    const Animation jumpingAnimation = this->makeAnimation(32);
-
-    AnimationComponent animation;
-    animation.animation = idleAnimation;
-    animation.elapsedTime = 0.5f;
-    animation.currentFrame = 6;
-    animation.currentState = StateId::Idle;
-
-    AnimationControllerComponent controller;
-    controller.currentState = StateId::Idle;
-    controller.animations.right[StateId::Idle] = idleAnimation;
-    controller.animations.right[StateId::Running] = runningAnimation;
-    controller.animations.right[StateId::Jumping] = jumpingAnimation;
-
+    auto [parent, child] = this->createControlledEntity();
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, animation);
-    comp.add<AnimationControllerComponent>(entity, controller);
 
-    this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, StateId::Idle, StateId::Running });
-    this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, StateId::Running, StateId::Jumping });
+    Animation idleAnim = this->makeAnimation(0);
+    Animation runningAnim = this->makeAnimation(16);
+    Animation jumpingAnim = this->makeAnimation(32);
+
+    auto& ctrl = comp.get<AnimationControllerComponent>(parent);
+    ctrl.animations.right[StateId::Idle] = idleAnim;
+    ctrl.animations.right[StateId::Running] = runningAnim;
+    ctrl.animations.right[StateId::Jumping] = jumpingAnim;
+    ctrl.currentState = StateId::Idle;
+
+    auto& anim = comp.get<AnimationComponent>(child);
+    anim.currentState = StateId::Idle;
+    anim.currentFrame = 6;
+    anim.elapsedTime = 0.5f;
+    anim.currentAnimation = idleAnim;
+
+    this->bus.emit<StateChangedEvent>(StateChangedEvent{ parent, StateId::Idle, StateId::Running });
+    this->bus.emit<StateChangedEvent>(StateChangedEvent{ parent, StateId::Running, StateId::Jumping });
     this->system.update(this->context);
 
-    const auto& updatedAnimation = comp.get<AnimationComponent>(entity);
-    const auto& updatedController = comp.get<AnimationControllerComponent>(entity);
+    const auto& updatedAnim = comp.get<AnimationComponent>(child);
+    const auto& updatedCtrl = comp.get<AnimationControllerComponent>(parent);
 
-    REQUIRE(updatedController.currentState == StateId::Jumping);
-    REQUIRE(updatedAnimation.currentState == StateId::Jumping);
-    REQUIRE(updatedAnimation.currentFrame == 0);
-    REQUIRE(updatedAnimation.elapsedTime == 0.f);
-    REQUIRE(updatedAnimation.animation.frames[0].x == 32);
+    REQUIRE(updatedCtrl.currentState == StateId::Jumping);
+    REQUIRE(updatedAnim.currentState == StateId::Jumping);
+    REQUIRE(updatedAnim.currentFrame == 0);
+    REQUIRE(updatedAnim.elapsedTime == 0.f);
 }
 
 TEST_CASE_METHOD(AnimationStateSystemFixture,
     "AnimationStateSystem selects left animation when OrientationComponent indicates left direction",
     "[integration][animation_state_system]"
 ) {
-    const auto entity = this->world.entities().create();
-
-    const Animation rightIdleAnimation = this->makeAnimation(0);
-    const Animation leftIdleAnimation = this->makeAnimation(50);
-    const Animation rightRunningAnimation = this->makeAnimation(16);
-    const Animation leftRunningAnimation = this->makeAnimation(66);
-
-    AnimationComponent animation;
-    animation.animation = rightIdleAnimation;
-    animation.elapsedTime = 0.1f;
-    animation.currentFrame = 1;
-    animation.currentState = StateId::Idle;
-
-    AnimationControllerComponent controller;
-    controller.currentState = StateId::Idle;
-    controller.animations.right[StateId::Idle] = rightIdleAnimation;
-    controller.animations.right[StateId::Running] = rightRunningAnimation;
-    controller.animations.left[StateId::Idle] = leftIdleAnimation;
-    controller.animations.left[StateId::Running] = leftRunningAnimation;
-    controller.animations.symmetric = false;
-
+    auto [parent, child] = this->createControlledEntity();
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, animation);
-    comp.add<AnimationControllerComponent>(entity, controller);
-    comp.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Left });
 
-    this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, StateId::Idle, StateId::Running });
+    Animation rightIdle = this->makeAnimation(0);
+    Animation leftIdle = this->makeAnimation(50);
+    Animation rightRun = this->makeAnimation(16);
+    Animation leftRun = this->makeAnimation(66);
+
+    auto& ctrl = comp.get<AnimationControllerComponent>(parent);
+    ctrl.animations.right[StateId::Idle] = rightIdle;
+    ctrl.animations.right[StateId::Running] = rightRun;
+    ctrl.animations.left[StateId::Idle] = leftIdle;
+    ctrl.animations.left[StateId::Running] = leftRun;
+    ctrl.animations.symmetric = false;
+    ctrl.currentState = StateId::Idle;
+
+    comp.add<OrientationComponent>(parent, OrientationComponent{ Orientation::Left });
+
+    auto& anim = comp.get<AnimationComponent>(child);
+    anim.currentState = StateId::Idle;
+    anim.currentAnimation = rightIdle;
+
+    this->bus.emit<StateChangedEvent>(StateChangedEvent{ parent, StateId::Idle, StateId::Running });
     this->system.update(this->context);
 
-    const auto& updatedAnimation = comp.get<AnimationComponent>(entity);
-
-    REQUIRE(updatedAnimation.currentState == StateId::Running);
-    REQUIRE(updatedAnimation.animation.frames[0].x == 66);
+    const auto& updatedAnim = comp.get<AnimationComponent>(child);
+    REQUIRE(updatedAnim.currentState == StateId::Running);
+    REQUIRE(updatedAnim.currentAnimation.frames[0].x == 66);
 }
 
 TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem resets animation when orientation changes",
     "[integration][animation_state_system]"
 ) {
-    const auto entity = this->world.entities().create();
-
-    const Animation rightIdleAnimation = this->makeAnimation(0);
-    const Animation leftIdleAnimation = this->makeAnimation(50);
-
-    AnimationComponent animation;
-    animation.animation = rightIdleAnimation;
-    animation.elapsedTime = 0.25f;
-    animation.currentFrame = 3;
-    animation.currentState = StateId::Idle;
-
-    AnimationControllerComponent controller;
-    controller.currentState = StateId::Idle;
-    controller.animations.right[StateId::Idle] = rightIdleAnimation;
-    controller.animations.left[StateId::Idle] = leftIdleAnimation;
-    controller.animations.symmetric = false;
-
+    auto [parent, child] = this->createControlledEntity();
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, animation);
-    comp.add<AnimationControllerComponent>(entity, controller);
-    comp.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Right });
 
-    auto& orientation = comp.get<OrientationComponent>(entity);
-    orientation.direction = Orientation::Left;
-    
-    this->bus.emit<OrientationChangedEvent>(OrientationChangedEvent{ entity, Orientation::Right, Orientation::Left });
+    Animation rightIdle = this->makeAnimation(0);
+    Animation leftIdle = this->makeAnimation(50);
+
+    auto& ctrl = comp.get<AnimationControllerComponent>(parent);
+    ctrl.animations.right[StateId::Idle] = rightIdle;
+    ctrl.animations.left[StateId::Idle] = leftIdle;
+    ctrl.animations.symmetric = false;
+    ctrl.currentState = StateId::Idle;
+
+    comp.add<OrientationComponent>(parent, OrientationComponent{ Orientation::Right });
+
+    auto& anim = comp.get<AnimationComponent>(child);
+    anim.currentState = StateId::Idle;
+    anim.currentAnimation = rightIdle;
+    anim.elapsedTime = 0.25f;
+    anim.currentFrame = 3;
+
+    auto& orient = comp.get<OrientationComponent>(parent);
+    orient.direction = Orientation::Left;
+    this->bus.emit<OrientationChangedEvent>(OrientationChangedEvent{ parent, Orientation::Right, Orientation::Left });
     this->system.update(this->context);
 
-    const auto& updatedAnimation = comp.get<AnimationComponent>(entity);
-
-    REQUIRE(updatedAnimation.currentState == StateId::Idle);
-    REQUIRE(updatedAnimation.currentFrame == 0);
-    REQUIRE(updatedAnimation.elapsedTime == 0.f);
-    REQUIRE(updatedAnimation.animation.frames[0].x == 50);
+    const auto& updatedAnim = comp.get<AnimationComponent>(child);
+    REQUIRE(updatedAnim.currentState == StateId::Idle);
+    REQUIRE(updatedAnim.currentFrame == 0);
+    REQUIRE(updatedAnim.elapsedTime == 0.f);
+    REQUIRE(updatedAnim.currentAnimation.frames[0].x == 50);
 }
 
 TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem uses right animation when no left animation exists",
     "[integration][animation_state_system]"
 ) {
-    const auto entity = this->world.entities().create();
-
-    const Animation idleAnimation = this->makeAnimation(0);
-    const Animation runningAnimation = this->makeAnimation(16);
-
-    AnimationComponent animation;
-    animation.animation = idleAnimation;
-    animation.currentState = StateId::Idle;
-
-    AnimationControllerComponent controller;
-    controller.currentState = StateId::Idle;
-    controller.animations.right[StateId::Idle] = idleAnimation;
-    controller.animations.right[StateId::Running] = runningAnimation;
-
+    auto [parent, child] = this->createControlledEntity();
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, animation);
-    comp.add<AnimationControllerComponent>(entity, controller);
-    comp.add<OrientationComponent>(entity, OrientationComponent{ Orientation::Left });
 
-    this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, StateId::Idle, StateId::Running });
+    Animation idleAnim = this->makeAnimation(0);
+    Animation runningAnim = this->makeAnimation(16);
+
+    auto& ctrl = comp.get<AnimationControllerComponent>(parent);
+    ctrl.animations.right[StateId::Idle] = idleAnim;
+    ctrl.animations.right[StateId::Running] = runningAnim;
+    ctrl.currentState = StateId::Idle;
+
+    comp.add<OrientationComponent>(parent, OrientationComponent{ Orientation::Left });
+
+    auto& anim = comp.get<AnimationComponent>(child);
+    anim.currentState = StateId::Idle;
+    anim.currentAnimation = idleAnim;
+
+    this->bus.emit<StateChangedEvent>(StateChangedEvent{ parent, StateId::Idle, StateId::Running });
     this->system.update(this->context);
 
-    const auto& updatedAnimation = comp.get<AnimationComponent>(entity);
-
-    REQUIRE(updatedAnimation.currentState == StateId::Running);
-    REQUIRE(updatedAnimation.animation.frames[0].x == 16);
+    const auto& updatedAnim = comp.get<AnimationComponent>(child);
+    REQUIRE(updatedAnim.currentState == StateId::Running);
+    REQUIRE(updatedAnim.currentAnimation.frames[0].x == 16);
 }
 
 TEST_CASE_METHOD(AnimationStateSystemFixture, "AnimationStateSystem uses right animation when entity has no OrientationComponent",
     "[integration][animation_state_system]"
 ) {
-    const auto entity = this->world.entities().create();
-
-    const Animation idleAnimation = this->makeAnimation(0);
-    const Animation runningAnimation = this->makeAnimation(16);
-
-    AnimationComponent animation;
-    animation.animation = idleAnimation;
-    animation.currentState = StateId::Idle;
-
-    AnimationControllerComponent controller;
-    controller.currentState = StateId::Idle;
-    controller.animations.right[StateId::Idle] = idleAnimation;
-    controller.animations.right[StateId::Running] = runningAnimation;
-
+    auto [parent, child] = this->createControlledEntity();
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, animation);
-    comp.add<AnimationControllerComponent>(entity, controller);
 
-    this->bus.emit<StateChangedEvent>(StateChangedEvent{ entity, StateId::Idle, StateId::Running });
+    Animation idleAnim = this->makeAnimation(0);
+    Animation runningAnim = this->makeAnimation(16);
+
+    auto& ctrl = comp.get<AnimationControllerComponent>(parent);
+    ctrl.animations.right[StateId::Idle] = idleAnim;
+    ctrl.animations.right[StateId::Running] = runningAnim;
+    ctrl.currentState = StateId::Idle;
+
+    auto& anim = comp.get<AnimationComponent>(child);
+    anim.currentState = StateId::Idle;
+    anim.currentAnimation = idleAnim;
+
+    this->bus.emit<StateChangedEvent>(StateChangedEvent{ parent, StateId::Idle, StateId::Running });
     this->system.update(this->context);
 
-    const auto& updatedAnimation = comp.get<AnimationComponent>(entity);
-
-    REQUIRE(updatedAnimation.currentState == StateId::Running);
-    REQUIRE(updatedAnimation.animation.frames[0].x == 16);
+    const auto& updatedAnim = comp.get<AnimationComponent>(child);
+    REQUIRE(updatedAnim.currentState == StateId::Running);
+    REQUIRE(updatedAnim.currentAnimation.frames[0].x == 16);
 }

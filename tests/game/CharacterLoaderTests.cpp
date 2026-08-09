@@ -13,16 +13,21 @@
 
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
 #include "domain/components/HitboxControllerMapComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
 #include "domain/components/HurtboxControllerMapComponent.h"
 #include "domain/components/JumpComponent.h"
+#include "domain/components/LocalTransform.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxControllerComponent.h"
 #include "domain/components/PushboxControllerMapComponent.h"
+#include "domain/components/RenderComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/StateComponent.h"
 #include "domain/components/StateMachineComponent.h"
+#include "domain/components/TransformComponent.h"
 #include "domain/include/World/World.h"
 #include "domain/value_objects/StateId/StateId.h"
 
@@ -170,26 +175,29 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     });
 
     auto& comp = world.components();
+    comp.registerComponent<AnimationComponent>();
+    comp.registerComponent<AnimationControllerComponent>();
+    comp.registerComponent<ChildrenComponent>();
+    comp.registerComponent<HitboxControllerComponent>();
+    comp.registerComponent<HitboxControllerMapComponent>();
+    comp.registerComponent<HurtboxControllerComponent>();
+    comp.registerComponent<HurtboxControllerMapComponent>();
+    comp.registerComponent<JumpComponent>();
+    comp.registerComponent<LocalTransform>();
+    comp.registerComponent<ParentComponent>();
+    comp.registerComponent<PushboxControllerComponent>();
+    comp.registerComponent<PushboxControllerMapComponent>();
+    comp.registerComponent<RenderComponent>();
     comp.registerComponent<SpriteComponent>();
     comp.registerComponent<StateComponent>();
     comp.registerComponent<StateMachineComponent>();
-    comp.registerComponent<AnimationControllerComponent>();
-    comp.registerComponent<AnimationComponent>();
-    comp.registerComponent<JumpComponent>();
-    comp.registerComponent<HitboxControllerMapComponent>();
-    comp.registerComponent<HurtboxControllerMapComponent>();
-    comp.registerComponent<PushboxControllerMapComponent>();
-    comp.registerComponent<HitboxControllerComponent>();
-    comp.registerComponent<HurtboxControllerComponent>();
-    comp.registerComponent<PushboxControllerComponent>();
+    comp.registerComponent<TransformComponent>();
 
     const auto entity = loader.create(world, "assets/characters/fighter_01.json");
 
-    REQUIRE(comp.has<SpriteComponent>(entity));
     REQUIRE(comp.has<StateComponent>(entity));
     REQUIRE(comp.has<StateMachineComponent>(entity));
     REQUIRE(comp.has<AnimationControllerComponent>(entity));
-    REQUIRE(comp.has<AnimationComponent>(entity));
     REQUIRE(comp.has<JumpComponent>(entity));
 
     const auto& jumpComp = comp.get<JumpComponent>(entity);
@@ -198,12 +206,6 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(jumpComp.gravityScaleAsc == Catch::Approx(0.7f));
     REQUIRE(jumpComp.gravityScaleDesc == Catch::Approx(1.9f));
     REQUIRE(jumpComp.fastFallMultiplier == Catch::Approx(2.2f));
-
-    const auto& sprite = comp.get<SpriteComponent>(entity);
-    REQUIRE(sprite.texturePath == "assets/sprites/fighter.png");
-    REQUIRE(sprite.source.size.width == 64);
-    REQUIRE(sprite.source.size.height == 96);
-    REQUIRE(sprite.useSourceRect == false);
 
     const auto& state = comp.get<StateComponent>(entity);
     REQUIRE(state.current == StateId::Idle);
@@ -220,14 +222,28 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     REQUIRE(controller.animations.right.contains(StateId::Idle));
     REQUIRE(controller.currentState == StateId::Idle);
 
-    const auto& animation = comp.get<AnimationComponent>(entity);
-    REQUIRE(animation.currentFrame == 0);
-    REQUIRE(animation.elapsedTime == 0.f);
-    REQUIRE(animation.currentState == StateId::Idle);
-
     REQUIRE(comp.has<HitboxControllerMapComponent>(entity));
     REQUIRE(comp.has<HurtboxControllerMapComponent>(entity));
     REQUIRE(comp.has<PushboxControllerMapComponent>(entity));
+
+    REQUIRE(comp.has<ChildrenComponent>(entity));
+    const auto& children = comp.get<ChildrenComponent>(entity);
+    REQUIRE(children.children.size() == 1);
+    Entity visualEntity = children.children[0];
+
+    REQUIRE(comp.has<SpriteComponent>(visualEntity));
+    REQUIRE(comp.has<AnimationComponent>(visualEntity));
+
+    const auto& sprite = comp.get<SpriteComponent>(visualEntity);
+    REQUIRE(sprite.texturePath == "assets/sprites/fighter.png");
+    REQUIRE(sprite.source.size.width == 64);
+    REQUIRE(sprite.source.size.height == 96);
+    REQUIRE(sprite.useSourceRect == false);
+
+    const auto& animation = comp.get<AnimationComponent>(visualEntity);
+    REQUIRE(animation.currentFrame == 0);
+    REQUIRE(animation.elapsedTime == 0.f);
+    REQUIRE(animation.currentState == StateId::Idle);
 }
 
 TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states per character definition",
@@ -242,7 +258,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     defRoot->setString("animations", "assets/animations/fighter_custom.json");
     defRoot->setString("stateMachine", "assets/fsm/fighter_custom.json");
     defRoot->setString("collisions", "assets/collisions/fighter_custom.json");
-    defRoot->setObject("jump", this->makeJumpNode());  // valores padrão
+    defRoot->setObject("jump", this->makeJumpNode());
 
     auto customStateNode = std::make_unique<StubDataNode>();
     customStateNode->setString("", "PowerCharge");
@@ -336,18 +352,23 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     });
 
     auto& comp = world.components();
+    comp.registerComponent<AnimationComponent>();
+    comp.registerComponent<AnimationControllerComponent>();
+    comp.registerComponent<ChildrenComponent>();
+    comp.registerComponent<HitboxControllerComponent>();
+    comp.registerComponent<HitboxControllerMapComponent>();
+    comp.registerComponent<HurtboxControllerComponent>();
+    comp.registerComponent<HurtboxControllerMapComponent>();
+    comp.registerComponent<JumpComponent>();
+    comp.registerComponent<LocalTransform>();
+    comp.registerComponent<ParentComponent>();
+    comp.registerComponent<PushboxControllerComponent>();
+    comp.registerComponent<PushboxControllerMapComponent>();
+    comp.registerComponent<RenderComponent>();
     comp.registerComponent<SpriteComponent>();
     comp.registerComponent<StateComponent>();
     comp.registerComponent<StateMachineComponent>();
-    comp.registerComponent<AnimationControllerComponent>();
-    comp.registerComponent<AnimationComponent>();
-    comp.registerComponent<JumpComponent>();
-    comp.registerComponent<HitboxControllerMapComponent>();
-    comp.registerComponent<HurtboxControllerMapComponent>();
-    comp.registerComponent<PushboxControllerMapComponent>();
-    comp.registerComponent<HitboxControllerComponent>();
-    comp.registerComponent<HurtboxControllerComponent>();
-    comp.registerComponent<PushboxControllerComponent>();
+    comp.registerComponent<TransformComponent>();
 
     const auto entity = loader.create(world, "def.json");
 

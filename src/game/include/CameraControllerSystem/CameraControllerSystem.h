@@ -40,7 +40,6 @@ private:
     float minMargin;
     bool favorBigPlayers;
 
-    AABB computePlayerBounds(UpdateContext& ctx);
     float selectZoom(const AABB& playerBounds) const;
     Position computeClampedCameraPosition(const Position& center, float targetZoom);
 };

@@ -5,10 +5,6 @@
 
 class EventBus;
 
-struct RenderContext
-{
-    World& world;
-    EventBus& eventBus;
-};
+struct RenderContext { World& world; EventBus& eventBus; };
 
 #endif // render_context_h

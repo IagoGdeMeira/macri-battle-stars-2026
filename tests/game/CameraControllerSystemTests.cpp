@@ -2,6 +2,7 @@
 
 #include "StubWindow.h"
 
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -21,6 +22,7 @@ public:
     CameraControllerSystemFixture() : ctx { this->world, this->bus, this->commandBuffer, 0.016f }
     {
         auto& comp = this->world.components();
+        comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<PlayerComponent>();
         comp.registerComponent<SpriteComponent>();
         comp.registerComponent<TransformComponent>();

@@ -7,6 +7,7 @@
 #include "domain/components/AnimationControllerComponent.h"
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/ParallaxComponent.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TextureEffectsComponent.h"
@@ -51,6 +52,7 @@ public:
         comp.registerComponent<AnimationControllerComponent>();
         comp.registerComponent<OrientationComponent>();
         comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<ParentComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<SpriteComponent>();
         comp.registerComponent<TextureEffectsComponent>();

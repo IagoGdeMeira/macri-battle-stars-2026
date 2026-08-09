@@ -3,35 +3,37 @@
 #include "StateIdMapper/StateIdMapper.h"
 
 #include "domain/components/ActiveComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
 #include "domain/components/HitboxControllerMapComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
 #include "domain/components/HurtboxControllerMapComponent.h"
 #include "domain/components/JumpComponent.h"
+#include "domain/components/LocalTransform.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/components/PushboxControllerComponent.h"
 #include "domain/components/PushboxControllerMapComponent.h"
+#include "domain/components/RenderComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/StateComponent.h"
 #include "domain/components/StateMachineComponent.h"
-#include "domain/utils/Logger/Logger.h"
+#include "domain/components/TransformComponent.h"
 
 Entity CharacterLoader::create(World& world, const std::string& path) const
 {
     auto def = this->defLoader.load(path);
-    Entity entity = world.entities().create();
     auto& comp = world.components();
 
-    comp.add<SpriteComponent>(entity, this->buildSpriteComponent(def));
+    Entity entity = world.entities().create();
 
     auto mapper = this->buildStateMapper(def);
     uint32_t machineId = this->registerStateMachine(def, *mapper);
     this->addStateComponents(world, entity, machineId);
 
     comp.add<AnimationControllerComponent>(entity, this->buildAnimationController(def, *mapper));
-    
     this->loadCollisionControllers(world, entity, def);
+    this->buildVisualEntity(world, entity, def);
 
-    comp.add<AnimationComponent>(entity, this->buildInitialAnimation(entity, world));
     comp.add<JumpComponent>(entity, JumpComponent{
         .force              = def.jump.force,
         .maxTime            = def.jump.maxTime,
@@ -41,10 +43,20 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
         .fastFallMultiplier = def.jump.fastFallMultiplier
     });
 
-    LOG_DEBUG("JumpComponent loaded: force={}, maxTime={}, asc={}, desc={}",
-        def.jump.force, def.jump.maxTime, def.jump.gravityScaleAsc, def.jump.gravityScaleDesc);
-
     return entity;
+}
+
+uint32_t CharacterLoader::registerStateMachine(const CharacterDefinition& def, const StateIdMapper& mapper) const
+{
+    StateMachine fsm = this->fsmLoader.load(def.stateMachinePath, mapper);
+    return this->stateMachineRegistry.registerMachine(std::move(fsm));
+}
+
+void CharacterLoader::addStateComponents(World& world, Entity entity, uint32_t machineId) const
+{
+    auto& comp = world.components();
+    comp.add<StateComponent>(entity, StateComponent{ StateId::Idle });
+    comp.add<StateMachineComponent>(entity, StateMachineComponent{ machineId });
 }
 
 SpriteComponent CharacterLoader::buildSpriteComponent(const CharacterDefinition& def) const
@@ -66,19 +78,6 @@ std::shared_ptr<StateIdMapper> CharacterLoader::buildStateMapper(const Character
     return mapper;
 }
 
-uint32_t CharacterLoader::registerStateMachine(const CharacterDefinition& def, const StateIdMapper& mapper) const
-{
-    StateMachine fsm = this->fsmLoader.load(def.stateMachinePath, mapper);
-    return this->stateMachineRegistry.registerMachine(std::move(fsm));
-}
-
-void CharacterLoader::addStateComponents(World& world, Entity entity, uint32_t machineId) const
-{
-    auto& comp = world.components();
-    comp.add<StateComponent>(entity, StateComponent{ StateId::Idle });
-    comp.add<StateMachineComponent>(entity, StateMachineComponent{ machineId });
-}
-
 AnimationControllerComponent CharacterLoader::buildAnimationController(const CharacterDefinition& def, const StateIdMapper& mapper) const
 {
     AnimationControllerComponent controller;
@@ -87,18 +86,29 @@ AnimationControllerComponent CharacterLoader::buildAnimationController(const Cha
     return controller;
 }
 
-AnimationComponent CharacterLoader::buildInitialAnimation(Entity entity, World& world) const
+AnimationComponent CharacterLoader::buildInitialAnimation() const
 {
-    auto& comp = world.components();
     AnimationComponent anim;
     anim.currentState = StateId::Idle;
     anim.currentFrame = 0;
     anim.elapsedTime = 0.f;
-
-    const auto& controllerRef = comp.get<AnimationControllerComponent>(entity);
-    auto it = controllerRef.animations.right.find(StateId::Idle);
-    if (it != controllerRef.animations.right.end()) anim.animation = it->second;
     return anim;
+}
+
+void CharacterLoader::buildVisualEntity(World& world, Entity entity, const CharacterDefinition& def) const
+{
+    auto& comp = world.components();
+
+    Entity visualEntity = world.entities().create();
+    comp.add<SpriteComponent>(visualEntity, this->buildSpriteComponent(def));
+    comp.add<AnimationComponent>(visualEntity, this->buildInitialAnimation());
+    comp.add<LocalTransform>(visualEntity, LocalTransform{Position{0.f, 0.f}});
+    comp.add<TransformComponent>(visualEntity, TransformComponent{});
+    comp.add<ParentComponent>(visualEntity, ParentComponent{entity});
+    comp.add<RenderComponent>(visualEntity, RenderComponent{0, 0});
+
+    if (!comp.has<ChildrenComponent>(entity)) comp.add<ChildrenComponent>(entity, ChildrenComponent{});
+    comp.get<ChildrenComponent>(entity).children.push_back(visualEntity);
 }
 
 void CharacterLoader::loadCollisionControllers(World& world, Entity entity, const CharacterDefinition& def) const

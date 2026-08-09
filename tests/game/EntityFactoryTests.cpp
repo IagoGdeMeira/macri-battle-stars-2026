@@ -279,16 +279,21 @@ TEST_CASE_METHOD(EntityFactoryFixture, "EntityFactory::createBackgroundAnimated(
     std::string texturePath = "assets/sprites/animated.png";
     std::string animationPath = "assets/animations/animated.json";
 
-    Entity animBg = this->factory.createBackgroundAnimated(EntityFactory::BackgroundParams{
+    Entity mainEntity = this->factory.createBackgroundAnimated(EntityFactory::BackgroundParams{
         parallax, zIndex, parent}, texturePath, animationPath);
 
     auto& comp = this->world.components();
-    REQUIRE(comp.has<SpriteComponent>(animBg));
-    REQUIRE(comp.has<AnimationControllerComponent>(animBg));
-    REQUIRE(comp.has<AnimationComponent>(animBg));
-    REQUIRE(comp.has<RenderComponent>(animBg));
-    REQUIRE(comp.has<ParallaxComponent>(animBg));
-    REQUIRE(comp.has<ParentComponent>(animBg));
-    REQUIRE(comp.has<LocalTransform>(animBg));
-    REQUIRE(comp.has<TransformComponent>(animBg));
+    REQUIRE(comp.has<AnimationControllerComponent>(mainEntity));
+    REQUIRE(comp.has<ChildrenComponent>(mainEntity));
+    REQUIRE(comp.has<RenderComponent>(mainEntity));
+    REQUIRE(comp.has<ParallaxComponent>(mainEntity));
+    REQUIRE(comp.has<ParentComponent>(mainEntity));
+    REQUIRE(comp.has<LocalTransform>(mainEntity));
+    REQUIRE(comp.has<TransformComponent>(mainEntity));
+
+    const auto& children = comp.get<ChildrenComponent>(mainEntity);
+    REQUIRE(children.children.size() == 1);
+    Entity visualEntity = children.children[0];
+    REQUIRE(comp.has<SpriteComponent>(visualEntity));
+    REQUIRE(comp.has<AnimationComponent>(visualEntity));
 }

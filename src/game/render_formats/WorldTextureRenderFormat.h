@@ -38,6 +38,7 @@ private:
     TextureLoader& textureLoader;
 
     DrawTextureCommand buildTextureCommand(Entity& entity, World& world, size_t order, std::shared_ptr<Texture> texture) const;
+    bool shouldFlipTexture(Entity& entity, World& world) const;
 };
 
 #endif // world_texture_render_format_h

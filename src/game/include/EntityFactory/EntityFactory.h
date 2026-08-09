@@ -18,6 +18,8 @@ class ResourceManager;
 class TextureLoader;
 class World;
 
+struct Animation;
+
 class EntityFactory
 {
 public:
@@ -64,6 +66,7 @@ public:
     Entity createBackgroundRectangle(const BackgroundParams& params, const Rectangle& rect, const Color& color, bool filled = true);
     Entity createBackgroundCircle(const BackgroundParams& params, const Circle& circle, const Color& color, bool filled = true);
     Entity createBackgroundAnimated(const BackgroundParams& params, const std::string& texturePath, const std::string& animationPath);
+    Entity createSimpleBackgroundAnimated(const BackgroundParams& params, const std::string& texturePath, const Animation& animation);
 
 private:
     World& factoryWorld;

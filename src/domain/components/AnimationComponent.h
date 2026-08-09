@@ -6,12 +6,10 @@
 
 struct AnimationComponent
 {
-    Animation animation;
-
     float elapsedTime = 0.f;
     int currentFrame = 0;
-
     StateId currentState = StateId::Unknown;
+    Animation currentAnimation;
 };
 
 #endif // animation_component_h

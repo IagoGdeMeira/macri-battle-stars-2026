@@ -1,5 +1,6 @@
 #include "CameraControllerSystem/CameraControllerSystem.h"
 
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -40,8 +41,20 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     {
         ++count;
         auto& pos = transform.position;
+
         Dimension2D halfSize {16.f, 16.f};
-        if (comp.has<SpriteComponent>(entity))
+        if (comp.has<ChildrenComponent>(entity))
+        {
+            const auto& children = comp.get<ChildrenComponent>(entity).children;
+            for (Entity child : children) if (comp.has<SpriteComponent>(child))
+            {
+                const auto& sprite = comp.get<SpriteComponent>(child);
+                halfSize = {sprite.size.width * 0.5f, sprite.size.height * 0.5f};
+                break;
+            }
+        }
+        
+        else if (comp.has<SpriteComponent>(entity))
         {
             const auto& sprite = comp.get<SpriteComponent>(entity);
             halfSize = {sprite.size.width * 0.5f, sprite.size.height * 0.5f};

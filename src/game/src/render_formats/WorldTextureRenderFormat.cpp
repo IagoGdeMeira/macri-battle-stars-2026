@@ -4,6 +4,7 @@
 
 #include "domain/components/AnimationControllerComponent.h"
 #include "domain/components/OrientationComponent.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/SpriteComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -57,12 +58,22 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
     cmd.rotation = transform.rotation;
     WorldRenderUtils::computeSpriteTransform(spriteConfig, cmd);
 
-    if (comp.has<OrientationComponent>(entity))
+    bool hasOrientation = false, orientFlipX = false;
+    if (comp.has<ParentComponent>(entity))
     {
-        bool symmetric = comp.has<AnimationControllerComponent>(entity)
-            ? comp.get<AnimationControllerComponent>(entity).animations.symmetric : true;
-        cmd.flipX = symmetric ? (comp.get<OrientationComponent>(entity).direction == Orientation::Left) : false;
+        Entity parent = comp.get<ParentComponent>(entity).parent;
+        if (comp.has<OrientationComponent>(parent))
+        {
+            orientFlipX = this->shouldFlipTexture(parent, world);
+            hasOrientation = true;
+        }
     }
+    else if (comp.has<OrientationComponent>(entity))
+    {
+        orientFlipX = this->shouldFlipTexture(entity, world);
+        hasOrientation = true;
+    }
+    if (hasOrientation) cmd.flipX = orientFlipX;
 
     float oldWidth  = cmd.dest.size.width;
     float oldHeight = cmd.dest.size.height;
@@ -78,4 +89,13 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
     cmd.source.size = sprite.source.size;
     cmd.useSourceRect = sprite.useSourceRect;
     return cmd;
+}
+
+bool WorldTextureRenderFormat::shouldFlipTexture(Entity& entity, World& world) const
+{
+    auto& comp = world.components();
+
+    bool symmetric = comp.has<AnimationControllerComponent>(entity)
+        ? comp.get<AnimationControllerComponent>(entity).animations.symmetric : true;
+    return symmetric ? (comp.get<OrientationComponent>(entity).direction == Orientation::Left) : false;
 }

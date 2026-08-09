@@ -11,6 +11,7 @@
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/ParallaxComponent.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -61,6 +62,7 @@ public:
         comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<OrientationComponent>();
         comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<ParentComponent>();
         comp.registerComponent<RectangleEffectsComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();

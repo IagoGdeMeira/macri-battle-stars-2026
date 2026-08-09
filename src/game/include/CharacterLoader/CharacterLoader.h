@@ -63,13 +63,15 @@ private:
     HurtboxLoader& hurtboxLoader;
     PushboxLoader& pushboxLoader;
     StateMachineRegistry& stateMachineRegistry;
+    
+    uint32_t registerStateMachine(const CharacterDefinition& def, const StateIdMapper& mapper) const;
+    void addStateComponents(World& world, Entity entity, uint32_t machineId) const;
 
     SpriteComponent buildSpriteComponent(const CharacterDefinition& def) const;
     std::shared_ptr<StateIdMapper> buildStateMapper(const CharacterDefinition& def) const;
-    uint32_t registerStateMachine(const CharacterDefinition& def, const StateIdMapper& mapper) const;
-    void addStateComponents(World& world, Entity entity, uint32_t machineId) const;
     AnimationControllerComponent buildAnimationController(const CharacterDefinition& def, const StateIdMapper& mapper) const;
-    AnimationComponent buildInitialAnimation(Entity entity, World& world) const;
+    AnimationComponent buildInitialAnimation() const;
+    void buildVisualEntity(World& world, Entity entity, const CharacterDefinition& def) const;
 
     void loadCollisionControllers(World& world, Entity entity, const CharacterDefinition& def) const;
 };

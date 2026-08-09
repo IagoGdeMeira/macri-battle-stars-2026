@@ -9,7 +9,6 @@
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include <catch2/catch_test_macros.hpp>
-#include <vector>
 
 class AnimationSystemFixture
 {
@@ -34,8 +33,14 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem advances sprite source
 ) {
     const auto entity = this->world.entities().create();
 
+    Animation animData{ {{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true };
+    AnimationComponent animComp;
+    animComp.currentAnimation = animData;
+    animComp.elapsedTime = 0.f;
+    animComp.currentFrame = 0;
+
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, AnimationComponent{ Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 0 });
+    comp.add<AnimationComponent>(entity, animComp);
     comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", nullptr, Dimension2D{16, 16}, Rectangle{}, false });
 
     this->context.deltaTime = 0.1f;
@@ -58,8 +63,14 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem loops back to the firs
 ) {
     const auto entity = this->world.entities().create();
 
+    Animation animData{ {{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true };
+    AnimationComponent animComp;
+    animComp.currentAnimation = animData;
+    animComp.elapsedTime = 0.f;
+    animComp.currentFrame = 1;
+
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, AnimationComponent { Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, true}, 0.f, 1 });
+    comp.add<AnimationComponent>(entity, animComp);
     comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", nullptr, Dimension2D{16, 16}, Rectangle{}, false });
 
     this->context.deltaTime = 0.1f;
@@ -80,8 +91,14 @@ TEST_CASE_METHOD(AnimationSystemFixture, "AnimationSystem holds the last frame w
 ) {
     const auto entity = this->world.entities().create();
 
+    Animation animData{ {{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, false };
+    AnimationComponent animComp;
+    animComp.currentAnimation = animData;
+    animComp.elapsedTime = 0.f;
+    animComp.currentFrame = 1;
+
     auto& comp = this->world.components();
-    comp.add<AnimationComponent>(entity, AnimationComponent{ Animation{{{0, 0, 16, 16}, {16, 0, 16, 16}}, 0.1f, false}, 0.f, 1 });
+    comp.add<AnimationComponent>(entity, animComp);
     comp.add<SpriteComponent>(entity, SpriteComponent{ "dummy.png", nullptr, Dimension2D{16, 16}, Rectangle{}, false });
 
     this->context.deltaTime = 0.3f;
