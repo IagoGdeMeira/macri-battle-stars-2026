@@ -61,7 +61,6 @@ add_executable(game_tests
     CollisionHandlerFactoryTests.cpp
     ComboLoaderTests.cpp
     ComboSystemTests.cpp
-    CrouchSystemTests.cpp
     DirectionTriggerSystemTests.cpp
     DynamicPushboxResolutionSystemTests.cpp
     EntityFactoryTests.cpp
@@ -73,6 +72,7 @@ add_executable(game_tests
     HitboxControllerSystemTests.cpp
     HitboxLoaderTests.cpp
     HitstopSystemTests.cpp
+    HoldTriggerSystemTests.cpp
     HorizontalMovementSystemTests.cpp
     HurtboxControllerSystemTests.cpp
     HurtboxLoaderTests.cpp

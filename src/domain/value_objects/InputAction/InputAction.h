@@ -10,7 +10,7 @@ enum class InputAction
     MoveRight,
     Punch,
     Kick,
-    Defend,
+    Block,
     Jump,
     Crouch
 };

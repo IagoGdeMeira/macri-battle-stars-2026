@@ -13,7 +13,6 @@
 #include "ComboLoader/ComboLoader.h"
 #include "ComboSystem/ComboSystem.h"
 #include "ComponentRegistry/ComponentRegistry.h"
-#include "CrouchSystem/CrouchSystem.h"
 #include "DamageSystem/DamageSystem.h"
 #include "DirectionTriggerSystem/DirectionTriggerSystem.h"
 #include "DynamicPushboxResolutionSystem/DynamicPushboxResolutionSystem.h"
@@ -25,6 +24,7 @@
 #include "HitboxCollisionController.h"
 #include "HitboxControllerSystem/HitboxControllerSystem.h"
 #include "HitboxLoader/HitboxLoader.h"
+#include "HoldTriggerSystem/HoldTriggerSystem.h"
 #include "HorizontalMovementSystem/HorizontalMovementSystem.h"
 #include "HurtboxCollisionController.h"
 #include "HurtboxControllerSystem/HurtboxControllerSystem.h"
@@ -270,10 +270,20 @@ void GameScene::addSystems()
     systems.addSystem<ComboSystem>(events, this->combos);
 
     systems.addSystem<DirectionTriggerSystem>(events);
-    systems.addSystem<CrouchSystem>(events);
+    systems.addSystem<HoldTriggerSystem>(events, HoldTriggerSystem::Config{
+        .action = InputAction::Crouch, .onPress = TriggerId::Crouched, .onRelease = TriggerId::CrouchReleased,
+        .condition = [](UpdateContext& ctx, Entity e) -> bool {
+            auto& c = ctx.world.components();
+            return c.has<GroundedComponent>(e) && c.get<GroundedComponent>(e).onGround;
+        }});
+    systems.addSystem<HoldTriggerSystem>(events, HoldTriggerSystem::Config{
+        .action = InputAction::Block, .onPress = TriggerId::Blocked, .onRelease = TriggerId::BlockReleased,
+        .condition = [](UpdateContext& ctx, Entity e) -> bool {
+            auto& c = ctx.world.components();
+            return c.has<GroundedComponent>(e) && c.get<GroundedComponent>(e).onGround;
+        }});
     systems.addSystem<AttackSystem>(events, InputAction::Punch, TriggerId::Punched);
     systems.addSystem<AttackSystem>(events, InputAction::Kick, TriggerId::Kicked);
-    systems.addSystem<AttackSystem>(events, InputAction::Defend, TriggerId::Blocked);
     systems.addSystem<FallTriggerSystem>(events);
 
     systems.addSystem<StateSystem>(events, *this->stateMachineRegistry);

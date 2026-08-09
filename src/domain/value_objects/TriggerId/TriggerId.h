@@ -15,6 +15,7 @@ enum class TriggerId
     Kicked,
     Punched,
     Blocked,
+    BlockReleased,
     StartedChargingSpecial,
     ReleasedSpecial,
     TookDamage,

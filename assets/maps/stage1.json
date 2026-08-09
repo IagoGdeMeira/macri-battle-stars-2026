@@ -16,6 +16,14 @@
             "layer": -10
         },
         {
+            "type": "circle",
+            "color": { "r": 255, "g": 255, "b": 0, "a": 255 },
+            "position": { "x": 0, "y": -150 },
+            "radius": 150,
+            "parallaxFactor": { "x": 3.5, "y": 1 },
+            "layer": -5
+        },
+        {
             "type": "rectangle",
             "color": { "r": 43, "g": 12, "b": 16, "a": 255 },
             "position": { "x": 0, "y": 500 },

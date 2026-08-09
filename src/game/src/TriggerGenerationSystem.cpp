@@ -18,10 +18,14 @@ void TriggerGenerationSystem::processInputTriggers(UpdateContext& ctx)
     for (auto [entity, input, p_] : view) for (const auto& [action, state] : input.actions)
     {
         (void)p_;
-        if (!state.pressed) continue;
 
-        auto it = this->context.bindings.find(action);
-        if (it == this->context.bindings.end()) continue;
+        if (!state.pressed) continue;
+        if (action == InputAction::Punch || action == InputAction::Kick) continue;
+        if (action == InputAction::Block || action == InputAction::Crouch) continue;
+
+        auto& bindings = this->context.bindings;
+        auto it = bindings.find(action);
+        if (it == bindings.end()) continue;
 
         for (auto trigger : it->second) this->bus.emit<TriggerEvent>(TriggerEvent{ entity, trigger });
     }

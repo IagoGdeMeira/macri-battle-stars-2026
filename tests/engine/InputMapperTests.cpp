@@ -20,7 +20,7 @@ TEST_CASE("InputMapper converts known and unknown key strings", "[unit][input_ma
 
 TEST_CASE("InputMapper converts enums to strings with fallback", "[unit][input_mapper]")
 {
-    REQUIRE(InputMapper::actionToString(InputAction::Defend) == "Defend");
+    REQUIRE(InputMapper::actionToString(InputAction::Block) == "Block");
     REQUIRE(InputMapper::actionToString(InputAction::Punch) == "Punch");
     REQUIRE(InputMapper::actionToString(InputAction::Kick) == "Kick");
     REQUIRE(InputMapper::actionToString(InputAction::None) == "None");

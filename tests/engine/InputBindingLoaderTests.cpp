@@ -41,7 +41,7 @@ public:
         players.push_back(std::move(player1));
 
         std::vector<std::unique_ptr<StubDataNode>> player2Bindings;
-        player2Bindings.push_back(this->makeBinding("Defend", "Keyboard.LShift"));
+        player2Bindings.push_back(this->makeBinding("Block", "Keyboard.LShift"));
         auto player2 = this->makePlayerBindings(2, std::move(player2Bindings));
         players.push_back(std::move(player2));
 
@@ -62,7 +62,7 @@ TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader builds context f
     REQUIRE(context.bindings.size() == 2);
     REQUIRE(context.bindings.at(1).keyMap.at(InputSource::keyboard(KeyCode::A)) == InputAction::Punch);
     REQUIRE(context.bindings.at(1).keyMap.at(InputSource::keyboard(KeyCode::Space)) == InputAction::Jump);
-    REQUIRE(context.bindings.at(2).keyMap.at(InputSource::keyboard(KeyCode::LShift)) == InputAction::Defend);
+    REQUIRE(context.bindings.at(2).keyMap.at(InputSource::keyboard(KeyCode::LShift)) == InputAction::Block);
 }
 
 TEST_CASE_METHOD(InputBindingLoaderFixture, "InputBindingLoader forwards path to parser",

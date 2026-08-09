@@ -10,7 +10,6 @@ class InputBindingLoader
 {
 public:
     InputBindingLoader(DataParser& parser) : parser(parser) {};
-
     InputContext load(const std::string& path);
 
 private:

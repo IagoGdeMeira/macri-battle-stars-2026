@@ -91,7 +91,7 @@ TEST_CASE("ComboSystem keeps buffer when combo does not consume input", "[integr
     const auto entity = scene.world().entities().create();
 
     InputBufferComponent buffer;
-    buffer.buffer.push_back({ InputAction::Defend, 0.01f });
+    buffer.buffer.push_back({ InputAction::Block, 0.01f });
 
     comp.add<InputBufferComponent>(entity, buffer);
 
@@ -99,7 +99,7 @@ TEST_CASE("ComboSystem keeps buffer when combo does not consume input", "[integr
     combo.name = "hold";
     combo.trigger = TriggerId::Kicked;
     combo.consumeInput = false;
-    combo.steps = { { InputAction::Defend, 100 } };
+    combo.steps = { { InputAction::Block, 100 } };
 
     scene.systems().addSystem<ComboSystem>(bus, std::vector<Combo> { combo });
 
@@ -107,5 +107,5 @@ TEST_CASE("ComboSystem keeps buffer when combo does not consume input", "[integr
 
     const auto& updated = comp.get<InputBufferComponent>(entity);
     REQUIRE(updated.buffer.size() == 1);
-    REQUIRE(updated.buffer.front().action == InputAction::Defend);
+    REQUIRE(updated.buffer.front().action == InputAction::Block);
 }

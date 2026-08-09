@@ -41,7 +41,6 @@ TEST_CASE_METHOD(AttackSystemFixture, "AttackSystem emits the configured trigger
     InputComponent input;
     input.actions[InputAction::Punch] = InputComponent::State{true, 0.f};
     input.actions[InputAction::Kick] = InputComponent::State{true, 0.f};
-    input.actions[InputAction::Defend] = InputComponent::State{true, 0.f};
 
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
@@ -54,16 +53,13 @@ TEST_CASE_METHOD(AttackSystemFixture, "AttackSystem emits the configured trigger
     auto& systems = this->scene.systems();
     systems.addSystem<AttackSystem>(this->bus, InputAction::Punch, TriggerId::Punched);
     systems.addSystem<AttackSystem>(this->bus, InputAction::Kick, TriggerId::Kicked);
-    systems.addSystem<AttackSystem>(this->bus, InputAction::Defend, TriggerId::Blocked);
     this->scene.update(updateDelay);
 
-    REQUIRE(events.size() == 3);
+    REQUIRE(events.size() == 2);
     REQUIRE(events[0].entity == entity);
     REQUIRE(events[0].trigger == TriggerId::Punched);
     REQUIRE(events[1].entity == entity);
     REQUIRE(events[1].trigger == TriggerId::Kicked);
-    REQUIRE(events[2].entity == entity);
-    REQUIRE(events[2].trigger == TriggerId::Blocked);
 }
 
 TEST_CASE_METHOD(AttackSystemFixture, "AttackSystem blocks attacks in non-attackable states",

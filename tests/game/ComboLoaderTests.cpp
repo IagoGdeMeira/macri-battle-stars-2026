@@ -50,7 +50,7 @@ public:
         combos.push_back(std::move(uppercut));
 
         std::vector<std::unique_ptr<StubDataNode>> guardSteps;
-        guardSteps.push_back(this->makeStep("Defend", 80.f));
+        guardSteps.push_back(this->makeStep("Block", 80.f));
         auto guard = this->makeCombo("guard", "Kicked", 5, true, std::move(guardSteps));
         combos.push_back(std::move(guard));
 
@@ -84,7 +84,7 @@ TEST_CASE_METHOD(ComboLoaderFixture, "ComboLoader parses combos with optional fi
     REQUIRE(combos[1].priority == 5);
     REQUIRE(combos[1].consumeInput == true);
     REQUIRE(combos[1].steps.size() == 1);
-    REQUIRE(combos[1].steps[0].action == InputAction::Defend);
+    REQUIRE(combos[1].steps[0].action == InputAction::Block);
     REQUIRE(combos[1].steps[0].maxDelay == 80.f);
 }
 

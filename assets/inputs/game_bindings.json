@@ -16,8 +16,8 @@
                 { "action": "Punch", "source": "Gamepad.X" },
                 { "action": "Kick", "source": "Keyboard.K" },
                 { "action": "Kick", "source": "Gamepad.Y" },
-                { "action": "Defend", "source": "Keyboard.L" },
-                { "action": "Defend", "source": "Gamepad.B" }
+                { "action": "Block", "source": "Keyboard.L" },
+                { "action": "Block", "source": "Gamepad.B" }
             ]
         },
         {
@@ -35,8 +35,8 @@
                 { "action": "Punch", "source": "Gamepad.X" },
                 { "action": "Kick", "source": "Keyboard.Numpad2" },
                 { "action": "Kick", "source": "Gamepad.Y" },
-                { "action": "Defend", "source": "Keyboard.Numpad3" },
-                { "action": "Defend", "source": "Gamepad.B" }
+                { "action": "Block", "source": "Keyboard.Numpad3" },
+                { "action": "Block", "source": "Gamepad.B" }
             ]
         }
     ]

@@ -9,12 +9,13 @@
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/System/System.h"
 
+#include <unordered_map>
+
 class AttackSystem : public System
 {
 public:
     AttackSystem(EventBus& bus, InputAction action, TriggerId trigger) :
         bus(bus), action(action), trigger(trigger) {}
-
     void update(UpdateContext& ctx) override;
 
 private:
@@ -22,8 +23,10 @@ private:
     InputAction action;
     TriggerId trigger;
 
+    std::unordered_map<Entity, bool, Entity::Hash> wasPressed;
+
     bool canAttack(UpdateContext& ctx, Entity entity) const;
-    bool hasInputAction(InputComponent& input, InputAction inputAction) const;
+    bool hasInputAction(InputComponent& input) const;
 };
 
 #endif // attack_system_h

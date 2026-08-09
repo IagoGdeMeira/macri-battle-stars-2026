@@ -40,7 +40,6 @@ target_sources(game
         src/CollisionHandlerFactory.cpp
         src/ComboLoader.cpp
         src/ComboSystem.cpp
-        src/CrouchSystem.cpp
         src/DamageSystem.cpp
         src/DirectionTriggerSystem.cpp
         src/DynamicPushboxResolutionSystem.cpp
@@ -53,6 +52,7 @@ target_sources(game
         src/HitboxControllerSystem.cpp
         src/HitboxLoader.cpp
         src/HitstopSystem.cpp
+        src/HoldTriggerSystem.cpp
         src/HorizontalMovementSystem.cpp
         src/HurtboxControllerSystem.cpp
         src/HurtboxLoader.cpp

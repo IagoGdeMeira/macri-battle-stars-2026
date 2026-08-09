@@ -79,14 +79,14 @@ TEST_CASE_METHOD(InputSystemFixture, "InputSystem ignores events from other play
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Defend] = InputComponent::State{false, 0.f};
+    input.actions[InputAction::Block] = InputComponent::State{false, 0.f};
 
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
     comp.add<PlayerComponent>(entity, PlayerComponent{3});
 
     InputContext context;
-    context.bindings[3].keyMap[InputSource::keyboard(KeyCode::RShift)] = InputAction::Defend;
+    context.bindings[3].keyMap[InputSource::keyboard(KeyCode::RShift)] = InputAction::Block;
 
     this->scene.systems().addSystem<InputSystem>(this->bus, context);
 
@@ -94,7 +94,7 @@ TEST_CASE_METHOD(InputSystemFixture, "InputSystem ignores events from other play
     this->scene.update(0.016f);
 
     const auto& updated = comp.get<InputComponent>(entity);
-    REQUIRE(updated.actions.at(InputAction::Defend).pressed == false);
+    REQUIRE(updated.actions.at(InputAction::Block).pressed == false);
 }
 
 TEST_CASE_METHOD(InputSystemFixture, "InputSystem keeps action pressed when at least one source is active",

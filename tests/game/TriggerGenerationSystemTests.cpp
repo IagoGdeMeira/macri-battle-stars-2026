@@ -31,14 +31,14 @@ TEST_CASE_METHOD(TriggerGenerationSystemFixture, "TriggerGenerationSystem emits 
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Punch] = InputComponent::State{true, 0.f};
+    input.actions[InputAction::Jump] = InputComponent::State{true, 0.f};
 
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
     comp.add<PlayerComponent>(entity, PlayerComponent{1});
 
     TriggerContext context;
-    context.bindings[InputAction::Punch] = {TriggerId::Jumped, TriggerId::Punched};
+    context.bindings[InputAction::Jump] = {TriggerId::Jumped, TriggerId::Punched};
 
     std::vector<TriggerEvent> events;
     this->bus.subscribe<TriggerEvent>([&](const TriggerEvent& event) { events.push_back(event); });
@@ -58,18 +58,17 @@ TEST_CASE_METHOD(TriggerGenerationSystemFixture, "TriggerGenerationSystem emits 
     const auto entity = this->scene.world().entities().create();
 
     InputComponent input;
-    input.actions[InputAction::Kick] = InputComponent::State{true, 0.f};
+    input.actions[InputAction::Jump] = InputComponent::State{true, 0.f};
 
     auto& comp = this->scene.world().components();
     comp.add<InputComponent>(entity, input);
     comp.add<PlayerComponent>(entity, PlayerComponent{2});
 
     TriggerContext context;
-    context.bindings[InputAction::Kick] = {TriggerId::Kicked};
+    context.bindings[InputAction::Jump] = {TriggerId::Kicked};
 
     std::vector<TriggerEvent> events;
     this->bus.subscribe<TriggerEvent>([&](const TriggerEvent& event) { events.push_back(event); });
-
     this->scene.systems().addSystem<TriggerGenerationSystem>(this->bus, context);
     this->scene.update(0.016f);
 

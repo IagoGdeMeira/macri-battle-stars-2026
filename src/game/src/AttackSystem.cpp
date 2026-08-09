@@ -20,9 +20,12 @@ void AttackSystem::update(UpdateContext& ctx)
     for (auto [entity, input, player] : view)
     {
         if (!this->canAttack(ctx, entity)) continue;
-        if (!this->hasInputAction(input, this->action)) continue;
 
-        this->bus.emit<TriggerEvent>(TriggerEvent{entity, this->trigger});
+        bool pressedNow = this->hasInputAction(input);
+        bool pressedBefore = this->wasPressed[entity];
+
+        if (pressedNow && !pressedBefore) this->bus.emit<TriggerEvent>(TriggerEvent{entity, this->trigger});
+        this->wasPressed[entity] = pressedNow;
     }
 }
 
@@ -46,8 +49,8 @@ bool AttackSystem::canAttack(UpdateContext& ctx, Entity entity) const
     }
 }
 
-bool AttackSystem::hasInputAction(InputComponent& input, InputAction inputAction) const
+bool AttackSystem::hasInputAction(InputComponent& input) const
 {
-    auto it = input.actions.find(inputAction);
+    auto it = input.actions.find(this->action);
     return it != input.actions.end() && it->second.pressed;
 }

@@ -17,10 +17,10 @@ void InputBufferSystem::update(UpdateContext& ctx)
 
     for (auto [entity, buffer, player] : view)
     {
-        for (auto& entry : buffer.buffer) entry.time += ctx.deltaTime;
+        auto& buf = buffer.buffer;
+        for (auto& entry : buf) entry.time += ctx.deltaTime;
 
-        while (!buffer.buffer.empty() && buffer.buffer.front().time > this->maxBufferTime)
-        { buffer.buffer.pop_front(); }
+        while (!buf.empty() && buf.front().time > this->maxBufferTime) buf.pop_front();
     }
 
     for (const auto& e : this->events)
