@@ -27,6 +27,7 @@ AnimationSet AnimationLoader::loadFromIndex(const std::string& indexPath, const 
             frame.y = fnode->getInt("y");
             frame.width = fnode->getInt("width");
             frame.height = fnode->getInt("height");
+            frame.duration = fnode->getFloat("duration", 0.f);
             anim.frames.push_back(frame);
         }
 

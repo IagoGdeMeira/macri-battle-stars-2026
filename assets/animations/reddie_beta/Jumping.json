@@ -1,8 +1,8 @@
 {
-    "frameDuration": 0.1,
     "loop": false,
+    "frameDuration": 0.1,
     "frames": [
-        { "x": 1464, "y": 0, "width": 183, "height": 367 },
+        { "x": 1464, "y": 0, "width": 183, "height": 367, "duration": 0.15 },
         { "x": 1647, "y": 0, "width": 183, "height": 367 },
         { "x": 1830, "y": 0, "width": 183, "height": 367 }
     ]

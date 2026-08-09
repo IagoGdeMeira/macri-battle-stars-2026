@@ -205,3 +205,27 @@ TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader handles empty hitbox list", 
     REQUIRE(controller.frames.size() == 1);
     REQUIRE(controller.frames[0].hitboxes.empty());
 }
+
+TEST_CASE_METHOD(HitboxLoaderFixture, "HitboxLoader uses global frameDuration when frame has no duration",
+    "[unit][hitbox_loader]")
+{
+    auto state = this->createStateNode(false);
+    state->setFloat("frameDuration", 0.25f);
+
+    auto frame = std::make_unique<StubDataNode>();
+    auto hitbox = this->createHitboxNode("rectangle", 0.f, 0.f, 10.f, 10.f, 3);
+    std::vector<std::unique_ptr<DataNode>> hitboxes;
+    hitboxes.push_back(std::move(hitbox));
+    frame->setArray("hitboxes", std::move(hitboxes));
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame));
+    state->setArray("frames", std::move(frames));
+
+    Entity parent = this->world.entities().create();
+    auto controller = this->loader->loadSingleState(*state, parent);
+
+    REQUIRE(controller.frames.size() == 1);
+    REQUIRE(controller.frames[0].duration == 0.25f);
+    REQUIRE(controller.frameDuration == 0.25f);
+}

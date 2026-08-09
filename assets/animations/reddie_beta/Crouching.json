@@ -1,6 +1,6 @@
 {
-    "frameDuration": 0.1,
     "loop": false,
+    "frameDuration": 0.1,
     "frames": [
         { "x": 366, "y": 0, "width": 183, "height": 367 },
         { "x": 549, "y": 0, "width": 183, "height": 367 },

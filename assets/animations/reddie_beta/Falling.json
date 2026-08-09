@@ -2,7 +2,7 @@
     "frameDuration": 0.1,
     "loop": false,
     "frames": [
-        { "x": 2013, "y": 0, "width": 183, "height": 367 },
+        { "x": 2013, "y": 0, "width": 183, "height": 367, "duration": 0.2 },
         { "x": 2196, "y": 0, "width": 183, "height": 367 }
     ]
 }

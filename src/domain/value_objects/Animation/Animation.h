@@ -8,6 +8,7 @@ struct Animation
     struct Frame
     {
         int x, y, width, height;
+        float duration = 0.f;
 
         bool operator==(const Frame& other) const
         {
@@ -16,6 +17,7 @@ struct Animation
             if (this->y != other.y) return false;
             if (this->width != other.width) return false;
             if (this->height != other.height) return false;
+            if (this->duration != other.duration) return false;
             return true;
         }
         bool operator!=(const Frame& other) const { return !(*this == other); }

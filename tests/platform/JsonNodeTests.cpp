@@ -48,7 +48,7 @@ TEST_CASE("JsonNode returns fallback when key does not exist", "[unit][json_node
     REQUIRE(node.getInt("unknown", intFallback) == 123);
     REQUIRE(node.getFloat("unknown", floatFallback) == 4.5f);
     REQUIRE(node.getBool("unknown", boolFallback) == true);
-    REQUIRE_THROWS_AS(node.getArray("unknown"), std::runtime_error);
+    REQUIRE(node.getArray("unknown").empty());
 }
 
 TEST_CASE("JsonNode returns nested array as DataNode collection", "[unit][json_node]")
@@ -97,7 +97,7 @@ TEST_CASE("JsonNode returns fallback when accessing non-existent key without exp
     REQUIRE(node.getInt("unknown") == 0);
     REQUIRE(node.getFloat("unknown") == 0.f);
     REQUIRE(node.getBool("unknown") == false);
-    REQUIRE_THROWS_AS(node.getArray("unknown"), std::runtime_error);
+    REQUIRE(node.getArray("unknown").empty());
     REQUIRE(node.getObject("unknown") == nullptr);
 }
 
@@ -105,7 +105,7 @@ TEST_CASE("JsonNode throws when accessing non-existent key as array or object", 
 {
     JsonNode node(json{{"name", "Ryu"}});
 
-    REQUIRE_THROWS_AS(node.getArray("unknown"), std::runtime_error);
+    REQUIRE(node.getArray("unknown").empty());
 
     auto obj = node.getObject("unknown");
     REQUIRE(obj == nullptr);
@@ -114,7 +114,7 @@ TEST_CASE("JsonNode throws when accessing non-existent key as array or object", 
 TEST_CASE("JsonNode throws when accessing non-array as array", "[unit][json_node]")
 {
     JsonNode node(json{{"name", "Ryu"}});
-    REQUIRE_THROWS_AS(node.getArray("name"), std::runtime_error);
+    REQUIRE(node.getArray("name").empty());
 }
 
 TEST_CASE("JsonNode returns nullptr when accessing non-object as object", "[unit][json_node]")

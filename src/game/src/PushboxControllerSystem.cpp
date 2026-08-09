@@ -23,7 +23,8 @@ void PushboxControllerSystem::update(UpdateContext& ctx)
         controller.elapsedTime += ctx.deltaTime;
         auto& currentFrame = controller.frames[controller.currentFrame];
 
-        if (controller.elapsedTime < currentFrame.duration) continue;
+        float effectiveDuration = currentFrame.duration > 0.f ? currentFrame.duration : controller.frameDuration;
+        if (controller.elapsedTime < effectiveDuration) continue;
         
         for (Entity e : currentFrame.pushboxes) if (comp.has<ActiveComponent>(e))
         { comp.get<ActiveComponent>(e).active = false; }

@@ -217,3 +217,27 @@ TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader handles empty pushbox list
     REQUIRE(controller.frames.size() == 1);
     REQUIRE(controller.frames[0].pushboxes.empty());
 }
+
+TEST_CASE_METHOD(PushboxLoaderFixture, "PushboxLoader uses global frameDuration when frame has no duration",
+    "[unit][pushbox_loader]")
+{
+    auto state = this->createStateNode(false);
+    state->setFloat("frameDuration", 0.18f);
+
+    auto frame = std::make_unique<StubDataNode>();
+    auto pushbox = this->createPushboxNode("rectangle", 5.f, 5.f, 30.f, 20.f, "dynamic", 70.f, 0.6f);
+    std::vector<std::unique_ptr<DataNode>> pushboxes;
+    pushboxes.push_back(std::move(pushbox));
+    frame->setArray("pushboxes", std::move(pushboxes));
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame));
+    state->setArray("frames", std::move(frames));
+
+    Entity parent = this->world.entities().create();
+    auto controller = this->loader->loadSingleState(*state, parent);
+
+    REQUIRE(controller.frames.size() == 1);
+    REQUIRE(controller.frames[0].duration == 0.18f);
+    REQUIRE(controller.frameDuration == 0.18f);
+}

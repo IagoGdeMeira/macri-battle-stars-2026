@@ -180,3 +180,39 @@ TEST_CASE_METHOD(AnimationLoaderFixture, "loadFromIndex with mapper throws on un
     StateIdMapper mapper;
     REQUIRE_THROWS_AS(loader.loadFromIndex("index.json", mapper), std::runtime_error);
 }
+
+TEST_CASE_METHOD(AnimationLoaderFixture, "loadFromIndex reads per-frame duration from json",
+    "[unit][animation_loader]")
+{
+    StateIdMapper mapper;
+
+    auto frame1 = std::make_unique<StubDataNode>();
+    frame1->setInt("x", 0);
+    frame1->setInt("y", 0);
+    frame1->setInt("width", 32);
+    frame1->setInt("height", 32);
+    frame1->setFloat("duration", 0.15f);
+
+    auto frame2 = std::make_unique<StubDataNode>();
+    frame2->setInt("x", 32);
+    frame2->setInt("y", 0);
+    frame2->setInt("width", 32);
+    frame2->setInt("height", 32);
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame1));
+    frames.push_back(std::move(frame2));
+    auto animNode = this->makeAnimationNode(0.2f, true, std::move(frames));
+
+    this->registerIndexEntry("index.json", "Idle", "idle.json", std::move(animNode));
+
+    AnimationLoader loader(this->parser);
+    auto set = loader.loadFromIndex("index.json", mapper);
+
+    REQUIRE(set.right.size() == 1);
+    REQUIRE(set.right.contains(StateId::Idle));
+    const auto& idle = set.right.at(StateId::Idle);
+    REQUIRE(idle.frames.size() == 2);
+    REQUIRE(idle.frames[0].duration == 0.15f);
+    REQUIRE(idle.frames[1].duration == 0.f);
+}

@@ -160,3 +160,48 @@ TEST_CASE_METHOD(PushboxControllerSystemFixture, "PushboxControllerSystem stays 
     REQUIRE(comp.get<ActiveComponent>(pb0).active == false);
     REQUIRE(comp.get<ActiveComponent>(pb1).active == true);
 }
+
+TEST_CASE_METHOD(PushboxControllerSystemFixture, "PushboxControllerSystem uses global frameDuration when frame duration is zero",
+    "[unit][pushbox_controller_system]")
+{
+    auto& comp = this->world.components();
+    auto& entities = this->world.entities();
+
+    Entity entity = entities.create();
+
+    PushboxControllerComponent controller;
+    controller.frameDuration = 0.12f;
+    controller.loop = false;
+
+    PushboxControllerComponent::Frame frame0;
+    frame0.duration = 0.f;
+    Entity pb0 = entities.create();
+    comp.add<ActiveComponent>(pb0, ActiveComponent{false});
+    frame0.pushboxes.push_back(pb0);
+
+    PushboxControllerComponent::Frame frame1;
+    frame1.duration = 0.f;
+    Entity pb1 = entities.create();
+    comp.add<ActiveComponent>(pb1, ActiveComponent{false});
+    frame1.pushboxes.push_back(pb1);
+
+    controller.frames.push_back(frame0);
+    controller.frames.push_back(frame1);
+    controller.currentFrame = 0;
+    controller.elapsedTime = 0.f;
+
+    comp.get<ActiveComponent>(pb0).active = true;
+    controller.initialized = true;
+
+    comp.add<PushboxControllerComponent>(entity, std::move(controller));
+
+    UpdateContext ctx1{this->world, this->bus, this->commandBuffer, 0.08f};
+    this->system.update(ctx1);
+    REQUIRE(comp.get<PushboxControllerComponent>(entity).currentFrame == 0);
+
+    UpdateContext ctx2{this->world, this->bus, this->commandBuffer, 0.08f};
+    this->system.update(ctx2);
+    REQUIRE(comp.get<PushboxControllerComponent>(entity).currentFrame == 1);
+    REQUIRE(comp.get<ActiveComponent>(pb0).active == false);
+    REQUIRE(comp.get<ActiveComponent>(pb1).active == true);
+}

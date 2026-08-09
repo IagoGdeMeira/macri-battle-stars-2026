@@ -160,3 +160,48 @@ TEST_CASE_METHOD(HurtboxControllerSystemFixture, "HurtboxControllerSystem stays 
     REQUIRE(comp.get<ActiveComponent>(hb0).active == false);
     REQUIRE(comp.get<ActiveComponent>(hb1).active == true);
 }
+
+TEST_CASE_METHOD(HurtboxControllerSystemFixture, "HurtboxControllerSystem uses global frameDuration when frame duration is zero",
+    "[unit][hurtbox_controller_system]")
+{
+    auto& comp = this->world.components();
+    auto& entities = this->world.entities();
+
+    Entity entity = entities.create();
+
+    HurtboxControllerComponent controller;
+    controller.frameDuration = 0.2f;
+    controller.loop = false;
+
+    HurtboxControllerComponent::Frame frame0;
+    frame0.duration = 0.f;
+    Entity hb0 = entities.create();
+    comp.add<ActiveComponent>(hb0, ActiveComponent{false});
+    frame0.hurtboxes.push_back(hb0);
+
+    HurtboxControllerComponent::Frame frame1;
+    frame1.duration = 0.f;
+    Entity hb1 = entities.create();
+    comp.add<ActiveComponent>(hb1, ActiveComponent{false});
+    frame1.hurtboxes.push_back(hb1);
+
+    controller.frames.push_back(frame0);
+    controller.frames.push_back(frame1);
+    controller.currentFrame = 0;
+    controller.elapsedTime = 0.f;
+
+    comp.get<ActiveComponent>(hb0).active = true;
+    controller.initialized = true;
+
+    comp.add<HurtboxControllerComponent>(entity, std::move(controller));
+
+    UpdateContext ctx1{this->world, this->bus, this->commandBuffer, 0.15f};
+    this->system.update(ctx1);
+    REQUIRE(comp.get<HurtboxControllerComponent>(entity).currentFrame == 0);
+
+    UpdateContext ctx2{this->world, this->bus, this->commandBuffer, 0.1f};
+    this->system.update(ctx2);
+    REQUIRE(comp.get<HurtboxControllerComponent>(entity).currentFrame == 1);
+    REQUIRE(comp.get<ActiveComponent>(hb0).active == false);
+    REQUIRE(comp.get<ActiveComponent>(hb1).active == true);
+}

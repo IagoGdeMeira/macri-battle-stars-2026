@@ -1,9 +1,9 @@
 {
     "loop": false,
+    "frameDuration": 0.1,
     "frames": [
         {
-            "duration": 0.1,
-            "hitboxes": [],
+            "duration": 0.2,
             "hurtboxes": [
                 {
                     "shape": "rectangle",
@@ -26,8 +26,6 @@
             ]
         },
         {
-            "duration": 0.1,
-            "hitboxes": [],
             "hurtboxes": [
                 {
                     "shape": "rectangle",

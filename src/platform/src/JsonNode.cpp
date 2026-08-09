@@ -67,9 +67,7 @@ bool JsonNode::getBool(const std::string& key, const bool& fallback) const
 std::vector<std::unique_ptr<DataNode>> JsonNode::getArray(const std::string& key) const
 {
     auto it = this->data.find(key);
-    if (it == this->data.end()) throw std::runtime_error("Key not found: " + key);
-    if (!it->is_array()) throw std::runtime_error("Key is not an array: " + key);
-    
+    if (it == this->data.end() || !it->is_array()) return {};
     std::vector<std::unique_ptr<DataNode>> result;
     for (const auto& item : *it) result.push_back(std::make_unique<JsonNode>(item));
     return result;

@@ -11,7 +11,7 @@ struct HurtboxControllerComponent
 
     std::vector<Frame> frames;
     int currentFrame = 0;
-    float elapsedTime = 0.f;
+    float frameDuration = 0.1f, elapsedTime = 0.f;
     bool loop = false, initialized = false;
 };
 

@@ -1,9 +1,8 @@
 {
     "loop": true,
+    "frameDuration": 0.12,
     "frames": [
         {
-            "duration": 0.12,
-            "hitboxes": [],
             "hurtboxes": [
                 {
                     "shape": "rectangle",

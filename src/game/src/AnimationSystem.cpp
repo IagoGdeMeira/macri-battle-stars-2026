@@ -16,23 +16,33 @@ void AnimationSystem::update(UpdateContext& ctx)
         auto& frames = anim.currentAnimation.frames;
         if (frames.empty()) continue;
 
-        anim.elapsedTime += ctx.deltaTime;
-        const float frameDuration = anim.currentAnimation.frameDuration;
-        
-        while (anim.elapsedTime >= frameDuration)
+        auto getFrameDuration = [&](int index) -> float
         {
-            anim.elapsedTime -= frameDuration;
+            float dur = frames[index].duration;
+            return dur > 0.f ? dur : anim.currentAnimation.frameDuration;
+        };
+
+        anim.elapsedTime += ctx.deltaTime;
+
+        while (anim.elapsedTime >= getFrameDuration(anim.currentFrame))
+        {
+            anim.elapsedTime -= getFrameDuration(anim.currentFrame);
             anim.currentFrame++;
+
             if (anim.currentFrame < static_cast<int>(frames.size())) continue;
-            
+
             if (anim.currentAnimation.loop) anim.currentFrame = 0;
-            else anim.currentFrame = static_cast<int>(frames.size()) - 1;
+            else
+            {
+                anim.currentFrame = static_cast<int>(frames.size()) - 1;
+                anim.elapsedTime = 0.f;
+                break;
+            }
         }
 
-        const auto& frame = anim.currentAnimation.frames[anim.currentFrame];
+        const auto& frame = frames[anim.currentFrame];
         auto& pos = sprite.source.position;
         auto& size = sprite.source.size;
-        
         pos.x = static_cast<float>(frame.x);
         pos.y = static_cast<float>(frame.y);
         size.width = static_cast<float>(frame.width);

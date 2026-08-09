@@ -1,8 +1,8 @@
 {
     "loop": false,
+    "frameDuration": 0.08,
     "frames": [
         {
-            "duration": 0.05,
             "hitboxes": [
                 {
                     "shape": "rectangle",
@@ -34,7 +34,6 @@
             ]
         },
         {
-            "duration": 0.05,
             "hitboxes": [
                 {
                     "shape": "rectangle",
@@ -66,8 +65,6 @@
             ]
         },
         {
-            "duration": 0.05,
-            "hitboxes": [],
             "hurtboxes": [
                 {
                     "shape": "rectangle",
@@ -90,8 +87,6 @@
             ]
         },
         {
-            "duration": 0.05,
-            "hitboxes": [],
             "hurtboxes": [
                 {
                     "shape": "rectangle",
@@ -114,8 +109,6 @@
             ]
         },
         {
-            "duration": 0.05,
-            "hitboxes": [],
             "hurtboxes": [
                 {
                     "shape": "rectangle",

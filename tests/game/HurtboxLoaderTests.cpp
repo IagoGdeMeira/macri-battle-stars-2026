@@ -203,3 +203,27 @@ TEST_CASE_METHOD(HurtboxLoaderFixture, "HurtboxLoader handles empty hurtbox list
     REQUIRE(controller.frames.size() == 1);
     REQUIRE(controller.frames[0].hurtboxes.empty());
 }
+
+TEST_CASE_METHOD(HurtboxLoaderFixture, "HurtboxLoader uses global frameDuration when frame has no duration",
+    "[unit][hurtbox_loader]")
+{
+    auto state = this->createStateNode(false);
+    state->setFloat("frameDuration", 0.3f);
+
+    auto frame = std::make_unique<StubDataNode>();
+    auto hurtbox = this->createHurtboxNode("circle", 0.f, 0.f, 12.f, 0.f, 1.2f);
+    std::vector<std::unique_ptr<DataNode>> hurtboxes;
+    hurtboxes.push_back(std::move(hurtbox));
+    frame->setArray("hurtboxes", std::move(hurtboxes));
+
+    std::vector<std::unique_ptr<DataNode>> frames;
+    frames.push_back(std::move(frame));
+    state->setArray("frames", std::move(frames));
+
+    Entity parent = this->world.entities().create();
+    auto controller = this->loader->loadSingleState(*state, parent);
+
+    REQUIRE(controller.frames.size() == 1);
+    REQUIRE(controller.frames[0].duration == 0.3f);
+    REQUIRE(controller.frameDuration == 0.3f);
+}

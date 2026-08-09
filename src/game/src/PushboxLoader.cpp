@@ -14,12 +14,14 @@
 PushboxControllerComponent PushboxLoader::loadSingleState(const DataNode& stateNode, Entity parent) const
 {
     PushboxControllerComponent controller;
+    controller.frameDuration = stateNode.getFloat("frameDuration", 0.1f);
     controller.loop = stateNode.getBool("loop", false);
 
     for (auto& frameNode : stateNode.getArray("frames"))
     {
         PushboxControllerComponent::Frame frame;
         frame.duration = frameNode->getFloat("duration", 0.f);
+        if (frame.duration == 0.f) frame.duration = controller.frameDuration;
 
         for (auto& hbNode : frameNode->getArray("pushboxes"))
         {
