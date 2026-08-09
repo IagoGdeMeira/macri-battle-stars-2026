@@ -1,6 +1,7 @@
 #include "WorldRenderUtils/WorldRenderUtils.h"
 
 #include "domain/components/ParallaxComponent.h"
+#include "domain/components/ParentComponent.h"
 
 #include "engine/value_objects/GameConstants/GameConstants.h"
 
@@ -17,11 +18,19 @@ Position WorldRenderUtils::worldToScreen(Camera2D& camera, Position worldPos, co
 Position WorldRenderUtils::resolveParallax(World& world, Entity& entity)
 {
     auto& comp = world.components();
-    if (comp.has<ParallaxComponent>(entity))
+    Entity current = entity;
+
+    while (true)
     {
-        const auto& parallax = comp.get<ParallaxComponent>(entity);
-        return parallax.factor;
+        if (comp.has<ParallaxComponent>(current))
+        {
+            const auto& parallax = comp.get<ParallaxComponent>(current);
+            return parallax.factor;
+        }
+        if (!comp.has<ParentComponent>(current)) break;
+        current = comp.get<ParentComponent>(current).parent;
     }
+
     return Position{1.f, 1.f};
 }
 

@@ -5,8 +5,8 @@
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/CircleEffectsComponent.h"
 #include "domain/components/CircleShapeComponent.h"
-#include "domain/components/TransformComponent.h"
 #include "domain/components/RenderComponent.h"
+#include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/RenderContext/RenderContext.h"
@@ -50,7 +50,8 @@ DrawCircleCommand WorldCircleRenderFormat::buildCircleCommand(Entity& entity, Wo
     }
     else zIndex = 100;
 
-    Position screenPos = WorldRenderUtils::worldToScreen(this->camera, transform.position);
+    const Position parallax = WorldRenderUtils::resolveParallax(world, entity);
+    Position screenPos = WorldRenderUtils::worldToScreen(this->camera, transform.position, parallax);
 
     DrawCircleCommand cmd;
     cmd.circle.position = screenPos;

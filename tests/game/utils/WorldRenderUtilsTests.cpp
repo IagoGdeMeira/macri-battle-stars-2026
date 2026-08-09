@@ -1,6 +1,7 @@
 #include "game/utils/WorldRenderUtils/WorldRenderUtils.h"
 
 #include "domain/components/ParallaxComponent.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/include/World/World.h"
 
 #include <catch2/catch_approx.hpp>
@@ -50,6 +51,7 @@ TEST_CASE("WorldRenderUtils::resolveParallax returns default when absent", "[uni
     auto& comp = world.components();
     
     comp.registerComponent<ParallaxComponent>();
+    comp.registerComponent<ParentComponent>();
 
     Entity entity = world.entities().create();
 

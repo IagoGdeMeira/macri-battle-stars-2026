@@ -3,10 +3,10 @@
 #include "WorldRenderUtils/WorldRenderUtils.h"
 
 #include "domain/components/ActiveComponent.h"
-#include "domain/components/TransformComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
+#include "domain/components/TransformComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/RenderContext/RenderContext.h"
@@ -53,7 +53,8 @@ DrawRectangleCommand WorldRectangleRenderFormat::buildRectangleCommand(Entity& e
     }
     else zIndex = 100;
 
-    Position screenPos = WorldRenderUtils::worldToScreen(this->camera, transform.position);
+    const Position parallax = WorldRenderUtils::resolveParallax(world, entity);
+    Position screenPos = WorldRenderUtils::worldToScreen(this->camera, transform.position, parallax);
 
     float w = shape.rect.size.width  * std::abs(transform.scale.x);
     float h = shape.rect.size.height * std::abs(transform.scale.y);
