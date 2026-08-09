@@ -12,15 +12,14 @@
             "color": { "r": 255, "g": 0, "b": 0, "a": 255 },
             "position": { "x": 0, "y": -100 },
             "size": { "width": 400, "height": 900 },
-            "parallaxFactor": { "x": 2, "y": 1 },
             "layer": -10, "zIndex": -2
         },
         {
             "type": "circle",
-            "color": { "r": 255, "g": 255, "b": 0, "a": 255 },
+            "color": { "r": 255, "g": 255, "b": 0, "a": 210 },
             "position": { "x": 0, "y": -150 },
             "radius": 150,
-            "parallaxFactor": { "x": 1.8, "y": 1 },
+            "parallaxFactor": { "x": 1.2, "y": 1 },
             "layer": -10, "zIndex": -1
         },
         {
@@ -28,7 +27,6 @@
             "color": { "r": 43, "g": 12, "b": 16, "a": 255 },
             "position": { "x": 0, "y": 500 },
             "size": { "width": 2000, "height": 300 },
-            "parallaxFactor": { "x": 1, "y": 1 },
             "layer": 0
         }
     ],

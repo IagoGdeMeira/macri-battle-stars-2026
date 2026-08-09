@@ -2,9 +2,11 @@
 
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/HitstopComponent.h"
+#include "domain/components/InputComponent.h"
 #include "domain/components/JumpComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/include/View/View.h"
+#include "domain/value_objects/InputAction/InputAction.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
@@ -20,6 +22,14 @@ void GravitySystem::update(UpdateContext& ctx)
 
         const JumpComponent* jump = comp.has<JumpComponent>(entity) ? &comp.get<JumpComponent>(entity) : nullptr;
         float scale = this->computeGravityScale(gravity, jump, velocity.velocity.y);
+
+        if (jump && velocity.velocity.y > 0.f && comp.has<InputComponent>(entity))
+        {
+            const auto& input = comp.get<InputComponent>(entity);
+            auto it = input.actions.find(InputAction::Crouch);
+            if (it != input.actions.end() && it->second.pressed) scale *= jump->fastFallMultiplier;
+        }
+
         this->applyGravity(velocity, ctx.deltaTime, scale);
     }
 }
