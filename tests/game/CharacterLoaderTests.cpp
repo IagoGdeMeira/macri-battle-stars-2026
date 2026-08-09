@@ -50,6 +50,9 @@
 #include <string>
 #include <vector>
 
+struct JumpParams
+{ float force = 1500.f, maxTime = 0.2f, gravityScaleAsc = 0.6f, gravityScaleDesc = 1.8f, fastFallMultiplier = 2.5f; };
+
 class CharacterLoaderFixture
 {
 public:
@@ -61,7 +64,6 @@ public:
         return sizeNode;
     }
 
-    struct JumpParams { float force = 1500.f, maxTime = 0.2f, gravityScaleAsc = 0.6f, gravityScaleDesc = 1.8f, fastFallMultiplier = 2.5f; };
     std::unique_ptr<StubDataNode> makeJumpNode(const JumpParams& params = JumpParams{}) const
     {
         auto jumpNode = std::make_unique<StubDataNode>();
