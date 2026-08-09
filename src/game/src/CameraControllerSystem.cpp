@@ -19,9 +19,9 @@ CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
     maxZoom(cfg.maxZoom),
     padding(cfg.padding),
     verticalOffset(cfg.verticalOffset),
-    bounds(cfg.bounds),
     epsilon(cfg.epsilon),
     smoothFactor(cfg.smoothFactor),
+    bounds(cfg.bounds),
     viewSize(cfg.viewSize),
     minMargin(cfg.minMargin),
     favorBigPlayers(cfg.favorBigPlayers)
