@@ -5,6 +5,8 @@
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/CircleEffectsComponent.h"
 #include "domain/components/CircleShapeComponent.h"
+#include "domain/components/ParallaxComponent.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -36,6 +38,8 @@ public:
         comp.registerComponent<ActiveComponent>();
         comp.registerComponent<CircleEffectsComponent>();
         comp.registerComponent<CircleShapeComponent>();
+        comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<ParentComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();

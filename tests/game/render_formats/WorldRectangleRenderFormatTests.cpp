@@ -4,6 +4,8 @@
 
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/CircleShapeComponent.h"
+#include "domain/components/ParallaxComponent.h"
+#include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -28,6 +30,8 @@ public:
         auto& comp = this->world.components();
         comp.registerComponent<ActiveComponent>();
         comp.registerComponent<CircleShapeComponent>();
+        comp.registerComponent<ParallaxComponent>();
+        comp.registerComponent<ParentComponent>();
         comp.registerComponent<RectangleEffectsComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
