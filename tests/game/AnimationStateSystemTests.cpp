@@ -5,7 +5,6 @@
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
-#include "domain/events/OrientationChangedEvent.h"
 #include "domain/include/World/World.h"
 #include "domain/value_objects/Animation/Animation.h"
 
@@ -14,6 +13,7 @@
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
 #include "game/events/StateChangedEvent.h"
+#include "game/events/OrientationChangedEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 

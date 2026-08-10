@@ -1,9 +1,9 @@
 #ifndef animation_state_system_h
 #define animation_state_system_h
 
+#include "OrientationChangedEvent.h"
 #include "StateChangedEvent.h"
 
-#include "domain/events/OrientationChangedEvent.h"
 #include "domain/include/Entity/Entity.h"
 #include "domain/include/World/World.h"
 #include "domain/value_objects/Animation/Animation.h"

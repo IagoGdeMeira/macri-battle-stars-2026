@@ -3,10 +3,11 @@
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/events/OrientationChangedEvent.h"
 
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/Scene/Scene.h"
+
+#include "game/events/OrientationChangedEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>

@@ -2,9 +2,8 @@
 #define collision_controller_system_h
 
 #include "ICollisionController/ICollisionController.h"
+#include "OrientationChangedEvent.h"
 #include "StateChangedEvent.h"
-
-#include "domain/events/OrientationChangedEvent.h"
 
 #include "engine/include/System/System.h"
 

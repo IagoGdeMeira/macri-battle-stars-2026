@@ -3,12 +3,13 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/components/KnockbackComponent.h"
-#include "domain/events/DamageEvent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/CommandBuffer/CommandBuffer.h"
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
+
+#include "game/events/DamageEvent.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

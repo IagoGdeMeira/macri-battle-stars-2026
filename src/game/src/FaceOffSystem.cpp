@@ -1,9 +1,10 @@
 #include "FaceOffSystem/FaceOffSystem.h"
 
+#include "OrientationChangedEvent.h"
+
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/events/OrientationChangedEvent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"

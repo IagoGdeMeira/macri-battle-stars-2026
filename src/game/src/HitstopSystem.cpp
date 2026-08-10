@@ -1,7 +1,8 @@
 #include "HitstopSystem/HitstopSystem.h"
 
+#include "DamageEvent.h"
+
 #include "domain/components/HitstopComponent.h"
-#include "domain/events/DamageEvent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"

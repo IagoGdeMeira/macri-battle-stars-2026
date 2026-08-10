@@ -1,9 +1,10 @@
 #include "KnockbackSystem/KnockbackSystem.h"
 
+#include "DamageEvent.h"
+
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
 #include "domain/components/KnockbackComponent.h"
-#include "domain/events/DamageEvent.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"

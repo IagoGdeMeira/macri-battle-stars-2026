@@ -1,11 +1,11 @@
 #include "DamageSystem/DamageSystem.h"
 
 #include "CollisionEvent.h"
+#include "DamageEvent.h"
 
 #include "domain/components/HealthComponent.h"
 #include "domain/components/HitboxComponent.h"
 #include "domain/components/HurtboxComponent.h"
-#include "domain/events/DamageEvent.h"
 #include "domain/include/Entity/Entity.h"
 
 #include "engine/include/EventBus/EventBus.h"
