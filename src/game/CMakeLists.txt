@@ -56,6 +56,7 @@ target_sources(game
         src/HitstopSystem.cpp
         src/HoldTriggerSystem.cpp
         src/HorizontalMovementSystem.cpp
+        src/HUDVisibilitySystem.cpp
         src/HurtboxControllerSystem.cpp
         src/HurtboxLoader.cpp
         src/JumpSystem.cpp

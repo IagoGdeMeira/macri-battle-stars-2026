@@ -234,7 +234,7 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player ent
         REQUIRE(player.id == 0);
         REQUIRE(transform.position.x == 300.f);
         REQUIRE(transform.position.y == Catch::Approx(400.f - 48.f));
-        (void)entity; (void)i_; (void)ib_; (void)v_; (void)g_; (void)r;
+        (void)entity, i_, ib_, v_, g_, r;
     }
     REQUIRE(count == 1);
 }
