@@ -51,6 +51,7 @@ target_sources(game
         src/FrictionSystem.cpp
         src/GravitySystem.cpp
         src/GroundDetectionSystem.cpp
+        src/HealthBarSystem.cpp
         src/HitboxControllerSystem.cpp
         src/HitboxLoader.cpp
         src/HitstopSystem.cpp

@@ -70,11 +70,13 @@ add_executable(game_tests
     FrictionSystemTests.cpp
     GravitySystemTests.cpp
     GroundDetectionSystemTests.cpp
+    HealthBarSystemTests.cpp
     HitboxControllerSystemTests.cpp
     HitboxLoaderTests.cpp
     HitstopSystemTests.cpp
     HoldTriggerSystemTests.cpp
     HorizontalMovementSystemTests.cpp
+    HUDVisibilitySystemTests.cpp
     HurtboxControllerSystemTests.cpp
     HurtboxLoaderTests.cpp
     JumpSystemTests.cpp

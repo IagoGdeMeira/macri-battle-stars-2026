@@ -1,8 +1,8 @@
 #include "HealthBarSystem/HealthBarSystem.h"
 
-#include "domain/components/ChildrenComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/HealthBarSegmentComponent.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/UITransform.h"
 #include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
@@ -18,31 +18,27 @@ HealthBarSystem::HealthBarSystem(EventBus& bus) : bus(bus)
 
 void HealthBarSystem::update(UpdateContext& ctx)
 {
-    for (const auto& event : this->damageEvents) this->processDamageEvent(ctx.world, event);
+    for (const auto& event : this->damageEvents)
+        this->processDamageEvent(ctx.world, event);
 
     this->damageEvents.clear();
 }
 
 void HealthBarSystem::processDamageEvent(World& world, const DamageEvent& event)
 {
-    Entity container = this->findHealthBarContainer(world, event.targetPlayerId);
-    if (container == Entity::Invalid) return;
-
-    auto& comp = world.components();
-    auto& tag = comp.get<HealthBarTag>(container);
-    tag.currentHealth = event.remainingHealth;
-    if (tag.currentHealth < 0) tag.currentHealth = 0;
-
-    this->updateHealthBarSegments(world, container, tag.currentHealth);
-}
-
-Entity HealthBarSystem::findHealthBarContainer(World& world, uint32_t playerId) const
-{
     auto& comp = world.components();
     auto view = View<HealthBarTag>(comp);
+
     for (auto [entity, tag] : view)
-        if (tag.playerId == playerId) return entity;
-    return Entity::Invalid;
+    {
+        if (tag.playerId != event.targetPlayerId) continue;
+
+        tag.currentHealth = event.remainingHealth;
+        if (tag.currentHealth < 0) tag.currentHealth = 0;
+
+        this->updateHealthBarSegments(world, entity, tag.currentHealth);
+        break; 
+    }
 }
 
 void HealthBarSystem::updateHealthBarSegments(World& world, Entity container, int currentHealth)
@@ -53,7 +49,7 @@ void HealthBarSystem::updateHealthBarSegments(World& world, Entity container, in
     const auto& children = comp.get<ChildrenComponent>(container).children;
     float remainingHP = static_cast<float>(currentHealth);
 
-    for (Entity child : children.children)
+    for (Entity child : children)
     {
         if (!comp.has<HealthBarSegmentComponent>(child)) continue;
 

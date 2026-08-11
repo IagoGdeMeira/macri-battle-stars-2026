@@ -3,6 +3,13 @@
 
 #include "Entity/Entity.h"
 
-struct DamageEvent { Entity attacker, target; int damage = 0; };
+#include <cstdint>
+
+struct DamageEvent
+{
+    Entity attacker, target;
+    uint32_t targetPlayerId;
+    int damage = 0, remainingHealth = 0;
+};
 
 #endif // damage_event_h
