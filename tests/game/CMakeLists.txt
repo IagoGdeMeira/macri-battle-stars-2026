@@ -36,7 +36,8 @@ add_executable(game_tests
     ui_actions/QuitActionTests.cpp
 
     utils/CollisionUtilsTests.cpp
-    utils/ComponentRegistryTests.cpp
+    utils/GameComponentRegistryTests.cpp
+    utils/HUDComponentRegistryTests.cpp
     utils/WorldRenderUtilsTests.cpp
 
     value_objects/ComboTests.cpp

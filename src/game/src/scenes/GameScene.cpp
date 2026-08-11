@@ -12,7 +12,7 @@
 #include "CollisionDetectionSystem/CollisionDetectionSystem.h"
 #include "ComboLoader/ComboLoader.h"
 #include "ComboSystem/ComboSystem.h"
-#include "ComponentRegistry/ComponentRegistry.h"
+#include "ComponentRegistry/GameComponentRegistry.h"
 #include "DamageSystem/DamageSystem.h"
 #include "DirectionTriggerSystem/DirectionTriggerSystem.h"
 #include "DynamicPushboxResolutionSystem/DynamicPushboxResolutionSystem.h"
@@ -209,7 +209,7 @@ void GameScene::prepareScene()
     this->preparePlayers();
 }
 
-void GameScene::prepareComponents() { ComponentRegistry::registerAll(this->world().components()); }
+void GameScene::prepareComponents() { GameComponentRegistry::registerAll(this->world().components()); }
 
 void GameScene::preparePlayers() { for (const auto& slot : this->playerSlots) this->preparePlayer(slot); }
 

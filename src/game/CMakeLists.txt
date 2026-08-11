@@ -18,11 +18,13 @@ target_sources(game
         src/render_formats/WorldTextureRenderFormat.cpp
 
         src/scenes/GameScene.cpp
+        src/scenes/HUDScene.cpp
         src/scenes/SelectionScene.cpp
         src/scenes/TitleScene.cpp
 
         src/utils/CollisionUtils.cpp
-        src/utils/ComponentRegistry.cpp
+        src/utils/GameComponentRegistry.cpp
+        src/utils/HUDComponentRegistry.cpp
         src/utils/WorldRenderUtils.cpp
 
         src/AirFrictionSystem.cpp

@@ -27,8 +27,6 @@
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/ThreadPool/ThreadPool.h"
 
-#include "game/utils/ComponentRegistry/ComponentRegistry.h"
-
 #include <catch2/catch_test_macros.hpp>
 
 class EntityFactoryFixture
