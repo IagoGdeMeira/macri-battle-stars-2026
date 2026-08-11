@@ -56,8 +56,6 @@ public:
 
     void onExit() override;
 
-    Scene::UpdatePolicy getUpdatePolicy() const override { return Scene::UpdatePolicy::WhenTop; }
-
 private:
     float sweepTimer = 0.f;
 

@@ -24,8 +24,6 @@ class Window;
 class Scene
 {
 public:
-    enum class UpdatePolicy { Always, WhenTop, Never };
-
     struct Config
     {
         EventBus* eventBus = nullptr;
@@ -54,7 +52,7 @@ public:
     virtual void onPause() {}
     virtual void onResume() {}
 
-    virtual UpdatePolicy getUpdatePolicy() const { return UpdatePolicy::WhenTop; }
+    virtual bool allowsUpdateBelow() const { return false; }
 
     World& world() { return this->localWorld; }
     const World& world() const { return this->localWorld; }

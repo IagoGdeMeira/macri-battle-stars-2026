@@ -43,9 +43,7 @@ public:
     void render() override;
     void onEnter() override {}
     void onExit() override {}
-
-    Scene::UpdatePolicy getUpdatePolicy() const override { return Scene::UpdatePolicy::WhenTop; }
-
+    
 private:
     EventBus& eventBus;
     SceneManager& sceneManager;

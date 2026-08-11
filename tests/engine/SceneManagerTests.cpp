@@ -104,15 +104,23 @@ private:
     int *updates, *renders, *enters, *exits, *pauses, *resumes;
 };
 
+class AllowsUpdateBelowScene : public LifecycleScene
+{
+public:
+    using LifecycleScene::LifecycleScene;
+    bool allowsUpdateBelow() const override { return true; }
+};
+
 TEST_CASE_METHOD(SceneManagerFixture, "Change scene initializes and updates", "[unit][scene_manager]")
 {
     int counter = 0;
     CounterScene::Config cfg;
     cfg.counter = &counter;
 
-    this->scenes().changeScene<CounterScene>(std::move(cfg));
-    this->scenes().update(0.016f);
-    this->scenes().update(0.016f);
+    auto& scenes = this->scenes();
+    scenes.changeScene<CounterScene>(std::move(cfg));
+    scenes.update(0.016f);
+    scenes.update(0.016f);
 
     REQUIRE(counter == 2);
 }
@@ -123,14 +131,16 @@ TEST_CASE_METHOD(SceneManagerFixture, "Replace scene stops old one", "[unit][sce
 
     CounterScene::Config cfg1;
     cfg1.counter = &firstC;
-    this->scenes().changeScene<CounterScene>(std::move(cfg1));
-    this->scenes().update(0.016f);
+
+    auto& scenes = this->scenes();
+    scenes.changeScene<CounterScene>(std::move(cfg1));
+    scenes.update(0.016f);
 
     CounterScene::Config cfg2;
     cfg2.counter = &secondC;
-    this->scenes().changeScene<CounterScene>(std::move(cfg2));
-    this->scenes().update(0.016f);
-    this->scenes().update(0.016f);
+    scenes.changeScene<CounterScene>(std::move(cfg2));
+    scenes.update(0.016f);
+    scenes.update(0.016f);
 
     REQUIRE(firstC == 1);
     REQUIRE(secondC == 2);
@@ -146,7 +156,8 @@ TEST_CASE_METHOD(SceneManagerFixture, "Lifecycle callbacks are invoked", "[unit]
     cfg1.pauses = &pauses;
     cfg1.resumes = &resumes;
 
-    this->scenes().changeScene<LifecycleScene>(std::move(cfg1));
+    auto& scenes = this->scenes();
+    scenes.changeScene<LifecycleScene>(std::move(cfg1));
     REQUIRE(enters == 1);
 
     LifecycleScene::Config cfg2;
@@ -154,43 +165,45 @@ TEST_CASE_METHOD(SceneManagerFixture, "Lifecycle callbacks are invoked", "[unit]
     cfg2.enters = &enters2;
     cfg2.exits = &exits2;
 
-    this->scenes().changeScene<LifecycleScene>(std::move(cfg2));
+    scenes.changeScene<LifecycleScene>(std::move(cfg2));
     REQUIRE(exits == 1);
     REQUIRE(enters2 == 1);
 }
 
-TEST_CASE_METHOD(SceneManagerFixture, "Push and pop scenes", "[unit][scene_manager]")
+TEST_CASE_METHOD(SceneManagerFixture, "Push and pop scenes with overlay that allows update below", "[unit][scene_manager]")
 {
     int updatesBase = 0, pausesBase = 0, resumesBase = 0;
     int updatesTop = 0, entersTop = 0, exitsTop = 0;
 
-    class AlwaysUpdateScene : public LifecycleScene
-    {
-    public:
-        using LifecycleScene::LifecycleScene;
-        UpdatePolicy getUpdatePolicy() const override { return UpdatePolicy::Always; }
-    };
-
-    AlwaysUpdateScene::Config baseCfg;
+    LifecycleScene::Config baseCfg;
     baseCfg.updates = &updatesBase;
     baseCfg.pauses = &pausesBase;
     baseCfg.resumes = &resumesBase;
-    this->scenes().changeScene<AlwaysUpdateScene>(std::move(baseCfg));
 
-    LifecycleScene::Config topCfg;
+    auto& scenes = this->scenes();
+    scenes.changeScene<LifecycleScene>(std::move(baseCfg));
+
+    struct OverlayScene : public LifecycleScene
+    {
+        using LifecycleScene::LifecycleScene;
+        bool allowsUpdateBelow() const override { return true; }
+    };
+
+    OverlayScene::Config topCfg;
     topCfg.updates = &updatesTop;
     topCfg.enters = &entersTop;
     topCfg.exits = &exitsTop;
-    this->scenes().pushScene(std::make_unique<LifecycleScene>(std::move(topCfg)));
+
+    scenes.pushScene(std::make_unique<OverlayScene>(std::move(topCfg)));
 
     REQUIRE(pausesBase == 1);
     REQUIRE(entersTop == 1);
 
-    this->scenes().update(0.016f);
+    scenes.update(0.016f);
     REQUIRE(updatesTop == 1);
     REQUIRE(updatesBase == 1);
 
-    this->scenes().popScene();
+    scenes.popScene();
     REQUIRE(exitsTop == 1);
     REQUIRE(resumesBase == 1);
 }
@@ -201,13 +214,15 @@ TEST_CASE_METHOD(SceneManagerFixture, "Render calls all scenes", "[unit][scene_m
 
     LifecycleScene::Config cfg1;
     cfg1.renders = &renders1;
-    this->scenes().changeScene<LifecycleScene>(std::move(cfg1));
+
+    auto& scenes = this->scenes();
+    scenes.changeScene<LifecycleScene>(std::move(cfg1));
 
     LifecycleScene::Config cfg2;
     cfg2.renders = &renders2;
-    this->scenes().pushScene(std::make_unique<LifecycleScene>(std::move(cfg2)));
+    scenes.pushScene(std::make_unique<LifecycleScene>(std::move(cfg2)));
 
-    this->scenes().render();
+    scenes.render();
     REQUIRE(renders1 == 1);
     REQUIRE(renders2 == 1);
 }

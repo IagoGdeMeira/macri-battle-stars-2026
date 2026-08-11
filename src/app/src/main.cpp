@@ -9,7 +9,7 @@
 
 int main()
 {
-    Logger::setLevel(Logger::LogLevel::DEBUG);
+    Logger::setLevel(Logger::LogLevel::WARN);
     Logger::setThrottleEnabled(true);
     Logger::setThrottleInterval(std::chrono::milliseconds(200));
     try

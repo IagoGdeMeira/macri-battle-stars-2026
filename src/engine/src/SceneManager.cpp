@@ -24,14 +24,13 @@ void SceneManager::popScene()
 void SceneManager::update(float deltaTime)
 {
     auto& stack = this->sceneStack;
-    for (size_t i = 0; i < stack.size(); ++i)
-    {
-        auto& scene = stack[i];
-        bool isTop = (i == stack.size() - 1);
-        using Policy = Scene::UpdatePolicy;
-        Policy policy = scene->getUpdatePolicy();
+    if (stack.empty()) return;
 
-        bool shouldUpdate = (policy == Policy::Always) || (policy == Policy::WhenTop && isTop);
-        if (shouldUpdate) scene->update(deltaTime);
+    for (int i = static_cast<int>(stack.size()) - 1; i >= 0; --i)
+    {
+        const bool isTop = (i == static_cast<int>(stack.size()) - 1);
+
+        if (isTop || stack[i + 1]->allowsUpdateBelow()) stack[i]->update(deltaTime);
+        else break;
     }
 }
