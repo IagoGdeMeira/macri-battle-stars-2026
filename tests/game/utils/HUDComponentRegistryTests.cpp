@@ -4,8 +4,8 @@
 #include "domain/components/BoxModel.h"
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/FlexContainer.h"
+#include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
-#include "domain/components/HealthBarSegmentTag.h"
 #include "domain/components/HudEntityTag.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -26,8 +26,8 @@ TEST_CASE("HUDComponentRegistry registers every HUD component", "[unit][hud_comp
     REQUIRE(comp.storage<BoxModel>() != nullptr);
     REQUIRE(comp.storage<ChildrenComponent>() != nullptr);
     REQUIRE(comp.storage<FlexContainer>() != nullptr);
+    REQUIRE(comp.storage<HealthBarSegmentComponent>() != nullptr);
     REQUIRE(comp.storage<HealthBarTag>() != nullptr);
-    REQUIRE(comp.storage<HealthBarSegmentTag>() != nullptr);
     REQUIRE(comp.storage<HUDEntityTag>() != nullptr);
     REQUIRE(comp.storage<ParentComponent>() != nullptr);
     REQUIRE(comp.storage<RenderComponent>() != nullptr);

@@ -4,8 +4,8 @@
 #include "domain/components/BoxModel.h"
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/FlexContainer.h"
+#include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
-#include "domain/components/HealthBarSegmentTag.h"
 #include "domain/components/HUDEntityTag.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -20,8 +20,8 @@ void HUDComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<BoxModel>();
     comp.registerComponent<ChildrenComponent>();
     comp.registerComponent<FlexContainer>();
+    comp.registerComponent<HealthBarSegmentComponent>();
     comp.registerComponent<HealthBarTag>();
-    comp.registerComponent<HealthBarSegmentTag>();
     comp.registerComponent<HUDEntityTag>();
     comp.registerComponent<ParentComponent>();
     comp.registerComponent<RenderComponent>();
