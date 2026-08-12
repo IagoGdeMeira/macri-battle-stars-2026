@@ -4,8 +4,6 @@
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/HUDEntityTag.h"
 #include "domain/components/ParentComponent.h"
-#include "domain/components/RenderComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/CommandBuffer/CommandBuffer.h"
@@ -24,8 +22,6 @@ public:
         comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<HUDEntityTag>();
         comp.registerComponent<ParentComponent>();
-        comp.registerComponent<RenderComponent>();
-        comp.registerComponent<UITransform>();
     }
 
     World world;
@@ -34,36 +30,36 @@ public:
     HUDVisibilitySystem system;
     UpdateContext ctx{this->world, this->bus, this->commandBuffer, 0.016f};
 
-    Entity createHudRoot()
+    Entity createRoot(bool active = true)
     {
         auto& comp = this->world.components();
-        Entity root = this->world.entities().create();
-        comp.add<ActiveComponent>(root, ActiveComponent{true});
-        comp.add<HUDEntityTag>(root, HUDEntityTag{});
-        comp.add<ChildrenComponent>(root, ChildrenComponent{});
-        return root;
+        Entity e = this->world.entities().create();
+        comp.add<ActiveComponent>(e, ActiveComponent{active});
+        comp.add<HUDEntityTag>(e, HUDEntityTag{});
+        comp.add<ChildrenComponent>(e, ChildrenComponent{});
+        return e;
     }
 
-    Entity createChild(Entity parent, bool active = true)
+    Entity addChild(Entity parent, bool active = true)
     {
         auto& comp = this->world.components();
         Entity child = this->world.entities().create();
         comp.add<ActiveComponent>(child, ActiveComponent{active});
         comp.add<ParentComponent>(child, ParentComponent{parent});
-        comp.add<UITransform>(child, UITransform{});
-
+        if (!comp.has<ChildrenComponent>(parent)) comp.add<ChildrenComponent>(parent, ChildrenComponent{});
+        if (!comp.has<ChildrenComponent>(child)) comp.add<ChildrenComponent>(child, ChildrenComponent{});
         comp.get<ChildrenComponent>(parent).children.push_back(child);
         return child;
     }
 };
 
-TEST_CASE_METHOD(HUDVisibilitySystemFixture, "HUDVisibilitySystem hides all HUD entities recursively",
+TEST_CASE_METHOD(HUDVisibilitySystemFixture, "Hide all HUD entities recursively",
     "[unit][hud_visibility_system]")
 {
-    Entity root = this->createHudRoot();
-    Entity child1 = this->createChild(root);
-    Entity child2 = this->createChild(root);
-    Entity grandchild = this->createChild(child1);
+    Entity root = this->createRoot();
+    Entity child1 = this->addChild(root);
+    Entity child2 = this->addChild(root);
+    Entity grandchild = this->addChild(child1);
 
     this->system.setVisible(false);
     this->system.update(this->ctx);
@@ -75,12 +71,14 @@ TEST_CASE_METHOD(HUDVisibilitySystemFixture, "HUDVisibilitySystem hides all HUD 
     REQUIRE(comp.get<ActiveComponent>(grandchild).active == false);
 }
 
-TEST_CASE_METHOD(HUDVisibilitySystemFixture, "HUDVisibilitySystem shows all HUD entities recursively",
+TEST_CASE_METHOD(HUDVisibilitySystemFixture, "Show all HUD entities recursively",
     "[unit][hud_visibility_system]")
 {
-    Entity root = this->createHudRoot();
-    Entity child = this->createChild(root, false);
+    Entity root = this->createRoot(false);
+    Entity child = this->addChild(root, false);
 
+    this->system.setVisible(false);
+    this->system.update(this->ctx);
     this->system.setVisible(true);
     this->system.update(this->ctx);
 
@@ -89,30 +87,27 @@ TEST_CASE_METHOD(HUDVisibilitySystemFixture, "HUDVisibilitySystem shows all HUD 
     REQUIRE(comp.get<ActiveComponent>(child).active == true);
 }
 
-TEST_CASE_METHOD(HUDVisibilitySystemFixture, "HUDVisibilitySystem does nothing when visibility is unchanged",
+TEST_CASE_METHOD(HUDVisibilitySystemFixture, "No change when visibility is unchanged",
     "[unit][hud_visibility_system]")
 {
-    Entity root = this->createHudRoot();
-    Entity child = this->createChild(root);
+    Entity root = this->createRoot();
+    Entity child = this->addChild(root);
 
     this->system.setVisible(false);
     this->system.update(this->ctx);
-
     auto& comp = this->world.components();
     REQUIRE(comp.get<ActiveComponent>(root).active == false);
-    
+
     comp.get<ActiveComponent>(child).active = true;
 
     this->system.update(this->ctx);
     REQUIRE(comp.get<ActiveComponent>(child).active == true);
 }
 
-TEST_CASE_METHOD(HUDVisibilitySystemFixture, "HUDVisibilitySystem setVisible without update does not change state",
+TEST_CASE_METHOD(HUDVisibilitySystemFixture, "setVisible without update does not change state",
     "[unit][hud_visibility_system]")
 {
-    Entity root = this->createHudRoot();
-
+    Entity root = this->createRoot();
     this->system.setVisible(false);
-    auto& comp = this->world.components();
-    REQUIRE(comp.get<ActiveComponent>(root).active == true);
+    REQUIRE(this->world.components().get<ActiveComponent>(root).active == true);
 }

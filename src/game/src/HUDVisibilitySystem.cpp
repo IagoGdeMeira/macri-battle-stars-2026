@@ -29,7 +29,7 @@ void HUDVisibilitySystem::setVisible(bool visible) { this->targetVisibility = vi
 void HUDVisibilitySystem::setActiveRecursive(World& world, Entity entity, bool active)
 {
     auto& comp = world.components();
-    comp.get<ActiveComponent>(entity).active = active;
+    if (comp.has<ActiveComponent>(entity)) comp.get<ActiveComponent>(entity).active = active;
     
     if (comp.has<ChildrenComponent>(entity)) for (Entity child : comp.get<ChildrenComponent>(entity).children)
     { this->setActiveRecursive(world, child, active); }
