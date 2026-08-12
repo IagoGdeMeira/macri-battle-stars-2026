@@ -90,6 +90,8 @@ add_executable(game_tests
     MovementSystemTests.cpp
     PushboxControllerSystemTests.cpp
     PushboxLoaderTests.cpp
+    RoundTimerDisplaySystemTests.cpp
+    RoundTimerSystemTests.cpp
     StateMachineLoaderTests.cpp
     StateSystemTests.cpp
     StaticPushboxResolutionSystemTests.cpp

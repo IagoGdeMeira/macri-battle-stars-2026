@@ -70,6 +70,8 @@ target_sources(game
         src/MovementSystem.cpp
         src/PushboxControllerSystem.cpp
         src/PushboxLoader.cpp
+        src/RoundTimerDisplaySystem.cpp
+        src/RoundTimerSystem.cpp
         src/StateMachineLoader.cpp
         src/StateMachineRegistry.cpp
         src/StateIdMapper.cpp
