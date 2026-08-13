@@ -26,13 +26,13 @@ public:
     { (void)window; return std::make_unique<StubRenderer>(); }
 
     InputAdapterPtr createKeyboardAdapter(EventBus& bus, const InputContext& ctx) override
-    { (void)bus, ctx; return nullptr; }
+    { (void)bus; (void)ctx; return nullptr; }
 
     InputAdapterPtr createMouseAdapter(EventBus& bus) override
     { (void)bus; return nullptr; }
 
     std::vector<InputAdapterPtr> createGamepadAdapters(EventBus& bus, uint32_t maxPlayers) override
-    { (void)bus, maxPlayers; return {}; }
+    { (void)bus; (void)maxPlayers; return {}; }
 
     InputAdapterPtr createSystemAdapter(EventBus& bus) override
     { (void)bus; return nullptr; }

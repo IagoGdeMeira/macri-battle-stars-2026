@@ -10,7 +10,7 @@ public:
     StubPushboxLoader(DataParser& parser, EntityFactory& factory) : PushboxLoader(parser, factory) {}
 
     PushboxControllerComponent loadSingleState(const DataNode& stateNode, Entity parent) const override
-    { (void)stateNode, parent; return PushboxControllerComponent{}; }
+    { (void)stateNode; (void)parent; return PushboxControllerComponent{}; }
 };
 
 #endif // stub_pushbox_loader_h

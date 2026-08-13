@@ -17,7 +17,7 @@ void HUDVisibilitySystem::update(UpdateContext& ctx)
 
     for (auto [entity, a_, t_] : view)
     {
-        (void) t_, a_;
+        (void)t_; (void)a_;
         this->setActiveRecursive(ctx.world, entity, this->targetVisibility);
     }
 

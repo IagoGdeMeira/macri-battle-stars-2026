@@ -6,7 +6,7 @@
 #include "domain/components/FlexContainer.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
-#include "domain/components/HudEntityTag.h"
+#include "domain/components/HUDEntityTag.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/UISpriteComponent.h"
