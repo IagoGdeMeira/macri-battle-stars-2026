@@ -38,7 +38,7 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem freezes attacker and targe
     comp.add<HitstopComponent>(attacker, HitstopComponent{});
     comp.add<HitstopComponent>(target, HitstopComponent{});
 
-    DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent damage { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
     this->bus.emit<DamageEvent>(damage);
 
     this->context.deltaTime = 0.016f;
@@ -66,7 +66,7 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem ignores entities without H
     comp.add<HitstopComponent>(target, HitstopComponent{});
     comp.add<HitstopComponent>(spectator, HitstopComponent{ .remaining = 0.25f, .frozen = false });
 
-    DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent damage { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
     this->bus.emit<DamageEvent>(damage);
 
     this->context.deltaTime = 0.016f;
@@ -93,7 +93,7 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem releases freeze when remai
     comp.add<HitstopComponent>(attacker, HitstopComponent{});
     comp.add<HitstopComponent>(target, HitstopComponent{});
 
-    DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent damage { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
     this->bus.emit<DamageEvent>(damage);
 
     this->context.deltaTime = 0.2f;
@@ -120,7 +120,7 @@ TEST_CASE_METHOD(HitstopSystemFixture, "HitstopSystem keeps frozen entities froz
     comp.add<HitstopComponent>(attacker, HitstopComponent{});
     comp.add<HitstopComponent>(target, HitstopComponent{});
 
-    DamageEvent damage { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent damage { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
     this->bus.emit<DamageEvent>(damage);
 
     this->context.deltaTime = 0.03f;

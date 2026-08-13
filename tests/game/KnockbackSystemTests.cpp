@@ -47,7 +47,7 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback in c
     comp.add<TransformComponent>(target, TransformComponent{10.f, 0.f});
     comp.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
 
-    DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent dmg { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
 
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
@@ -70,7 +70,7 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem normalizes direction v
     comp.add<TransformComponent>(target, TransformComponent{3.f, 4.f});
     comp.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
 
-    DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent dmg { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
 
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
@@ -94,7 +94,7 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem applies knockback mult
     comp.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
     comp.add<KnockbackComponent>(target, KnockbackComponent{2.f, 0.5f});
 
-    DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent dmg { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
 
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
@@ -117,7 +117,7 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles zero distance 
     comp.add<TransformComponent>(target, TransformComponent{5.f, 5.f});
     comp.add<VelocityComponent>(target, VelocityComponent{10.f, 10.f});
 
-    DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent dmg { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
 
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
@@ -140,7 +140,7 @@ TEST_CASE_METHOD(KnockbackSystemFixture,
     comp.add<TransformComponent>(attacker, TransformComponent{ 0.f, 0.f });
     comp.add<TransformComponent>(target, TransformComponent{ 10.f, 0.f });
 
-    DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent dmg { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
     this->bus.emit<DamageEvent>(dmg);
 
     REQUIRE_NOTHROW(this->system.update(this->context));
@@ -159,7 +159,7 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem accumulates velocity f
     comp.add<TransformComponent>(target, TransformComponent{10.f, 0.f});
     comp.add<VelocityComponent>(target, VelocityComponent{100.f, 50.f});
 
-    DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent dmg { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
 
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
@@ -182,7 +182,7 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem handles diagonal knock
     comp.add<TransformComponent>(target, TransformComponent{1.f, 1.f});
     comp.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
 
-    DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent dmg { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
 
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
@@ -207,7 +207,7 @@ TEST_CASE_METHOD(KnockbackSystemFixture, "KnockbackSystem default multiplier is 
     comp.add<TransformComponent>(target, TransformComponent{10.f, 0.f});
     comp.add<VelocityComponent>(target, VelocityComponent{0.f, 0.f});
 
-    DamageEvent dmg { .attacker = attacker, .target = target, .damage = 10 };
+    DamageEvent dmg { .attacker = attacker, .target = target, .targetPlayerId = 0, .damage = 10, .remainingHealth = 0 };
 
     this->bus.emit<DamageEvent>(dmg);
     this->system.update(this->context);
