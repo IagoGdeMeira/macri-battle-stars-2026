@@ -12,6 +12,7 @@
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
 #include "domain/components/SpriteComponent.h"
+#include "domain/include/Entity/Entity.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/DataParser/DataParser.h"
@@ -38,6 +39,13 @@ public:
         StateMachineRegistry& stateMachineRegistry;
     };
 
+    struct Info
+    {
+        Entity entity;
+        std::string displayName;
+        int maxHealth = 100, currentHealth = 100;
+    };
+
     explicit CharacterLoader(Config&& cfg) :
         parser(cfg.parser),
         defLoader(cfg.defLoader),
@@ -50,7 +58,7 @@ public:
         pushboxLoader(cfg.pushboxLoader),
         stateMachineRegistry(cfg.stateMachineRegistry) {}
 
-    Entity create(World& world, const std::string& path) const;
+    CharacterLoader::Info create(World& world, const std::string& path) const;
 
 private:
     DataParser& parser;

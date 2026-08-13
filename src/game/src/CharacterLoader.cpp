@@ -4,6 +4,7 @@
 
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/ChildrenComponent.h"
+#include "domain/components/HealthComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
 #include "domain/components/HitboxControllerMapComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
@@ -19,7 +20,7 @@
 #include "domain/components/StateMachineComponent.h"
 #include "domain/components/TransformComponent.h"
 
-Entity CharacterLoader::create(World& world, const std::string& path) const
+CharacterLoader::Info CharacterLoader::create(World& world, const std::string& path) const
 {
     auto def = this->defLoader.load(path);
     auto& comp = world.components();
@@ -43,7 +44,14 @@ Entity CharacterLoader::create(World& world, const std::string& path) const
         .fastFallMultiplier = def.jump.fastFallMultiplier
     });
 
-    return entity;
+    comp.add<HealthComponent>(entity, HealthComponent{def.maxHealth, def.maxHealth});
+
+    return CharacterLoader::Info {
+        .entity         = entity,
+        .displayName    = def.id,
+        .maxHealth      = def.maxHealth,
+        .currentHealth  = def.maxHealth
+    };
 }
 
 uint32_t CharacterLoader::registerStateMachine(const CharacterDefinition& def, const StateIdMapper& mapper) const

@@ -16,6 +16,7 @@ struct CharacterDefinition
     std::string texturePath, animationsPath, stateMachinePath, combosPath, collisionsPath;
 
     JumpDefinition jump;
+    int maxHealth = 100;
     
     std::vector<std::string> customStates;
 };

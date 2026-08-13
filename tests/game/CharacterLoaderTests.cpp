@@ -14,6 +14,7 @@
 #include "domain/components/AnimationComponent.h"
 #include "domain/components/AnimationControllerComponent.h"
 #include "domain/components/ChildrenComponent.h"
+#include "domain/components/HealthComponent.h"
 #include "domain/components/HitboxControllerComponent.h"
 #include "domain/components/HitboxControllerMapComponent.h"
 #include "domain/components/HurtboxControllerComponent.h"
@@ -180,6 +181,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     comp.registerComponent<AnimationComponent>();
     comp.registerComponent<AnimationControllerComponent>();
     comp.registerComponent<ChildrenComponent>();
+    comp.registerComponent<HealthComponent>();
     comp.registerComponent<HitboxControllerComponent>();
     comp.registerComponent<HitboxControllerMapComponent>();
     comp.registerComponent<HurtboxControllerComponent>();
@@ -195,41 +197,41 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader creates entity and req
     comp.registerComponent<StateMachineComponent>();
     comp.registerComponent<TransformComponent>();
 
-    const auto entity = loader.create(world, "assets/characters/fighter_01.json");
+    const auto result = loader.create(world, "assets/characters/fighter_01.json");
 
-    REQUIRE(comp.has<StateComponent>(entity));
-    REQUIRE(comp.has<StateMachineComponent>(entity));
-    REQUIRE(comp.has<AnimationControllerComponent>(entity));
-    REQUIRE(comp.has<JumpComponent>(entity));
+    REQUIRE(comp.has<StateComponent>(result.entity));
+    REQUIRE(comp.has<StateMachineComponent>(result.entity));
+    REQUIRE(comp.has<AnimationControllerComponent>(result.entity));
+    REQUIRE(comp.has<JumpComponent>(result.entity));
 
-    const auto& jumpComp = comp.get<JumpComponent>(entity);
+    const auto& jumpComp = comp.get<JumpComponent>(result.entity);
     REQUIRE(jumpComp.force == Catch::Approx(1800.f));
     REQUIRE(jumpComp.maxTime == Catch::Approx(0.25f));
     REQUIRE(jumpComp.gravityScaleAsc == Catch::Approx(0.7f));
     REQUIRE(jumpComp.gravityScaleDesc == Catch::Approx(1.9f));
     REQUIRE(jumpComp.fastFallMultiplier == Catch::Approx(2.2f));
 
-    const auto& state = comp.get<StateComponent>(entity);
+    const auto& state = comp.get<StateComponent>(result.entity);
     REQUIRE(state.current == StateId::Idle);
 
-    uint32_t machineId = comp.get<StateMachineComponent>(entity).machineId;
+    uint32_t machineId = comp.get<StateMachineComponent>(result.entity).machineId;
     const StateMachine* machine = registry.getMachine(machineId);
     REQUIRE(machine != nullptr);
     REQUIRE(machine->transitions.size() == 1);
     REQUIRE(machine->transitions[0].from == StateId::Idle);
     REQUIRE(machine->transitions[0].to == StateId::Punching);
 
-    const auto& controller = comp.get<AnimationControllerComponent>(entity);
+    const auto& controller = comp.get<AnimationControllerComponent>(result.entity);
     REQUIRE(controller.animations.right.size() == 1);
     REQUIRE(controller.animations.right.contains(StateId::Idle));
     REQUIRE(controller.currentState == StateId::Idle);
 
-    REQUIRE(comp.has<HitboxControllerMapComponent>(entity));
-    REQUIRE(comp.has<HurtboxControllerMapComponent>(entity));
-    REQUIRE(comp.has<PushboxControllerMapComponent>(entity));
+    REQUIRE(comp.has<HitboxControllerMapComponent>(result.entity));
+    REQUIRE(comp.has<HurtboxControllerMapComponent>(result.entity));
+    REQUIRE(comp.has<PushboxControllerMapComponent>(result.entity));
 
-    REQUIRE(comp.has<ChildrenComponent>(entity));
-    const auto& children = comp.get<ChildrenComponent>(entity);
+    REQUIRE(comp.has<ChildrenComponent>(result.entity));
+    const auto& children = comp.get<ChildrenComponent>(result.entity);
     REQUIRE(children.children.size() == 1);
     Entity visualEntity = children.children[0];
 
@@ -357,6 +359,7 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     comp.registerComponent<AnimationComponent>();
     comp.registerComponent<AnimationControllerComponent>();
     comp.registerComponent<ChildrenComponent>();
+    comp.registerComponent<HealthComponent>();
     comp.registerComponent<HitboxControllerComponent>();
     comp.registerComponent<HitboxControllerMapComponent>();
     comp.registerComponent<HurtboxControllerComponent>();
@@ -372,11 +375,11 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     comp.registerComponent<StateMachineComponent>();
     comp.registerComponent<TransformComponent>();
 
-    const auto entity = loader.create(world, "def.json");
+    const auto result = loader.create(world, "def.json");
 
-    REQUIRE(comp.has<JumpComponent>(entity));
+    REQUIRE(comp.has<JumpComponent>(result.entity));
 
-    uint32_t machineId = comp.get<StateMachineComponent>(entity).machineId;
+    uint32_t machineId = comp.get<StateMachineComponent>(result.entity).machineId;
     const StateMachine* machine = registry.getMachine(machineId);
     REQUIRE(machine != nullptr);
     REQUIRE(machine->transitions.size() == 1);
@@ -384,9 +387,9 @@ TEST_CASE_METHOD(CharacterLoaderFixture, "CharacterLoader resolves custom states
     StateId customStateId = machine->transitions[0].to;
     REQUIRE(customStateId.isCustom());
 
-    const auto& controller = comp.get<AnimationControllerComponent>(entity);
+    const auto& controller = comp.get<AnimationControllerComponent>(result.entity);
     REQUIRE(controller.animations.right.contains(customStateId));
-    REQUIRE(comp.has<HitboxControllerMapComponent>(entity));
-    REQUIRE(comp.has<HurtboxControllerMapComponent>(entity));
-    REQUIRE(comp.has<PushboxControllerMapComponent>(entity));
+    REQUIRE(comp.has<HitboxControllerMapComponent>(result.entity));
+    REQUIRE(comp.has<HurtboxControllerMapComponent>(result.entity));
+    REQUIRE(comp.has<PushboxControllerMapComponent>(result.entity));
 }

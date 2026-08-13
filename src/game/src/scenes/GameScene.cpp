@@ -33,11 +33,13 @@
 #include "LocalToWorldSystem/LocalToWorldSystem.h"
 #include "MapLoader/MapLoader.h"
 #include "MovementSystem/MovementSystem.h"
+#include "PlayerSpawnedEvent.h"
 #include "PushboxCollisionController.h"
 #include "PushboxControllerSystem/PushboxControllerSystem.h"
 #include "PushboxLoader/PushboxLoader.h"
 #include "RectCircleCollisionDetection.h"
 #include "RectRectCollisionDetection.h"
+#include "RoundTimerSystem/RoundTimerSystem.h"
 #include "StateMachineLoader/StateMachineLoader.h"
 #include "StateSystem/StateSystem.h"
 #include "StaticPushboxResolutionSystem/StaticPushboxResolutionSystem.h"
@@ -49,6 +51,7 @@
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/GravityComponent.h"
 #include "domain/components/GroundedComponent.h"
+#include "domain/components/HealthComponent.h"
 #include "domain/components/InputBufferComponent.h"
 #include "domain/components/InputComponent.h"
 #include "domain/components/OrientationComponent.h"
@@ -218,7 +221,8 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     auto& world = this->world();
     auto& comp = world.components();
 
-    Entity entity = this->characterLoader->create(world, slot.characterDefPath);
+    auto result = this->characterLoader->create(world, slot.characterDefPath);
+    Entity entity = result.entity;
 
     comp.add<PlayerComponent>(entity, PlayerComponent{ slot.playerId });
     comp.add<InputComponent>(entity, InputComponent{});
@@ -233,13 +237,13 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
 
     Orientation initialOrient = (slot.playerId == 0) ? Orientation::Right : Orientation::Left;
     comp.add<OrientationComponent>(entity, OrientationComponent{initialOrient});
-    
+
     const auto& mapComp = comp.get<MapComponent>(this->mapRoot);
 
     float spawnX = 400.f;
     for (const auto& sp : mapComp.spawnPoints) if (sp.playerId == slot.playerId)
     { spawnX = sp.x; break; }
-    
+
     auto& transform = comp.get<TransformComponent>(entity);
     transform.position.x = spawnX;
 
@@ -257,6 +261,9 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     transform.position.y = mapComp.floorY - spriteHalfHeight;
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
+
+    this->eventBus.emit<PlayerSpawnedEvent>(PlayerSpawnedEvent{
+        slot.playerId, result.displayName, entity, result.maxHealth, result.currentHealth });
 }
 
 void GameScene::addSystems()
@@ -293,6 +300,7 @@ void GameScene::addSystems()
 
     auto& mapComp = this->world().components().get<MapComponent>(this->mapRoot);
     systems.addSystem<AirFrictionSystem>(mapComp.airFriction);
+    systems.addSystem<RoundTimerSystem>(events, mapComp.roundTime);
 
     systems.addSystem<JumpSystem>(events, -4000.f);
     systems.addSystem<GravitySystem>(mapComp.gravity);
