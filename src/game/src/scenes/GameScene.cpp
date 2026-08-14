@@ -61,6 +61,7 @@
 #include "domain/components/StateComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/include/InputBindingLoader/InputBindingLoader.h"
 #include "engine/include/InputBufferSystem/InputBufferSystem.h"
@@ -71,6 +72,7 @@
 
 GameScene::GameScene(Config&& cfg) :
     Scene(*cfg.eventBus),
+    roundTime(cfg.roundTime),
     eventBus(*cfg.eventBus),
     sceneManager(*cfg.sceneManager),
     renderer(*cfg.renderer),
@@ -139,6 +141,23 @@ void GameScene::init()
 void GameScene::update(float deltaTime)
 {
     Scene::update(deltaTime);
+
+    if (!this->spawnEventsEmitted)
+    {
+        for (const auto& spawn : this->pendingSpawns)
+        {
+            auto& result = spawn.result;
+            this->eventBus.emit<PlayerSpawnedEvent>(PlayerSpawnedEvent{
+                .playerId       = spawn.playerId,
+                .characterName  = result.displayName,
+                .playerEntity   = result.entity,
+                .maxHealth      = result.maxHealth,
+                .currentHealth  = result.currentHealth
+            });
+        }
+        this->pendingSpawns.clear();
+        this->spawnEventsEmitted = true;
+    }
 
     this->sweepTimer += deltaTime;
     if (this->sweepTimer >= 5.f)
@@ -262,8 +281,7 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
 
     if (comp.has<StateComponent>(entity)) comp.get<StateComponent>(entity).current = StateId::Idle;
 
-    this->eventBus.emit<PlayerSpawnedEvent>(PlayerSpawnedEvent{
-        slot.playerId, result.displayName, entity, result.maxHealth, result.currentHealth });
+    this->pendingSpawns.push_back(PendingSpawn{ slot.playerId, result });
 }
 
 void GameScene::addSystems()
@@ -275,6 +293,7 @@ void GameScene::addSystems()
     systems.addSystem<TriggerGenerationSystem>(events, this->triggerContext);
     systems.addSystem<InputBufferSystem>(events, *this->inputContext);
     systems.addSystem<ComboSystem>(events, this->combos);
+    systems.addSystem<RoundTimerSystem>(events, this->roundTime);
 
     systems.addSystem<DirectionTriggerSystem>(events);
     systems.addSystem<HoldTriggerSystem>(events, HoldTriggerSystem::Config{
@@ -300,7 +319,6 @@ void GameScene::addSystems()
 
     auto& mapComp = this->world().components().get<MapComponent>(this->mapRoot);
     systems.addSystem<AirFrictionSystem>(mapComp.airFriction);
-    systems.addSystem<RoundTimerSystem>(events, mapComp.roundTime);
 
     systems.addSystem<JumpSystem>(events, -4000.f);
     systems.addSystem<GravitySystem>(mapComp.gravity);

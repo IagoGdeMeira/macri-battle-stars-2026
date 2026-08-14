@@ -12,7 +12,7 @@ struct MapComponent
     struct SpawnPoint { std::uint32_t playerId; float x; };
 
     std::string name;
-    float gravity = 980.f, floorFriction = 5.f, airFriction = 2.f, floorY = 0.f, roundTime = 99.f;
+    float gravity = 980.f, floorFriction = 5.f, airFriction = 2.f, floorY = 0.f;
     AABB worldBounds;
     std::vector<SpawnPoint> spawnPoints;
 };

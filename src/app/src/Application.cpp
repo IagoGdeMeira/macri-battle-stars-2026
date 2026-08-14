@@ -5,6 +5,7 @@
 #include "engine/events/WindowResizedEvent.h"
 
 #include "game/scenes/GameScene.h"
+#include "game/scenes/HUDScene.h"
 
 #include "platform/include/JsonParser/JsonParser.h"
 #include "platform/include/SDLPlatformFactory/SDLPlatformFactory.h"
@@ -86,13 +87,22 @@ void Application::setupInitialScene()
 
     this->sceneManager = std::make_unique<SceneManager>(*this->sceneFactory, *this->engine);
     this->engine->setSceneManager(*this->sceneManager);
+    auto& scenes = this->engine->scenes();
 
-    GameScene::Config cfg;
-    cfg.playerSlots = {{0, GameConstants::DEFAULT_CHARACTER_DEF_PATH}, {1, "assets/characters/grey_beta.json"}};
-    cfg.mapPath             = GameConstants::DEFAULT_MAP_PATH;
-    cfg.inputBindingsPath   = GameConstants::DEFAULT_INPUT_BINDINGS_PATH;
-    cfg.combosPath          = GameConstants::DEFAULT_COMBOS_PATH;
-    cfg.triggersPath        = GameConstants::DEFAULT_TRIGGERS_PATH;
+    GameScene::Config gameCfg;
+    gameCfg.playerSlots = {
+        {0, GameConstants::DEFAULT_CHARACTER_DEF_PATH},
+        {1, "assets/characters/grey_beta.json"}
+    };
+    gameCfg.mapPath             = GameConstants::DEFAULT_MAP_PATH;
+    gameCfg.inputBindingsPath   = GameConstants::DEFAULT_INPUT_BINDINGS_PATH;
+    gameCfg.combosPath          = GameConstants::DEFAULT_COMBOS_PATH;
+    gameCfg.triggersPath        = GameConstants::DEFAULT_TRIGGERS_PATH;
+    gameCfg.roundTime           = 99.f;
+    scenes.changeScene<GameScene>(std::move(gameCfg));
 
-    this->engine->scenes().changeScene<GameScene>(std::move(cfg));
+    HUDScene::Config hudCfg;
+    hudCfg.initialRoundTime = 99.f;
+    auto hudScene = this->sceneFactory->createScene<HUDScene>(std::move(hudCfg), this->sceneManager.get());
+    scenes.pushScene(std::move(hudScene));
 }

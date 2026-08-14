@@ -16,6 +16,7 @@
 #include "domain/include/World/World.h"
 #include "domain/resources/Font/Font.h"
 #include "domain/resources/Texture/Texture.h"
+#include "domain/utils/Logger/Logger.h"
 
 #include "engine/include/IPlatformFactory/IPlatformFactory.h"
 
@@ -61,12 +62,13 @@ Entity UIFactory::createText(const std::string& text, float fontSize, const Colo
     comp.add<UITransform>(e, UITransform{ Rectangle{ position, { 0, 0 } } });
     comp.add<FlexItem>(e, FlexItem{});
 
-    auto font = this->fontFactory.createFont("assets/fonts/default.ttf");
-    comp.add<UITextComponent>(e, UITextComponent{ font, text, color, true, fontSize });
+    std::shared_ptr<Font> font = nullptr;
+    try { font = this->fontFactory.createFont("assets/fonts/default.ttf"); }
+    catch (const std::exception&) { LOG_ERROR("Failed to create font for text: " + text); }
 
+    comp.add<UITextComponent>(e, UITextComponent{ font, text, color, true, fontSize });
     return e;
 }
-
 Entity UIFactory::createImage(const std::string& texturePath, const Rectangle& rect)
 {
     Entity e = this->world.entities().create();

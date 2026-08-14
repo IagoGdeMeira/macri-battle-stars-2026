@@ -46,6 +46,7 @@ public:
         IPlatformFactory* platformFactory = nullptr;
         std::vector<PlayerSlot> playerSlots;
         std::string mapPath, inputBindingsPath, combosPath, triggersPath;
+        float roundTime = 99.f;
     };
 
     explicit GameScene(Config&& cfg);
@@ -57,8 +58,13 @@ public:
     void onExit() override;
 
 private:
-    float sweepTimer = 0.f;
+    struct PendingSpawn { std::uint32_t playerId; CharacterLoader::Info result; };
 
+    std::vector<PendingSpawn> pendingSpawns;
+    bool spawnEventsEmitted = false;
+
+    float sweepTimer = 0.f, roundTime = 99.f;
+    
     EventBus& eventBus;
     SceneManager& sceneManager;
     Renderer& renderer;

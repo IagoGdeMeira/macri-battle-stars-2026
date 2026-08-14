@@ -3,12 +3,16 @@
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/BoxModel.h"
 #include "domain/components/ChildrenComponent.h"
+#include "domain/components/CircleEffectsComponent.h"
 #include "domain/components/FlexContainer.h"
+#include "domain/components/FlexItem.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/HUDEntityTag.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
+#include "domain/components/RoundTimerTag.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/components/UITransform.h"
@@ -25,12 +29,16 @@ TEST_CASE("HUDComponentRegistry registers every HUD component", "[unit][hud_comp
     REQUIRE(comp.storage<ActiveComponent>() != nullptr);
     REQUIRE(comp.storage<BoxModel>() != nullptr);
     REQUIRE(comp.storage<ChildrenComponent>() != nullptr);
+    REQUIRE(comp.storage<CircleEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<FlexContainer>() != nullptr);
+    REQUIRE(comp.storage<FlexItem>() != nullptr);
     REQUIRE(comp.storage<HealthBarSegmentComponent>() != nullptr);
     REQUIRE(comp.storage<HealthBarTag>() != nullptr);
     REQUIRE(comp.storage<HUDEntityTag>() != nullptr);
     REQUIRE(comp.storage<ParentComponent>() != nullptr);
+    REQUIRE(comp.storage<RectangleEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<RenderComponent>() != nullptr);
+    REQUIRE(comp.storage<RoundTimerTag>() != nullptr);
     REQUIRE(comp.storage<UISpriteComponent>() != nullptr);
     REQUIRE(comp.storage<UITextComponent>() != nullptr);
     REQUIRE(comp.storage<UITransform>() != nullptr);

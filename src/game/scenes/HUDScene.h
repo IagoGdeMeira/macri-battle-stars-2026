@@ -5,20 +5,22 @@
 
 #include <memory>
 
-class UIFactory;
-class UIDrawer;
 class Renderer;
 class GameSettings;
 class IFontFactory;
 class ITextureFactory;
+class UIFactory;
+class UIDrawer;
+class HUDVisibilitySystem;
 
 class HUDScene : public Scene
 {
 public:
-    struct Config : public Scene::Config {};
-    
+    struct Config : public Scene::Config { float initialRoundTime = 99.f; };
+
     explicit HUDScene(Config&& cfg);
-    ~HUDScene() override = default;
+
+    ~HUDScene() override;
 
     void init() override;
     void onPause() override;
@@ -28,6 +30,8 @@ public:
     bool allowsUpdateBelow() const override { return true; }
 
 private:
+    float initialRoundTime = 99.f;
+
     Renderer& renderer;
     GameSettings& settings;
     IFontFactory& fontFactory;
@@ -36,9 +40,15 @@ private:
     std::unique_ptr<UIFactory> uiFactory;
     std::unique_ptr<UIDrawer> uiDrawer;
 
+    HUDVisibilitySystem* visibilitySystem = nullptr;
+
     void registerComponents();
     void addSystems();
-    void createHealthBar(uint32_t playerId, int maxHealth, int currentHealth);
+
+    struct HealthBarParams { uint32_t playerId; std::string playerName; int maxHealth = 0, currentHealth = 0; };
+    void createHealthBar(const HealthBarParams& params);
+    
+    void createTimer(float initialTime);
 };
 
 #endif // hud_scene_h

@@ -48,8 +48,6 @@ MapComponent MapLoader::parseMapComponent(const std::unique_ptr<DataNode>& root)
     }
     else mapComp.floorY = 400.f;
 
-    mapComp.roundTime = root->getFloat("roundTime", 99.f);
-
     if (root->has("worldBounds"))
     {
         auto boundsNode = root->getObject("worldBounds");
