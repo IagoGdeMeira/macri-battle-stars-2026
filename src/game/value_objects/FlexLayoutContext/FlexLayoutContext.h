@@ -24,8 +24,8 @@ struct FlexLayoutContext
     const FlexContainer& flex;
     std::vector<Entity> children;
     
-    Rectangle innerRect;
-    std::vector<ChildLayoutInfo> childInfos;
+    Rectangle innerRect {{0.f, 0.f}, {0.f, 0.f}};
+    std::vector<ChildLayoutInfo> childInfos {};
 
     bool isColumn = false, isReverse = false;
     float freeSpace = 0.f, startOffset = 0.f, between = 0.f;
