@@ -176,22 +176,22 @@ void UILoader::applyBoxModel(const ApplyParams& params)
     if (boxNode->has("margin"))
     {
         auto marginNode = boxNode->getObject("margin");
-        if (marginNode) box.margin = DataUtils::parseAABB(*marginNode, {0,0,0,0});
+        if (marginNode) box.margin = DataUtils::parseAABB(*marginNode, {0, 0, 0, 0});
     }
     if (boxNode->has("padding"))
     {
         auto paddingNode = boxNode->getObject("padding");
-        if (paddingNode) box.padding = DataUtils::parseAABB(*paddingNode, {0,0,0,0});
+        if (paddingNode) box.padding = DataUtils::parseAABB(*paddingNode, {0, 0, 0, 0});
     }
     if (boxNode->has("border"))
     {
         auto borderNode = boxNode->getObject("border");
-        if (borderNode) box.border = DataUtils::parseAABB(*borderNode, {0,0,0,0});
+        if (borderNode) box.border = DataUtils::parseAABB(*borderNode, {0, 0, 0, 0});
     }
     if (boxNode->has("borderRadius"))
     {
         auto radiusNode = boxNode->getObject("borderRadius");
-        if (radiusNode) box.borderRadius = DataUtils::parseCorners(*radiusNode, {0,0,0,0});
+        if (radiusNode) box.borderRadius = DataUtils::parseCorners(*radiusNode, {0, 0, 0, 0});
     }
 
     auto& comp = this->factory.world().components();

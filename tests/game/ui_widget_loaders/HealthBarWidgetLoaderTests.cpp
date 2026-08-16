@@ -110,7 +110,7 @@ TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader handles ze
     auto node = this->makeNode();
     auto params = this->makeParams(0, 100, 0);
 
-    Entity bar = this->loader.load(*node, params);
+    this->loader.load(*node, params);
 
     auto& comp = this->world.components();
     auto view = View<HealthBarSegmentComponent>(comp);

@@ -43,7 +43,12 @@ public:
         comp.add<TransformComponent>(e, TransformComponent{rect.position});
         comp.add<UIRectComponent>(e, UIRectComponent{rect.size});
         comp.add<FlexContainer>(e, FlexContainer{});
-        comp.add<BoxModel>(e, BoxModel{ .padding = padding });
+        comp.add<BoxModel>(e, BoxModel{
+            .margin         = {},
+            .padding        = padding,
+            .border         = {},
+            .borderRadius   = {}
+        });
 
         return e;
     }
@@ -57,7 +62,12 @@ public:
         comp.add<TransformComponent>(child, TransformComponent{{0.f,0.f}});
         comp.add<UIRectComponent>(child, UIRectComponent{size});
         comp.add<FlexItem>(child, FlexItem{grow, shrink, basis});
-        comp.add<BoxModel>(child, BoxModel{ .margin = margin });
+        comp.add<BoxModel>(child, BoxModel{
+            .margin         = margin,
+            .padding        = {},
+            .border         = {},
+            .borderRadius   = {}
+        });
         comp.add<ParentComponent>(child, ParentComponent{parent});
         return child;
     }
