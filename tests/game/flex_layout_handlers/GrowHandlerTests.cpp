@@ -70,6 +70,7 @@ TEST_CASE("GrowHandler does not grow when no grow factor", "[unit][grow_handler]
         .world      = world,
         .container  = Entity{0},
         .flex       = flex,
+        .children   = {},
         .innerRect  = Rectangle{Position{0.f, 0.f}, Dimension2D{100.f, 100.f}},
         .childInfos = {info}
     };

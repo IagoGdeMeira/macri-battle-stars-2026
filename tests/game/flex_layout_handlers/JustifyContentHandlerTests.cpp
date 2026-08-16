@@ -45,6 +45,7 @@ TEST_CASE("JustifyContentHandler center splits free space", "[unit][justify_hand
         .world      = world,
         .container  = Entity{0},
         .flex       = flex,
+        .children   = {},
         .innerRect  = Rectangle{},
         .childInfos = {ChildLayoutInfo{}, ChildLayoutInfo{}},
         .freeSpace  = 50.f
