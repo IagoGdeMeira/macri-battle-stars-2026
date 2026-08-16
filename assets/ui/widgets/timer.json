@@ -1,0 +1,7 @@
+{
+    "type": "widget",
+    "widgetType": "timer",
+    "initialTime": 99,
+    "position": { "x": 0, "y": 0 },
+    "size": { "width": 800, "height": 40 }
+}

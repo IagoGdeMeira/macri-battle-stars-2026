@@ -28,6 +28,9 @@ target_sources(game
         src/scenes/SelectionScene.cpp
         src/scenes/TitleScene.cpp
 
+        src/ui_widget_loaders/HealthBarWidgetLoader.cpp
+        src/ui_widget_loaders/TimerWidgetLoader.cpp
+
         src/utils/CollisionUtils.cpp
         src/utils/GameComponentRegistry.cpp
         src/utils/HUDComponentRegistry.cpp
@@ -91,6 +94,8 @@ target_sources(game
         src/UIFactory.cpp
         src/UIFlexLayoutSystem.cpp
         src/UIInputSystem.cpp
+        src/UILoader.cpp
+        src/UIStyleLoader.cpp
 )
 
 target_include_directories(game
@@ -106,6 +111,7 @@ target_include_directories(game
         ${CMAKE_CURRENT_SOURCE_DIR}/scenes
         ${CMAKE_CURRENT_SOURCE_DIR}/trigger_conditions
         ${CMAKE_CURRENT_SOURCE_DIR}/ui_actions
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui_widget_loaders
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/value_objects
         ${CMAKE_CURRENT_SOURCE_DIR}/visual_effects

@@ -1,0 +1,6 @@
+{
+    "type": "widget",
+    "widgetType": "healthBar",
+    "width": 300,
+    "height": 30
+}

@@ -1,11 +1,10 @@
 #ifndef hud_scene_h
 #define hud_scene_h
 
-#include "domain/components/FlexContainer.h"
-
 #include "engine/include/Scene/Scene.h"
 
 #include <memory>
+#include <string>
 
 class GameSettings;
 class HUDVisibilitySystem;
@@ -14,11 +13,20 @@ class ITextureFactory;
 class Renderer;
 class UIDrawer;
 class UIFactory;
+class UILoader;
+class UIActionFactory;
+class DataParser;
+class SceneManager;
+class EventBus;
 
 class HUDScene : public Scene
 {
 public:
-    struct Config : public Scene::Config { float initialRoundTime = 99.f; };
+    struct Config : public Scene::Config
+    {
+        float initialRoundTime = 99.f;
+        std::string layoutPath, healthBarWidgetPath;
+    };
 
     explicit HUDScene(Config&& cfg);
 
@@ -32,12 +40,13 @@ public:
     bool allowsUpdateBelow() const override { return true; }
 
 private:
-    using Direction = FlexContainer::FlexDirection;
-    using Align = FlexContainer::AlignItems;
-    using Justify = FlexContainer::JustifyContent;
-
     float initialRoundTime = 99.f;
+    std::string layoutPath;
+    std::string healthBarWidgetPath;
 
+    EventBus& eventBus;
+    SceneManager& sceneManager;
+    DataParser& parser;
     Renderer& renderer;
     GameSettings& settings;
     IFontFactory& fontFactory;
@@ -45,17 +54,16 @@ private:
 
     std::unique_ptr<UIFactory> uiFactory;
     std::unique_ptr<UIDrawer> uiDrawer;
+    std::unique_ptr<UILoader> uiLoader;
+    std::unique_ptr<UIActionFactory> actionFactory;
 
     HUDVisibilitySystem* visibilitySystem = nullptr;
     Entity hudRoot;
 
     void registerComponents();
     void addSystems();
-
-    struct HealthBarParams { uint32_t playerId; std::string playerName; int maxHealth = 0, currentHealth = 0; };
-    void createHealthBar(const HealthBarParams& params);
-    void createTimer(float initialTime);
-    void createRoot();
+    void loadHUDLayout();
+    void registerWidgetLoaders();
 };
 
 #endif // hud_scene_h

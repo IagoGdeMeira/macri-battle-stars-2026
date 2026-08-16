@@ -19,7 +19,9 @@ class UIFactory
 {
 public:
     UIFactory(World& world, IFontFactory& fontFactory, ITextureFactory& textureFactory) :
-        world(world), fontFactory(fontFactory), textureFactory(textureFactory) {}
+        factoryWorld(world), fontFactory(fontFactory), textureFactory(textureFactory) {}
+
+    World& world() { return this->factoryWorld; }
 
     Entity createPanel(const Rectangle& rect);
     Entity createButton(const std::string& text, const Rectangle& rect, std::shared_ptr<IUIAction> action);
@@ -29,7 +31,7 @@ public:
     Entity createFromElement(const UIElement& element);
 
 private:
-    World& world;
+    World& factoryWorld;
     IFontFactory& fontFactory;
     ITextureFactory& textureFactory;
 

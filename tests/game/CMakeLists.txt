@@ -41,6 +41,9 @@ add_executable(game_tests
     ui_actions/NavigateToTitleActionTests.cpp
     ui_actions/QuitActionTests.cpp
 
+    ui_widget_loaders/HealthBarWidgetLoaderTests.cpp
+    ui_widget_loaders/TimerWidgetLoaderTests.cpp
+
     utils/CollisionUtilsTests.cpp
     utils/GameComponentRegistryTests.cpp
     utils/HUDComponentRegistryTests.cpp
@@ -108,6 +111,8 @@ add_executable(game_tests
     UIFactoryTests.cpp
     UIActionFactoryTests.cpp
     UIInputSystemTests.cpp
+    UILoaderTests.cpp
+    UIStyleLoaderTests.cpp
 )
 
 target_link_libraries(game_tests

@@ -5,21 +5,25 @@
 #include "ComponentRegistry/HUDComponentRegistry.h"
 #include "GrowHandler.h"
 #include "HealthBarSystem/HealthBarSystem.h"
+#include "HealthBarWidgetLoader.h"
 #include "HUDVisibilitySystem/HUDVisibilitySystem.h"
 #include "JustifyContentHandler.h"
 #include "MainAxisHandler.h"
 #include "PlayerSpawnedEvent.h"
 #include "RoundTimerDisplaySystem/RoundTimerDisplaySystem.h"
+#include "TimerWidgetLoader.h"
+#include "UIActionFactory/UIActionFactory.h"
 #include "UIFactory/UIFactory.h"
 #include "UIDrawer/UIDrawer.h"
 #include "UIFlexLayoutSystem/UIFlexLayoutSystem.h"
+#include "UILoader/UILoader.h"
 
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/BoxModel.h"
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/FlexContainer.h"
-#include "domain/components/HealthBarTag.h"
 #include "domain/components/HealthBarSegmentComponent.h"
+#include "domain/components/HealthBarTag.h"
 #include "domain/components/HUDEntityTag.h"
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
@@ -36,6 +40,11 @@
 HUDScene::HUDScene(Config&& cfg) :
     Scene(*cfg.eventBus),
     initialRoundTime(cfg.initialRoundTime),
+    layoutPath(cfg.layoutPath),
+    healthBarWidgetPath(cfg.healthBarWidgetPath),
+    eventBus(*cfg.eventBus),
+    sceneManager(*cfg.sceneManager),
+    parser(*cfg.parser),
     renderer(*cfg.renderer),
     settings(*cfg.settings),
     fontFactory(*cfg.fontFactory),
@@ -52,19 +61,35 @@ void HUDScene::init()
     this->uiFactory = std::make_unique<UIFactory>(this->world(), this->fontFactory, this->textureFactory);
     this->uiDrawer = std::make_unique<UIDrawer>(this->eventBus, this->renderer, this->settings);
 
-    this->createRoot();
+    this->actionFactory = std::make_unique<UIActionFactory>(
+        UIActionFactory::Config{ .eventBus = this->eventBus, .sceneManager = this->sceneManager }
+    );
+
+    this->uiLoader = std::make_unique<UILoader>(this->parser, *this->uiFactory, *this->actionFactory);
+
+    this->registerWidgetLoaders();
+    this->loadHUDLayout();
 
     this->eventBus.subscribe<PlayerSpawnedEvent>([this](const PlayerSpawnedEvent& e)
     {
-        this->createHealthBar(HealthBarParams{
-            .playerId       = e.playerId,
-            .playerName     = e.characterName,
-            .maxHealth      = e.maxHealth,
-            .currentHealth  = e.currentHealth
-        });
-    });
+        UILoader::ParamMap params;
+        params["playerId"] = std::to_string(e.playerId);
+        params["maxHealth"] = std::to_string(e.maxHealth);
+        params["currentHealth"] = std::to_string(e.currentHealth);
 
-    this->createTimer(this->initialRoundTime);
+        this->uiLoader->instantiateWidget(this->healthBarWidgetPath, params, this->hudRoot);
+    });
+}
+
+void HUDScene::onPause() { if (this->visibilitySystem) this->visibilitySystem->setVisible(false); }
+
+void HUDScene::onResume() { if (this->visibilitySystem) this->visibilitySystem->setVisible(true); }
+
+void HUDScene::render()
+{
+    if (!this->uiDrawer) return;
+    RenderContext ctx{ this->world(), this->eventBus };
+    this->uiDrawer->draw(ctx);
 }
 
 void HUDScene::registerComponents() { HUDComponentRegistry::registerAll(this->world().components()); }
@@ -85,127 +110,14 @@ void HUDScene::addSystems()
     this->visibilitySystem = &visSystem;
 }
 
-void HUDScene::onPause() { if (this->visibilitySystem) this->visibilitySystem->setVisible(false); }
-
-void HUDScene::onResume() { if (this->visibilitySystem) this->visibilitySystem->setVisible(true); }
-
-void HUDScene::render()
+void HUDScene::loadHUDLayout()
 {
-    if (!this->uiDrawer) return;
-    RenderContext ctx{ this->world(), this->eventBus };
-    this->uiDrawer->draw(ctx);
+    auto entities = this->uiLoader->loadLayout(this->layoutPath);
+    if (!entities.empty()) this->hudRoot = entities[0];
 }
 
-void HUDScene::createHealthBar(const HealthBarParams& params)
+void HUDScene::registerWidgetLoaders()
 {
-    auto& world = this->world();
-    auto& comp = world.components();
-
-    const float totalWidth = 300.f;
-    const float barHeight = 30.f;
-    const float maxSegmentHP = 100.f;
-    const int maxHealth = params.maxHealth;
-    const int currentHealth = params.currentHealth;
-    const int numSegments = (maxHealth + static_cast<int>(maxSegmentHP) - 1) / static_cast<int>(maxSegmentHP);
-    const float segmentMaxWidth = totalWidth / numSegments;
-
-    Entity container = world.entities().create();
-    comp.add<TransformComponent>(container, TransformComponent{{0.f, 0.f}, {1.f, 1.f}, 0.f});
-    comp.add<UIRectComponent>(container, UIRectComponent{{totalWidth, barHeight}});
-    comp.add<ActiveComponent>(container, ActiveComponent{true});
-    comp.add<HUDEntityTag>(container, HUDEntityTag{});
-    comp.add<HealthBarTag>(container, HealthBarTag{params.playerId, maxHealth, currentHealth});
-    comp.add<ChildrenComponent>(container, ChildrenComponent{});
-    comp.add<RenderComponent>(container, RenderComponent{0, 0});
-    comp.add<LayoutDirtyComponent>(container, LayoutDirtyComponent{true});
-
-    Entity background = world.entities().create();
-    comp.add<TransformComponent>(background, TransformComponent{{0.f, 0.f}, {1.f, 1.f}, 0.f});
-    comp.add<UIRectComponent>(background, UIRectComponent{{totalWidth, barHeight}});
-    comp.add<ActiveComponent>(background, ActiveComponent{true});
-    comp.add<ParentComponent>(background, ParentComponent{container});
-    comp.add<UISpriteComponent>(background, UISpriteComponent{nullptr, Color{60, 60, 60, 255}});
-    comp.add<RenderComponent>(background, RenderComponent{0, 0});
-    comp.get<ChildrenComponent>(container).children.push_back(background);
-
-    Entity border = world.entities().create();
-    comp.add<TransformComponent>(border, TransformComponent{{0.f, 0.f}, {1.f, 1.f}, 0.f});
-    comp.add<UIRectComponent>(border, UIRectComponent{{totalWidth, barHeight}});
-    comp.add<ActiveComponent>(border, ActiveComponent{true});
-    comp.add<ParentComponent>(border, ParentComponent{container});
-    comp.add<UISpriteComponent>(border, UISpriteComponent{nullptr, Color::TRANSPARENT()});
-    comp.add<RenderComponent>(border, RenderComponent{0, 2});
-    comp.get<ChildrenComponent>(container).children.push_back(border);
-
-    float remainingHP = static_cast<float>(currentHealth);
-    for (int i = 0; i < numSegments; ++i)
-    {
-        float segmentHP = std::min(remainingHP, maxSegmentHP);
-        remainingHP -= segmentHP;
-
-        bool isLast = (i == numSegments - 1);
-        Color fillColor = isLast ? Color{255, 200, 0, 255} : Color{0, 200, 0, 255};
-
-        Entity segment = world.entities().create();
-        comp.add<TransformComponent>(segment, TransformComponent{{i * segmentMaxWidth, 0.f}, {1.f, 1.f}, 0.f});
-        comp.add<UIRectComponent>(segment, UIRectComponent{{(segmentHP / maxSegmentHP) * segmentMaxWidth, barHeight}});
-        comp.add<ActiveComponent>(segment, ActiveComponent{true});
-        comp.add<ParentComponent>(segment, ParentComponent{container});
-        comp.add<HealthBarSegmentComponent>(segment, HealthBarSegmentComponent{maxSegmentHP, segmentMaxWidth});
-        comp.add<UISpriteComponent>(segment, UISpriteComponent{nullptr, fillColor});
-        comp.add<RenderComponent>(segment, RenderComponent{0, 1});
-        comp.get<ChildrenComponent>(container).children.push_back(segment);
-    }
-
-    comp.add<ParentComponent>(container, ParentComponent{this->hudRoot});
-    comp.get<ChildrenComponent>(this->hudRoot).children.push_back(container);
-}
-
-void HUDScene::createTimer(float initialTime)
-{
-    auto& world = this->world();
-    auto& comp = world.components();
-
-    Entity timerPanel = this->uiFactory->createPanel(
-        Rectangle{{0.f, 0.f}, Dimension2D{GameConstants::VIRTUAL_SIZE.width, 40.f}}
-    );
-    comp.add<ActiveComponent>(timerPanel, ActiveComponent{true});
-    comp.add<HUDEntityTag>(timerPanel, HUDEntityTag{});
-
-    auto& flex = comp.get<FlexContainer>(timerPanel);
-    flex.direction = Direction::Row;
-    flex.justify = Justify::Center;
-    flex.align = Align::Center;
-
-    Entity timerText = this->uiFactory->createText(
-        std::to_string(static_cast<int>(initialTime)),
-        32.f,
-        Color::WHITE(),
-        Position{0.f, 0.f}
-    );
-    comp.add<ActiveComponent>(timerText, ActiveComponent{true});
-    comp.add<HUDEntityTag>(timerText, HUDEntityTag{});
-    comp.add<RoundTimerTag>(timerText, RoundTimerTag{});
-    comp.add<ParentComponent>(timerText, ParentComponent{timerPanel});
-
-    comp.add<ParentComponent>(timerPanel, ParentComponent{this->hudRoot});
-    comp.get<ChildrenComponent>(this->hudRoot).children.push_back(timerPanel);
-}
-
-void HUDScene::createRoot()
-{
-    auto& world = this->world();
-    auto& comp = world.components();
-
-    Entity root = world.entities().create();
-    comp.add<TransformComponent>(root, TransformComponent{{0.f, 0.f}, {1.f, 1.f}, 0.f});
-    comp.add<UIRectComponent>(root, UIRectComponent{{GameConstants::VIRTUAL_SIZE.width, GameConstants::VIRTUAL_SIZE.height}});
-    comp.add<FlexContainer>(root, FlexContainer{ Direction::Column, Justify::FlexStart, Align::FlexStart, 10.f });
-    comp.add<BoxModel>(root, BoxModel{ .padding = {10.f, 10.f, 10.f, 10.f} });
-    comp.add<LayoutDirtyComponent>(root, LayoutDirtyComponent{true});
-    comp.add<ActiveComponent>(root, ActiveComponent{true});
-    comp.add<HUDEntityTag>(root, HUDEntityTag{});
-    comp.add<ChildrenComponent>(root, ChildrenComponent{});
-
-    this->hudRoot = root;
+    this->uiLoader->registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(*this->uiFactory));
+    this->uiLoader->registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(*this->uiFactory));
 }

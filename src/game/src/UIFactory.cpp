@@ -26,8 +26,8 @@
 
 Entity UIFactory::createPanel(const Rectangle& rect)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     comp.add<TransformComponent>(e, TransformComponent{rect.position, {1.f, 1.f}, 0.f});
     comp.add<UIRectComponent>(e, UIRectComponent{rect.size});
@@ -40,7 +40,7 @@ Entity UIFactory::createPanel(const Rectangle& rect)
 Entity UIFactory::createButton(const std::string& text, const Rectangle& rect, std::shared_ptr<IUIAction> action)
 {
     Entity button = this->createPanel(rect);
-    auto& comp = this->world.components();
+    auto& comp = this->factoryWorld.components();
 
     comp.add<UIFocusable>(button, UIFocusable{ true });
 
@@ -59,8 +59,8 @@ Entity UIFactory::createButton(const std::string& text, const Rectangle& rect, s
 
 Entity UIFactory::createText(const std::string& text, float fontSize, const Color& color, const Position& position)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     comp.add<TransformComponent>(e, TransformComponent{position, {1.f, 1.f}, 0.f});
     comp.add<UIRectComponent>(e, UIRectComponent{{0.f, 0.f}});
@@ -76,8 +76,8 @@ Entity UIFactory::createText(const std::string& text, float fontSize, const Colo
 
 Entity UIFactory::createImage(const std::string& texturePath, const Rectangle& rect)
 {
-    Entity e = this->world.entities().create();
-    auto& comp = this->world.components();
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
 
     comp.add<TransformComponent>(e, TransformComponent{rect.position, {1.f, 1.f}, 0.f});
     comp.add<UIRectComponent>(e, UIRectComponent{rect.size});
@@ -103,7 +103,7 @@ Entity UIFactory::createFromElement(const UIElement& element)
 
 void UIFactory::applyDefaultBoxModel(Entity& entity)
 {
-    auto& comp = this->world.components();
+    auto& comp = this->factoryWorld.components();
     BoxModel box;
     box.margin = {};
     box.padding = {8, 8, 8, 8};

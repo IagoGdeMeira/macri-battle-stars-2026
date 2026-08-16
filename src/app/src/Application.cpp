@@ -103,6 +103,8 @@ void Application::setupInitialScene()
 
     HUDScene::Config hudCfg;
     hudCfg.initialRoundTime = 99.f;
+    hudCfg.layoutPath = "assets/ui/hud_layout.json";
+    hudCfg.healthBarWidgetPath = "assets/ui/widgets/health_bar.json";
     auto hudScene = this->sceneFactory->createScene<HUDScene>(std::move(hudCfg), this->sceneManager.get());
     scenes.pushScene(std::move(hudScene));
 }
