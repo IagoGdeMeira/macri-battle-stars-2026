@@ -9,13 +9,15 @@
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/HUDEntityTag.h"
+#include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/RoundTimerTag.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/ComponentManager/ComponentManager.h"
 
 void HUDComponentRegistry::registerAll(ComponentManager& comp)
@@ -29,11 +31,13 @@ void HUDComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<HealthBarSegmentComponent>();
     comp.registerComponent<HealthBarTag>();
     comp.registerComponent<HUDEntityTag>();
+    comp.registerComponent<LayoutDirtyComponent>();
     comp.registerComponent<ParentComponent>();
     comp.registerComponent<RectangleEffectsComponent>();
     comp.registerComponent<RenderComponent>();
     comp.registerComponent<RoundTimerTag>();
+    comp.registerComponent<TransformComponent>();
+    comp.registerComponent<UIRectComponent>();
     comp.registerComponent<UISpriteComponent>();
     comp.registerComponent<UITextComponent>();
-    comp.registerComponent<UITransform>();
 }

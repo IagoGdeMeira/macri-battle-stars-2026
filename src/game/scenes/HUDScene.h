@@ -1,17 +1,19 @@
 #ifndef hud_scene_h
 #define hud_scene_h
 
+#include "domain/components/FlexContainer.h"
+
 #include "engine/include/Scene/Scene.h"
 
 #include <memory>
 
-class Renderer;
 class GameSettings;
+class HUDVisibilitySystem;
 class IFontFactory;
 class ITextureFactory;
-class UIFactory;
+class Renderer;
 class UIDrawer;
-class HUDVisibilitySystem;
+class UIFactory;
 
 class HUDScene : public Scene
 {
@@ -30,6 +32,10 @@ public:
     bool allowsUpdateBelow() const override { return true; }
 
 private:
+    using Direction = FlexContainer::FlexDirection;
+    using Align = FlexContainer::AlignItems;
+    using Justify = FlexContainer::JustifyContent;
+
     float initialRoundTime = 99.f;
 
     Renderer& renderer;
@@ -41,14 +47,15 @@ private:
     std::unique_ptr<UIDrawer> uiDrawer;
 
     HUDVisibilitySystem* visibilitySystem = nullptr;
+    Entity hudRoot;
 
     void registerComponents();
     void addSystems();
 
     struct HealthBarParams { uint32_t playerId; std::string playerName; int maxHealth = 0, currentHealth = 0; };
     void createHealthBar(const HealthBarParams& params);
-    
     void createTimer(float initialTime);
+    void createRoot();
 };
 
 #endif // hud_scene_h

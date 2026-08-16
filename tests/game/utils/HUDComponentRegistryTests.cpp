@@ -9,13 +9,15 @@
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/HUDEntityTag.h"
+#include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/RoundTimerTag.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/ComponentManager/ComponentManager.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -35,13 +37,15 @@ TEST_CASE("HUDComponentRegistry registers every HUD component", "[unit][hud_comp
     REQUIRE(comp.storage<HealthBarSegmentComponent>() != nullptr);
     REQUIRE(comp.storage<HealthBarTag>() != nullptr);
     REQUIRE(comp.storage<HUDEntityTag>() != nullptr);
+    REQUIRE(comp.storage<LayoutDirtyComponent>() != nullptr);
     REQUIRE(comp.storage<ParentComponent>() != nullptr);
     REQUIRE(comp.storage<RectangleEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<RenderComponent>() != nullptr);
     REQUIRE(comp.storage<RoundTimerTag>() != nullptr);
+    REQUIRE(comp.storage<TransformComponent>() != nullptr);
+    REQUIRE(comp.storage<UIRectComponent>() != nullptr);
     REQUIRE(comp.storage<UISpriteComponent>() != nullptr);
     REQUIRE(comp.storage<UITextComponent>() != nullptr);
-    REQUIRE(comp.storage<UITransform>() != nullptr);
 }
 
 TEST_CASE("HUDComponentRegistry can be invoked more than once safely", "[unit][hud_component_registry]")

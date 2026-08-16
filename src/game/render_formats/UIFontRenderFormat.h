@@ -5,8 +5,9 @@
 
 #include "domain/components/FontEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/components/UITextComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/View/View.h"
 
 #include "engine/draw_commands/DrawFontCommand.h"
@@ -22,17 +23,19 @@ public:
     void render(RenderContext& ctx, RenderQueue& queue) override
     {
         auto& comp = ctx.world.components();
-        auto view = View<UITransform, UITextComponent, RenderComponent>(comp);
+        auto view = View<TransformComponent, UIRectComponent, UITextComponent, RenderComponent>(comp);
         size_t order = 0;
 
-        for (auto [entity, transform, text, render] : view)
+        for (auto [entity, transform, uiRect, text, render] : view)
         {
             if (text.text.empty() || !text.font) continue;
+
+            Rectangle dest{transform.position, uiRect.size};
 
             auto& cmd = queue.emplace<DrawFontCommand>();
             cmd.text = text.text;
             cmd.font = text.font.get();
-            cmd.dest = transform.rect;
+            cmd.dest = dest;
             cmd.fontSize = text.fontSize > 0 ? text.fontSize : 16;
             cmd.color = text.color;
             cmd.layer = render.layer;

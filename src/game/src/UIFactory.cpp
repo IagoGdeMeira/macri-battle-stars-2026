@@ -7,12 +7,14 @@
 #include "domain/components/BoxModel.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
+#include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/TransformComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/World/World.h"
 #include "domain/resources/Font/Font.h"
 #include "domain/resources/Texture/Texture.h"
@@ -27,8 +29,10 @@ Entity UIFactory::createPanel(const Rectangle& rect)
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    comp.add<UITransform>(e, UITransform{ rect });
+    comp.add<TransformComponent>(e, TransformComponent{rect.position, {1.f, 1.f}, 0.f});
+    comp.add<UIRectComponent>(e, UIRectComponent{rect.size});
     comp.add<FlexContainer>(e, FlexContainer{});
+    comp.add<LayoutDirtyComponent>(e, LayoutDirtyComponent{true});
     this->applyDefaultBoxModel(e);
     return e;
 }
@@ -50,7 +54,6 @@ Entity UIFactory::createButton(const std::string& text, const Rectangle& rect, s
     comp.get<FlexItem>(textEntity);
 
     if (action) comp.add<UIActionComponent>(button, UIActionComponent{[action]() { action->execute(); }});
-
     return button;
 }
 
@@ -59,7 +62,8 @@ Entity UIFactory::createText(const std::string& text, float fontSize, const Colo
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    comp.add<UITransform>(e, UITransform{ Rectangle{ position, { 0, 0 } } });
+    comp.add<TransformComponent>(e, TransformComponent{position, {1.f, 1.f}, 0.f});
+    comp.add<UIRectComponent>(e, UIRectComponent{{0.f, 0.f}});
     comp.add<FlexItem>(e, FlexItem{});
 
     std::shared_ptr<Font> font = nullptr;
@@ -69,12 +73,14 @@ Entity UIFactory::createText(const std::string& text, float fontSize, const Colo
     comp.add<UITextComponent>(e, UITextComponent{ font, text, color, true, fontSize });
     return e;
 }
+
 Entity UIFactory::createImage(const std::string& texturePath, const Rectangle& rect)
 {
     Entity e = this->world.entities().create();
     auto& comp = this->world.components();
 
-    comp.add<UITransform>(e, UITransform{ rect });
+    comp.add<TransformComponent>(e, TransformComponent{rect.position, {1.f, 1.f}, 0.f});
+    comp.add<UIRectComponent>(e, UIRectComponent{rect.size});
 
     auto texture = this->textureFactory.createTexture(texturePath);
     comp.add<UISpriteComponent>(e, UISpriteComponent{ texture, Color::WHITE() });
@@ -91,7 +97,7 @@ Entity UIFactory::createFromElement(const UIElement& element)
     { return this->createButton(button->text, button->rect, button->action); }
     if (auto* img = dynamic_cast<const ImageElement*>(&element))
     { return this->createImage(img->imagePath, img->rect); }
-    
+
     throw std::runtime_error("Unsupported UIElement type: " + element.id);
 }
 

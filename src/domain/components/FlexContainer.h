@@ -12,7 +12,6 @@ struct FlexContainer
     AlignItems align = AlignItems::Stretch;
 
     float gap = 0.f;
-    bool needsLayout = true;
 };
 
 #endif // flex_container_h

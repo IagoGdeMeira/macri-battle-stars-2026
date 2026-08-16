@@ -5,8 +5,9 @@
 
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TextureEffectsComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/components/UISpriteComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
@@ -34,7 +35,8 @@ public:
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<TextureEffectsComponent>();
         comp.registerComponent<UISpriteComponent>();
-        comp.registerComponent<UITransform>();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<UIRectComponent>();
     }
 };
 
@@ -45,13 +47,17 @@ TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits ba
 
     Entity entity = this->world.entities().create();
 
-    UITransform transform;
-    transform.rect = Rectangle{Position{10.f, 20.f}, Dimension2D{100.f, 30.f}};
-    transform.rotation = 45.f;
-    transform.scale = Position {-1.f, 2.f};
+    TransformComponent tc;
+    tc.position = {10.f, 20.f};
+    tc.rotation = 45.f;
+    tc.scale = {-1.f, 2.f};
+
+    UIRectComponent urc;
+    urc.size = {100.f, 30.f};
 
     auto& comp = this->world.components();
-    comp.add<UITransform>(entity, transform);
+    comp.add<TransformComponent>(entity, tc);
+    comp.add<UIRectComponent>(entity, urc);
     comp.add<UISpriteComponent>(entity, UISpriteComponent { texture, Color { 10, 20, 30, 40 } });
     comp.add<RenderComponent>(entity, RenderComponent { 2, 3 });
 

@@ -5,7 +5,6 @@
 
 #include "domain/components/OutlineComponent.h"
 #include "domain/components/ShadowComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/Entity/Entity.h"
 #include "domain/value_objects/Geometry/Geometry.h"
 

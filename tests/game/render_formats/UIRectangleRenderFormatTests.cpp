@@ -4,7 +4,8 @@
 
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
-#include "domain/components/UITransform.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
@@ -30,7 +31,8 @@ public:
         auto& comp = this->world.components();
         comp.registerComponent<RectangleEffectsComponent>();
         comp.registerComponent<RenderComponent>();
-        comp.registerComponent<UITransform>();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<UIRectComponent>();
     }
 };
 
@@ -39,11 +41,15 @@ TEST_CASE_METHOD(UIRectangleRenderFormatFixture, "UIRectangleRenderFormat submit
 ) {
     Entity entity = this->world.entities().create();
 
-    UITransform transform;
-    transform.rect = Rectangle{Position{15.f, 25.f}, Dimension2D{40.f, 12.f}};
+    TransformComponent tc;
+    tc.position = {15.f, 25.f};
+
+    UIRectComponent urc;
+    urc.size = {40.f, 12.f};
 
     auto& comp = this->world.components();
-    comp.add<UITransform>(entity, transform);
+    comp.add<TransformComponent>(entity, tc);
+    comp.add<UIRectComponent>(entity, urc);
     comp.add<RenderComponent>(entity, RenderComponent { 3, 9 });
 
     RectangleEffectsComponent fx;

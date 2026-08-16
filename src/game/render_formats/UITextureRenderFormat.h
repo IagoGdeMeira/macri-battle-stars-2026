@@ -5,8 +5,9 @@
 
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TextureEffectsComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/components/UISpriteComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/View/View.h"
 
 #include "engine/draw_commands/DrawTextureCommand.h"
@@ -22,16 +23,18 @@ public:
     void render(RenderContext& ctx, RenderQueue& queue) override
     {
         auto& comp = ctx.world.components();
-        auto view = View<UISpriteComponent, UITransform, RenderComponent>(comp);
+        auto view = View<UISpriteComponent, TransformComponent, UIRectComponent, RenderComponent>(comp);
         size_t order = 0;
 
-        for (auto [entity, sprite, transform, render] : view)
+        for (auto [entity, sprite, transform, uiRect, render] : view)
         {
             if (!sprite.texture) continue;
 
+            Rectangle dest{transform.position, uiRect.size};
+
             auto& cmd = queue.emplace<DrawTextureCommand>();
             cmd.texture = sprite.texture;
-            cmd.dest = transform.rect;
+            cmd.dest = dest;
             cmd.rotation = transform.rotation;
             cmd.flipX = (transform.scale.x < 0.f);
             cmd.flipY = (transform.scale.y < 0.f);

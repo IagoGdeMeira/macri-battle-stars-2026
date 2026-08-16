@@ -13,6 +13,12 @@ target_sources(game
         src/drawers/UIDrawer.cpp
         src/drawers/WorldDrawer.cpp
 
+        src/flex_layout_handlers/AlignItemsHandler.cpp
+        src/flex_layout_handlers/BoxModelHandler.cpp
+        src/flex_layout_handlers/GrowHandler.cpp
+        src/flex_layout_handlers/JustifyContentHandler.cpp
+        src/flex_layout_handlers/MainAxisHandler.cpp
+
         src/render_formats/WorldCircleRenderFormat.cpp
         src/render_formats/WorldRectangleRenderFormat.cpp
         src/render_formats/WorldTextureRenderFormat.cpp
@@ -83,8 +89,8 @@ target_sources(game
         src/TriggerMapper.cpp
         src/UIActionFactory.cpp
         src/UIFactory.cpp
+        src/UIFlexLayoutSystem.cpp
         src/UIInputSystem.cpp
-        src/UILayoutSystem.cpp
 )
 
 target_include_directories(game
@@ -94,6 +100,7 @@ target_include_directories(game
         ${CMAKE_CURRENT_SOURCE_DIR}/collision_handlers
         ${CMAKE_CURRENT_SOURCE_DIR}/drawers
         ${CMAKE_CURRENT_SOURCE_DIR}/events
+        ${CMAKE_CURRENT_SOURCE_DIR}/flex_layout_handlers
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/render_formats
         ${CMAKE_CURRENT_SOURCE_DIR}/scenes

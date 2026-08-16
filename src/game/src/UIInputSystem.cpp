@@ -2,9 +2,10 @@
 
 #include "UIActionEvent.h"
 
+#include "domain/components/TransformComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
-#include "domain/components/UITransform.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -30,17 +31,12 @@ void UIInputSystem::update(UpdateContext& ctx)
         if (id.has_value() && event.playerId != id.value()) continue;
 
         using Type = InputSource::Type;
+        const auto& code = event.source.code();
         switch (event.source.type())
         {
-            case Type::Keyboard:
-                this->navigateKeyboard(ctx, static_cast<KeyCode>(event.source.code()));
-                break;
-            case Type::Mouse:
-                this->navigateMouse(ctx, static_cast<MouseButton>(event.source.code()));
-                break;
-            case Type::Gamepad:
-                this->navigateGamepad(ctx, static_cast<GamepadButton>(event.source.code()));
-                break;
+            case Type::Keyboard: this->navigateKeyboard(ctx, static_cast<KeyCode>(code)); break;
+            case Type::Mouse: this->navigateMouse(ctx, static_cast<MouseButton>(code)); break;
+            case Type::Gamepad: this->navigateGamepad(ctx, static_cast<GamepadButton>(code)); break;
         }
     }
     this->digitalEvents.clear();
@@ -51,8 +47,8 @@ void UIInputSystem::navigate(UpdateContext& ctx, Direction dir)
     if (!this->focusedEntity.has_value())
     {
         auto& comp = ctx.world.components();
-        auto focusables = View<UIFocusable, UITransform>(comp);
-        for (auto [entity, focusable, transform] : focusables)
+        auto focusables = View<UIFocusable, TransformComponent, UIRectComponent>(comp);
+        for (auto [entity, focusable, transform, uiRect] : focusables)
         {
             if (!focusable.canFocus) continue;
             
@@ -97,11 +93,11 @@ void UIInputSystem::navigateMouse(UpdateContext& ctx, MouseButton button)
     if (button != MouseButton::Left) return;
 
     auto& comp = ctx.world.components();
-    auto focusables = View<UIFocusable, UITransform>(comp);
-    for (auto [entity, focusable, transform] : focusables)
+    auto focusables = View<UIFocusable, TransformComponent, UIRectComponent>(comp);
+    for (auto [entity, focusable, transform, uiRect] : focusables)
     {
         if (!focusable.canFocus) continue;
-        const Rectangle& rect = transform.rect;
+        const Rectangle rect{transform.position, uiRect.size};
         
         if (this->mousePosition.x < rect.position.x) continue;
         if (this->mousePosition.x > rect.position.x + rect.size.width) continue;
@@ -124,26 +120,28 @@ void UIInputSystem::activate(UpdateContext& ctx)
 std::optional<Entity> UIInputSystem::findClosest(UpdateContext& ctx, Entity current, Direction dir) const
 {
     auto& comp = ctx.world.components();
-    if (!comp.has<UITransform>(current)) return std::nullopt;
+    if (!comp.has<TransformComponent>(current) || !comp.has<UIRectComponent>(current))
+        return std::nullopt;
 
-    const auto& uiTransform = comp.get<UITransform>(current);
+    const auto& currentTransform = comp.get<TransformComponent>(current);
+    const auto& currentRect = comp.get<UIRectComponent>(current);
     Position cur =
     {
-        uiTransform.rect.position.x + uiTransform.rect.size.width * 0.5f,
-        uiTransform.rect.position.y + uiTransform.rect.size.height * 0.5f
+        currentTransform.position.x + currentRect.size.width * 0.5f,
+        currentTransform.position.y + currentRect.size.height * 0.5f
     };
 
     std::optional<Entity> best = std::nullopt;
     float bestScore = std::numeric_limits<float>::max();
 
-    auto focusables = View<UIFocusable, UITransform>(comp);
-    for (auto [entity, focusable, transform] : focusables)
+    auto focusables = View<UIFocusable, TransformComponent, UIRectComponent>(comp);
+    for (auto [entity, focusable, transform, uiRect] : focusables)
     {
         if (entity == current || !focusable.canFocus) continue;
 
-        Position next = {
-            transform.rect.position.x + transform.rect.size.width * 0.5f,
-            transform.rect.position.y + transform.rect.size.height * 0.5f
+        Position next {
+            transform.position.x + uiRect.size.width * 0.5f,
+            transform.position.y + uiRect.size.height * 0.5f
         };
         Position delta { next.x - cur.x, next.y - cur.y };
 

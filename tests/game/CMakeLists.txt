@@ -13,6 +13,12 @@ add_executable(game_tests
     drawers/UIDrawerTests.cpp
     drawers/WorldDrawerTests.cpp
 
+    flex_layout_handlers/AlignItemsHandlerTests.cpp
+    flex_layout_handlers/BoxModelHandlerTests.cpp
+    flex_layout_handlers/GrowHandlerTests.cpp
+    flex_layout_handlers/JustifyContentHandlerTests.cpp
+    flex_layout_handlers/MainAxisHandlerTests.cpp
+
     render_formats/UICircleRenderFormatTests.cpp
     render_formats/UIFontRenderFormatTests.cpp
     render_formats/UIRectangleRenderFormatTests.cpp
@@ -102,7 +108,6 @@ add_executable(game_tests
     UIFactoryTests.cpp
     UIActionFactoryTests.cpp
     UIInputSystemTests.cpp
-    UILayoutSystemTests.cpp
 )
 
 target_link_libraries(game_tests

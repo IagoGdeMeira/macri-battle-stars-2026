@@ -1,8 +1,9 @@
 #include "game/include/UIInputSystem/UIInputSystem.h"
 
+#include "domain/components/TransformComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
-#include "domain/components/UITransform.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/CommandBuffer/CommandBuffer.h"
@@ -29,7 +30,8 @@ public:
     {
         auto& components = this->world.components();
         components.registerComponent<UIFocusable>();
-        components.registerComponent<UITransform>();
+        components.registerComponent<TransformComponent>();
+        components.registerComponent<UIRectComponent>();
         components.registerComponent<UIActionComponent>();
 
         this->bus.subscribe<UIActionEvent>([this](const UIActionEvent& event)
@@ -43,9 +45,14 @@ public:
         auto& components = this->world.components();
         components.add<UIFocusable>(entity, UIFocusable{true});
 
-        UITransform transform;
-        transform.rect = rect;
-        components.add<UITransform>(entity, transform);
+        TransformComponent tc;
+        tc.position = rect.position;
+        components.add<TransformComponent>(entity, tc);
+
+        UIRectComponent urc;
+        urc.size = rect.size;
+        components.add<UIRectComponent>(entity, urc);
+
         components.add<UIActionComponent>(entity, UIActionComponent{[]() {}});
 
         return entity;

@@ -8,12 +8,14 @@
 #include "domain/components/BoxModel.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
+#include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/TransformComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/World/World.h"
 
 #include "game/include/IUIAction/IUIAction.h"
@@ -42,15 +44,17 @@ public:
     UIFactoryFixture() : factory(this->world, this->fontFactory, this->textureFactory)
     {
         auto& comp = this->world.components();
-        comp.registerComponent<UITransform>();
-        comp.registerComponent<FlexContainer>();
         comp.registerComponent<BoxModel>();
-        comp.registerComponent<UIFocusable>();
-        comp.registerComponent<ParentComponent>();
+        comp.registerComponent<FlexContainer>();
         comp.registerComponent<FlexItem>();
-        comp.registerComponent<UITextComponent>();
-        comp.registerComponent<UISpriteComponent>();
+        comp.registerComponent<LayoutDirtyComponent>();
+        comp.registerComponent<ParentComponent>();
+        comp.registerComponent<TransformComponent>();
         comp.registerComponent<UIActionComponent>();
+        comp.registerComponent<UIFocusable>();
+        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UISpriteComponent>();
+        comp.registerComponent<UITextComponent>();
     }
 };
 
@@ -60,15 +64,18 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createPanel adds base UI component
 
     auto& comp = this->world.components();
 
-    REQUIRE(comp.has<UITransform>(panel));
+    REQUIRE(comp.has<TransformComponent>(panel));
+    REQUIRE(comp.has<UIRectComponent>(panel));
     REQUIRE(comp.has<FlexContainer>(panel));
     REQUIRE(comp.has<BoxModel>(panel));
 
-    const auto& transform = comp.get<UITransform>(panel);
-    REQUIRE(transform.rect.position.x == Catch::Approx(10.f));
-    REQUIRE(transform.rect.position.y == Catch::Approx(20.f));
-    REQUIRE(transform.rect.size.width == Catch::Approx(100.f));
-    REQUIRE(transform.rect.size.height == Catch::Approx(50.f));
+    const auto& transform = comp.get<TransformComponent>(panel);
+    REQUIRE(transform.position.x == Catch::Approx(10.f));
+    REQUIRE(transform.position.y == Catch::Approx(20.f));
+
+    const auto& uiRect = comp.get<UIRectComponent>(panel);
+    REQUIRE(uiRect.size.width == Catch::Approx(100.f));
+    REQUIRE(uiRect.size.height == Catch::Approx(50.f));
 
     const auto& box = comp.get<BoxModel>(panel);
     REQUIRE(box.margin.left == Catch::Approx(0.f));
@@ -86,7 +93,8 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createText builds a text entity", 
 
     REQUIRE(this->fontFactory.createFontCalls == 1);
     REQUIRE(this->fontFactory.lastPath == "assets/fonts/default.ttf");
-    REQUIRE(comp.has<UITransform>(text));
+    REQUIRE(comp.has<TransformComponent>(text));
+    REQUIRE(comp.has<UIRectComponent>(text));
     REQUIRE(comp.has<FlexItem>(text));
     REQUIRE(comp.has<UITextComponent>(text));
 
@@ -104,7 +112,8 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createImage builds a sprite entity
 
     REQUIRE(this->textureFactory.createTextureCalls == 1);
     REQUIRE(this->textureFactory.lastPath == "assets/ui/icon.png");
-    REQUIRE(comp.has<UITransform>(image));
+    REQUIRE(comp.has<TransformComponent>(image));
+    REQUIRE(comp.has<UIRectComponent>(image));
     REQUIRE(comp.has<UISpriteComponent>(image));
 
     const auto& sprite = comp.get<UISpriteComponent>(image);
@@ -126,14 +135,14 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createButton wires focus, text and
     for (auto [entity, parent] : view)
     {
         if (parent.parent != button) continue;
-        
         optEntity = entity;
-        break;        
+        break;
     }
     REQUIRE(optEntity.has_value());
     Entity textEntity = *optEntity;
 
-    REQUIRE(comp.has<UITransform>(button));
+    REQUIRE(comp.has<TransformComponent>(button));
+    REQUIRE(comp.has<UIRectComponent>(button));
     REQUIRE(comp.has<FlexContainer>(button));
     REQUIRE(comp.has<BoxModel>(button));
     REQUIRE(comp.has<UIFocusable>(button));

@@ -1,9 +1,10 @@
 #include "HealthBarSystem/HealthBarSystem.h"
 
-#include "domain/components/HealthBarTag.h"
-#include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/ChildrenComponent.h"
-#include "domain/components/UITransform.h"
+#include "domain/components/HealthBarSegmentComponent.h"
+#include "domain/components/HealthBarTag.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
 
@@ -18,9 +19,7 @@ HealthBarSystem::HealthBarSystem(EventBus& bus) : bus(bus)
 
 void HealthBarSystem::update(UpdateContext& ctx)
 {
-    for (const auto& event : this->damageEvents)
-        this->processDamageEvent(ctx.world, event);
-
+    for (const auto& event : this->damageEvents) this->processDamageEvent(ctx.world, event);
     this->damageEvents.clear();
 }
 
@@ -66,6 +65,6 @@ void HealthBarSystem::updateSegmentWidth(World& world, Entity segment, float cur
 {
     auto& comp = world.components();
     auto& segmentComp = comp.get<HealthBarSegmentComponent>(segment);
-    auto& transform = comp.get<UITransform>(segment);
-    transform.rect.size.width = (currentHP / segmentComp.maxHP) * segmentComp.maxWidth;
+    auto& uiRect = comp.get<UIRectComponent>(segment);
+    uiRect.size.width = (currentHP / segmentComp.maxHP) * segmentComp.maxWidth;
 }

@@ -5,9 +5,10 @@
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TextureEffectsComponent.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
-#include "domain/components/UITransform.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
@@ -38,7 +39,8 @@ public:
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<UISpriteComponent>();
         comp.registerComponent<UITextComponent>();
-        comp.registerComponent<UITransform>();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<UIRectComponent>();
         comp.registerComponent<CircleEffectsComponent>();
         comp.registerComponent<FontEffectsComponent>();
         comp.registerComponent<RectangleEffectsComponent>();
@@ -49,13 +51,17 @@ public:
     {
         Entity entity = this->world.entities().create();
 
-        UITransform transform;
-        transform.rect = rect;
-        transform.rotation = 37.5f;
-        transform.scale = {-2.f, 3.f};
+        TransformComponent tc;
+        tc.position = rect.position;
+        tc.rotation = 37.5f;
+        tc.scale = {-2.f, 3.f};
+
+        UIRectComponent urc;
+        urc.size = rect.size;
 
         auto& comp = this->world.components();
-        comp.add<UITransform>(entity, transform);
+        comp.add<TransformComponent>(entity, tc);
+        comp.add<UIRectComponent>(entity, urc);
         comp.add<UISpriteComponent>(entity, UISpriteComponent{texture, Color{10, 20, 30, 40}});
         comp.add<RenderComponent>(entity, RenderComponent{});
 
@@ -66,8 +72,11 @@ public:
     {
         Entity entity = this->world.entities().create();
 
-        UITransform transform;
-        transform.rect = rect;
+        TransformComponent tc;
+        tc.position = rect.position;
+
+        UIRectComponent urc;
+        urc.size = rect.size;
 
         UITextComponent text;
         text.font = font;
@@ -76,7 +85,8 @@ public:
         text.fontSize = 24.f;
 
         auto& comp = this->world.components();
-        comp.add<UITransform>(entity, transform);
+        comp.add<TransformComponent>(entity, tc);
+        comp.add<UIRectComponent>(entity, urc);
         comp.add<UITextComponent>(entity, text);
         comp.add<RenderComponent>(entity, RenderComponent{});
 
@@ -140,17 +150,26 @@ TEST_CASE_METHOD(UIDrawerFixture, "UIDrawer skips sprites without texture and te
     auto& entities = this->world.entities();
 
     Entity sprite = entities.create();
-    UITransform spriteTransform;
-    spriteTransform.rect = Rectangle{Position{1.f, 2.f}, Dimension2D{10.f, 12.f}};
 
-    comp.add<UITransform>(sprite, spriteTransform);
+    TransformComponent stc;
+    stc.position = {1.f, 2.f};
+    UIRectComponent surc;
+    surc.size = {10.f, 12.f};
+
+    comp.add<TransformComponent>(sprite, stc);
+    comp.add<UIRectComponent>(sprite, surc);
     comp.add<UISpriteComponent>(sprite, UISpriteComponent{ nullptr, Color::WHITE() });
     comp.add<RenderComponent>(sprite, RenderComponent{});
 
     Entity text = entities.create();
-    UITransform textTransform;
-    textTransform.rect = Rectangle{Position{3.f, 4.f}, Dimension2D{20.f, 22.f}};
-    comp.add<UITransform>(text, textTransform);
+
+    TransformComponent ttc;
+    ttc.position = {3.f, 4.f};
+    UIRectComponent turc;
+    turc.size = {20.f, 22.f};
+
+    comp.add<TransformComponent>(text, ttc);
+    comp.add<UIRectComponent>(text, turc);
     comp.add<UITextComponent>(text, UITextComponent{});
     comp.add<RenderComponent>(text, RenderComponent{});
 

@@ -5,7 +5,8 @@
 
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
-#include "domain/components/UITransform.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/draw_commands/DrawRectangleCommand.h"
@@ -21,13 +22,15 @@ public:
     void render(RenderContext& ctx, RenderQueue& queue) override
     {
         auto& comp = ctx.world.components();
-        auto view = View<UITransform, RenderComponent>(comp);
+        auto view = View<TransformComponent, UIRectComponent, RenderComponent>(comp);
         size_t order = 0;
 
-        for (auto [entity, transform, render] : view)
+        for (auto [entity, transform, uiRect, render] : view)
         {
+            Rectangle rect{transform.position, uiRect.size};
+
             auto& cmd = queue.emplace<DrawRectangleCommand>();
-            cmd.rect = transform.rect;
+            cmd.rect = rect;
             cmd.color = Color::WHITE();
             cmd.filled = false;
             cmd.layer = render.layer;

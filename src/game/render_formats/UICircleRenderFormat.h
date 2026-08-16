@@ -5,7 +5,8 @@
 
 #include "domain/components/CircleEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
-#include "domain/components/UITransform.h"
+#include "domain/components/TransformComponent.h"
+#include "domain/components/UIRectComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/draw_commands/DrawCircleCommand.h"
@@ -21,17 +22,17 @@ public:
     void render(RenderContext& ctx, RenderQueue& queue) override
     {
         auto& comp = ctx.world.components();
-        auto view = View<UITransform, RenderComponent>(comp);
+        auto view = View<TransformComponent, UIRectComponent, RenderComponent>(comp);
         size_t order = 0;
 
-        for (auto [entity, transform, render] : view)
+        for (auto [entity, transform, uiRect, render] : view)
         {
             auto& cmd = queue.emplace<DrawCircleCommand>();
             cmd.circle.position = {
-                transform.rect.position.x + transform.rect.size.width * 0.5f,
-                transform.rect.position.y + transform.rect.size.height * 0.5f
+                transform.position.x + uiRect.size.width * 0.5f,
+                transform.position.y + uiRect.size.height * 0.5f
             };
-            cmd.circle.radius = std::min(transform.rect.size.width, transform.rect.size.height) * 0.5f;
+            cmd.circle.radius = std::min(uiRect.size.width, uiRect.size.height) * 0.5f;
             cmd.color = Color::WHITE();
             cmd.filled = false;
             cmd.layer = render.layer;

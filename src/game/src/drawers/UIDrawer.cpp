@@ -23,11 +23,17 @@ UIDrawer::UIDrawer(EventBus& bus, Renderer& renderer, GameSettings& settings) :
 
 void UIDrawer::draw(RenderContext& ctx)
 {
+    float viewportScale = static_cast<float>(this->uiViewport.width) / this->vSize.width;
+    float totalScale = viewportScale;
+
     this->renderer.setViewport(this->uiViewport);
+    this->renderer.setScale(Position{totalScale, totalScale});
 
     RenderQueue queue;
     for (auto& format : this->formats) format->render(ctx, queue);
     queue.submit(this->renderer);
+
+    this->renderer.setScale(Position{1.f, 1.f});
 }
 
 void UIDrawer::recalculateViewport()
