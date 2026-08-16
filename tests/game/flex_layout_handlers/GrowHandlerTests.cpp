@@ -42,6 +42,7 @@ TEST_CASE("GrowHandler distributes free space proportionally", "[unit][grow_hand
         .world      = world,
         .container  = fakeContainer,
         .flex       = flex,
+        .children   = {},
         .innerRect  = Rectangle{Position{0.f, 0.f}, Dimension2D{200.f, 100.f}},
         .childInfos = {info1, info2}
     };

@@ -29,8 +29,9 @@ public:
     Entity createChild(float width, float height)
     {
         Entity e = world.entities().create();
-        world.components().add<TransformComponent>(e, TransformComponent{{0.f,0.f}});
-        world.components().add<UIRectComponent>(e, UIRectComponent{{width, height}});
+        auto& comp = world.components();
+        comp.add<TransformComponent>(e, TransformComponent{{0.f, 0.f}});
+        comp.add<UIRectComponent>(e, UIRectComponent{{width, height}});
         return e;
     }
 };
@@ -56,6 +57,7 @@ TEST_CASE_METHOD(MainAxisHandlerFixture, "MainAxisHandler positions children in 
         .world          = world,
         .container      = Entity{0},
         .flex           = flex,
+        .children       = {child1, child2},
         .innerRect      = Rectangle{Position{10.f, 10.f}, Dimension2D{200.f, 100.f}},
         .childInfos     = {info1, info2},
         .isColumn       = false,

@@ -78,6 +78,7 @@ TEST_CASE_METHOD(AlignItemsHandlerFixture, "AlignItemsHandler stretches child cr
         .world      = world,
         .container  = Entity{0},
         .flex       = flex,
+        .children   = {},
         .innerRect  = Rectangle{Position{10.f, 10.f}, Dimension2D{100.f, 100.f}},
         .childInfos = {info},
         .isColumn   = false

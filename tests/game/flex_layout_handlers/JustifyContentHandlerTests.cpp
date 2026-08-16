@@ -68,6 +68,7 @@ TEST_CASE("JustifyContentHandler space-between distributes between children", "[
         .world      = world,
         .container  = Entity{0},
         .flex       = flex,
+        .children   = {},
         .innerRect  = Rectangle{},
         .childInfos = {ChildLayoutInfo{}, ChildLayoutInfo{}},
         .freeSpace  = 50.f
