@@ -2,7 +2,7 @@
 
 #include "domain/components/FlexContainer.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
@@ -23,7 +23,7 @@ public:
     {
         auto& comp = world.components();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
     }
 
     Entity createChild(float width, float height)
@@ -31,7 +31,7 @@ public:
         Entity e = world.entities().create();
         auto& comp = world.components();
         comp.add<TransformComponent>(e, TransformComponent{{0.f, 0.f}});
-        comp.add<UIRectComponent>(e, UIRectComponent{{width, height}});
+        comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{{width, height}});
         return e;
     }
 };
@@ -74,8 +74,8 @@ TEST_CASE_METHOD(MainAxisHandlerFixture, "MainAxisHandler positions children in 
     REQUIRE(t1.position.x == Catch::Approx(10.f));
     REQUIRE(t2.position.x == Catch::Approx(10.f + 50.f + 10.f + 5.f));
 
-    const auto& r1 = comp.get<UIRectComponent>(child1);
-    const auto& r2 = comp.get<UIRectComponent>(child2);
-    REQUIRE(r1.size.width == Catch::Approx(50.f));
-    REQUIRE(r2.size.width == Catch::Approx(80.f));
+    const auto& l1 = comp.get<UILayoutMetricsComponent>(child1);
+    const auto& l2 = comp.get<UILayoutMetricsComponent>(child2);
+    REQUIRE(l1.size.width == Catch::Approx(50.f));
+    REQUIRE(l2.size.width == Catch::Approx(80.f));
 }

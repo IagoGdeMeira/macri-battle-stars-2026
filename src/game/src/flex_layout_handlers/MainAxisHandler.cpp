@@ -4,7 +4,7 @@
 
 #include "domain/components/FlexContainer.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
 void MainAxisHandler::layout(FlexLayoutContext& ctx)
@@ -22,9 +22,9 @@ void MainAxisHandler::layout(FlexLayoutContext& ctx)
         if (ctx.isColumn) childTransform.position.y = mainPos + marginStart;
         else childTransform.position.x = mainPos + marginStart;
 
-        auto& childRect = comp.get<UIRectComponent>(info.entity);
-        if (ctx.isColumn) childRect.size.height = info.mainSize;
-        else childRect.size.width = info.mainSize;
+        auto& childLayout = comp.get<UILayoutMetricsComponent>(info.entity);
+        if (ctx.isColumn) childLayout.size.height = info.mainSize;
+        else childLayout.size.width = info.mainSize;
 
         mainPos += info.mainSize + marginStart + marginEnd;
         if (i != ctx.childInfos.size() - 1) mainPos += ctx.flex.gap + ctx.between;

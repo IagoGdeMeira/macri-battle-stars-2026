@@ -6,7 +6,7 @@
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TextureEffectsComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/include/World/World.h"
 
@@ -36,7 +36,7 @@ public:
         comp.registerComponent<TextureEffectsComponent>();
         comp.registerComponent<UISpriteComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
     }
 };
 
@@ -52,12 +52,12 @@ TEST_CASE_METHOD(UITextureRenderFormatFixture, "UITextureRenderFormat submits ba
     tc.rotation = 45.f;
     tc.scale = {-1.f, 2.f};
 
-    UIRectComponent urc;
-    urc.size = {100.f, 30.f};
+    UILayoutMetricsComponent layout;
+    layout.size = {100.f, 30.f};
 
     auto& comp = this->world.components();
     comp.add<TransformComponent>(entity, tc);
-    comp.add<UIRectComponent>(entity, urc);
+    comp.add<UILayoutMetricsComponent>(entity, layout);
     comp.add<UISpriteComponent>(entity, UISpriteComponent { texture, Color { 10, 20, 30, 40 } });
     comp.add<RenderComponent>(entity, RenderComponent { 2, 3 });
 

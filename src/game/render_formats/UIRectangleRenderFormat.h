@@ -4,9 +4,10 @@
 #include "IRenderFormat/IRenderFormat.h"
 
 #include "domain/components/RectangleEffectsComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/draw_commands/DrawRectangleCommand.h"
@@ -22,25 +23,25 @@ public:
     void render(RenderContext& ctx, RenderQueue& queue) override
     {
         auto& comp = ctx.world.components();
-        auto view = View<TransformComponent, UIRectComponent, RenderComponent>(comp);
+        auto view = View<TransformComponent, RectangleShapeComponent, RenderComponent>(comp);
         size_t order = 0;
 
-        for (auto [entity, transform, uiRect, render] : view)
+        for (auto [entity, transform, shape, render] : view)
         {
-            Rectangle rect{transform.position, uiRect.size};
-
-            auto& cmd = queue.emplace<DrawRectangleCommand>();
-            cmd.rect = rect;
-            cmd.color = Color::WHITE();
-            cmd.filled = false;
+            DrawRectangleCommand cmd;
+            cmd.rect = shape.rect;
+            cmd.color = shape.color;
+            cmd.filled = shape.filled;
             cmd.layer = render.layer;
             cmd.zIndex = render.zIndex;
             cmd.order = order++;
 
+            auto& baseCmd = queue.emplace<DrawRectangleCommand>(std::move(cmd));
+
             if (comp.has<RectangleEffectsComponent>(entity))
             {
                 const auto& fx = comp.get<RectangleEffectsComponent>(entity);
-                for (auto& effect : fx.effects) if (effect) effect(&queue, &cmd);
+                for (auto& effect : fx.effects) if (effect) effect(&queue, &baseCmd);
             }
         }
     }

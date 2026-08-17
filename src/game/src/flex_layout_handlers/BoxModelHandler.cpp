@@ -6,14 +6,14 @@
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
 void BoxModelHandler::layout(FlexLayoutContext& ctx)
 {
     auto& comp = ctx.world.components();
     const auto& transform = comp.get<TransformComponent>(ctx.container);
-    const auto& uiRect = comp.get<UIRectComponent>(ctx.container);
+    const auto& uiRect = comp.get<UILayoutMetricsComponent>(ctx.container);
 
     Rectangle outerRect{transform.position, uiRect.size};
 
@@ -49,7 +49,7 @@ void BoxModelHandler::layout(FlexLayoutContext& ctx)
         float basis = -1.f;
         if (comp.has<FlexItem>(child)) basis = comp.get<FlexItem>(child).basis;
 
-        const auto& childRect = comp.get<UIRectComponent>(child);
+        const auto& childRect = comp.get<UILayoutMetricsComponent>(child);
 
         float currentMain = ctx.isColumn ? childRect.size.height : childRect.size.width;
         info.mainSize = (basis >= 0.f) ? basis : currentMain;

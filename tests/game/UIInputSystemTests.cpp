@@ -3,7 +3,7 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/CommandBuffer/CommandBuffer.h"
@@ -29,10 +29,10 @@ public:
     UIInputSystemFixture() : system(this->bus)
     {
         auto& components = this->world.components();
-        components.registerComponent<UIFocusable>();
         components.registerComponent<TransformComponent>();
-        components.registerComponent<UIRectComponent>();
         components.registerComponent<UIActionComponent>();
+        components.registerComponent<UIFocusable>();
+        components.registerComponent<UILayoutMetricsComponent>();
 
         this->bus.subscribe<UIActionEvent>([this](const UIActionEvent& event)
         { this->activatedEntityIds.push_back(event.entity.id); });
@@ -49,9 +49,9 @@ public:
         tc.position = rect.position;
         components.add<TransformComponent>(entity, tc);
 
-        UIRectComponent urc;
-        urc.size = rect.size;
-        components.add<UIRectComponent>(entity, urc);
+        UILayoutMetricsComponent layout;
+        layout.size = rect.size;
+        components.add<UILayoutMetricsComponent>(entity, layout);
 
         components.add<UIActionComponent>(entity, UIActionComponent{[]() {}});
 

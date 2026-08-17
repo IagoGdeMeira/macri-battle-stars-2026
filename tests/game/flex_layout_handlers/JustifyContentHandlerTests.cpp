@@ -22,6 +22,7 @@ TEST_CASE("JustifyContentHandler flex-start leaves free space at end", "[unit][j
         .world      = world,
         .container  = Entity{0},
         .flex       = flex,
+        .children   = {},
         .innerRect  = Rectangle{},
         .childInfos = {ChildLayoutInfo{}, ChildLayoutInfo{}},
         .freeSpace  = 50.f

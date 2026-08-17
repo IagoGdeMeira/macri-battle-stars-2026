@@ -6,7 +6,7 @@
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/CommandBuffer/CommandBuffer.h"
@@ -30,7 +30,7 @@ public:
         comp.registerComponent<HealthBarTag>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
     }
 
     World world;
@@ -47,7 +47,7 @@ public:
         Entity container = this->world.entities().create();
 
         comp.add<TransformComponent>(container, TransformComponent{Position{0.f, 0.f}});
-        comp.add<UIRectComponent>(container, UIRectComponent{Dimension2D{totalWidth, barHeight}});
+        comp.add<UILayoutMetricsComponent>(container, UILayoutMetricsComponent{Dimension2D{totalWidth, barHeight}});
         comp.add<ActiveComponent>(container, ActiveComponent{true});
         comp.add<ChildrenComponent>(container, ChildrenComponent{});
         comp.add<HealthBarTag>(container, HealthBarTag{playerId, maxHealth, currentHealth});
@@ -65,7 +65,7 @@ public:
 
             Entity segment = this->world.entities().create();
             comp.add<TransformComponent>(segment, TransformComponent{Position{0.f, 0.f}});
-            comp.add<UIRectComponent>(segment, UIRectComponent{Dimension2D{(segmentHP / maxSegmentHP) * segmentMaxWidth, barHeight}});
+            comp.add<UILayoutMetricsComponent>(segment, UILayoutMetricsComponent{Dimension2D{(segmentHP / maxSegmentHP) * segmentMaxWidth, barHeight}});
             comp.add<ActiveComponent>(segment, ActiveComponent{true});
             comp.add<HealthBarSegmentComponent>(segment, HealthBarSegmentComponent{maxSegmentHP, segmentMaxWidth});
             children.children.push_back(segment);
@@ -88,19 +88,19 @@ TEST_CASE_METHOD(HealthBarSystemFixture, "HealthBarSystem reduces segment width 
     const auto& children = comp.get<ChildrenComponent>(bar).children;
 
     {
-        auto& uiRect = comp.get<UIRectComponent>(children[0]);
+        auto& uiRect = comp.get<UILayoutMetricsComponent>(children[0]);
         auto& seg = comp.get<HealthBarSegmentComponent>(children[0]);
         REQUIRE(uiRect.size.width == seg.maxWidth);
     }
 
     {
-        auto& uiRect = comp.get<UIRectComponent>(children[1]);
+        auto& uiRect = comp.get<UILayoutMetricsComponent>(children[1]);
         auto& seg = comp.get<HealthBarSegmentComponent>(children[1]);
         REQUIRE(uiRect.size.width == seg.maxWidth);
     }
 
     {
-        auto& uiRect = comp.get<UIRectComponent>(children[2]);
+        auto& uiRect = comp.get<UILayoutMetricsComponent>(children[2]);
         auto& seg = comp.get<HealthBarSegmentComponent>(children[2]);
         REQUIRE(uiRect.size.width == (50.f / seg.maxHP) * seg.maxWidth);
     }
@@ -122,7 +122,7 @@ TEST_CASE_METHOD(HealthBarSystemFixture, "HealthBarSystem handles zero health co
 
     for (Entity child : children)
     {
-        auto& uiRect = comp.get<UIRectComponent>(child);
+        auto& uiRect = comp.get<UILayoutMetricsComponent>(child);
         REQUIRE(uiRect.size.width == 0.f);
     }
 }

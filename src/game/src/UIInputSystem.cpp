@@ -5,7 +5,7 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -47,7 +47,7 @@ void UIInputSystem::navigate(UpdateContext& ctx, Direction dir)
     if (!this->focusedEntity.has_value())
     {
         auto& comp = ctx.world.components();
-        auto focusables = View<UIFocusable, TransformComponent, UIRectComponent>(comp);
+        auto focusables = View<UIFocusable, TransformComponent, UILayoutMetricsComponent>(comp);
         for (auto [entity, focusable, transform, uiRect] : focusables)
         {
             if (!focusable.canFocus) continue;
@@ -93,7 +93,7 @@ void UIInputSystem::navigateMouse(UpdateContext& ctx, MouseButton button)
     if (button != MouseButton::Left) return;
 
     auto& comp = ctx.world.components();
-    auto focusables = View<UIFocusable, TransformComponent, UIRectComponent>(comp);
+    auto focusables = View<UIFocusable, TransformComponent, UILayoutMetricsComponent>(comp);
     for (auto [entity, focusable, transform, uiRect] : focusables)
     {
         if (!focusable.canFocus) continue;
@@ -120,11 +120,11 @@ void UIInputSystem::activate(UpdateContext& ctx)
 std::optional<Entity> UIInputSystem::findClosest(UpdateContext& ctx, Entity current, Direction dir) const
 {
     auto& comp = ctx.world.components();
-    if (!comp.has<TransformComponent>(current) || !comp.has<UIRectComponent>(current))
-        return std::nullopt;
+    if (!comp.has<TransformComponent>(current) || !comp.has<UILayoutMetricsComponent>(current))
+    { return std::nullopt; }
 
     const auto& currentTransform = comp.get<TransformComponent>(current);
-    const auto& currentRect = comp.get<UIRectComponent>(current);
+    const auto& currentRect = comp.get<UILayoutMetricsComponent>(current);
     Position cur =
     {
         currentTransform.position.x + currentRect.size.width * 0.5f,
@@ -134,7 +134,7 @@ std::optional<Entity> UIInputSystem::findClosest(UpdateContext& ctx, Entity curr
     std::optional<Entity> best = std::nullopt;
     float bestScore = std::numeric_limits<float>::max();
 
-    auto focusables = View<UIFocusable, TransformComponent, UIRectComponent>(comp);
+    auto focusables = View<UIFocusable, TransformComponent, UILayoutMetricsComponent>(comp);
     for (auto [entity, focusable, transform, uiRect] : focusables)
     {
         if (entity == current || !focusable.canFocus) continue;

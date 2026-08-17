@@ -4,7 +4,7 @@
 
 #include "domain/components/FlexContainer.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
 void AlignItemsHandler::layout(FlexLayoutContext& ctx)
@@ -32,9 +32,9 @@ void AlignItemsHandler::layout(FlexLayoutContext& ctx)
         if (ctx.flex.align == Align::Stretch)
         {
             float finalCrossSize = crossSize - marginCrossStart - marginCrossEnd;
-            auto& childRect = comp.get<UIRectComponent>(info.entity);
-            if (ctx.isColumn) childRect.size.width = finalCrossSize;
-            else childRect.size.height = finalCrossSize;
+            auto& childLayout = comp.get<UILayoutMetricsComponent>(info.entity);
+            if (ctx.isColumn) childLayout.size.width = finalCrossSize;
+            else childLayout.size.height = finalCrossSize;
         }
     }
 }

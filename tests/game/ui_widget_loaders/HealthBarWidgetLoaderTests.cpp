@@ -12,9 +12,10 @@
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/include/World/World.h"
 
@@ -47,9 +48,10 @@ public:
         comp.registerComponent<HealthBarTag>();
         comp.registerComponent<LayoutDirtyComponent>();
         comp.registerComponent<ParentComponent>();
+        comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
         comp.registerComponent<UISpriteComponent>();
     }
 
@@ -116,7 +118,7 @@ TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader handles ze
     auto view = View<HealthBarSegmentComponent>(comp);
     for (auto [e, seg] : view)
     {
-        auto& uiRect = comp.get<UIRectComponent>(e);
-        REQUIRE(uiRect.size.width == 0.f);
+        auto& layout = comp.get<UILayoutMetricsComponent>(e);
+        REQUIRE(layout.size.width == 0.f);
     }
 }

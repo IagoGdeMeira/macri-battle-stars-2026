@@ -18,22 +18,6 @@
 #include "UIFlexLayoutSystem/UIFlexLayoutSystem.h"
 #include "UILoader/UILoader.h"
 
-#include "domain/components/ActiveComponent.h"
-#include "domain/components/BoxModel.h"
-#include "domain/components/ChildrenComponent.h"
-#include "domain/components/FlexContainer.h"
-#include "domain/components/HealthBarSegmentComponent.h"
-#include "domain/components/HealthBarTag.h"
-#include "domain/components/HUDEntityTag.h"
-#include "domain/components/LayoutDirtyComponent.h"
-#include "domain/components/ParentComponent.h"
-#include "domain/components/RenderComponent.h"
-#include "domain/components/RoundTimerTag.h"
-#include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
-#include "domain/components/UISpriteComponent.h"
-#include "domain/components/UITextComponent.h"
-
 #include "engine/value_objects/GameConstants/GameConstants.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
@@ -61,11 +45,10 @@ void HUDScene::init()
     this->uiFactory = std::make_unique<UIFactory>(this->world(), this->fontFactory, this->textureFactory);
     this->uiDrawer = std::make_unique<UIDrawer>(this->eventBus, this->renderer, this->settings);
 
-    this->actionFactory = std::make_unique<UIActionFactory>(
-        UIActionFactory::Config{ .eventBus = this->eventBus, .sceneManager = this->sceneManager }
-    );
+    this->actionFactory = std::make_unique<UIActionFactory>(UIActionFactory::Config{
+        .eventBus = this->eventBus, .sceneManager = this->sceneManager });
 
-    this->uiLoader = std::make_unique<UILoader>(this->parser, *this->uiFactory, *this->actionFactory);
+    this->uiLoader = std::make_unique<UILoader>(this->parser, *this->uiFactory, *this->actionFactory, this->fontFactory);
 
     this->registerWidgetLoaders();
     this->loadHUDLayout();
@@ -119,5 +102,5 @@ void HUDScene::loadHUDLayout()
 void HUDScene::registerWidgetLoaders()
 {
     this->uiLoader->registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(*this->uiFactory));
-    this->uiLoader->registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(*this->uiFactory));
+    this->uiLoader->registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(*this->uiFactory, this->fontFactory));
 }

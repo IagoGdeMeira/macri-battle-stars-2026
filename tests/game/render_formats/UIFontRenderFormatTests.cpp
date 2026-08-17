@@ -6,7 +6,7 @@
 #include "domain/components/FontEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/include/World/World.h"
 
@@ -36,7 +36,7 @@ public:
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<UITextComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
     }
 };
 
@@ -50,8 +50,8 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
     TransformComponent tc;
     tc.position = {30.f, 50.f};
 
-    UIRectComponent urc;
-    urc.size = {80.f, 24.f};
+    UILayoutMetricsComponent layout;
+    layout.size = {80.f, 24.f};
 
     UITextComponent text;
     text.font = font;
@@ -61,7 +61,7 @@ TEST_CASE_METHOD(UIFontRenderFormatFixture, "UIFontRenderFormat submits base and
 
     auto& comp = this->world.components();
     comp.add<TransformComponent>(entity, tc);
-    comp.add<UIRectComponent>(entity, urc);
+    comp.add<UILayoutMetricsComponent>(entity, layout);
     comp.add<UITextComponent>(entity, text);
     comp.add<RenderComponent>(entity, RenderComponent { 4, 1 });
 

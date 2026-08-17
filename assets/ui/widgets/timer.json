@@ -2,6 +2,8 @@
     "type": "widget",
     "widgetType": "timer",
     "initialTime": 99,
+    "fontPath": "assets/fonts/joystix/joystix monospace.otf",
+    "fontSize": 32,
     "position": { "x": 0, "y": 0 },
     "size": { "width": 800, "height": 40 }
 }

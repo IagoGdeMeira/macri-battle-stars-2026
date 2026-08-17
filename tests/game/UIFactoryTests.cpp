@@ -10,10 +10,11 @@
 #include "domain/components/FlexItem.h"
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/include/World/World.h"
@@ -49,10 +50,11 @@ public:
         comp.registerComponent<FlexItem>();
         comp.registerComponent<LayoutDirtyComponent>();
         comp.registerComponent<ParentComponent>();
+        comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<UIActionComponent>();
         comp.registerComponent<UIFocusable>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
         comp.registerComponent<UISpriteComponent>();
         comp.registerComponent<UITextComponent>();
     }
@@ -65,7 +67,7 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createPanel adds base UI component
     auto& comp = this->world.components();
 
     REQUIRE(comp.has<TransformComponent>(panel));
-    REQUIRE(comp.has<UIRectComponent>(panel));
+    REQUIRE(comp.has<UILayoutMetricsComponent>(panel));
     REQUIRE(comp.has<FlexContainer>(panel));
     REQUIRE(comp.has<BoxModel>(panel));
 
@@ -73,9 +75,9 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createPanel adds base UI component
     REQUIRE(transform.position.x == Catch::Approx(10.f));
     REQUIRE(transform.position.y == Catch::Approx(20.f));
 
-    const auto& uiRect = comp.get<UIRectComponent>(panel);
-    REQUIRE(uiRect.size.width == Catch::Approx(100.f));
-    REQUIRE(uiRect.size.height == Catch::Approx(50.f));
+    const auto& layout = comp.get<UILayoutMetricsComponent>(panel);
+    REQUIRE(layout.size.width == Catch::Approx(100.f));
+    REQUIRE(layout.size.height == Catch::Approx(50.f));
 
     const auto& box = comp.get<BoxModel>(panel);
     REQUIRE(box.margin.left == Catch::Approx(0.f));
@@ -87,14 +89,15 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createPanel adds base UI component
 
 TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createText builds a text entity", "[unit][ui_factory]")
 {
-    Entity text = this->factory.createText("Play", 24.f, Color::WHITE(), Position{5.f, 6.f});
+    UIFactory::TextParams params{"Play", 24.f, Color::WHITE(), Position{5.f, 6.f}};
+    Entity text = this->factory.createText(params);
 
     auto& comp = this->world.components();
 
     REQUIRE(this->fontFactory.createFontCalls == 1);
     REQUIRE(this->fontFactory.lastPath == "assets/fonts/default.ttf");
     REQUIRE(comp.has<TransformComponent>(text));
-    REQUIRE(comp.has<UIRectComponent>(text));
+    REQUIRE(comp.has<UILayoutMetricsComponent>(text));
     REQUIRE(comp.has<FlexItem>(text));
     REQUIRE(comp.has<UITextComponent>(text));
 
@@ -113,7 +116,7 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createImage builds a sprite entity
     REQUIRE(this->textureFactory.createTextureCalls == 1);
     REQUIRE(this->textureFactory.lastPath == "assets/ui/icon.png");
     REQUIRE(comp.has<TransformComponent>(image));
-    REQUIRE(comp.has<UIRectComponent>(image));
+    REQUIRE(comp.has<UILayoutMetricsComponent>(image));
     REQUIRE(comp.has<UISpriteComponent>(image));
 
     const auto& sprite = comp.get<UISpriteComponent>(image);
@@ -142,7 +145,7 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createButton wires focus, text and
     Entity textEntity = *optEntity;
 
     REQUIRE(comp.has<TransformComponent>(button));
-    REQUIRE(comp.has<UIRectComponent>(button));
+    REQUIRE(comp.has<UILayoutMetricsComponent>(button));
     REQUIRE(comp.has<FlexContainer>(button));
     REQUIRE(comp.has<BoxModel>(button));
     REQUIRE(comp.has<UIFocusable>(button));

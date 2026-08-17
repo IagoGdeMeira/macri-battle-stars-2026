@@ -1,12 +1,14 @@
 #include "game/drawers/UIDrawer/UIDrawer.h"
 
 #include "domain/components/CircleEffectsComponent.h"
+#include "domain/components/CircleShapeComponent.h"
 #include "domain/components/FontEffectsComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TextureEffectsComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/include/World/World.h"
@@ -35,16 +37,18 @@ public:
 
     UIDrawerFixture() : drawer(this->bus, this->renderer, this->settings), context{ this->world, this->bus }
     {
-        auto& comp = this->world.components();
-        comp.registerComponent<RenderComponent>();
-        comp.registerComponent<UISpriteComponent>();
-        comp.registerComponent<UITextComponent>();
-        comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        auto &comp = this->world.components();
         comp.registerComponent<CircleEffectsComponent>();
+        comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<FontEffectsComponent>();
         comp.registerComponent<RectangleEffectsComponent>();
+        comp.registerComponent<RectangleShapeComponent>();
+        comp.registerComponent<RenderComponent>();
         comp.registerComponent<TextureEffectsComponent>();
+        comp.registerComponent<TransformComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
+        comp.registerComponent<UISpriteComponent>();
+        comp.registerComponent<UITextComponent>();
     }
 
     Entity createSpriteEntity(const Rectangle& rect, std::shared_ptr<Texture> texture)
@@ -56,12 +60,12 @@ public:
         tc.rotation = 37.5f;
         tc.scale = {-2.f, 3.f};
 
-        UIRectComponent urc;
-        urc.size = rect.size;
+        UILayoutMetricsComponent layout;
+        layout.size = rect.size;
 
         auto& comp = this->world.components();
         comp.add<TransformComponent>(entity, tc);
-        comp.add<UIRectComponent>(entity, urc);
+        comp.add<UILayoutMetricsComponent>(entity, layout);
         comp.add<UISpriteComponent>(entity, UISpriteComponent{texture, Color{10, 20, 30, 40}});
         comp.add<RenderComponent>(entity, RenderComponent{});
 
@@ -75,8 +79,8 @@ public:
         TransformComponent tc;
         tc.position = rect.position;
 
-        UIRectComponent urc;
-        urc.size = rect.size;
+        UILayoutMetricsComponent layout;
+        layout.size = rect.size;
 
         UITextComponent text;
         text.font = font;
@@ -86,7 +90,7 @@ public:
 
         auto& comp = this->world.components();
         comp.add<TransformComponent>(entity, tc);
-        comp.add<UIRectComponent>(entity, urc);
+        comp.add<UILayoutMetricsComponent>(entity, layout);
         comp.add<UITextComponent>(entity, text);
         comp.add<RenderComponent>(entity, RenderComponent{});
 
@@ -153,23 +157,22 @@ TEST_CASE_METHOD(UIDrawerFixture, "UIDrawer skips sprites without texture and te
 
     TransformComponent stc;
     stc.position = {1.f, 2.f};
-    UIRectComponent surc;
-    surc.size = {10.f, 12.f};
+    UILayoutMetricsComponent spriteLayout;
+    spriteLayout.size = {10.f, 12.f};
 
     comp.add<TransformComponent>(sprite, stc);
-    comp.add<UIRectComponent>(sprite, surc);
+    comp.add<UILayoutMetricsComponent>(sprite, spriteLayout);
     comp.add<UISpriteComponent>(sprite, UISpriteComponent{ nullptr, Color::WHITE() });
     comp.add<RenderComponent>(sprite, RenderComponent{});
 
     Entity text = entities.create();
-
     TransformComponent ttc;
+    UILayoutMetricsComponent textLayout;
     ttc.position = {3.f, 4.f};
-    UIRectComponent turc;
-    turc.size = {20.f, 22.f};
+    textLayout.size = {20.f, 22.f};
 
     comp.add<TransformComponent>(text, ttc);
-    comp.add<UIRectComponent>(text, turc);
+    comp.add<UILayoutMetricsComponent>(text, textLayout);
     comp.add<UITextComponent>(text, UITextComponent{});
     comp.add<RenderComponent>(text, RenderComponent{});
 

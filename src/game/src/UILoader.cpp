@@ -10,11 +10,13 @@
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
 #include "domain/include/World/World.h"
+#include "domain/resources/Font/Font.h"
+#include "domain/utils/Logger/Logger.h"
 
+#include "engine/include/IFontFactory/IFontFactory.h"
 #include "engine/utils/DataUtils/DataUtils.h"
 
 void UILoader::loadStyleSheet(const std::string& path)
@@ -73,13 +75,20 @@ Entity UILoader::createElement(const DataNode& node, std::optional<Entity> paren
     {
         const std::string text = node.getString("text", "");
         float fontSize = node.getFloat("fontSize", 24.f);
+
         Color color = Color::WHITE();
         if (node.has("color"))
         {
             auto colorNode = node.getObject("color");
             if (colorNode) color = DataUtils::parseColor(*colorNode, Color::WHITE());
         }
-        entity = this->factory.createText(text, fontSize, color, rect.position);
+
+        std::string fontPath = node.getString("fontPath", "assets/fonts/default.ttf");
+        std::shared_ptr<Font> font = nullptr;
+        try { font = this->fontFactory.createFont(fontPath); }
+        catch (const std::exception &) { LOG_ERROR("Failed to load font: " + fontPath); }
+
+        entity = this->factory.createText({text, fontSize, color, rect.position}, font);
     }
     else if (type == "image") entity = this->factory.createImage(node.getString("image", ""), rect);
     else if (type == "button")

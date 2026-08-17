@@ -6,7 +6,7 @@
 #include "domain/components/FontEffectsComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/include/View/View.h"
 
@@ -23,7 +23,7 @@ public:
     void render(RenderContext& ctx, RenderQueue& queue) override
     {
         auto& comp = ctx.world.components();
-        auto view = View<TransformComponent, UIRectComponent, UITextComponent, RenderComponent>(comp);
+        auto view = View<TransformComponent, UILayoutMetricsComponent, UITextComponent, RenderComponent>(comp);
         size_t order = 0;
 
         for (auto [entity, transform, uiRect, text, render] : view)

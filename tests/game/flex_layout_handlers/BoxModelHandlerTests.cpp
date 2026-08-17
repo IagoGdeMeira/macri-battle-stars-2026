@@ -5,7 +5,7 @@
 #include "domain/components/FlexItem.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
@@ -26,22 +26,22 @@ public:
 
     BoxModelHandlerFixture()
     {
-        auto& comp = world.components();
+        auto& comp = this->world.components();
         comp.registerComponent<BoxModel>();
         comp.registerComponent<FlexContainer>();
         comp.registerComponent<FlexItem>();
         comp.registerComponent<ParentComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
     }
 
     Entity createContainer(const Rectangle& rect, const AABB& padding = {0, 0, 0, 0})
     {
-        auto& comp = world.components();
-        Entity e = world.entities().create();
+        auto& comp = this->world.components();
+        Entity e = this->world.entities().create();
 
         comp.add<TransformComponent>(e, TransformComponent{rect.position});
-        comp.add<UIRectComponent>(e, UIRectComponent{rect.size});
+        comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{rect.size});
         comp.add<FlexContainer>(e, FlexContainer{});
         comp.add<BoxModel>(e, BoxModel{
             .margin         = {},
@@ -57,10 +57,10 @@ public:
         Entity parent, const Dimension2D& size, const AABB& margin = {0, 0, 0, 0},
         float grow = 0.f, float shrink = 1.f, float basis = -1.f
     ) {
-        auto& comp = world.components();
-        Entity child = world.entities().create();
+        auto& comp = this->world.components();
+        Entity child = this->world.entities().create();
         comp.add<TransformComponent>(child, TransformComponent{{0.f,0.f}});
-        comp.add<UIRectComponent>(child, UIRectComponent{size});
+        comp.add<UILayoutMetricsComponent>(child, UILayoutMetricsComponent{size});
         comp.add<FlexItem>(child, FlexItem{grow, shrink, basis});
         comp.add<BoxModel>(child, BoxModel{
             .margin         = margin,
@@ -84,15 +84,15 @@ TEST_CASE_METHOD(BoxModelHandlerFixture, "BoxModelHandler calculates inner rect 
     Entity child1 = createChild(container, {100.f, 50.f});
     Entity child2 = createChild(container, {150.f, 75.f}, {2.f, 3.f, 4.f, 5.f}, 1.f, 0.f, 120.f);
 
-    auto& comp = world.components();
+    auto& comp = this->world.components();
     FlexLayoutContext ctx{
-        .world      = world,
+        .world      = this->world,
         .container  = container,
         .flex       = comp.get<FlexContainer>(container),
         .children   = {child1, child2}
     };
 
-    handler.layout(ctx);
+    this->handler.layout(ctx);
 
     REQUIRE(ctx.innerRect.position.x == Catch::Approx(10.f + 5.f));
     REQUIRE(ctx.innerRect.position.y == Catch::Approx(20.f + 7.f));

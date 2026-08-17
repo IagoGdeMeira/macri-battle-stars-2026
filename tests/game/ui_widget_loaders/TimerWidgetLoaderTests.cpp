@@ -11,9 +11,10 @@
 #include "domain/components/FlexItem.h"
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/RenderComponent.h"
 #include "domain/components/RoundTimerTag.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/include/World/World.h"
 
@@ -37,7 +38,7 @@ public:
 
     TimerWidgetLoaderFixture() :
         factory(this->world, this->fontFactory, this->textureFactory),
-        loader(this->factory)
+        loader(this->factory, this->fontFactory)
     {
         auto& comp = this->world.components();
         comp.registerComponent<BoxModel>();
@@ -45,9 +46,10 @@ public:
         comp.registerComponent<FlexItem>();
         comp.registerComponent<LayoutDirtyComponent>();
         comp.registerComponent<ParentComponent>();
+        comp.registerComponent<RenderComponent>();
         comp.registerComponent<RoundTimerTag>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
         comp.registerComponent<UITextComponent>();
     }
 

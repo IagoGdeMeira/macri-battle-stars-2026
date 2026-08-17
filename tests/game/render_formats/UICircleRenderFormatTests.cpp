@@ -3,9 +3,10 @@
 #include "StubRenderer.h"
 
 #include "domain/components/CircleEffectsComponent.h"
+#include "domain/components/CircleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
@@ -30,9 +31,10 @@ public:
     {
         auto& comp = this->world.components();
         comp.registerComponent<CircleEffectsComponent>();
+        comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
     }
 };
 
@@ -44,12 +46,19 @@ TEST_CASE_METHOD(UICircleRenderFormatFixture, "UICircleRenderFormat submits base
     TransformComponent tc;
     tc.position = {10.f, 20.f};
 
-    UIRectComponent urc;
+    UILayoutMetricsComponent urc;
     urc.size = {30.f, 20.f};
+
+    CircleShapeComponent shape;
+    shape.circle.position = Position{25.f, 30.f};
+    shape.circle.radius = 10.f;
+    shape.color = Color::WHITE();
+    shape.filled = false;
 
     auto& comp = this->world.components();
     comp.add<TransformComponent>(entity, tc);
-    comp.add<UIRectComponent>(entity, urc);
+    comp.add<UILayoutMetricsComponent>(entity, urc);
+    comp.add<CircleShapeComponent>(entity, shape);
     comp.add<RenderComponent>(entity, RenderComponent { 8, 2 });
 
     CircleEffectsComponent fx;

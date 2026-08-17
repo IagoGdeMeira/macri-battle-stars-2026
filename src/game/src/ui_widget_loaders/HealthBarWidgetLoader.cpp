@@ -7,9 +7,10 @@
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
-#include "domain/components/UISpriteComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/include/World/World.h"
+#include "domain/value_objects/Color/Color.h"
 
 #include <cstdlib>
 
@@ -30,15 +31,18 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const UILoader::ParamMa
 
     Entity container = this->factory.createPanel(Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
     comp.add<HealthBarTag>(container, HealthBarTag{playerId, maxHealth, currentHealth});
-    comp.add<RenderComponent>(container, RenderComponent{0, 0});
 
-    Entity background = this->factory.createImage("", Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
-    comp.get<UISpriteComponent>(background).tint = Color{60, 60, 60, 255};
+    Entity background = this->factory.createRectangleShape(
+        UIFactory::ShapeParams{Color{60, 60, 60, 255}},
+        Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
     comp.add<ParentComponent>(background, ParentComponent{container});
+    comp.get<RenderComponent>(background).zIndex = 0;
 
-    Entity border = this->factory.createImage("", Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
-    comp.get<UISpriteComponent>(border).tint = Color::TRANSPARENT();
+    Entity border = this->factory.createRectangleShape(
+        UIFactory::ShapeParams{Color::TRANSPARENT(), false},
+        Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
     comp.add<ParentComponent>(border, ParentComponent{container});
+    comp.get<RenderComponent>(border).zIndex = 2;
 
     float remainingHP = static_cast<float>(currentHealth);
     for (int i = 0; i < numSegments; ++i)
@@ -49,12 +53,16 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const UILoader::ParamMa
         bool isLast = (i == numSegments - 1);
         Color fillColor = isLast ? Color{255, 200, 0, 255} : Color{0, 200, 0, 255};
 
-        Entity segment = this->factory.createImage("", Rectangle{
-            Position{i * segmentMaxWidth, 0.f},
-            Dimension2D{(segmentHP / maxSegmentHP) * segmentMaxWidth, barHeight}});
-        comp.get<UISpriteComponent>(segment).tint = fillColor;
+        Entity segment = this->factory.createRectangleShape(
+            UIFactory::ShapeParams{fillColor},
+            Rectangle{
+                Position{i * segmentMaxWidth, 0.f},
+                Dimension2D{(segmentHP / maxSegmentHP) * segmentMaxWidth, barHeight}
+            }
+        );
         comp.add<HealthBarSegmentComponent>(segment, HealthBarSegmentComponent{maxSegmentHP, segmentMaxWidth});
         comp.add<ParentComponent>(segment, ParentComponent{container});
+        comp.get<RenderComponent>(segment).zIndex = 1;
     }
 
     return container;

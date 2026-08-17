@@ -7,18 +7,20 @@
 #include "StubTextureFactory.h"
 
 #include "domain/components/BoxModel.h"
+#include "domain/components/CircleShapeComponent.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/RoundTimerTag.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/include/World/World.h"
@@ -43,36 +45,38 @@ public:
     EventBus bus;
     StubFontFactory fontFactory;
     StubTextureFactory textureFactory;
-    UIFactory factory;
     StubSceneManager sceneManager;
+    StubDataParser parser;
+    UIFactory factory;
     UIActionFactory actionFactory;
     UILoader loader;
-    StubDataParser parser;
 
     UILoaderFixture() :
         factory(this->world, this->fontFactory, this->textureFactory),
         actionFactory(UIActionFactory::Config{this->bus, this->sceneManager}),
-        loader(this->parser, this->factory, this->actionFactory)
+        loader(this->parser, this->factory, this->actionFactory, this->fontFactory)
     {
         auto& comp = this->world.components();
         comp.registerComponent<BoxModel>();
+        comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<FlexContainer>();
         comp.registerComponent<FlexItem>();
         comp.registerComponent<HealthBarSegmentComponent>();
         comp.registerComponent<HealthBarTag>();
         comp.registerComponent<LayoutDirtyComponent>();
         comp.registerComponent<ParentComponent>();
+        comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<RoundTimerTag>();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<UIActionComponent>();
         comp.registerComponent<UIFocusable>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
         comp.registerComponent<UISpriteComponent>();
         comp.registerComponent<UITextComponent>();
 
         this->loader.registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(this->factory));
-        this->loader.registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(this->factory));
+        this->loader.registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(this->factory, this->fontFactory));
     }
 
     std::unique_ptr<StubDataNode> makeElementNode(
@@ -130,7 +134,7 @@ TEST_CASE_METHOD(UILoaderFixture, "UILoader loads a layout with panel and text",
 
     auto& comp = this->world.components();
     REQUIRE(comp.has<TransformComponent>(panel));
-    REQUIRE(comp.has<UIRectComponent>(panel));
+    REQUIRE(comp.has<UILayoutMetricsComponent>(panel));
     REQUIRE(comp.has<FlexContainer>(panel));
     REQUIRE(comp.has<BoxModel>(panel));
     REQUIRE(comp.has<LayoutDirtyComponent>(panel));
@@ -139,9 +143,9 @@ TEST_CASE_METHOD(UILoaderFixture, "UILoader loads a layout with panel and text",
     REQUIRE(transform.position.x == Catch::Approx(10.f));
     REQUIRE(transform.position.y == Catch::Approx(20.f));
 
-    const auto& uiRect = comp.get<UIRectComponent>(panel);
-    REQUIRE(uiRect.size.width == Catch::Approx(200.f));
-    REQUIRE(uiRect.size.height == Catch::Approx(100.f));
+    const auto& uiLayout = comp.get<UILayoutMetricsComponent>(panel);
+    REQUIRE(uiLayout.size.width == Catch::Approx(200.f));
+    REQUIRE(uiLayout.size.height == Catch::Approx(100.f));
 
     std::optional<Entity> childOpt;
     auto parentView = View<ParentComponent>(comp);
@@ -166,7 +170,7 @@ TEST_CASE_METHOD(UILoaderFixture, "UILoader loads a widget from a single object"
     auto& comp = this->world.components();
     REQUIRE(comp.has<FlexContainer>(widget));
     REQUIRE(comp.has<TransformComponent>(widget));
-    REQUIRE(comp.has<UIRectComponent>(widget));
+    REQUIRE(comp.has<UILayoutMetricsComponent>(widget));
 }
 
 TEST_CASE_METHOD(UILoaderFixture, "UILoader applies style from stylesheet", "[integration][ui_loader]")
@@ -278,7 +282,7 @@ TEST_CASE_METHOD(UILoaderFixture, "UILoader loads widget from external source", 
     auto& comp = this->world.components();
     REQUIRE(comp.has<RoundTimerTag>(entity));
     REQUIRE(comp.has<TransformComponent>(entity));
-    REQUIRE(comp.has<UIRectComponent>(entity));
+    REQUIRE(comp.has<UILayoutMetricsComponent>(entity));
 
     std::optional<Entity> textEntity;
     auto view = View<ParentComponent>(comp);

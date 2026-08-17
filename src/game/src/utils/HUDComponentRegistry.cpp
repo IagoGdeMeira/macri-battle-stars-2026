@@ -4,6 +4,7 @@
 #include "domain/components/BoxModel.h"
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/CircleEffectsComponent.h"
+#include "domain/components/CircleShapeComponent.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
 #include "domain/components/HealthBarSegmentComponent.h"
@@ -12,10 +13,11 @@
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/RoundTimerTag.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/include/ComponentManager/ComponentManager.h"
@@ -26,6 +28,7 @@ void HUDComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<BoxModel>();
     comp.registerComponent<ChildrenComponent>();
     comp.registerComponent<CircleEffectsComponent>();
+    comp.registerComponent<CircleShapeComponent>();
     comp.registerComponent<FlexContainer>();
     comp.registerComponent<FlexItem>();
     comp.registerComponent<HealthBarSegmentComponent>();
@@ -34,10 +37,11 @@ void HUDComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<LayoutDirtyComponent>();
     comp.registerComponent<ParentComponent>();
     comp.registerComponent<RectangleEffectsComponent>();
+    comp.registerComponent<RectangleShapeComponent>();
     comp.registerComponent<RenderComponent>();
     comp.registerComponent<RoundTimerTag>();
     comp.registerComponent<TransformComponent>();
-    comp.registerComponent<UIRectComponent>();
+    comp.registerComponent<UILayoutMetricsComponent>();
     comp.registerComponent<UISpriteComponent>();
     comp.registerComponent<UITextComponent>();
 }

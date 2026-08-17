@@ -4,7 +4,7 @@
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/View/View.h"
 #include "domain/include/World/World.h"
 
@@ -65,6 +65,6 @@ void HealthBarSystem::updateSegmentWidth(World& world, Entity segment, float cur
 {
     auto& comp = world.components();
     auto& segmentComp = comp.get<HealthBarSegmentComponent>(segment);
-    auto& uiRect = comp.get<UIRectComponent>(segment);
-    uiRect.size.width = (currentHP / segmentComp.maxHP) * segmentComp.maxWidth;
+    auto& uiMetrics = comp.get<UILayoutMetricsComponent>(segment);
+    uiMetrics.size.width = (currentHP / segmentComp.maxHP) * segmentComp.maxWidth;
 }

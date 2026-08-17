@@ -1,18 +1,22 @@
 #ifndef ui_loader_h
 #define ui_loader_h
 
+#include "UIStyleLoader/UIStyleLoader.h"
+
 #include "domain/include/Entity/Entity.h"
 
 #include "engine/include/DataParser/DataParser.h"
 
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 class UIFactory;
 class UIActionFactory;
+class IFontFactory;
 class DataNode;
 class IUIWidgetLoader;
 
@@ -21,8 +25,8 @@ class UILoader
 public:
     using ParamMap = std::unordered_map<std::string, std::string>;
 
-    UILoader(DataParser& parser, UIFactory& factory, UIActionFactory& actionFactory) :
-        parser(parser), factory(factory), actionFactory(actionFactory) {}
+    UILoader(DataParser& parser, UIFactory& factory, UIActionFactory& actionFactory, IFontFactory& fontFactory) :
+        parser(parser), factory(factory), actionFactory(actionFactory), fontFactory(fontFactory), styleLoader(parser) {}
 
     void loadStyleSheet(const std::string& path);
     std::vector<Entity> loadLayout(const std::string& path);
@@ -35,9 +39,10 @@ private:
     DataParser& parser;
     UIFactory& factory;
     UIActionFactory& actionFactory;
+    IFontFactory& fontFactory;
 
-    using StyleMap = std::unordered_map<std::string, std::unique_ptr<DataNode>>;
-    StyleMap styles;
+    UIStyleLoader styleLoader;
+    UIStyleLoader::StyleMap styles;
 
     std::unordered_map<std::string, std::unique_ptr<IUIWidgetLoader>> widgetLoaders;
 

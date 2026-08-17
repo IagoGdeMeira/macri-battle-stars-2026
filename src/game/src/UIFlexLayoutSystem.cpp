@@ -6,7 +6,6 @@
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
 #include "domain/include/View/View.h"
 
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
@@ -48,9 +47,10 @@ std::vector<Entity> UIFlexLayoutSystem::collectChildren(World& world, Entity par
 void UIFlexLayoutSystem::layoutRecursive(World& world, Entity container)
 {
     this->layoutContainer(world, container);
-    world.components().get<LayoutDirtyComponent>(container).dirty = false;
+    auto& comp = world.components();
+    comp.get<LayoutDirtyComponent>(container).dirty = false;
 
-    for (Entity child : this->collectChildren(world, container)) if (world.components().has<FlexContainer>(child))
+    for (Entity child : this->collectChildren(world, container)) if (comp.has<FlexContainer>(child))
     { this->layoutRecursive(world, child); }
 }
 

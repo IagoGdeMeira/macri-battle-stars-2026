@@ -2,7 +2,7 @@
 
 #include "domain/components/FlexContainer.h"
 #include "domain/components/TransformComponent.h"
-#include "domain/components/UIRectComponent.h"
+#include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
@@ -21,16 +21,17 @@ public:
 
     AlignItemsHandlerFixture()
     {
-        auto& comp = world.components();
+        auto& comp = this->world.components();
         comp.registerComponent<TransformComponent>();
-        comp.registerComponent<UIRectComponent>();
+        comp.registerComponent<UILayoutMetricsComponent>();
     }
 
     Entity createChild(float width, float height)
     {
-        Entity e = world.entities().create();
-        world.components().add<TransformComponent>(e, TransformComponent{{0.f, 0.f}});
-        world.components().add<UIRectComponent>(e, UIRectComponent{{width, height}});
+        Entity e = this->world.entities().create();
+        auto& comp = this->world.components();
+        comp.add<TransformComponent>(e, TransformComponent{{0.f, 0.f}});
+        comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{{width, height}});
         return e;
     }
 };
@@ -57,9 +58,9 @@ TEST_CASE_METHOD(AlignItemsHandlerFixture, "AlignItemsHandler centers children c
         .isColumn   = false
     };
 
-    handler.layout(ctx);
+    this->handler.layout(ctx);
 
-    const auto& transform = world.components().get<TransformComponent>(child);
+    const auto& transform = this->world.components().get<TransformComponent>(child);
     REQUIRE(transform.position.y == Catch::Approx(10.f + (100.f - 20.f) * 0.5f));
 }
 
@@ -85,8 +86,8 @@ TEST_CASE_METHOD(AlignItemsHandlerFixture, "AlignItemsHandler stretches child cr
         .isColumn   = false
     };
 
-    handler.layout(ctx);
+    this->handler.layout(ctx);
 
-    const auto& uiRect = world.components().get<UIRectComponent>(child);
-    REQUIRE(uiRect.size.height == Catch::Approx(100.f));
+    const auto& layout = this->world.components().get<UILayoutMetricsComponent>(child);
+    REQUIRE(layout.size.height == Catch::Approx(100.f));
 }

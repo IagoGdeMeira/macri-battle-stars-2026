@@ -1,9 +1,9 @@
-#ifndef ui_rect_component_h
-#define ui_rect_component_h
+#ifndef ui_layout_metrics_component_h
+#define ui_layout_metrics_component_h
 
 #include "domain/value_objects/Geometry/Geometry.h"
 
-struct UIRectComponent
+struct UILayoutMetricsComponent
 {
     enum class UIAnchor
     {
@@ -17,4 +17,4 @@ struct UIRectComponent
     Position pivot{0.5f, 0.5f};
 };
 
-#endif // ui_rect_component_h
+#endif // ui_layout_metrics_component_h

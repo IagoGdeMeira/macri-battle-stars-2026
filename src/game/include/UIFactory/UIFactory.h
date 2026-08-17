@@ -12,6 +12,7 @@ class IFontFactory;
 class ITextureFactory;
 class IUIAction;
 class World;
+class Font;
 
 struct UIElement;
 
@@ -25,9 +26,16 @@ public:
 
     Entity createPanel(const Rectangle& rect);
     Entity createButton(const std::string& text, const Rectangle& rect, std::shared_ptr<IUIAction> action);
-    Entity createText(const std::string& text, float fontSize, const Color& color, const Position& position);
     Entity createImage(const std::string& texturePath, const Rectangle& rect);
 
+    struct ShapeParams { const Color& color; bool filled = true; };
+    Entity createRectangleShape(const ShapeParams& params, const Rectangle& rect);
+    Entity createCircleShape(const ShapeParams& params, const Circle& circle);
+
+    struct TextParams { const std::string& text; float fontSize; const Color& color; const Position& position; };
+    Entity createText(const TextParams& params);
+    Entity createText(const TextParams& params, std::shared_ptr<Font> font);
+    
     Entity createFromElement(const UIElement& element);
 
 private:
