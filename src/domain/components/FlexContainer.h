@@ -1,12 +1,10 @@
 #ifndef flex_container_h
 #define flex_container_h
 
+#include "FlexEnums/FlexEnums.h"
+
 struct FlexContainer
 {
-    enum class FlexDirection { Row, Column, RowReverse, ColumnReverse };
-    enum class JustifyContent { FlexStart, FlexEnd, Center, SpaceBetween, SpaceAround, SpaceEvenly };
-    enum class AlignItems { FlexStart, FlexEnd, Center, Stretch, Baseline };
-
     FlexDirection direction = FlexDirection::Row;
     JustifyContent justify = JustifyContent::FlexStart;
     AlignItems align = AlignItems::Stretch;

@@ -3,13 +3,14 @@
 #include "FlexLayoutContext/FlexLayoutContext.h"
 
 #include "domain/components/FlexContainer.h"
+#include "domain/value_objects/FlexEnums/FlexEnums.h"
 
 void JustifyContentHandler::layout(FlexLayoutContext& ctx)
 {
     ctx.startOffset = 0.f;
     ctx.between = 0.f;
 
-    using Justify = FlexContainer::JustifyContent;
+    using Justify = JustifyContent;
     switch (ctx.flex.justify)
     {
         case Justify::FlexEnd: ctx.startOffset = ctx.freeSpace; break;

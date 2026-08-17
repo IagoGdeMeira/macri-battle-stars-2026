@@ -1,16 +1,17 @@
 {
-  "elements": [
+    "elements": [
         {
             "type": "panel",
             "position": { "x": 0, "y": 0 },
             "size": { "width": 800, "height": 600 },
-            "flex": { "direction": 1, "justify": 0, "align": 0, "gap": 10 },
-            "boxModel": { "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 } },
+            "flex": {
+                "direction": "Column",
+                "justify": "FlexStart",
+                "align": "Center"
+            },
+            "boxModel": { "padding": { "left": 20, "right": 20, "top": 10, "bottom": 10 } },
             "children": [
-                {
-                    "type": "widget",
-                    "source": "assets/ui/widgets/timer.json"
-                }
+                { "type": "widget", "source": "assets/ui/widgets/timer.json" }
             ]
         }
     ]

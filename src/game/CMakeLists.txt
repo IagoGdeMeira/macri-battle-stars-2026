@@ -57,6 +57,7 @@ target_sources(game
         src/EntityFactory.cpp
         src/FaceOffSystem.cpp
         src/FallTriggerSystem.cpp
+        src/FlexEnumMapper.cpp
         src/FrictionSystem.cpp
         src/GravitySystem.cpp
         src/GroundDetectionSystem.cpp

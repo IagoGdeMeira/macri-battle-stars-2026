@@ -22,6 +22,7 @@
 #include "domain/resources/Font/Font.h"
 #include "domain/resources/Texture/Texture.h"
 #include "domain/utils/Logger/Logger.h"
+#include "domain/value_objects/FlexEnums/FlexEnums.h"
 
 #include "engine/include/IPlatformFactory/IPlatformFactory.h"
 
@@ -49,9 +50,9 @@ Entity UIFactory::createButton(const std::string& text, const Rectangle& rect, s
     comp.add<UIFocusable>(button, UIFocusable{ true });
 
     auto& flex = comp.get<FlexContainer>(button);
-    flex.direction = FlexContainer::FlexDirection::Row;
-    flex.justify = FlexContainer::JustifyContent::Center;
-    flex.align = FlexContainer::AlignItems::Center;
+    flex.direction = FlexDirection::Row;
+    flex.justify = JustifyContent::Center;
+    flex.align = AlignItems::Center;
 
     Entity textEntity = this->createText({text, 24.f, Color::WHITE(), {0, 0}});
     comp.add<ParentComponent>(textEntity, ParentComponent{ button });
@@ -73,6 +74,17 @@ Entity UIFactory::createImage(const std::string& texturePath, const Rectangle& r
     comp.add<UISpriteComponent>(e, UISpriteComponent{ texture, Color::WHITE() });
     comp.add<RenderComponent>(e, RenderComponent{0, 0});
 
+    return e;
+}
+
+Entity UIFactory::createBox(const Rectangle& rect)
+{
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
+
+    comp.add<TransformComponent>(e, TransformComponent{rect.position, {1.f, 1.f}, 0.f});
+    comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{rect.size});
+    comp.add<RenderComponent>(e, RenderComponent{0, 0});
     return e;
 }
 
@@ -134,13 +146,13 @@ Entity UIFactory::createText(const TextParams& params, std::shared_ptr<Font> fon
 Entity UIFactory::createFromElement(const UIElement& element)
 {
     if (auto* panel = dynamic_cast<const PanelElement*>(&element)) return this->createPanel(panel->rect);
-    
+
     if (auto* text = dynamic_cast<const TextElement*>(&element))
     { return this->createText({text->text, text->fontSize, text->color, text->rect.position}); }
-    
+
     if (auto* button = dynamic_cast<const ButtonElement*>(&element))
     { return this->createButton(button->text, button->rect, button->action); }
-    
+
     if (auto* img = dynamic_cast<const ImageElement*>(&element))
     { return this->createImage(img->imagePath, img->rect); }
 

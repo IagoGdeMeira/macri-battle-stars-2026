@@ -15,6 +15,7 @@ class SDLDrawFontCommandHandler : public IDrawCommandHandler
 {
 public:
     explicit SDLDrawFontCommandHandler(SDL_Renderer* renderer) : renderer(renderer) {}
+    
     ~SDLDrawFontCommandHandler() override { for (auto& [_, texture] : this->textCache) if (texture) SDL_DestroyTexture(texture); }
 
     void execute(const DrawCommand& command) override
@@ -55,12 +56,15 @@ public:
             this->textCache[cacheKey] = texture;
         }
 
+        int texW = 0, texH = 0;
+        SDL_QueryTexture(texture, nullptr, nullptr, &texW, &texH);
+
         SDL_Rect dst {
-            static_cast<int>(std::lround(cmd.dest.position.x)),
-            static_cast<int>(std::lround(cmd.dest.position.y)),
-            static_cast<int>(std::lround(cmd.dest.size.width)),
-            static_cast<int>(std::lround(cmd.dest.size.height))
+            static_cast<int>(std::lround(cmd.dest.position.x + (cmd.dest.size.width - texW) * 0.5f)),
+            static_cast<int>(std::lround(cmd.dest.position.y + (cmd.dest.size.height - texH) * 0.5f)),
+            texW, texH
         };
+
         SDL_RenderCopy(this->renderer, texture, nullptr, &dst);
     }
 

@@ -24,6 +24,7 @@
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/include/World/World.h"
+#include "domain/value_objects/FlexEnums/FlexEnums.h"
 
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/utils/DataUtils/DataUtils.h"
@@ -178,9 +179,9 @@ TEST_CASE_METHOD(UILoaderFixture, "UILoader applies style from stylesheet", "[in
     StubDataNode styleNode;
     styleNode.setString("id", "primaryButton");
     auto flexNode = std::make_unique<StubDataNode>();
-    flexNode->setInt("direction", static_cast<int>(FlexContainer::FlexDirection::Row));
-    flexNode->setInt("justify", static_cast<int>(FlexContainer::JustifyContent::Center));
-    flexNode->setInt("align", static_cast<int>(FlexContainer::AlignItems::Center));
+    flexNode->setString("direction", "Row");
+    flexNode->setString("justify", "Center");
+    flexNode->setString("align", "Center");
     flexNode->setFloat("gap", 5.f);
     styleNode.setObject("flex", std::move(flexNode));
 
@@ -209,9 +210,9 @@ TEST_CASE_METHOD(UILoaderFixture, "UILoader applies style from stylesheet", "[in
     auto& comp = this->world.components();
     REQUIRE(comp.has<FlexContainer>(entity));
     const auto& flex = comp.get<FlexContainer>(entity);
-    REQUIRE(flex.direction == FlexContainer::FlexDirection::Row);
-    REQUIRE(flex.justify == FlexContainer::JustifyContent::Center);
-    REQUIRE(flex.align == FlexContainer::AlignItems::Center);
+    REQUIRE(flex.direction == FlexDirection::Row);
+    REQUIRE(flex.justify == JustifyContent::Center);
+    REQUIRE(flex.align == AlignItems::Center);
     REQUIRE(flex.gap == Catch::Approx(5.f));
 }
 

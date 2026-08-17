@@ -8,6 +8,7 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
+#include "domain/value_objects/FlexEnums/FlexEnums.h"
 
 void BoxModelHandler::layout(FlexLayoutContext& ctx)
 {
@@ -30,13 +31,14 @@ void BoxModelHandler::layout(FlexLayoutContext& ctx)
     ctx.innerRect.size.width = outerRect.size.width - border.left - border.right - padding.left - padding.right;
     ctx.innerRect.size.height = outerRect.size.height - border.top - border.bottom - padding.top - padding.bottom;
 
+    using FlexDir = FlexDirection;
     ctx.isColumn = false;
-    ctx.isColumn |= ctx.flex.direction == FlexContainer::FlexDirection::Column;
-    ctx.isColumn |= ctx.flex.direction == FlexContainer::FlexDirection::ColumnReverse;
+    ctx.isColumn |= ctx.flex.direction == FlexDir::Column;
+    ctx.isColumn |= ctx.flex.direction == FlexDir::ColumnReverse;
     
     ctx.isReverse = false;
-    ctx.isReverse |= ctx.flex.direction == FlexContainer::FlexDirection::RowReverse;
-    ctx.isReverse |= ctx.flex.direction == FlexContainer::FlexDirection::ColumnReverse;
+    ctx.isReverse |= ctx.flex.direction == FlexDir::RowReverse;
+    ctx.isReverse |= ctx.flex.direction == FlexDir::ColumnReverse;
 
     ctx.childInfos.clear();
 

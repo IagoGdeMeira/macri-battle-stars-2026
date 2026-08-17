@@ -2,6 +2,7 @@
 
 #include "domain/components/FlexContainer.h"
 #include "domain/include/World/World.h"
+#include "domain/value_objects/FlexEnums/FlexEnums.h"
 
 #include "engine/include/EventBus/EventBus.h"
 
@@ -13,7 +14,7 @@
 TEST_CASE("JustifyContentHandler flex-start leaves free space at end", "[unit][justify_handler]")
 {
     FlexContainer flex;
-    flex.justify = FlexContainer::JustifyContent::FlexStart;
+    flex.justify = JustifyContent::FlexStart;
     World world;
     EventBus bus;
     JustifyContentHandler handler;
@@ -37,7 +38,7 @@ TEST_CASE("JustifyContentHandler flex-start leaves free space at end", "[unit][j
 TEST_CASE("JustifyContentHandler center splits free space", "[unit][justify_handler]")
 {
     FlexContainer flex;
-    flex.justify = FlexContainer::JustifyContent::Center;
+    flex.justify = JustifyContent::Center;
     World world;
     EventBus bus;
     JustifyContentHandler handler;
@@ -61,7 +62,7 @@ TEST_CASE("JustifyContentHandler center splits free space", "[unit][justify_hand
 TEST_CASE("JustifyContentHandler space-between distributes between children", "[unit][justify_handler]")
 {
     FlexContainer flex;
-    flex.justify = FlexContainer::JustifyContent::SpaceBetween;
+    flex.justify = JustifyContent::SpaceBetween;
     World world;
     EventBus bus;
     JustifyContentHandler handler;

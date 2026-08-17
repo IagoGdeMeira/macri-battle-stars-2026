@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
+class Font;
 class IFontFactory;
 class ITextureFactory;
 class IUIAction;
 class World;
-class Font;
 
 struct UIElement;
 
@@ -27,6 +27,7 @@ public:
     Entity createPanel(const Rectangle& rect);
     Entity createButton(const std::string& text, const Rectangle& rect, std::shared_ptr<IUIAction> action);
     Entity createImage(const std::string& texturePath, const Rectangle& rect);
+    Entity createBox(const Rectangle& rect);
 
     struct ShapeParams { const Color& color; bool filled = true; };
     Entity createRectangleShape(const ShapeParams& params, const Rectangle& rect);
@@ -35,7 +36,7 @@ public:
     struct TextParams { const std::string& text; float fontSize; const Color& color; const Position& position; };
     Entity createText(const TextParams& params);
     Entity createText(const TextParams& params, std::shared_ptr<Font> font);
-    
+
     Entity createFromElement(const UIElement& element);
 
 private:

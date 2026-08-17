@@ -3,6 +3,7 @@
 #include "IUIWidgetLoader/IUIWidgetLoader.h"
 #include "UIActionFactory/UIActionFactory.h"
 #include "UIFactory/UIFactory.h"
+#include "FlexEnumMapper/FlexEnumMapper.h"
 
 #include "domain/components/BoxModel.h"
 #include "domain/components/FlexContainer.h"
@@ -15,6 +16,7 @@
 #include "domain/include/World/World.h"
 #include "domain/resources/Font/Font.h"
 #include "domain/utils/Logger/Logger.h"
+#include "domain/value_objects/FlexEnums/FlexEnums.h"
 
 #include "engine/include/IFontFactory/IFontFactory.h"
 #include "engine/utils/DataUtils/DataUtils.h"
@@ -104,7 +106,7 @@ Entity UILoader::createElement(const DataNode& node, std::optional<Entity> paren
         {
             auto sourcePath = node.getString("source");
             auto externalNode = this->parser.parse(sourcePath);
-            
+
             if (externalNode->isArray())
             {
                 auto arr = externalNode->getArray("");
@@ -125,11 +127,17 @@ Entity UILoader::createElement(const DataNode& node, std::optional<Entity> paren
     }
 
     this->applyFlex({entity, node});
+    this->applyFlexItem({entity, node});
     this->applyBoxModel({entity, node});
     this->applyLayoutDirty({entity, node});
     this->applyAction({entity, node});
 
-    if (parent.has_value()) comp.add<ParentComponent>(entity, ParentComponent{*parent});
+    if (parent.has_value())
+    {
+        comp.add<ParentComponent>(entity, ParentComponent{*parent});
+        this->markParentDirty(*parent);
+    }
+
     this->applyChildren({entity, node}, params);
 
     return entity;
@@ -147,6 +155,7 @@ Entity UILoader::createWidget(const DataNode& node, const ParamMap& params)
 void UILoader::applyStyle(const ApplyParams& params)
 {
     this->applyFlex(params);
+    this->applyFlexItem(params);
     this->applyBoxModel(params);
     this->applyLayoutDirty(params);
 }
@@ -158,19 +167,37 @@ void UILoader::applyFlex(const ApplyParams& params)
     auto flexNode = params.node.getObject("flex");
     if (!flexNode) return;
 
-    using Direction = FlexContainer::FlexDirection;
-    using Justify = FlexContainer::JustifyContent;
-    using Align = FlexContainer::AlignItems;
-
     FlexContainer flex;
-    flex.direction = static_cast<Direction>(flexNode->getInt("direction", static_cast<int>(Direction::Row)));
-    flex.justify = static_cast<Justify>(flexNode->getInt("justify", static_cast<int>(Justify::FlexStart)));
-    flex.align = static_cast<Align>(flexNode->getInt("align", static_cast<int>(Align::Stretch)));
-    flex.gap = flexNode->getFloat("gap", 0.f);
+    flex.direction = FlexEnumMapper::toDirection(flexNode->getString("direction", "Row"));
+    flex.justify   = FlexEnumMapper::toJustify(flexNode->getString("justify", "FlexStart"));
+    flex.align     = FlexEnumMapper::toAlign(flexNode->getString("align", "Stretch"));
+    flex.gap       = flexNode->getFloat("gap", 0.f);
 
     auto& comp = this->factory.world().components();
     if (comp.has<FlexContainer>(params.entity)) comp.get<FlexContainer>(params.entity) = flex;
     else comp.add<FlexContainer>(params.entity, flex);
+}
+
+void UILoader::applyFlexItem(const ApplyParams& params)
+{
+    if (!params.node.has("flexItem")) return;
+
+    auto itemNode = params.node.getObject("flexItem");
+    if (!itemNode) return;
+
+    auto& comp = this->factory.world().components();
+    FlexItem item;
+
+    if (comp.has<FlexItem>(params.entity)) item = comp.get<FlexItem>(params.entity);
+
+    item.grow   = itemNode->getFloat("grow", item.grow);
+    item.shrink = itemNode->getFloat("shrink", item.shrink);
+    item.basis  = itemNode->getFloat("basis", item.basis);
+
+    if (itemNode->has("alignSelf")) item.alignSelf = FlexEnumMapper::toAlign(itemNode->getString("alignSelf"));
+
+    if (comp.has<FlexItem>(params.entity)) comp.get<FlexItem>(params.entity) = item;
+    else comp.add<FlexItem>(params.entity, item);
 }
 
 void UILoader::applyBoxModel(const ApplyParams& params)
@@ -233,4 +260,11 @@ void UILoader::applyChildren(const ApplyParams& params, const ParamMap& paramsMa
 {
     if (!params.node.has("children")) return;
     for (auto& childNode : params.node.getArray("children")) this->createElement(*childNode, params.entity, paramsMap);
+}
+
+void UILoader::markParentDirty(Entity parent)
+{
+    auto& comp = this->factory.world().components();
+    if (comp.has<LayoutDirtyComponent>(parent)) comp.get<LayoutDirtyComponent>(parent).dirty = true;
+    else comp.add<LayoutDirtyComponent>(parent, LayoutDirtyComponent{true});
 }

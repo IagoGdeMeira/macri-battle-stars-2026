@@ -76,6 +76,7 @@ add_executable(game_tests
     EntityFactoryTests.cpp
     FaceOffSystemTests.cpp
     FallTriggerSystemTests.cpp
+    FlexEnumMapperTests.cpp
     FrictionSystemTests.cpp
     GravitySystemTests.cpp
     GroundDetectionSystemTests.cpp
@@ -109,6 +110,7 @@ add_executable(game_tests
     TriggerGenerationSystemTests.cpp
     TriggerMapperTests.cpp
     UIFactoryTests.cpp
+    UIFlexLayoutSystemTests.cpp
     UIActionFactoryTests.cpp
     UIInputSystemTests.cpp
     UILoaderTests.cpp

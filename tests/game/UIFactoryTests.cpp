@@ -18,6 +18,7 @@
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
 #include "domain/include/World/World.h"
+#include "domain/value_objects/FlexEnums/FlexEnums.h"
 
 #include "game/include/IUIAction/IUIAction.h"
 
@@ -155,9 +156,9 @@ TEST_CASE_METHOD(UIFactoryFixture, "UIFactory createButton wires focus, text and
     REQUIRE(focusable.canFocus);
 
     const auto& flex = comp.get<FlexContainer>(button);
-    REQUIRE(flex.direction == FlexContainer::FlexDirection::Row);
-    REQUIRE(flex.justify == FlexContainer::JustifyContent::Center);
-    REQUIRE(flex.align == FlexContainer::AlignItems::Center);
+    REQUIRE(flex.direction == FlexDirection::Row);
+    REQUIRE(flex.justify == JustifyContent::Center);
+    REQUIRE(flex.align == AlignItems::Center);
 
     REQUIRE(comp.has<ParentComponent>(textEntity));
     REQUIRE(comp.has<FlexItem>(textEntity));

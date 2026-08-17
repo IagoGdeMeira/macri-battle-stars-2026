@@ -14,11 +14,11 @@
 #include <unordered_map>
 #include <vector>
 
-class UIFactory;
-class UIActionFactory;
-class IFontFactory;
 class DataNode;
+class IFontFactory;
 class IUIWidgetLoader;
+class UIActionFactory;
+class UIFactory;
 
 class UILoader
 {
@@ -31,7 +31,7 @@ public:
     void loadStyleSheet(const std::string& path);
     std::vector<Entity> loadLayout(const std::string& path);
     Entity loadWidget(const std::string& path);
-    
+
     Entity instantiateWidget(const std::string& widgetPath, const ParamMap& params, std::optional<Entity> parent = std::nullopt);
     void registerWidgetLoader(const std::string& widgetType, std::unique_ptr<IUIWidgetLoader> loader);
 
@@ -52,10 +52,12 @@ private:
     struct ApplyParams { Entity entity; const DataNode& node; };
     void applyStyle(const ApplyParams& params);
     void applyFlex(const ApplyParams& params);
+    void applyFlexItem(const ApplyParams& params);
     void applyBoxModel(const ApplyParams& params);
     void applyLayoutDirty(const ApplyParams& params);
     void applyAction(const ApplyParams& params);
     void applyChildren(const ApplyParams& params, const ParamMap& paramsMap);
+    void markParentDirty(Entity parent);
 };
 
 #endif // ui_loader_h

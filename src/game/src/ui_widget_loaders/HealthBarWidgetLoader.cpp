@@ -29,7 +29,7 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const UILoader::ParamMa
     int numSegments = (maxHealth + static_cast<int>(maxSegmentHP) - 1) / static_cast<int>(maxSegmentHP);
     float segmentMaxWidth = totalWidth / numSegments;
 
-    Entity container = this->factory.createPanel(Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
+    Entity container = this->factory.createBox(Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
     comp.add<HealthBarTag>(container, HealthBarTag{playerId, maxHealth, currentHealth});
 
     Entity background = this->factory.createRectangleShape(
