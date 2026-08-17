@@ -4,7 +4,6 @@
     "width": 300,
     "height": 30,
     "flexItem": {
-        "basis": 300,
         "grow": 0,
         "shrink": 0,
         "alignSelf": "FlexStart"

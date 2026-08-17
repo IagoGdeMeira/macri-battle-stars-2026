@@ -12,6 +12,7 @@
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/HUDEntityTag.h"
 #include "domain/components/LayoutDirtyComponent.h"
+#include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
@@ -37,6 +38,7 @@ void HUDComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<HealthBarTag>();
     comp.registerComponent<HUDEntityTag>();
     comp.registerComponent<LayoutDirtyComponent>();
+    comp.registerComponent<LocalTransform>();
     comp.registerComponent<ParentComponent>();
     comp.registerComponent<RectangleEffectsComponent>();
     comp.registerComponent<RectangleShapeComponent>();

@@ -22,7 +22,7 @@ Entity TimerWidgetLoader::load(const DataNode& node, const UILoader::ParamMap& p
     auto& comp = this->factory.world().components();
 
     Rectangle rect = DataUtils::parseRect(node, {{0.f, 0.f}, {100.f, 40.f}});
-    Entity panel = this->factory.createPanel(rect);
+    Entity panel = this->factory.createBox(rect);
     comp.add<RoundTimerTag>(panel, RoundTimerTag{});
 
     float initialTime = node.getFloat("initialTime", 99.f);

@@ -8,6 +8,7 @@
 #include "HealthBarWidgetLoader.h"
 #include "HUDVisibilitySystem/HUDVisibilitySystem.h"
 #include "JustifyContentHandler.h"
+#include "LocalToWorldSystem/LocalToWorldSystem.h"
 #include "MainAxisHandler.h"
 #include "PlayerSpawnedEvent.h"
 #include "RoundTimerDisplaySystem/RoundTimerDisplaySystem.h"
@@ -86,6 +87,7 @@ void HUDScene::addSystems()
     flexSystem.addHandler(std::make_unique<MainAxisHandler>());
     flexSystem.addHandler(std::make_unique<AlignItemsHandler>());
 
+    this->addSystem<LocalToWorldSystem>();
     this->addSystem<HealthBarSystem>(this->eventBus);
     this->addSystem<RoundTimerDisplaySystem>(this->eventBus);
 

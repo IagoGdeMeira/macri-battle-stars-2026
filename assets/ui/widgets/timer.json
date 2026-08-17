@@ -5,7 +5,6 @@
     "fontPath": "assets/fonts/yoster-island/yoster.ttf",
     "fontSize": 32,
     "flexItem": {
-        "basis": 100,
         "grow": 0,
         "shrink": 0,
         "alignSelf": "Center"

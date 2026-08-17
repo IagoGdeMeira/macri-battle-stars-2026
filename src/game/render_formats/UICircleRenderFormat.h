@@ -23,13 +23,13 @@ public:
     void render(RenderContext& ctx, RenderQueue& queue) override
     {
         auto& comp = ctx.world.components();
-        auto view = View<TransformComponent, CircleShapeComponent, RenderComponent>(comp);
+        auto view = View<TransformComponent, CircleShapeComponent, UILayoutMetricsComponent, RenderComponent>(comp);
         size_t order = 0;
 
-        for (auto [entity, transform, shape, render] : view)
+        for (auto [entity, transform, shape, layout, render] : view)
         {
             DrawCircleCommand cmd;
-            cmd.circle.position = shape.circle.position;
+            cmd.circle.position = transform.position;
             cmd.circle.radius = shape.circle.radius;
             cmd.color = shape.color;
             cmd.filled = shape.filled;
@@ -51,4 +51,4 @@ private:
     Renderer& renderer;
 };
 
-#endif // ui_circle_render_format_h
+#endif // ui_circle_render_format

@@ -9,6 +9,7 @@
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
 #include "domain/components/LayoutDirtyComponent.h"
+#include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -100,6 +101,22 @@ Entity UIFactory::createRectangleShape(const ShapeParams& params, const Rectangl
     return e;
 }
 
+Entity UIFactory::createRectangleShapeChild(Entity parent, const Position& offset, const Dimension2D& size, const ShapeParams& params)
+{
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
+
+    comp.add<ParentComponent>(e, ParentComponent{parent});
+    comp.add<LocalTransform>(e, LocalTransform{offset});
+    comp.add<TransformComponent>(e, TransformComponent{{0.f, 0.f}});
+    comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{size});
+    comp.add<RectangleShapeComponent>(e, RectangleShapeComponent{Rectangle{
+        Position{0.f, 0.f}, size}, params.color, params.filled});
+    comp.add<RenderComponent>(e, RenderComponent{0, 0});
+
+    return e;
+}
+
 Entity UIFactory::createCircleShape(const ShapeParams& params, const Circle& circle)
 {
     Entity e = this->factoryWorld.entities().create();
@@ -109,6 +126,22 @@ Entity UIFactory::createCircleShape(const ShapeParams& params, const Circle& cir
     comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{{circle.radius * 2.f, circle.radius * 2.f}});
     comp.add<CircleShapeComponent>(e, CircleShapeComponent{circle, params.color, params.filled});
     comp.add<RenderComponent>(e, RenderComponent{0, 0});
+    return e;
+}
+
+Entity UIFactory::createCircleShapeChild(Entity parent, const Position& offset, float radius, const ShapeParams& params)
+{
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
+
+    comp.add<ParentComponent>(e, ParentComponent{parent});
+    comp.add<LocalTransform>(e, LocalTransform{offset});
+    comp.add<TransformComponent>(e, TransformComponent{{0.f, 0.f}});
+    comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{{radius * 2.f, radius * 2.f}});
+    comp.add<CircleShapeComponent>(e, CircleShapeComponent{Circle{
+        Position{0.f, 0.f}, radius}, params.color, params.filled});
+    comp.add<RenderComponent>(e, RenderComponent{0, 0});
+
     return e;
 }
 

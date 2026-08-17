@@ -32,16 +32,16 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const UILoader::ParamMa
     Entity container = this->factory.createBox(Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
     comp.add<HealthBarTag>(container, HealthBarTag{playerId, maxHealth, currentHealth});
 
-    Entity background = this->factory.createRectangleShape(
-        UIFactory::ShapeParams{Color{60, 60, 60, 255}},
-        Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
-    comp.add<ParentComponent>(background, ParentComponent{container});
+    Entity background = this->factory.createRectangleShapeChild(
+        container, Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight},
+        UIFactory::ShapeParams{Color{60, 60, 60, 255}}
+    );
     comp.get<RenderComponent>(background).zIndex = 0;
 
-    Entity border = this->factory.createRectangleShape(
-        UIFactory::ShapeParams{Color::TRANSPARENT(), false},
-        Rectangle{Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight}});
-    comp.add<ParentComponent>(border, ParentComponent{container});
+    Entity border = this->factory.createRectangleShapeChild(
+        container, Position{0.f, 0.f}, Dimension2D{totalWidth, barHeight},
+        UIFactory::ShapeParams{Color::TRANSPARENT(), false}
+    );
     comp.get<RenderComponent>(border).zIndex = 2;
 
     float remainingHP = static_cast<float>(currentHealth);
@@ -53,15 +53,13 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const UILoader::ParamMa
         bool isLast = (i == numSegments - 1);
         Color fillColor = isLast ? Color{255, 200, 0, 255} : Color{0, 200, 0, 255};
 
-        Entity segment = this->factory.createRectangleShape(
-            UIFactory::ShapeParams{fillColor},
-            Rectangle{
-                Position{i * segmentMaxWidth, 0.f},
-                Dimension2D{(segmentHP / maxSegmentHP) * segmentMaxWidth, barHeight}
-            }
+        Entity segment = this->factory.createRectangleShapeChild(
+            container,
+            Position{i * segmentMaxWidth, 0.f},
+            Dimension2D{(segmentHP / maxSegmentHP) * segmentMaxWidth, barHeight},
+            UIFactory::ShapeParams{fillColor}
         );
         comp.add<HealthBarSegmentComponent>(segment, HealthBarSegmentComponent{maxSegmentHP, segmentMaxWidth});
-        comp.add<ParentComponent>(segment, ParentComponent{container});
         comp.get<RenderComponent>(segment).zIndex = 1;
     }
 

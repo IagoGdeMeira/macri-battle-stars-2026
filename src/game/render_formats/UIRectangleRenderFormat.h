@@ -23,13 +23,14 @@ public:
     void render(RenderContext& ctx, RenderQueue& queue) override
     {
         auto& comp = ctx.world.components();
-        auto view = View<TransformComponent, RectangleShapeComponent, RenderComponent>(comp);
+        auto view = View<TransformComponent, RectangleShapeComponent, UILayoutMetricsComponent, RenderComponent>(comp);
         size_t order = 0;
 
-        for (auto [entity, transform, shape, render] : view)
+        for (auto [entity, transform, shape, layout, render] : view)
         {
             DrawRectangleCommand cmd;
-            cmd.rect = shape.rect;
+            cmd.rect.position = transform.position;
+            cmd.rect.size = layout.size;
             cmd.color = shape.color;
             cmd.filled = shape.filled;
             cmd.layer = render.layer;
@@ -50,4 +51,4 @@ private:
     Renderer& renderer;
 };
 
-#endif // ui_rectangle_render_format_h
+#endif // ui_rectangle_render_format

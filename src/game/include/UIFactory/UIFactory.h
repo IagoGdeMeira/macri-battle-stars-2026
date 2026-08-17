@@ -31,7 +31,9 @@ public:
 
     struct ShapeParams { const Color& color; bool filled = true; };
     Entity createRectangleShape(const ShapeParams& params, const Rectangle& rect);
+    Entity createRectangleShapeChild(Entity parent, const Position& offset, const Dimension2D& size, const ShapeParams& params);
     Entity createCircleShape(const ShapeParams& params, const Circle& circle);
+    Entity createCircleShapeChild(Entity parent, const Position& offset, float radius, const ShapeParams& params);
 
     struct TextParams { const std::string& text; float fontSize; const Color& color; const Position& position; };
     Entity createText(const TextParams& params);
