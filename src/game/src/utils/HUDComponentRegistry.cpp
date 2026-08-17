@@ -7,6 +7,7 @@
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
+#include "domain/components/FontEffectsComponent.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/HUDEntityTag.h"
@@ -31,6 +32,7 @@ void HUDComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<CircleShapeComponent>();
     comp.registerComponent<FlexContainer>();
     comp.registerComponent<FlexItem>();
+    comp.registerComponent<FontEffectsComponent>();
     comp.registerComponent<HealthBarSegmentComponent>();
     comp.registerComponent<HealthBarTag>();
     comp.registerComponent<HUDEntityTag>();

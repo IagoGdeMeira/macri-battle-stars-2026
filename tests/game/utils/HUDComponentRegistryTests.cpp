@@ -7,6 +7,7 @@
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
+#include "domain/components/FontEffectsComponent.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/HUDEntityTag.h"
@@ -37,6 +38,7 @@ TEST_CASE("HUDComponentRegistry registers every HUD component", "[unit][hud_comp
     REQUIRE(comp.storage<CircleShapeComponent>() != nullptr);
     REQUIRE(comp.storage<FlexContainer>() != nullptr);
     REQUIRE(comp.storage<FlexItem>() != nullptr);
+    REQUIRE(comp.storage<FontEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<HealthBarSegmentComponent>() != nullptr);
     REQUIRE(comp.storage<HealthBarTag>() != nullptr);
     REQUIRE(comp.storage<HUDEntityTag>() != nullptr);
