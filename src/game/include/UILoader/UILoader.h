@@ -57,6 +57,7 @@ private:
     void applyLayoutDirty(const ApplyParams& params);
     void applyAction(const ApplyParams& params);
     void applyChildren(const ApplyParams& params, const ParamMap& paramsMap);
+
     void markParentDirty(Entity parent);
 };
 

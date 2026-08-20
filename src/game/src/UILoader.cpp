@@ -20,6 +20,7 @@
 
 #include "engine/include/IFontFactory/IFontFactory.h"
 #include "engine/utils/DataUtils/DataUtils.h"
+#include "engine/value_objects/DebugConfig/DebugConfig.h"
 
 void UILoader::loadStyleSheet(const std::string& path)
 {
@@ -132,6 +133,12 @@ Entity UILoader::createElement(const DataNode& node, std::optional<Entity> paren
     this->applyLayoutDirty({entity, node});
     this->applyAction({entity, node});
 
+    if (node.has("debug"))
+    {
+        DebugConfig debug = DataUtils::parseDebug(node, {false, Color::WHITE()});
+        if (debug.enabled) this->factory.createDebugChild(entity, rect.size, debug);
+    }
+
     if (parent.has_value())
     {
         comp.add<ParentComponent>(entity, ParentComponent{*parent});
@@ -168,10 +175,10 @@ void UILoader::applyFlex(const ApplyParams& params)
     if (!flexNode) return;
 
     FlexContainer flex;
-    flex.direction = FlexEnumMapper::toDirection(flexNode->getString("direction", "Row"));
-    flex.justify   = FlexEnumMapper::toJustify(flexNode->getString("justify", "FlexStart"));
-    flex.align     = FlexEnumMapper::toAlign(flexNode->getString("align", "Stretch"));
-    flex.gap       = flexNode->getFloat("gap", 0.f);
+    flex.direction  = FlexEnumMapper::toDirection(flexNode->getString("direction", "Row"));
+    flex.justify    = FlexEnumMapper::toJustify(flexNode->getString("justify", "FlexStart"));
+    flex.align      = FlexEnumMapper::toAlign(flexNode->getString("align", "Stretch"));
+    flex.gap        = flexNode->getFloat("gap", 0.f);
 
     auto& comp = this->factory.world().components();
     if (comp.has<FlexContainer>(params.entity)) comp.get<FlexContainer>(params.entity) = flex;
