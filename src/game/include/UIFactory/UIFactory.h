@@ -25,6 +25,7 @@ public:
 
     World& world() { return this->factoryWorld; }
 
+    Entity createDebugOverlay(const Rectangle& rect, const DebugConfig& debug);
     Entity createPanel(const Rectangle& rect);
     Entity createButton(const std::string& text, const Rectangle& rect, std::shared_ptr<IUIAction> action);
     Entity createImage(const std::string& texturePath, const Rectangle& rect);
@@ -33,13 +34,14 @@ public:
     struct ShapeParams { const Color& color; bool filled = true; };
     Entity createRectangleShape(const ShapeParams& params, const Rectangle& rect);
     Entity createCircleShape(const ShapeParams& params, const Circle& circle);
-    Entity createDebugChild(Entity parent, const Dimension2D& size, const DebugConfig& debug);
 
     struct TextParams { const std::string& text; float fontSize; const Color& color; const Position& position; };
     Entity createText(const TextParams& params);
     Entity createText(const TextParams& params, std::shared_ptr<Font> font);
 
     Entity createFromElement(const UIElement& element);
+
+    void attachChild(Entity parent, Entity child, const Position& localPos = {0.f, 0.f});
 
 private:
     World& factoryWorld;

@@ -13,6 +13,7 @@
 #include "domain/components/HUDEntityTag.h"
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/LocalTransform.h"
+#include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
@@ -45,6 +46,7 @@ TEST_CASE("HUDComponentRegistry registers every HUD component", "[unit][hud_comp
     REQUIRE(comp.storage<HUDEntityTag>() != nullptr);
     REQUIRE(comp.storage<LayoutDirtyComponent>() != nullptr);
     REQUIRE(comp.storage<LocalTransform>() != nullptr);
+    REQUIRE(comp.storage<OrientationComponent>() != nullptr);
     REQUIRE(comp.storage<ParentComponent>() != nullptr);
     REQUIRE(comp.storage<RectangleEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<RectangleShapeComponent>() != nullptr);

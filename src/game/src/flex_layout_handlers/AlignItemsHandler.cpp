@@ -4,7 +4,7 @@
 
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
-#include "domain/components/TransformComponent.h"
+#include "domain/components/LocalTransform.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 #include "domain/value_objects/FlexEnums/FlexEnums.h"
@@ -12,8 +12,8 @@
 void AlignItemsHandler::layout(FlexLayoutContext& ctx)
 {
     auto& comp = ctx.world.components();
-    float crossPos = ctx.isColumn ? ctx.innerRect.position.x : ctx.innerRect.position.y;
-    float crossSize = ctx.isColumn ? ctx.innerRect.size.width : ctx.innerRect.size.height;
+    float crossPos = ctx.innerRect.position.x;
+    float crossSize = ctx.innerRect.size.width;
 
     for (auto& info : ctx.childInfos)
     {
@@ -27,19 +27,22 @@ void AlignItemsHandler::layout(FlexLayoutContext& ctx)
             if (flexItem.alignSelf.has_value()) align = flexItem.alignSelf.value();
         }
 
+        Entity child = info.entity;
+        if (!comp.has<LocalTransform>(child)) comp.add<LocalTransform>(child, LocalTransform{});
+        auto& childLocal = comp.get<LocalTransform>(child);
+
         float pos = crossPos + marginCrossStart;
 
         if (align == AlignItems::Center) pos += (crossSize - info.crossSize - marginCrossStart - marginCrossEnd) * 0.5f;
         else if (align == AlignItems::FlexEnd) pos += crossSize - info.crossSize - marginCrossStart - marginCrossEnd;
 
-        auto& childTransform = comp.get<TransformComponent>(info.entity);
-        if (ctx.isColumn) childTransform.position.x = pos;
-        else childTransform.position.y = pos;
+        if (ctx.isColumn) childLocal.position.x = pos;
+        else childLocal.position.y = pos;
 
         if (align == AlignItems::Stretch)
         {
             float finalCrossSize = crossSize - marginCrossStart - marginCrossEnd;
-            auto& childLayout = comp.get<UILayoutMetricsComponent>(info.entity);
+            auto& childLayout = comp.get<UILayoutMetricsComponent>(child);
             if (ctx.isColumn) childLayout.size.width = finalCrossSize;
             else childLayout.size.height = finalCrossSize;
         }

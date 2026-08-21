@@ -5,7 +5,6 @@
 #include "domain/components/VelocityComponent.h"
 #include "domain/include/ComponentManager/ComponentManager.h"
 #include "domain/include/View/View.h"
-#include "domain/utils/Logger/Logger.h"
 
 void MovementSystem::update(UpdateContext& ctx)
 {
@@ -21,8 +20,5 @@ void MovementSystem::update(UpdateContext& ctx)
 
         pos.x += vel.x * ctx.deltaTime;
         pos.y += vel.y * ctx.deltaTime;
-
-        if (entity.id == 5 || entity.id == 58) LOG_DEBUG("MovementSystem: entity {} pos.y={:.2f} vel.y={:.2f} dt={:.4f}",
-            entity.id, pos.y, vel.y, ctx.deltaTime);
     }
 }

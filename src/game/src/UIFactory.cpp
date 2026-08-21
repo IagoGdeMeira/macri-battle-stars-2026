@@ -5,6 +5,7 @@
 #include "UIElement/UIElement.h"
 
 #include "domain/components/BoxModel.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
@@ -30,6 +31,19 @@
 #include "engine/value_objects/DebugConfig/DebugConfig.h"
 
 #include <stdexcept>
+
+Entity UIFactory::createDebugOverlay(const Rectangle& rect, const DebugConfig& debug)
+{
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
+
+    comp.add<TransformComponent>(e, TransformComponent{rect.position, {1.f, 1.f}, 0.f});
+    comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{rect.size});
+    comp.add<RectangleShapeComponent>(e, RectangleShapeComponent{rect, debug.color, debug.filled});
+    comp.add<RenderComponent>(e, RenderComponent{debug.layer, debug.zIndex});
+
+    return e;
+}
 
 Entity UIFactory::createPanel(const Rectangle& rect)
 {
@@ -58,7 +72,7 @@ Entity UIFactory::createButton(const std::string& text, const Rectangle& rect, s
     flex.align = AlignItems::Center;
 
     Entity textEntity = this->createText({text, 24.f, Color::WHITE(), {0, 0}});
-    comp.add<ParentComponent>(textEntity, ParentComponent{ button });
+    this->attachChild(button, textEntity);
     comp.get<FlexItem>(textEntity);
 
     if (action) comp.add<UIActionComponent>(button, UIActionComponent{[action]() { action->execute(); }});
@@ -115,22 +129,6 @@ Entity UIFactory::createCircleShape(const ShapeParams& params, const Circle& cir
     return e;
 }
 
-Entity UIFactory::createDebugChild(Entity parent, const Dimension2D& size, const DebugConfig& debug)
-{
-    Entity e = this->factoryWorld.entities().create();
-    auto& comp = this->factoryWorld.components();
-
-    comp.add<ParentComponent>(e, ParentComponent{parent});
-    comp.add<LocalTransform>(e, LocalTransform{Position{0.f, 0.f}});
-    comp.add<TransformComponent>(e, TransformComponent{{0.f, 0.f}});
-    comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{size});
-    comp.add<RectangleShapeComponent>(e, RectangleShapeComponent{
-        Rectangle{Position{0.f, 0.f}, size}, debug.color, debug.filled});
-    comp.add<RenderComponent>(e, RenderComponent{debug.layer, debug.zIndex});
-
-    return e;
-}
-
 Entity UIFactory::createText(const TextParams& params)
 {
     Entity e = this->factoryWorld.entities().create();
@@ -176,6 +174,17 @@ Entity UIFactory::createFromElement(const UIElement& element)
     { return this->createImage(img->imagePath, img->rect); }
 
     throw std::runtime_error("Unsupported UIElement type: " + element.id);
+}
+
+void UIFactory::attachChild(Entity parent, Entity child, const Position& localPos)
+{
+    auto& comp = this->factoryWorld.components();
+
+    if (!comp.has<ParentComponent>(child)) comp.add<ParentComponent>(child, ParentComponent{parent});
+    if (!comp.has<LocalTransform>(child)) comp.add<LocalTransform>(child, LocalTransform{localPos});
+    if (!comp.has<TransformComponent>(child)) comp.add<TransformComponent>(child, TransformComponent{{0.f, 0.f}});
+    if (!comp.has<ChildrenComponent>(parent)) comp.add<ChildrenComponent>(parent, ChildrenComponent{});
+    comp.get<ChildrenComponent>(parent).children.push_back(child);
 }
 
 void UIFactory::applyDefaultBoxModel(Entity& entity)

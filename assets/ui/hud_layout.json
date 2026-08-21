@@ -7,9 +7,19 @@
             "flex": {
                 "direction": "Column",
                 "justify": "FlexStart",
-                "align": "Center"
+                "align": "Center",
+                "gap": 10
             },
-            "boxModel": { "padding": { "left": 20, "right": 20, "top": 10, "bottom": 10 } },
+            "boxModel": {
+                "padding": { "left": 20, "right": 20, "top": 10, "bottom": 10 }
+            },
+            "debug": {
+                "enabled": true,
+                "color": { "r": 255, "g": 0, "b": 0, "a": 128 },
+                "filled": false,
+                "layer": 999,
+                "zIndex": 1000
+            },
             "children": [
                 { "type": "widget", "source": "assets/ui/widgets/timer.json" }
             ]

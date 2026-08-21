@@ -6,10 +6,13 @@
 #include "FlexEnumMapper/FlexEnumMapper.h"
 
 #include "domain/components/BoxModel.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
 #include "domain/components/LayoutDirtyComponent.h"
+#include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
@@ -136,12 +139,13 @@ Entity UILoader::createElement(const DataNode& node, std::optional<Entity> paren
     if (node.has("debug"))
     {
         DebugConfig debug = DataUtils::parseDebug(node, {false, Color::WHITE()});
-        if (debug.enabled) this->factory.createDebugChild(entity, rect.size, debug);
+        if (debug.enabled) comp.add<RectangleShapeComponent>(entity, RectangleShapeComponent{
+            rect, debug.color, debug.filled, debug.layer, debug.zIndex});
     }
 
     if (parent.has_value())
     {
-        comp.add<ParentComponent>(entity, ParentComponent{*parent});
+        this->factory.attachChild(*parent, entity);
         this->markParentDirty(*parent);
     }
 
@@ -175,10 +179,10 @@ void UILoader::applyFlex(const ApplyParams& params)
     if (!flexNode) return;
 
     FlexContainer flex;
-    flex.direction  = FlexEnumMapper::toDirection(flexNode->getString("direction", "Row"));
-    flex.justify    = FlexEnumMapper::toJustify(flexNode->getString("justify", "FlexStart"));
-    flex.align      = FlexEnumMapper::toAlign(flexNode->getString("align", "Stretch"));
-    flex.gap        = flexNode->getFloat("gap", 0.f);
+    flex.direction = FlexEnumMapper::toDirection(flexNode->getString("direction", "Row"));
+    flex.justify   = FlexEnumMapper::toJustify(flexNode->getString("justify", "FlexStart"));
+    flex.align     = FlexEnumMapper::toAlign(flexNode->getString("align", "Stretch"));
+    flex.gap       = flexNode->getFloat("gap", 0.f);
 
     auto& comp = this->factory.world().components();
     if (comp.has<FlexContainer>(params.entity)) comp.get<FlexContainer>(params.entity) = flex;
@@ -219,22 +223,22 @@ void UILoader::applyBoxModel(const ApplyParams& params)
     if (boxNode->has("margin"))
     {
         auto marginNode = boxNode->getObject("margin");
-        if (marginNode) box.margin = DataUtils::parseAABB(*marginNode, {0, 0, 0, 0});
+        if (marginNode) box.margin = DataUtils::parseAABB(*marginNode, {0,0,0,0});
     }
     if (boxNode->has("padding"))
     {
         auto paddingNode = boxNode->getObject("padding");
-        if (paddingNode) box.padding = DataUtils::parseAABB(*paddingNode, {0, 0, 0, 0});
+        if (paddingNode) box.padding = DataUtils::parseAABB(*paddingNode, {0,0,0,0});
     }
     if (boxNode->has("border"))
     {
         auto borderNode = boxNode->getObject("border");
-        if (borderNode) box.border = DataUtils::parseAABB(*borderNode, {0, 0, 0, 0});
+        if (borderNode) box.border = DataUtils::parseAABB(*borderNode, {0,0,0,0});
     }
     if (boxNode->has("borderRadius"))
     {
         auto radiusNode = boxNode->getObject("borderRadius");
-        if (radiusNode) box.borderRadius = DataUtils::parseCorners(*radiusNode, {0, 0, 0, 0});
+        if (radiusNode) box.borderRadius = DataUtils::parseCorners(*radiusNode, {0,0,0,0});
     }
 
     auto& comp = this->factory.world().components();

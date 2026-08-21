@@ -3,7 +3,7 @@
 #include "FlexLayoutContext/FlexLayoutContext.h"
 
 #include "domain/components/FlexContainer.h"
-#include "domain/components/TransformComponent.h"
+#include "domain/components/LocalTransform.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 
@@ -18,11 +18,14 @@ void MainAxisHandler::layout(FlexLayoutContext& ctx)
         float marginStart = ctx.isColumn ? info.margin.top : info.margin.left;
         float marginEnd = ctx.isColumn ? info.margin.bottom : info.margin.right;
 
-        auto& childTransform = comp.get<TransformComponent>(info.entity);
-        if (ctx.isColumn) childTransform.position.y = mainPos + marginStart;
-        else childTransform.position.x = mainPos + marginStart;
+        Entity child = info.entity;
+        if (!comp.has<LocalTransform>(child)) comp.add<LocalTransform>(child, LocalTransform{});
+        auto& childLocal = comp.get<LocalTransform>(child);
 
-        auto& childLayout = comp.get<UILayoutMetricsComponent>(info.entity);
+        if (ctx.isColumn) childLocal.position.y = mainPos + marginStart;
+        else childLocal.position.x = mainPos + marginStart;
+
+        auto& childLayout = comp.get<UILayoutMetricsComponent>(child);
         if (ctx.isColumn) childLayout.size.height = info.mainSize;
         else childLayout.size.width = info.mainSize;
 

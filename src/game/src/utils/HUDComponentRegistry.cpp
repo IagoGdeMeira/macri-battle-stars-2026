@@ -13,6 +13,7 @@
 #include "domain/components/HUDEntityTag.h"
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/LocalTransform.h"
+#include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
@@ -39,6 +40,7 @@ void HUDComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<HUDEntityTag>();
     comp.registerComponent<LayoutDirtyComponent>();
     comp.registerComponent<LocalTransform>();
+    comp.registerComponent<OrientationComponent>();
     comp.registerComponent<ParentComponent>();
     comp.registerComponent<RectangleEffectsComponent>();
     comp.registerComponent<RectangleShapeComponent>();

@@ -5,7 +5,6 @@
 #include "domain/components/BoxModel.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
-#include "domain/components/TransformComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
 #include "domain/value_objects/FlexEnums/FlexEnums.h"
@@ -13,10 +12,9 @@
 void BoxModelHandler::layout(FlexLayoutContext& ctx)
 {
     auto& comp = ctx.world.components();
-    const auto& transform = comp.get<TransformComponent>(ctx.container);
     const auto& uiRect = comp.get<UILayoutMetricsComponent>(ctx.container);
 
-    Rectangle outerRect{transform.position, uiRect.size};
+    Rectangle outerRect{Position{0.f, 0.f}, uiRect.size};
 
     AABB padding{0, 0, 0, 0}, border{0, 0, 0, 0};
     if (comp.has<BoxModel>(ctx.container))
@@ -26,8 +24,8 @@ void BoxModelHandler::layout(FlexLayoutContext& ctx)
         border = box.border;
     }
 
-    ctx.innerRect.position.x = outerRect.position.x + border.left + padding.left;
-    ctx.innerRect.position.y = outerRect.position.y + border.top + padding.top;
+    ctx.innerRect.position.x = border.left + padding.left;
+    ctx.innerRect.position.y = border.top + padding.top;
     ctx.innerRect.size.width = outerRect.size.width - border.left - border.right - padding.left - padding.right;
     ctx.innerRect.size.height = outerRect.size.height - border.top - border.bottom - padding.top - padding.bottom;
 
