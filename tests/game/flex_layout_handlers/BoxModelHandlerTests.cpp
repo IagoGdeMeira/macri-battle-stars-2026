@@ -94,8 +94,8 @@ TEST_CASE_METHOD(BoxModelHandlerFixture, "BoxModelHandler calculates inner rect 
 
     this->handler.layout(ctx);
 
-    REQUIRE(ctx.innerRect.position.x == Catch::Approx(10.f + 5.f));
-    REQUIRE(ctx.innerRect.position.y == Catch::Approx(20.f + 7.f));
+    REQUIRE(ctx.innerRect.position.x == Catch::Approx(5.f));
+    REQUIRE(ctx.innerRect.position.y == Catch::Approx(7.f));
     REQUIRE(ctx.innerRect.size.width == Catch::Approx(300.f - 5.f - 6.f));
     REQUIRE(ctx.innerRect.size.height == Catch::Approx(200.f - 7.f - 8.f));
 

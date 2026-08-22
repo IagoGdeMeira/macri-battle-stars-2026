@@ -12,8 +12,8 @@
 void AlignItemsHandler::layout(FlexLayoutContext& ctx)
 {
     auto& comp = ctx.world.components();
-    float crossPos = ctx.innerRect.position.x;
-    float crossSize = ctx.innerRect.size.width;
+    float crossPos = ctx.isColumn ? ctx.innerRect.position.x : ctx.innerRect.position.y;
+    float crossSize = ctx.isColumn ? ctx.innerRect.size.width : ctx.innerRect.size.height;
 
     for (auto& info : ctx.childInfos)
     {

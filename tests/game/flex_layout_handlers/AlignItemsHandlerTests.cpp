@@ -2,6 +2,7 @@
 
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
+#include "domain/components/LocalTransform.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
@@ -25,6 +26,7 @@ public:
     {
         auto& comp = this->world.components();
         comp.registerComponent<FlexItem>();
+        comp.registerComponent<LocalTransform>();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<UILayoutMetricsComponent>();
     }
@@ -63,8 +65,8 @@ TEST_CASE_METHOD(AlignItemsHandlerFixture, "AlignItemsHandler centers children c
 
     this->handler.layout(ctx);
 
-    const auto& transform = this->world.components().get<TransformComponent>(child);
-    REQUIRE(transform.position.y == Catch::Approx(10.f + (100.f - 20.f) * 0.5f));
+    const auto& local = this->world.components().get<LocalTransform>(child);
+    REQUIRE(local.position.y == Catch::Approx(10.f + (100.f - 20.f) * 0.5f));
 }
 
 TEST_CASE_METHOD(AlignItemsHandlerFixture, "AlignItemsHandler stretches child cross-axis",
@@ -127,6 +129,6 @@ TEST_CASE_METHOD(AlignItemsHandlerFixture, "AlignItemsHandler respects alignSelf
 
     handler.layout(ctx);
 
-    const auto& transform = comp.get<TransformComponent>(child);
-    REQUIRE(transform.position.y == Catch::Approx(10.f + (100.f - 20.f) * 0.5f));
+    const auto& local = this->world.components().get<LocalTransform>(child);
+    REQUIRE(local.position.y == Catch::Approx(10.f + (100.f - 20.f) * 0.5f));
 }

@@ -6,19 +6,18 @@
 #include <memory>
 #include <string>
 
+class DataParser;
+class EventBus;
 class GameSettings;
 class HUDVisibilitySystem;
 class IFontFactory;
 class ITextureFactory;
 class Renderer;
+class SceneManager;
 class UIDrawer;
 class UIFactory;
 class UILoader;
 class UIActionFactory;
-class DataParser;
-class SceneManager;
-class EventBus;
-
 class HUDScene : public Scene
 {
 public:
@@ -64,6 +63,7 @@ private:
     void addSystems();
     void loadHUDLayout();
     void registerWidgetLoaders();
+    void prepareHealthBars();
 };
 
 #endif // hud_scene_h

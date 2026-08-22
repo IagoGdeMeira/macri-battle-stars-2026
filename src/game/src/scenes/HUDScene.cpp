@@ -19,6 +19,9 @@
 #include "UIFlexLayoutSystem/UIFlexLayoutSystem.h"
 #include "UILoader/UILoader.h"
 
+#include "domain/components/FlexContainer.h"
+#include "domain/value_objects/FlexEnums/FlexEnums.h"
+
 #include "engine/value_objects/GameConstants/GameConstants.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
@@ -53,16 +56,7 @@ void HUDScene::init()
 
     this->registerWidgetLoaders();
     this->loadHUDLayout();
-
-    this->eventBus.subscribe<PlayerSpawnedEvent>([this](const PlayerSpawnedEvent& e)
-    {
-        UILoader::ParamMap params;
-        params["playerId"] = std::to_string(e.playerId);
-        params["maxHealth"] = std::to_string(e.maxHealth);
-        params["currentHealth"] = std::to_string(e.currentHealth);
-
-        this->uiLoader->instantiateWidget(this->healthBarWidgetPath, params, this->hudRoot);
-    });
+    this->prepareHealthBars();
 }
 
 void HUDScene::onPause() { if (this->visibilitySystem) this->visibilitySystem->setVisible(false); }
@@ -105,4 +99,25 @@ void HUDScene::registerWidgetLoaders()
 {
     this->uiLoader->registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(*this->uiFactory));
     this->uiLoader->registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(*this->uiFactory, this->fontFactory));
+}
+
+void HUDScene::prepareHealthBars()
+{
+    auto leftContainerOpt  = this->uiLoader->findEntityById("leftHealthBarContainer");
+    auto rightContainerOpt = this->uiLoader->findEntityById("rightHealthBarContainer");
+    if (!leftContainerOpt.has_value() || !rightContainerOpt.has_value()) return;
+
+    Entity leftContainer  = *leftContainerOpt;
+    Entity rightContainer = *rightContainerOpt;
+
+    this->eventBus.subscribe<PlayerSpawnedEvent>([this, leftContainer, rightContainer](const PlayerSpawnedEvent& e)
+    {
+        UILoader::ParamMap params;
+        params["playerId"]      = std::to_string(e.playerId);
+        params["maxHealth"]     = std::to_string(e.maxHealth);
+        params["currentHealth"] = std::to_string(e.currentHealth);
+
+        Entity target = (e.playerId == 0) ? leftContainer : rightContainer;
+        this->uiLoader->instantiateWidget(this->healthBarWidgetPath, params, target);
+    });
 }

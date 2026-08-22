@@ -29,8 +29,7 @@ public:
         for (auto [entity, transform, shape, layout, render] : view)
         {
             DrawCircleCommand cmd;
-            cmd.circle.position = transform.position;
-            cmd.circle.radius = shape.circle.radius;
+            cmd.circle = shape.circle;
             cmd.color = shape.color;
             cmd.filled = shape.filled;
             cmd.layer = render.layer;

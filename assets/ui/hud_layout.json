@@ -7,7 +7,7 @@
             "flex": {
                 "direction": "Column",
                 "justify": "FlexStart",
-                "align": "Center",
+                "align": "FlexStart",
                 "gap": 10
             },
             "boxModel": {
@@ -21,7 +21,72 @@
                 "zIndex": 1000
             },
             "children": [
-                { "type": "widget", "source": "assets/ui/widgets/timer.json" }
+                {
+                    "type": "panel",
+                    "id": "topBarContainer",
+                    "position": { "x": 0, "y": 0 },
+                    "size": { "width": 760, "height": 50 },
+                    "flex": {
+                        "direction": "Row",
+                        "justify": "SpaceBetween",
+                        "align": "Center",
+                        "gap": 10
+                    },
+                    "boxModel": {
+                        "padding": { "left": 0, "right": 0, "top": 0, "bottom": 0 }
+                    },
+                    "debug": {
+                        "enabled": true,
+                        "color": { "r": 0, "g": 0, "b": 255, "a": 128 },
+                        "filled": false,
+                        "layer": 999,
+                        "zIndex": 1000
+                    },
+                    "children": [
+                        {
+                            "type": "panel",
+                            "id": "leftHealthBarContainer",
+                            "position": { "x": 0, "y": 0 },
+                            "size": { "width": 300, "height": 30 },
+                            "flex": {
+                                "direction": "Row",
+                                "justify": "FlexStart",
+                                "align": "Center"
+                            },
+                            "boxModel": { "padding": { "left": 0, "right": 0, "top": 0, "bottom": 0 } },
+                            "debug": {
+                                "enabled": true,
+                                "color": { "r": 255, "g": 0, "b": 0, "a": 128 },
+                                "filled": false,
+                                "layer": 999,
+                                "zIndex": 1000
+                            }
+                        },
+                        {
+                            "type": "widget",
+                            "source": "assets/ui/widgets/timer.json"
+                        },
+                        {
+                            "type": "panel",
+                            "id": "rightHealthBarContainer",
+                            "position": { "x": 0, "y": 0 },
+                            "size": { "width": 300, "height": 30 },
+                            "flex": {
+                                "direction": "Row",
+                                "justify": "FlexStart",
+                                "align": "Center"
+                            },
+                            "boxModel": { "padding": { "left": 0, "right": 0, "top": 0, "bottom": 0 } },
+                            "debug": {
+                                "enabled": true,
+                                "color": { "r": 255, "g": 0, "b": 0, "a": 128 },
+                                "filled": false,
+                                "layer": 999,
+                                "zIndex": 1000
+                            }
+                        }
+                    ]
+                }
             ]
         }
     ]

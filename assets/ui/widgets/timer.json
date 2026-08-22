@@ -6,8 +6,7 @@
     "fontSize": 32,
     "flexItem": {
         "grow": 0,
-        "shrink": 0,
-        "alignSelf": "Center"
+        "shrink": 0
     },
     "debug": {
         "enabled": true,

@@ -7,12 +7,14 @@
 #include "StubTextureFactory.h"
 
 #include "domain/components/BoxModel.h"
+#include "domain/components/ChildrenComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/LayoutDirtyComponent.h"
+#include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -59,12 +61,14 @@ public:
     {
         auto& comp = this->world.components();
         comp.registerComponent<BoxModel>();
+        comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<FlexContainer>();
         comp.registerComponent<FlexItem>();
         comp.registerComponent<HealthBarSegmentComponent>();
         comp.registerComponent<HealthBarTag>();
         comp.registerComponent<LayoutDirtyComponent>();
+        comp.registerComponent<LocalTransform>();
         comp.registerComponent<ParentComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();

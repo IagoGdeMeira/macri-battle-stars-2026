@@ -1,6 +1,7 @@
 #include "game/flex_layout_handlers/MainAxisHandler.h"
 
 #include "domain/components/FlexContainer.h"
+#include "domain/components/LocalTransform.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/World/World.h"
@@ -22,6 +23,7 @@ public:
     MainAxisHandlerFixture()
     {
         auto& comp = world.components();
+        comp.registerComponent<LocalTransform>();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<UILayoutMetricsComponent>();
     }
@@ -68,11 +70,11 @@ TEST_CASE_METHOD(MainAxisHandlerFixture, "MainAxisHandler positions children in 
     handler.layout(ctx);
 
     auto& comp = world.components();
-    const auto& t1 = comp.get<TransformComponent>(child1);
-    const auto& t2 = comp.get<TransformComponent>(child2);
+    const auto& local1 = comp.get<LocalTransform>(child1);
+    const auto& local2 = comp.get<LocalTransform>(child2);
 
-    REQUIRE(t1.position.x == Catch::Approx(10.f));
-    REQUIRE(t2.position.x == Catch::Approx(10.f + 50.f + 10.f + 5.f));
+    REQUIRE(local1.position.x == Catch::Approx(10.f));
+    REQUIRE(local2.position.x == Catch::Approx(10.f + 50.f + 10.f + 5.f));
 
     const auto& l1 = comp.get<UILayoutMetricsComponent>(child1);
     const auto& l2 = comp.get<UILayoutMetricsComponent>(child2);

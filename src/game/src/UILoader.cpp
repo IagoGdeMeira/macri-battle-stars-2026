@@ -14,6 +14,7 @@
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
+#include "domain/components/UIIDComponent.h"
 #include "domain/components/UIActionComponent.h"
 #include "domain/components/UIFocusable.h"
 #include "domain/include/World/World.h"
@@ -124,6 +125,13 @@ Entity UILoader::createElement(const DataNode& node, std::optional<Entity> paren
         else entity = this->createWidget(node, params);
     }
 
+    if (node.has("id"))
+    {
+        std::string id = node.getString("id");
+        comp.add<UIIDComponent>(entity, UIIDComponent{id});
+        this->idToEntity.emplace(id, entity);
+    }
+
     if (node.has("style"))
     {
         auto it = this->styles.find(node.getString("style"));
@@ -161,6 +169,13 @@ Entity UILoader::createWidget(const DataNode& node, const ParamMap& params)
     if (it == this->widgetLoaders.end()) throw std::runtime_error("No widget loader registered for type: " + widgetType);
 
     return it->second->load(node, params);
+}
+
+std::optional<Entity> UILoader::findEntityById(const std::string& id) const
+{
+    auto it = this->idToEntity.find(id);
+    if (it != this->idToEntity.end()) return it->second;
+    return std::nullopt;
 }
 
 void UILoader::applyStyle(const ApplyParams& params)
@@ -276,6 +291,22 @@ void UILoader::applyChildren(const ApplyParams& params, const ParamMap& paramsMa
 void UILoader::markParentDirty(Entity parent)
 {
     auto& comp = this->factory.world().components();
-    if (comp.has<LayoutDirtyComponent>(parent)) comp.get<LayoutDirtyComponent>(parent).dirty = true;
-    else comp.add<LayoutDirtyComponent>(parent, LayoutDirtyComponent{true});
+    Entity current = parent;
+
+    while (true)
+    {
+        if (comp.has<LayoutDirtyComponent>(current)) comp.get<LayoutDirtyComponent>(current).dirty = true;
+        else comp.add<LayoutDirtyComponent>(current, LayoutDirtyComponent{true});
+
+        if (comp.has<ParentComponent>(current))
+        {
+            Entity next = comp.get<ParentComponent>(current).parent;
+            if (comp.has<FlexContainer>(next))
+            {
+                current = next;
+                continue;
+            }
+        }
+        break;
+    }
 }

@@ -20,6 +20,7 @@
 #include "domain/components/RenderComponent.h"
 #include "domain/components/RoundTimerTag.h"
 #include "domain/components/TransformComponent.h"
+#include "domain/components/UIIDComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
@@ -47,6 +48,7 @@ void HUDComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<RenderComponent>();
     comp.registerComponent<RoundTimerTag>();
     comp.registerComponent<TransformComponent>();
+    comp.registerComponent<UIIDComponent>();
     comp.registerComponent<UILayoutMetricsComponent>();
     comp.registerComponent<UISpriteComponent>();
     comp.registerComponent<UITextComponent>();

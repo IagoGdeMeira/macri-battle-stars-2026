@@ -35,6 +35,8 @@ public:
     Entity instantiateWidget(const std::string& widgetPath, const ParamMap& params, std::optional<Entity> parent = std::nullopt);
     void registerWidgetLoader(const std::string& widgetType, std::unique_ptr<IUIWidgetLoader> loader);
 
+    std::optional<Entity> findEntityById(const std::string& id) const;
+
 private:
     DataParser& parser;
     UIFactory& factory;
@@ -45,6 +47,7 @@ private:
     UIStyleLoader::StyleMap styles;
 
     std::unordered_map<std::string, std::unique_ptr<IUIWidgetLoader>> widgetLoaders;
+    std::unordered_map<std::string, Entity> idToEntity;
 
     Entity createElement(const DataNode& node, std::optional<Entity> parent = std::nullopt, const ParamMap& params = {});
     Entity createWidget(const DataNode& node, const ParamMap& params);

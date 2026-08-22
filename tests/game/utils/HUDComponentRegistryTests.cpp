@@ -20,6 +20,7 @@
 #include "domain/components/RenderComponent.h"
 #include "domain/components/RoundTimerTag.h"
 #include "domain/components/TransformComponent.h"
+#include "domain/components/UIIDComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UISpriteComponent.h"
 #include "domain/components/UITextComponent.h"
@@ -53,6 +54,7 @@ TEST_CASE("HUDComponentRegistry registers every HUD component", "[unit][hud_comp
     REQUIRE(comp.storage<RenderComponent>() != nullptr);
     REQUIRE(comp.storage<RoundTimerTag>() != nullptr);
     REQUIRE(comp.storage<TransformComponent>() != nullptr);
+    REQUIRE(comp.storage<UIIDComponent>() != nullptr);
     REQUIRE(comp.storage<UILayoutMetricsComponent>() != nullptr);
     REQUIRE(comp.storage<UISpriteComponent>() != nullptr);
     REQUIRE(comp.storage<UITextComponent>() != nullptr);

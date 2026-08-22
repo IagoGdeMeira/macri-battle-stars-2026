@@ -10,6 +10,7 @@
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
 #include "domain/components/LayoutDirtyComponent.h"
+#include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
@@ -33,6 +34,7 @@ public:
         comp.registerComponent<FlexContainer>();
         comp.registerComponent<FlexItem>();
         comp.registerComponent<LayoutDirtyComponent>();
+        comp.registerComponent<LocalTransform>();
         comp.registerComponent<ParentComponent>();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<UILayoutMetricsComponent>();
@@ -96,9 +98,9 @@ TEST_CASE_METHOD(UIFlexLayoutSystemFixture, "UIFlexLayoutSystem applies alignSel
     this->system.update(ctx);
 
     auto& comp = this->world.components();
-    const auto& transform1 = comp.get<TransformComponent>(child1);
-    const auto& transform2 = comp.get<TransformComponent>(child2);
+    const auto& local1 = comp.get<LocalTransform>(child1);
+    const auto& local2 = comp.get<LocalTransform>(child2);
 
-    REQUIRE(transform1.position.x == Catch::Approx(0.f));
-    REQUIRE(transform2.position.x == Catch::Approx((800.f - 100.f) * 0.5f));
+    REQUIRE(local1.position.x == Catch::Approx(0.f));
+    REQUIRE(local2.position.x == Catch::Approx((800.f - 100.f) * 0.5f));
 }
