@@ -1,10 +1,13 @@
 #ifndef hud_scene_h
 #define hud_scene_h
 
+#include "PlayerSpawnedEvent.h"
+
 #include "engine/include/Scene/Scene.h"
 
 #include <memory>
 #include <string>
+#include <vector>
 
 class DataParser;
 class EventBus;
@@ -18,6 +21,7 @@ class UIDrawer;
 class UIFactory;
 class UILoader;
 class UIActionFactory;
+
 class HUDScene : public Scene
 {
 public:
@@ -32,9 +36,11 @@ public:
     ~HUDScene() override;
 
     void init() override;
+    void update(float deltaTime) override;
+    void render() override;
+
     void onPause() override;
     void onResume() override;
-    void render() override;
 
     bool allowsUpdateBelow() const override { return true; }
 
@@ -42,6 +48,8 @@ private:
     float initialRoundTime = 99.f;
     std::string layoutPath;
     std::string healthBarWidgetPath;
+
+    std::vector<PlayerSpawnedEvent> pendingSpawns;
 
     EventBus& eventBus;
     SceneManager& sceneManager;

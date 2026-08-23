@@ -158,7 +158,8 @@ TEST_CASE_METHOD(HitboxControllerSystemFixture, "HitboxControllerSystem stays on
     this->system.update(ctx);
 
     REQUIRE(comp.get<ActiveComponent>(hb0).active == false);
-    REQUIRE(comp.get<ActiveComponent>(hb1).active == true);
+    REQUIRE(comp.get<ActiveComponent>(hb1).active == false);
+    REQUIRE(comp.get<HitboxControllerComponent>(entity).finished == true);
 }
 
 TEST_CASE_METHOD(HitboxControllerSystemFixture, "HitboxControllerSystem uses global frameDuration when frame duration is zero",

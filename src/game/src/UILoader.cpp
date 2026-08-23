@@ -13,6 +13,7 @@
 #include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
+#include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UIIDComponent.h"
 #include "domain/components/UIActionComponent.h"
@@ -147,8 +148,17 @@ Entity UILoader::createElement(const DataNode& node, std::optional<Entity> paren
     if (node.has("debug"))
     {
         DebugConfig debug = DataUtils::parseDebug(node, {false, Color::WHITE()});
-        if (debug.enabled) comp.add<RectangleShapeComponent>(entity, RectangleShapeComponent{
-            rect, debug.color, debug.filled, debug.layer, debug.zIndex});
+        if (debug.enabled)
+        {
+            comp.add<RectangleShapeComponent>(entity, RectangleShapeComponent{
+                rect, debug.color, debug.filled, debug.layer, debug.zIndex});
+            if (comp.has<RenderComponent>(entity))
+            {
+                comp.get<RenderComponent>(entity).layer = debug.layer;
+                comp.get<RenderComponent>(entity).zIndex = debug.zIndex;
+            }
+            else comp.add<RenderComponent>(entity, RenderComponent{debug.layer, debug.zIndex});
+        }
     }
 
     if (parent.has_value())

@@ -84,6 +84,7 @@ void PushboxCollisionController::applyController(Entity entity, const PushboxCon
         old.currentFrame = 0;
         old.elapsedTime = 0.f;
         old.initialized = false;
+        old.finished = false;
         this->activateFirstFrame(old, world);
     }
     else

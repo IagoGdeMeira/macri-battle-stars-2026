@@ -11,4 +11,3 @@ public:
 };
 
 #endif // hud_component_registry_h
-    

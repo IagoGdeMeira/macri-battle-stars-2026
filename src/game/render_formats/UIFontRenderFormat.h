@@ -3,55 +3,21 @@
 
 #include "IRenderFormat/IRenderFormat.h"
 
-#include "domain/components/FontEffectsComponent.h"
-#include "domain/components/RenderComponent.h"
-#include "domain/components/TransformComponent.h"
-#include "domain/components/UILayoutMetricsComponent.h"
-#include "domain/components/UITextComponent.h"
-#include "domain/include/View/View.h"
+#include "domain/include/Entity/Entity.h"
+#include "domain/include/World/World.h"
 
 #include "engine/draw_commands/DrawFontCommand.h"
-#include "engine/include/RenderQueue/RenderQueue.h"
 #include "engine/include/Renderer/Renderer.h"
-#include "engine/value_objects/RenderContext/RenderContext.h"
 
 class UIFontRenderFormat : public IRenderFormat
 {
 public:
-    UIFontRenderFormat(Renderer& renderer) : renderer(renderer) {}
-
-    void render(RenderContext& ctx, RenderQueue& queue) override
-    {
-        auto& comp = ctx.world.components();
-        auto view = View<TransformComponent, UILayoutMetricsComponent, UITextComponent, RenderComponent>(comp);
-        size_t order = 0;
-
-        for (auto [entity, transform, uiRect, text, render] : view)
-        {
-            if (text.text.empty() || !text.font) continue;
-
-            Rectangle dest{transform.position, uiRect.size};
-
-            auto& cmd = queue.emplace<DrawFontCommand>();
-            cmd.text = text.text;
-            cmd.font = text.font.get();
-            cmd.dest = dest;
-            cmd.fontSize = text.fontSize > 0 ? text.fontSize : 16;
-            cmd.color = text.color;
-            cmd.layer = render.layer;
-            cmd.zIndex = render.zIndex;
-            cmd.order = order++;
-
-            if (comp.has<FontEffectsComponent>(entity))
-            {
-                const auto& fx = comp.get<FontEffectsComponent>(entity);
-                for (auto& effect : fx.effects) if (effect) effect(&queue, &cmd);
-            }
-        }
-    }
+    explicit UIFontRenderFormat(Renderer& renderer) : renderer(renderer) {}
+    void render(RenderContext& ctx, RenderQueue& queue) override;
 
 private:
     Renderer& renderer;
+    DrawFontCommand buildFontCommand(Entity entity, World& world, size_t order) const;
 };
 
 #endif // ui_font_render_format_h

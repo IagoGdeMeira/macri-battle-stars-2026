@@ -59,9 +59,26 @@ void HUDScene::init()
     this->prepareHealthBars();
 }
 
-void HUDScene::onPause() { if (this->visibilitySystem) this->visibilitySystem->setVisible(false); }
+void HUDScene::update(float deltaTime)
+{
+    for (const auto& spawn : this->pendingSpawns)
+    {
+        UILoader::ParamMap params;
+        params["playerId"]      = std::to_string(spawn.playerId);
+        params["maxHealth"]     = std::to_string(spawn.maxHealth);
+        params["currentHealth"] = std::to_string(spawn.currentHealth);
 
-void HUDScene::onResume() { if (this->visibilitySystem) this->visibilitySystem->setVisible(true); }
+        auto leftContainerOpt  = this->uiLoader->findEntityById("leftHealthBarContainer");
+        auto rightContainerOpt = this->uiLoader->findEntityById("rightHealthBarContainer");
+        if (!leftContainerOpt.has_value() || !rightContainerOpt.has_value()) continue;
+
+        Entity target = (spawn.playerId == 0) ? *leftContainerOpt : *rightContainerOpt;
+        this->uiLoader->instantiateWidget(this->healthBarWidgetPath, params, target);
+    }
+    this->pendingSpawns.clear();
+
+    Scene::update(deltaTime);
+}
 
 void HUDScene::render()
 {
@@ -69,6 +86,10 @@ void HUDScene::render()
     RenderContext ctx{ this->world(), this->eventBus };
     this->uiDrawer->draw(ctx);
 }
+
+void HUDScene::onPause() { if (this->visibilitySystem) this->visibilitySystem->setVisible(false); }
+
+void HUDScene::onResume() { if (this->visibilitySystem) this->visibilitySystem->setVisible(true); }
 
 void HUDScene::registerComponents() { HUDComponentRegistry::registerAll(this->world().components()); }
 
@@ -111,13 +132,5 @@ void HUDScene::prepareHealthBars()
     Entity rightContainer = *rightContainerOpt;
 
     this->eventBus.subscribe<PlayerSpawnedEvent>([this, leftContainer, rightContainer](const PlayerSpawnedEvent& e)
-    {
-        UILoader::ParamMap params;
-        params["playerId"]      = std::to_string(e.playerId);
-        params["maxHealth"]     = std::to_string(e.maxHealth);
-        params["currentHealth"] = std::to_string(e.currentHealth);
-
-        Entity target = (e.playerId == 0) ? leftContainer : rightContainer;
-        this->uiLoader->instantiateWidget(this->healthBarWidgetPath, params, target);
-    });
+    { this->pendingSpawns.push_back(e); });
 }

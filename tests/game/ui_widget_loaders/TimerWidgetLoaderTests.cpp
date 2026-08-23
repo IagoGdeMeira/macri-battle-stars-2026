@@ -13,6 +13,7 @@
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/RoundTimerTag.h"
 #include "domain/components/TransformComponent.h"
@@ -50,6 +51,7 @@ public:
         comp.registerComponent<LayoutDirtyComponent>();
         comp.registerComponent<LocalTransform>();
         comp.registerComponent<ParentComponent>();
+        comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<RoundTimerTag>();
         comp.registerComponent<TransformComponent>();

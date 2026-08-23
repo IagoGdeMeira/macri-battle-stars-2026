@@ -19,6 +19,10 @@ target_sources(game
         src/flex_layout_handlers/JustifyContentHandler.cpp
         src/flex_layout_handlers/MainAxisHandler.cpp
 
+        src/render_formats/UICircleRenderFormat.cpp
+        src/render_formats/UIFontRenderFormat.cpp
+        src/render_formats/UIRectangleRenderFormat.cpp
+        src/render_formats/UITextureRenderFormat.cpp
         src/render_formats/WorldCircleRenderFormat.cpp
         src/render_formats/WorldRectangleRenderFormat.cpp
         src/render_formats/WorldTextureRenderFormat.cpp

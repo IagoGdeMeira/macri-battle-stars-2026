@@ -4,6 +4,7 @@
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
@@ -28,6 +29,7 @@ public:
         comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<HealthBarSegmentComponent>();
         comp.registerComponent<HealthBarTag>();
+        comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<UILayoutMetricsComponent>();

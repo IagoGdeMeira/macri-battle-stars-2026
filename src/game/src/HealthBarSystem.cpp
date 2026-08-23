@@ -3,6 +3,7 @@
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
+#include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/include/View/View.h"
@@ -19,8 +20,13 @@ HealthBarSystem::HealthBarSystem(EventBus& bus) : bus(bus)
 
 void HealthBarSystem::update(UpdateContext& ctx)
 {
+    auto& comp = ctx.world.components();
+    auto view = View<HealthBarTag>(comp);
+
     for (const auto& event : this->damageEvents) this->processDamageEvent(ctx.world, event);
     this->damageEvents.clear();
+
+    for (auto [entity, tag] : view) this->updateHealthBarSegments(ctx.world, entity, tag.currentHealth);
 }
 
 void HealthBarSystem::processDamageEvent(World& world, const DamageEvent& event)
@@ -66,5 +72,12 @@ void HealthBarSystem::updateSegmentWidth(World& world, Entity segment, float cur
     auto& comp = world.components();
     auto& segmentComp = comp.get<HealthBarSegmentComponent>(segment);
     auto& uiMetrics = comp.get<UILayoutMetricsComponent>(segment);
-    uiMetrics.size.width = (currentHP / segmentComp.maxHP) * segmentComp.maxWidth;
+    float newWidth = (currentHP / segmentComp.maxHP) * segmentComp.maxWidth;
+    uiMetrics.size.width = newWidth;
+
+    if (comp.has<RectangleShapeComponent>(segment))
+    {
+        auto& shape = comp.get<RectangleShapeComponent>(segment);
+        shape.rect.size.width = newWidth;
+    }
 }

@@ -21,11 +21,9 @@ Entity TimerWidgetLoader::load(const DataNode& node, const UILoader::ParamMap& p
 
     Rectangle rect = DataUtils::parseRect(node, {{0.f, 0.f}, {100.f, 40.f}});
     Entity panel = this->factory.createBox(rect);
-    comp.add<RoundTimerTag>(panel, RoundTimerTag{});
 
     float initialTime = node.getFloat("initialTime", 99.f);
-    if (params.contains("initialTime"))
-        initialTime = std::stof(params.at("initialTime"));
+    if (params.contains("initialTime")) initialTime = std::stof(params.at("initialTime"));
 
     std::string text = std::to_string(static_cast<int>(initialTime));
     float fontSize = node.getFloat("fontSize", 32.f);
@@ -45,7 +43,10 @@ Entity TimerWidgetLoader::load(const DataNode& node, const UILoader::ParamMap& p
 
     UIFactory::TextParams paramsText{text, fontSize, color, rect.position};
     Entity textEntity = this->factory.createText(paramsText, font);
+
     this->factory.attachChild(panel, textEntity, {0.f, 0.f});
+
+    comp.add<RoundTimerTag>(panel, RoundTimerTag{});
     comp.get<UILayoutMetricsComponent>(textEntity).size = rect.size;
 
     return panel;

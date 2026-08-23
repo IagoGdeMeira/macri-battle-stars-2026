@@ -11,4 +11,3 @@ public:
 };
 
 #endif // game_component_registry_h
-    

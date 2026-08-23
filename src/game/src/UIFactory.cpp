@@ -185,6 +185,12 @@ void UIFactory::attachChild(Entity parent, Entity child, const Position& localPo
     if (!comp.has<TransformComponent>(child)) comp.add<TransformComponent>(child, TransformComponent{{0.f, 0.f}});
     if (!comp.has<ChildrenComponent>(parent)) comp.add<ChildrenComponent>(parent, ChildrenComponent{});
     comp.get<ChildrenComponent>(parent).children.push_back(child);
+
+    if (comp.has<RectangleShapeComponent>(child))
+    {
+        auto& shape = comp.get<RectangleShapeComponent>(child);
+        shape.rect.position = localPos;
+    }
 }
 
 void UIFactory::applyDefaultBoxModel(Entity& entity)
