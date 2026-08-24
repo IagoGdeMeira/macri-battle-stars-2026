@@ -12,6 +12,9 @@
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
+#include <unordered_map>
+#include <vector>
+
 HealthBarSystem::HealthBarSystem(EventBus& bus) : bus(bus)
 {
     this->bus.subscribe<DamageEvent>([this](const DamageEvent& e)
@@ -20,12 +23,11 @@ HealthBarSystem::HealthBarSystem(EventBus& bus) : bus(bus)
 
 void HealthBarSystem::update(UpdateContext& ctx)
 {
-    auto& comp = ctx.world.components();
-    auto view = View<HealthBarTag>(comp);
-
     for (const auto& event : this->damageEvents) this->processDamageEvent(ctx.world, event);
     this->damageEvents.clear();
 
+    auto& comp = ctx.world.components();
+    auto view = View<HealthBarTag>(comp);
     for (auto [entity, tag] : view) this->updateHealthBarSegments(ctx.world, entity, tag.currentHealth);
 }
 
@@ -42,7 +44,7 @@ void HealthBarSystem::processDamageEvent(World& world, const DamageEvent& event)
         if (tag.currentHealth < 0) tag.currentHealth = 0;
 
         this->updateHealthBarSegments(world, entity, tag.currentHealth);
-        break; 
+        break;
     }
 }
 
@@ -54,30 +56,34 @@ void HealthBarSystem::updateHealthBarSegments(World& world, Entity container, in
     const auto& children = comp.get<ChildrenComponent>(container).children;
     float remainingHP = static_cast<float>(currentHealth);
 
+    std::unordered_map<int, std::vector<Entity>> segmentsByIndex;
+
     for (Entity child : children)
     {
         if (!comp.has<HealthBarSegmentComponent>(child)) continue;
+        int idx = comp.get<HealthBarSegmentComponent>(child).segmentIndex;
+        segmentsByIndex[idx].push_back(child);
+    }
 
-        auto& segmentComp = comp.get<HealthBarSegmentComponent>(child);
-        float maxHP = segmentComp.maxHP;
+    for (auto& [index, entities] : segmentsByIndex)
+    {
+        if (entities.empty()) continue;
+
+        auto& firstSeg = comp.get<HealthBarSegmentComponent>(entities.front());
+        float maxHP = firstSeg.maxHP;
         float segmentHP = std::min(remainingHP, maxHP);
         remainingHP -= segmentHP;
 
-        this->updateSegmentWidth(world, child, segmentHP);
+        float newWidth = (segmentHP / maxHP) * firstSeg.maxWidth;
+
+        for (Entity e : entities) this->updateSegmentWidth(world, e, newWidth);
     }
 }
 
-void HealthBarSystem::updateSegmentWidth(World& world, Entity segment, float currentHP)
+void HealthBarSystem::updateSegmentWidth(World& world, Entity segment, float newWidth)
 {
     auto& comp = world.components();
-    auto& segmentComp = comp.get<HealthBarSegmentComponent>(segment);
-    auto& uiMetrics = comp.get<UILayoutMetricsComponent>(segment);
-    float newWidth = (currentHP / segmentComp.maxHP) * segmentComp.maxWidth;
-    uiMetrics.size.width = newWidth;
 
-    if (comp.has<RectangleShapeComponent>(segment))
-    {
-        auto& shape = comp.get<RectangleShapeComponent>(segment);
-        shape.rect.size.width = newWidth;
-    }
+    if (comp.has<UILayoutMetricsComponent>(segment)) comp.get<UILayoutMetricsComponent>(segment).size.width = newWidth;
+    if (comp.has<RectangleShapeComponent>(segment)) comp.get<RectangleShapeComponent>(segment).rect.size.width = newWidth;
 }

@@ -118,7 +118,7 @@ void HUDScene::loadHUDLayout()
 
 void HUDScene::registerWidgetLoaders()
 {
-    this->uiLoader->registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(*this->uiFactory));
+    this->uiLoader->registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(*this->uiFactory, this->parser));
     this->uiLoader->registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(*this->uiFactory, this->fontFactory));
 }
 

@@ -22,7 +22,7 @@ private:
 
     void processDamageEvent(World& world, const DamageEvent& event);
     void updateHealthBarSegments(World& world, Entity container, int currentHealth);
-    void updateSegmentWidth(World& world, Entity segment, float currentHP);
+    void updateSegmentWidth(World& world, Entity segment, float newWidth);
 };
 
 #endif // health_bar_system_h

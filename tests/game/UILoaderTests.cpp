@@ -80,7 +80,7 @@ public:
         comp.registerComponent<UISpriteComponent>();
         comp.registerComponent<UITextComponent>();
 
-        this->loader.registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(this->factory));
+        this->loader.registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(this->factory, this->parser));
         this->loader.registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(this->factory, this->fontFactory));
     }
 

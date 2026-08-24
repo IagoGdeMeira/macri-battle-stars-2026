@@ -36,12 +36,13 @@ public:
     EventBus bus;
     StubFontFactory fontFactory;
     StubTextureFactory textureFactory;
+    StubDataParser parser;
     UIFactory factory;
     HealthBarWidgetLoader loader;
 
     HealthBarWidgetLoaderFixture() :
         factory(this->world, this->fontFactory, this->textureFactory),
-        loader(this->factory)
+        loader(this->factory, this->parser)
     {
         auto& comp = this->world.components();
         comp.registerComponent<BoxModel>();
