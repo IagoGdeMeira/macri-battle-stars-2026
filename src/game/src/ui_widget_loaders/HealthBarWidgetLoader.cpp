@@ -11,6 +11,7 @@
 
 #include "engine/utils/DataUtils/DataUtils.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <vector>
 
@@ -60,61 +61,49 @@ void HealthBarWidgetLoader::createBorder(Entity container, const BarData& data) 
     comp.get<RenderComponent>(border).zIndex = 2;
 }
 
-
-
 void HealthBarWidgetLoader::createSegments(Entity container, const BarData& data) const
 {
     const float maxSegmentHP = 100.f;
-    int numSegments = (data.maxHealth + static_cast<int>(maxSegmentHP) - 1) / static_cast<int>(maxSegmentHP);
-    float segmentMaxWidth = data.width / numSegments;
-    float remainingHP = static_cast<float>(data.currentHealth);
-
+    const float barTotalWidth = data.width;
     const float shadowHeight = data.height * HealthBarWidgetLoader::SHADOW_HEIGHT_RATIO;
     const float fillHeight = data.height - shadowHeight;
 
-    for (int i = 0; i < numSegments; ++i)
+    for (int i = 0; ; ++i)
     {
-        SegmentParams params;
-        params.remainingHP = remainingHP;
-        params.maxHP = maxSegmentHP;
-        params.maxWidth = segmentMaxWidth;
-        SegmentData seg = this->computeSegment(i, params);
-        remainingHP -= seg.hp;
+        float rangeStartHP = i * maxSegmentHP;
+        if (rangeStartHP >= data.maxHealth) break;
 
-        float width = (seg.hp / seg.maxHP) * seg.maxWidth;
+        float rangeEndHP = std::min(rangeStartHP + maxSegmentHP, static_cast<float>(data.maxHealth));
+        float rangeMaxHP = rangeEndHP - rangeStartHP;
+        float hpInRange = std::max(0.f, std::min(static_cast<float>(data.currentHealth) - rangeStartHP, rangeMaxHP));
+
+        float fillFraction = (rangeMaxHP > 0.f) ? hpInRange / rangeMaxHP : 0.f;
+        float segmentWidth = barTotalWidth * fillFraction;
+        float positionX = 0.f;
+
         SegmentColor colors = this->getSegmentColor(i);
 
         Entity fillSegment = this->factory.createRectangleShape(
             UIFactory::ShapeParams{colors.fill},
-            Rectangle{Position{0.f, 0.f}, Dimension2D{width, fillHeight}});
-        this->factory.attachChild(container, fillSegment, Position{seg.index * seg.maxWidth, 0.f});
+            Rectangle{Position{0.f, 0.f}, Dimension2D{segmentWidth, fillHeight}});
+        this->factory.attachChild(container, fillSegment, Position{positionX, 0.f});
 
         Entity shadowSegment = this->factory.createRectangleShape(
             UIFactory::ShapeParams{colors.shadow},
-            Rectangle{Position{0.f, 0.f}, Dimension2D{width, shadowHeight}});
-        this->factory.attachChild(container, shadowSegment, Position{seg.index * seg.maxWidth, fillHeight});
+            Rectangle{Position{0.f, 0.f}, Dimension2D{segmentWidth, shadowHeight}});
+        this->factory.attachChild(container, shadowSegment, Position{positionX, fillHeight});
 
         auto& comp = this->factory.world().components();
 
         comp.add<HealthBarSegmentComponent>(fillSegment, HealthBarSegmentComponent{
-            seg.maxHP, seg.maxWidth, colors.fill, colors.shadow, i});
+            rangeMaxHP, barTotalWidth, colors.fill, colors.shadow, i});
 
         comp.add<HealthBarSegmentComponent>(shadowSegment, HealthBarSegmentComponent{
-            seg.maxHP, seg.maxWidth, colors.shadow, colors.shadow, i});
+            rangeMaxHP, barTotalWidth, colors.shadow, colors.shadow, i});
 
-        comp.get<RenderComponent>(fillSegment).zIndex = 1;
-        comp.get<RenderComponent>(shadowSegment).zIndex = 1;
+        comp.get<RenderComponent>(fillSegment).zIndex = 1 + i;
+        comp.get<RenderComponent>(shadowSegment).zIndex = 1 + i;
     }
-}
-
-HealthBarWidgetLoader::SegmentData HealthBarWidgetLoader::computeSegment(int index, const SegmentParams& params) const
-{
-    SegmentData seg;
-    seg.index       = index;
-    seg.maxHP       = params.maxHP;
-    seg.maxWidth    = params.maxWidth;
-    seg.hp          = std::min(params.remainingHP, params.maxHP);
-    return seg;
 }
 
 void HealthBarWidgetLoader::loadSegmentColors()

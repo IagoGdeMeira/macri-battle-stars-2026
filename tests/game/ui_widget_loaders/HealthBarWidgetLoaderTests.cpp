@@ -58,14 +58,28 @@ public:
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<UILayoutMetricsComponent>();
         comp.registerComponent<UISpriteComponent>();
+
+        StubDataNode colorsRoot;
+        std::vector<std::unique_ptr<DataNode>> segmentsArray;
+
+        auto segmentNode = std::make_unique<StubDataNode>();
+        auto fillNode = std::make_unique<StubDataNode>();
+        fillNode->setInt("r", 255); fillNode->setInt("g", 0); fillNode->setInt("b", 0); fillNode->setInt("a", 255);
+        auto shadowNode = std::make_unique<StubDataNode>();
+        shadowNode->setInt("r", 120); shadowNode->setInt("g", 0); shadowNode->setInt("b", 0); shadowNode->setInt("a", 255);
+        segmentNode->setObject("fill", std::move(fillNode));
+        segmentNode->setObject("shadow", std::move(shadowNode));
+        segmentsArray.push_back(std::move(segmentNode));
+        colorsRoot.setArray("segments", std::move(segmentsArray));
+        this->parser.registerNode("assets/ui/health_bar_colors.json", std::make_unique<StubDataNode>(colorsRoot));
     }
 
     UILoader::ParamMap makeParams(int playerId, int maxHealth, int currentHealth)
     {
         return {
-            {"playerId", std::to_string(playerId)},
-            {"maxHealth", std::to_string(maxHealth)},
-            {"currentHealth", std::to_string(currentHealth)}
+            { "playerId", std::to_string(playerId) },
+            { "maxHealth", std::to_string(maxHealth) },
+            { "currentHealth", std::to_string(currentHealth) }
         };
     }
 
@@ -97,7 +111,7 @@ TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader creates co
     auto view = View<ParentComponent>(comp);
     for (auto [e, parent] : view) if (parent.parent == bar) children.push_back(e);
 
-    REQUIRE(children.size() == 5);
+    REQUIRE(children.size() == 8);
 
     int segmentCount = 0;
     for (Entity child : children) if (comp.has<HealthBarSegmentComponent>(child))
@@ -105,10 +119,10 @@ TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader creates co
         ++segmentCount;
         const auto& seg = comp.get<HealthBarSegmentComponent>(child);
         REQUIRE(seg.maxHP == 100.f);
-        REQUIRE(seg.maxWidth == Catch::Approx(100.f));
+        REQUIRE(seg.maxWidth == Catch::Approx(300.f));
     }
 
-    REQUIRE(segmentCount == 3);
+    REQUIRE(segmentCount == 6);
 }
 
 TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader handles zero health with full width background",

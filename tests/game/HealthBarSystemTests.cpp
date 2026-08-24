@@ -63,13 +63,20 @@ public:
         {
             float segmentHP = std::min(remainingHP, maxSegmentHP);
             remainingHP -= segmentHP;
-            float segmentMaxWidth = totalWidth / numSegments;
+
+            float segmentWidth = (segmentHP / maxSegmentHP) * totalWidth;
 
             Entity segment = this->world.entities().create();
             comp.add<TransformComponent>(segment, TransformComponent{Position{0.f, 0.f}});
-            comp.add<UILayoutMetricsComponent>(segment, UILayoutMetricsComponent{Dimension2D{(segmentHP / maxSegmentHP) * segmentMaxWidth, barHeight}});
+            comp.add<UILayoutMetricsComponent>(segment, UILayoutMetricsComponent{Dimension2D{segmentWidth, barHeight}});
             comp.add<ActiveComponent>(segment, ActiveComponent{true});
-            comp.add<HealthBarSegmentComponent>(segment, HealthBarSegmentComponent{maxSegmentHP, segmentMaxWidth});
+            comp.add<HealthBarSegmentComponent>(segment, HealthBarSegmentComponent{
+                .maxHP          = maxSegmentHP,
+                .maxWidth       = totalWidth,
+                .fill           = Color::WHITE(),
+                .shadow         = Color::WHITE(),
+                .segmentIndex   = i
+            });
             children.children.push_back(segment);
         }
         return container;

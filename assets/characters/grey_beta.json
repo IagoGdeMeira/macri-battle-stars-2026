@@ -13,5 +13,6 @@
         "gravityScaleDesc": 2.0,
         "fastFallMultiplier": 2.5
     },
+    "health": { "initial": 240, "max": 300 },
     "customStates": []
 }

@@ -44,13 +44,13 @@ CharacterLoader::Info CharacterLoader::create(World& world, const std::string& p
         .fastFallMultiplier = def.jump.fastFallMultiplier
     });
 
-    comp.add<HealthComponent>(entity, HealthComponent{def.maxHealth, def.maxHealth});
+    comp.add<HealthComponent>(entity, HealthComponent{def.health.initial, def.health.max});
 
     return CharacterLoader::Info {
         .entity         = entity,
         .displayName    = def.id,
-        .maxHealth      = def.maxHealth,
-        .currentHealth  = def.maxHealth
+        .maxHealth      = def.health.max,
+        .currentHealth  = def.health.initial
     };
 }
 

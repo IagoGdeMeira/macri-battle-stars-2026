@@ -12,7 +12,7 @@
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/value_objects/UpdateContext/UpdateContext.h"
 
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 HealthBarSystem::HealthBarSystem(EventBus& bus) : bus(bus)
@@ -54,9 +54,7 @@ void HealthBarSystem::updateHealthBarSegments(World& world, Entity container, in
     if (!comp.has<ChildrenComponent>(container)) return;
 
     const auto& children = comp.get<ChildrenComponent>(container).children;
-    float remainingHP = static_cast<float>(currentHealth);
-
-    std::unordered_map<int, std::vector<Entity>> segmentsByIndex;
+    std::map<int, std::vector<Entity>> segmentsByIndex;
 
     for (Entity child : children)
     {
@@ -64,6 +62,8 @@ void HealthBarSystem::updateHealthBarSegments(World& world, Entity container, in
         int idx = comp.get<HealthBarSegmentComponent>(child).segmentIndex;
         segmentsByIndex[idx].push_back(child);
     }
+
+    float remainingHP = static_cast<float>(currentHealth);
 
     for (auto& [index, entities] : segmentsByIndex)
     {
@@ -75,7 +75,6 @@ void HealthBarSystem::updateHealthBarSegments(World& world, Entity container, in
         remainingHP -= segmentHP;
 
         float newWidth = (segmentHP / maxHP) * firstSeg.maxWidth;
-
         for (Entity e : entities) this->updateSegmentWidth(world, e, newWidth);
     }
 }

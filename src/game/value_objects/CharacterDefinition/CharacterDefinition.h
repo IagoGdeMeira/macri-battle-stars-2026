@@ -1,6 +1,7 @@
 #ifndef character_definition_h
 #define character_definition_h
 
+#include "HealthDefinition/HealthDefinition.h"
 #include "JumpDefinition/JumpDefinition.h"
 
 #include "domain/value_objects/Geometry/Geometry.h"
@@ -16,7 +17,7 @@ struct CharacterDefinition
     std::string texturePath, animationsPath, stateMachinePath, combosPath, collisionsPath;
 
     JumpDefinition jump;
-    int maxHealth = 100;
+    HealthDefinition health { .initial = 150, .max = 200 };
     
     std::vector<std::string> customStates;
 };

@@ -33,7 +33,12 @@ CharacterDefinition CharacterDefinitionLoader::load(const std::string& path) con
         def.jump.fastFallMultiplier = jumpNode->getFloat("fastFallMultiplier", 2.5f);
     }
 
-    def.maxHealth = root->getInt("maxHealth", 100);
+    if (root->has("health"))
+    {
+        auto healthNode = root->getObject("health");
+        def.health.initial = healthNode->getInt("initial", 100);
+        def.health.max = healthNode->getInt("max", 100);
+    }
 
     if (root->has("customStates")) for (auto& node : root->getArray("customStates"))
     {
