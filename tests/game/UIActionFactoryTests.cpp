@@ -22,7 +22,6 @@
 #include "engine/value_objects/GameSettings/GameSettings.h"
 
 #include "game/ui_actions/NavigateToSelectionAction.h"
-#include "game/ui_actions/NavigateToTitleAction.h"
 #include "game/ui_actions/QuitAction.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -80,13 +79,6 @@ TEST_CASE_METHOD(UIActionFactoryFixture, "UIActionFactory creates NavigateToSele
 ) {
     auto action = this->actionFactory->create("NavigateToSelection");
     REQUIRE(dynamic_cast<NavigateToSelectionAction*>(action.get()) != nullptr);
-}
-
-TEST_CASE_METHOD(UIActionFactoryFixture, "UIActionFactory creates NavigateToTitleAction",
-    "[unit][ui_action_factory]"
-) {
-    auto action = this->actionFactory->create("NavigateToTitle");
-    REQUIRE(dynamic_cast<NavigateToTitleAction*>(action.get()) != nullptr);
 }
 
 TEST_CASE_METHOD(UIActionFactoryFixture, "UIActionFactory creates QuitAction",

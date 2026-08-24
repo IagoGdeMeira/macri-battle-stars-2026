@@ -38,7 +38,6 @@ add_executable(game_tests
     trigger_conditions/VerticalVelocityAboveConditionTests.cpp
 
     ui_actions/NavigateToSelectionActionTests.cpp
-    ui_actions/NavigateToTitleActionTests.cpp
     ui_actions/QuitActionTests.cpp
 
     ui_widget_loaders/HealthBarWidgetLoaderTests.cpp
@@ -92,11 +91,9 @@ add_executable(game_tests
     JumpSystemTests.cpp
     KnockbackSystemTests.cpp
     LocalToWorldSystemTests.cpp
-    MenuLoaderTests.cpp
     MapLoaderTests.cpp
     MapRosterTests.cpp
     MapRosterLoaderTests.cpp
-    MenuLoaderTests.cpp
     MovementSystemTests.cpp
     PushboxControllerSystemTests.cpp
     PushboxLoaderTests.cpp

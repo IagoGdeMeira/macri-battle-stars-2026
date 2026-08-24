@@ -1,8 +1,6 @@
 #include "UIFactory/UIFactory.h"
 
 #include "IUIAction/IUIAction.h"
-#include "UIElement/TextElement.h"
-#include "UIElement/UIElement.h"
 
 #include "domain/components/BoxModel.h"
 #include "domain/components/ChildrenComponent.h"
@@ -158,22 +156,6 @@ Entity UIFactory::createText(const TextParams& params, std::shared_ptr<Font> fon
     comp.add<UITextComponent>(e, UITextComponent{ font, params.text, params.color, true, params.fontSize });
     comp.add<RenderComponent>(e, RenderComponent{0, 0});
     return e;
-}
-
-Entity UIFactory::createFromElement(const UIElement& element)
-{
-    if (auto* panel = dynamic_cast<const PanelElement*>(&element)) return this->createPanel(panel->rect);
-
-    if (auto* text = dynamic_cast<const TextElement*>(&element))
-    { return this->createText({text->text, text->fontSize, text->color, text->rect.position}); }
-
-    if (auto* button = dynamic_cast<const ButtonElement*>(&element))
-    { return this->createButton(button->text, button->rect, button->action); }
-
-    if (auto* img = dynamic_cast<const ImageElement*>(&element))
-    { return this->createImage(img->imagePath, img->rect); }
-
-    throw std::runtime_error("Unsupported UIElement type: " + element.id);
 }
 
 void UIFactory::attachChild(Entity parent, Entity child, const Position& localPos)

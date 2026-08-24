@@ -30,7 +30,6 @@ target_sources(game
         src/scenes/GameScene.cpp
         src/scenes/HUDScene.cpp
         src/scenes/SelectionScene.cpp
-        src/scenes/TitleScene.cpp
 
         src/ui_widget_loaders/HealthBarWidgetLoader.cpp
         src/ui_widget_loaders/TimerWidgetLoader.cpp
@@ -80,7 +79,6 @@ target_sources(game
         src/MapLoader.cpp
         src/MapRoster.cpp
         src/MapRosterLoader.cpp
-        src/MenuLoader.cpp
         src/MovementSystem.cpp
         src/PushboxControllerSystem.cpp
         src/PushboxLoader.cpp

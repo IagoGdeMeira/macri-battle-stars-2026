@@ -15,7 +15,6 @@ class IUIAction;
 class World;
 
 struct DebugConfig;
-struct UIElement;
 
 class UIFactory
 {
@@ -38,8 +37,6 @@ public:
     struct TextParams { const std::string& text; float fontSize; const Color& color; const Position& position; };
     Entity createText(const TextParams& params);
     Entity createText(const TextParams& params, std::shared_ptr<Font> font);
-
-    Entity createFromElement(const UIElement& element);
 
     void attachChild(Entity parent, Entity child, const Position& localPos = {0.f, 0.f});
 
