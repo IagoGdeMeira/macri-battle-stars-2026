@@ -252,6 +252,8 @@ TEST_CASE_METHOD(UILoaderFixture, "UILoader instantiates widget with parameters"
     params["playerId"] = "1";
     params["maxHealth"] = "300";
     params["currentHealth"] = "150";
+    params["characterName"] = "TestFighter";
+    params["avatarTexturePath"] = "";
 
     Entity widget = this->loader.instantiateWidget("widget_healthbar.json", params);
 

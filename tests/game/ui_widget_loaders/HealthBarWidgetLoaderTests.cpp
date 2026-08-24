@@ -6,9 +6,12 @@
 #include "StubSceneManager.h"
 #include "StubTextureFactory.h"
 
+#include "IUIWidgetLoader/IParametrizedUIWidgetLoader.h"
+
 #include "domain/components/BoxModel.h"
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/FlexContainer.h"
+#include "domain/components/FlexItem.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/LayoutDirtyComponent.h"
@@ -19,6 +22,7 @@
 #include "domain/components/TransformComponent.h"
 #include "domain/components/UILayoutMetricsComponent.h"
 #include "domain/components/UISpriteComponent.h"
+#include "domain/components/UITextComponent.h"
 #include "domain/include/World/World.h"
 
 #include "engine/include/EventBus/EventBus.h"
@@ -48,6 +52,7 @@ public:
         comp.registerComponent<BoxModel>();
         comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<FlexContainer>();
+        comp.registerComponent<FlexItem>();
         comp.registerComponent<HealthBarSegmentComponent>();
         comp.registerComponent<HealthBarTag>();
         comp.registerComponent<LayoutDirtyComponent>();
@@ -58,6 +63,7 @@ public:
         comp.registerComponent<TransformComponent>();
         comp.registerComponent<UILayoutMetricsComponent>();
         comp.registerComponent<UISpriteComponent>();
+        comp.registerComponent<UITextComponent>();
 
         StubDataNode colorsRoot;
         std::vector<std::unique_ptr<DataNode>> segmentsArray;
@@ -74,12 +80,14 @@ public:
         this->parser.registerNode("assets/ui/health_bar_colors.json", std::make_unique<StubDataNode>(colorsRoot));
     }
 
-    UILoader::ParamMap makeParams(int playerId, int maxHealth, int currentHealth)
+    IParametrizedUIWidgetLoader::ParamMap makeParams(int playerId, int maxHealth, int currentHealth)
     {
         return {
             { "playerId", std::to_string(playerId) },
             { "maxHealth", std::to_string(maxHealth) },
-            { "currentHealth", std::to_string(currentHealth) }
+            { "currentHealth", std::to_string(currentHealth) },
+            { "characterName", "TestFighter" },
+            { "avatarTexturePath", "" }
         };
     }
 
@@ -88,6 +96,7 @@ public:
         auto node = std::make_unique<StubDataNode>();
         node->setFloat("width", width);
         node->setFloat("height", height);
+        node->setFloat("avatarSize", 0.f);
         return node;
     }
 };

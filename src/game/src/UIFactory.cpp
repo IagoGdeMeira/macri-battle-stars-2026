@@ -85,7 +85,7 @@ Entity UIFactory::createImage(const std::string& texturePath, const Rectangle& r
     comp.add<TransformComponent>(e, TransformComponent{rect.position, {1.f, 1.f}, 0.f});
     comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{rect.size});
 
-    auto texture = this->textureFactory.createTexture(texturePath);
+    auto texture = this->factoryTextureFactory.createTexture(texturePath);
     comp.add<UISpriteComponent>(e, UISpriteComponent{ texture, Color::WHITE() });
     comp.add<RenderComponent>(e, RenderComponent{0, 0});
 
@@ -137,7 +137,7 @@ Entity UIFactory::createText(const TextParams& params)
     comp.add<FlexItem>(e, FlexItem{});
 
     std::shared_ptr<Font> font = nullptr;
-    try { font = this->fontFactory.createFont("assets/fonts/default.ttf"); }
+    try { font = this->factoryFontFactory.createFont("assets/fonts/default.ttf"); }
     catch (const std::exception&) { LOG_ERROR("Failed to create font for text: " + params.text); }
 
     comp.add<UITextComponent>(e, UITextComponent{ font, params.text, params.color, true, params.fontSize });

@@ -1,5 +1,6 @@
 #include "UILoader/UILoader.h"
 
+#include "IUIWidgetLoader/IParametrizedUIWidgetLoader.h"
 #include "IUIWidgetLoader/IUIWidgetLoader.h"
 #include "UIActionFactory/UIActionFactory.h"
 #include "UIFactory/UIFactory.h"
@@ -178,7 +179,10 @@ Entity UILoader::createWidget(const DataNode& node, const ParamMap& params)
     auto it = this->widgetLoaders.find(widgetType);
     if (it == this->widgetLoaders.end()) throw std::runtime_error("No widget loader registered for type: " + widgetType);
 
-    return it->second->load(node, params);
+    if (auto* paramLoader = dynamic_cast<IParametrizedUIWidgetLoader*>(it->second.get()))
+    { return paramLoader->load(node, params); }
+
+    return it->second->load(node);
 }
 
 std::optional<Entity> UILoader::findEntityById(const std::string& id) const

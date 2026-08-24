@@ -1,16 +1,16 @@
 #ifndef timer_widget_loader_h
 #define timer_widget_loader_h
 
-#include "IUIWidgetLoader/IUIWidgetLoader.h"
+#include "IUIWidgetLoader/IParametrizedUIWidgetLoader.h"
 
 class IFontFactory;
 class UIFactory;
 
-class TimerWidgetLoader : public IUIWidgetLoader
+class TimerWidgetLoader : public IParametrizedUIWidgetLoader
 {
 public:
     TimerWidgetLoader(UIFactory& factory, IFontFactory& fontFactory);
-    Entity load(const DataNode& node, const UILoader::ParamMap& params) override;
+    Entity load(const DataNode& node, const ParamMap& params) override;
 
 private:
     UIFactory& factory;

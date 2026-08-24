@@ -42,6 +42,7 @@ add_executable(game_tests
     ui_actions/QuitActionTests.cpp
 
     ui_widget_loaders/HealthBarWidgetLoaderTests.cpp
+    ui_widget_loaders/ShapeWidgetLoaderTests.cpp
     ui_widget_loaders/TimerWidgetLoaderTests.cpp
 
     utils/CollisionUtilsTests.cpp

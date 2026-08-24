@@ -17,10 +17,10 @@ class IFontFactory;
 class ITextureFactory;
 class Renderer;
 class SceneManager;
+class UIActionFactory;
 class UIDrawer;
 class UIFactory;
 class UILoader;
-class UIActionFactory;
 
 class HUDScene : public Scene
 {

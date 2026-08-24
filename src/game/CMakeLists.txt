@@ -32,6 +32,7 @@ target_sources(game
         src/scenes/SelectionScene.cpp
 
         src/ui_widget_loaders/HealthBarWidgetLoader.cpp
+        src/ui_widget_loaders/ShapeWidgetLoader.cpp
         src/ui_widget_loaders/TimerWidgetLoader.cpp
 
         src/utils/CollisionUtils.cpp

@@ -15,7 +15,7 @@
 TimerWidgetLoader::TimerWidgetLoader(UIFactory& factory, IFontFactory& fontFactory) :
     factory(factory), fontFactory(fontFactory) {}
 
-Entity TimerWidgetLoader::load(const DataNode& node, const UILoader::ParamMap& params)
+Entity TimerWidgetLoader::load(const DataNode& node, const ParamMap& params)
 {
     auto& comp = this->factory.world().components();
 

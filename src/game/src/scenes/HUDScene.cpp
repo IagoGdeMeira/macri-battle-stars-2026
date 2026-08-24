@@ -12,6 +12,7 @@
 #include "MainAxisHandler.h"
 #include "PlayerSpawnedEvent.h"
 #include "RoundTimerDisplaySystem/RoundTimerDisplaySystem.h"
+#include "ShapeWidgetLoader.h"
 #include "TimerWidgetLoader.h"
 #include "UIActionFactory/UIActionFactory.h"
 #include "UIFactory/UIFactory.h"
@@ -120,6 +121,7 @@ void HUDScene::registerWidgetLoaders()
 {
     this->uiLoader->registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(*this->uiFactory, this->parser));
     this->uiLoader->registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(*this->uiFactory, this->fontFactory));
+    this->uiLoader->registerWidgetLoader("shape", std::make_unique<ShapeWidgetLoader>(*this->uiFactory));
 }
 
 void HUDScene::prepareHealthBars()

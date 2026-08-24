@@ -20,9 +20,11 @@ class UIFactory
 {
 public:
     UIFactory(World& world, IFontFactory& fontFactory, ITextureFactory& textureFactory) :
-        factoryWorld(world), fontFactory(fontFactory), textureFactory(textureFactory) {}
+        factoryWorld(world), factoryFontFactory(fontFactory), factoryTextureFactory(textureFactory) {}
 
     World& world() { return this->factoryWorld; }
+    IFontFactory& fontFactory() { return this->factoryFontFactory; }
+    ITextureFactory& textureFactory() { return this->factoryTextureFactory; }
 
     Entity createDebugOverlay(const Rectangle& rect, const DebugConfig& debug);
     Entity createPanel(const Rectangle& rect);
@@ -42,8 +44,8 @@ public:
 
 private:
     World& factoryWorld;
-    IFontFactory& fontFactory;
-    ITextureFactory& textureFactory;
+    IFontFactory& factoryFontFactory;
+    ITextureFactory& factoryTextureFactory;
 
     void applyDefaultBoxModel(Entity& entity);
 };
