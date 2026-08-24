@@ -15,6 +15,7 @@
 #include "domain/components/AnalogInputComponent.h"
 #include "domain/components/GravityComponent.h"
 #include "domain/components/GroundedComponent.h"
+#include "domain/components/HealthComponent.h"
 #include "domain/components/InputBufferComponent.h"
 #include "domain/components/InputComponent.h"
 #include "domain/components/PlayerComponent.h"
@@ -37,6 +38,8 @@
 #include "engine/include/Window/Window.h"
 #include "engine/utils/DataUtils/DataUtils.h"
 #include "engine/value_objects/GameSettings/GameSettings.h"
+
+#include "game/events/PlayerSpawnedEvent.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -74,24 +77,33 @@ public:
     {
         auto root = std::make_unique<StubDataNode>();
         root->setString("name", "TestStage");
+
         auto floorNode = std::make_unique<StubDataNode>();
         floorNode->setFloat("y", 400.f);
         floorNode->setString("texture", "assets/floor.png");
         floorNode->setFloat("width", 2000.f);
         floorNode->setFloat("height", 50.f);
         root->setObject("floor", std::move(floorNode));
-        auto spawn = std::make_unique<StubDataNode>();
-        spawn->setInt("playerId", 0);
-        spawn->setFloat("x", 300.f);
+
         std::vector<std::unique_ptr<DataNode>> spawns;
-        spawns.push_back(std::move(spawn));
+        spawns.push_back(this->makeSpawnNode(0, 300.f));
+        spawns.push_back(this->makeSpawnNode(1, 700.f));
         root->setArray("spawnPoints", std::move(spawns));
+
         root->setArray("walls", {});
         root->setArray("backgroundLayers", {});
         root->setFloat("gravity", 980.f);
         root->setFloat("floorFriction", 5.f);
         root->setFloat("airFriction", 2.f);
         return root;
+    }
+
+    std::unique_ptr<StubDataNode> makeSpawnNode(uint32_t playerId, float x) const
+    {
+        auto spawn = std::make_unique<StubDataNode>();
+        spawn->setInt("playerId", static_cast<int>(playerId));
+        spawn->setFloat("x", x);
+        return spawn;
     }
 
     std::unique_ptr<StubDataNode> makeInputBindingsNode() const
@@ -165,7 +177,7 @@ public:
 
         return root;
     }
-    
+
     std::unique_ptr<StubDataNode> makeFSMNode() const
     {
         auto root = std::make_unique<StubDataNode>();
@@ -237,4 +249,63 @@ TEST_CASE_METHOD(GameSceneFixture, "GameScene initializes and creates player ent
         (void)entity; (void)i_; (void)ib_; (void)v_; (void)g_; (void)r;
     }
     REQUIRE(count == 1);
+}
+
+TEST_CASE_METHOD(GameSceneFixture, "GameScene emits PlayerSpawnedEvent for each player",
+    "[integration][game_scene]"
+) {
+    GameScene::Config cfg;
+    cfg.eventBus        = &this->engine.events();
+    cfg.sceneManager    = &this->sceneManager;
+    cfg.renderer        = &this->renderer;
+    cfg.window          = &this->window;
+    cfg.parser          = &this->parser;
+    cfg.resourceManager = &this->resourceManager;
+    cfg.textureLoader   = &this->textureLoader;
+    cfg.settings        = &this->settings;
+    cfg.engine          = &this->engine;
+    cfg.fontFactory     = &this->fontFactory;
+    cfg.textureFactory  = &this->textureFactory;
+    cfg.platformFactory = nullptr;
+
+    cfg.playerSlots = {
+        {0, "assets/characters/knight.json"},
+        {1, "assets/characters/knight.json"}
+    };
+    cfg.mapPath             = "assets/maps/stage1.json";
+    cfg.inputBindingsPath   = "assets/inputs/game_bindings.json";
+    cfg.combosPath          = "assets/combos/default_combos.json";
+    cfg.triggersPath        = "assets/triggers/default_triggers.json";
+
+    GameScene scene(std::move(cfg));
+    scene.init();
+
+    std::vector<PlayerSpawnedEvent> spawnEvents;
+    auto& bus = this->engine.events();
+    bus.subscribe<PlayerSpawnedEvent>([&spawnEvents](const PlayerSpawnedEvent& e)
+    { spawnEvents.push_back(e); });
+
+    scene.update(0.0f);
+
+    REQUIRE(spawnEvents.size() == 2);
+
+    bool foundPlayer0 = false;
+    bool foundPlayer1 = false;
+    for (const auto& ev : spawnEvents)
+    {
+        if (ev.playerId == 0)
+        {
+            foundPlayer0 = true;
+            REQUIRE(ev.maxHealth == 200);
+            REQUIRE(ev.currentHealth == 150);
+        }
+        if (ev.playerId == 1)
+        {
+            foundPlayer1 = true;
+            REQUIRE(ev.maxHealth == 200);
+            REQUIRE(ev.currentHealth == 150);
+        }
+    }
+    REQUIRE(foundPlayer0);
+    REQUIRE(foundPlayer1);
 }

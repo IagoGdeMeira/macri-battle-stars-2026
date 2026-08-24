@@ -28,6 +28,7 @@ add_executable(game_tests
     render_formats/WorldTextureRenderFormatTests.cpp
 
     scenes/GameSceneTests.cpp
+    scenes/HUDSceneTests.cpp
 
     trigger_conditions/CompositeConditionTests.cpp
     trigger_conditions/HealthBelowConditionTests.cpp
