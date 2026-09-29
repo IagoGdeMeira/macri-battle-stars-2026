@@ -19,7 +19,7 @@ public:
     public:
         struct Params { ComponentManager& manager; const std::vector<Entity>& entities; size_t index, baseIndex; };
 
-        Iterator(Params params);
+        Iterator(Params params) : params(params) { this->advance(); }
 
         Iterator& operator++();
         bool operator==(const Iterator& other) const;
@@ -37,8 +37,8 @@ public:
 
     size_t size() const;
 
-    Iterator begin();
-    Iterator end();
+    Iterator begin() { return Iterator({ this->manager, this->baseStorage->entities(), 0, this->baseIndex }); }
+    Iterator end() { return Iterator({ this->manager, this->baseStorage->entities(), this->baseStorage->entities().size(), this->baseIndex }); }
 
 private:
     ComponentManager& manager;
