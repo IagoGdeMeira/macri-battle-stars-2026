@@ -8,8 +8,7 @@
 template <typename... Components>
 View<Components...>::View(ComponentManager& componentManager) : manager(componentManager)
 {
-    std::array<IComponentStorage*, sizeof...(Components)> storages =
-        { this->manager.storage<Components>()... };
+    std::array<IComponentStorage*, sizeof...(Components)> storages = { this->manager.storage<Components>()... };
 
     this->baseIndex = 0;
     this->baseStorage = storages[0];
@@ -17,39 +16,36 @@ View<Components...>::View(ComponentManager& componentManager) : manager(componen
     for (size_t i = 1; i < storages.size(); i++)
     {
         if (storages[i]->size() >= this->baseStorage->size()) continue;
-        
+
         this->baseStorage = storages[i];
         this->baseIndex = i;
     }
 }
 
 template <typename... Components>
-View<Components...>::Iterator::Iterator(
-    ComponentManager& manager, const std::vector<Entity>& entities, size_t index, size_t baseIndex
-) : manager(manager), entities(entities), index(index), baseIndex(baseIndex) { this->advance(); }
+View<Components...>::Iterator::Iterator(Params params) : params(params) { this->advance(); }
 
 template <typename... Components>
 typename View<Components...>::Iterator&
 View<Components...>::Iterator::operator++()
 {
-    this->index++;
+    this->params.index++;
     this->advance();
     return *this;
 }
 
 template <typename... Components>
 bool View<Components...>::Iterator::operator==(const Iterator& other) const
-{ return this->index == other.index && &this->entities == &other.entities; }
+{ return this->params.index == other.params.index && &this->params.entities == &other.params.entities; }
 
 template <typename... Components>
-bool View<Components...>::Iterator::operator!=(const Iterator& other) const
-{ return !(*this == other); }
+bool View<Components...>::Iterator::operator!=(const Iterator& other) const { return !(*this == other); }
 
 template <typename... Components>
 auto View<Components...>::Iterator::operator*()
 {
-    Entity e = this->entities[this->index];
-    return std::tuple<Entity, Components&...>(e, this->manager.get<Components>(e)...);
+    Entity e = this->params.entities[this->params.index];
+    return std::tuple<Entity, Components&...>(e, this->params.manager.get<Components>(e)...);
 }
 
 template <typename... Components>
@@ -60,19 +56,19 @@ template <typename... Components>
 template <size_t... I>
 bool View<Components...>::Iterator::matchesImpl(Entity e, std::index_sequence<I...>)
 {
-    return ((I == this->baseIndex ||
-        this->manager.has<std::tuple_element_t<I, std::tuple<Components...>>>(e)) && ...
+    return ((I == this->params.baseIndex ||
+        this->params.manager.has<std::tuple_element_t<I, std::tuple<Components...>>>(e)) && ...
     );
 }
 
 template <typename... Components>
 void View<Components...>::Iterator::advance()
 {
-    while (this->index < this->entities.size())
+    while (this->params.index < this->params.entities.size())
     {
-        Entity e = this->entities[this->index];
+        Entity e = this->params.entities[this->params.index];
         if (this->matches(e)) break;
-        this->index++;
+        this->params.index++;
     }
 }
 
@@ -102,11 +98,16 @@ bool View<Components...>::matchesEntity(Entity e) const
 template <typename... Components>
 typename View<Components...>::Iterator
 View<Components...>::begin()
-{ return Iterator(this->manager, this->baseStorage->entities(), 0, this->baseIndex); }
+{ return Iterator({ this->manager, this->baseStorage->entities(), 0, this->baseIndex }); }
 
 template <typename... Components>
 typename View<Components...>::Iterator
 View<Components...>::end()
-{ return Iterator(this->manager, this->baseStorage->entities(), this->baseStorage->entities().size(), this->baseIndex); }
+{
+    return Iterator({
+        this->manager, this->baseStorage->entities(),
+        this->baseStorage->entities().size(), this->baseIndex
+    });
+}
 
 #endif // view_inl
