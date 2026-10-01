@@ -28,7 +28,7 @@ void AlignItemsHandler::layout(FlexLayoutContext& ctx)
         }
 
         Entity child = info.entity;
-        if (!comp.has<LocalTransform>(child)) comp.add<LocalTransform>(child, LocalTransform{});
+        if (!comp.has<LocalTransform>(child)) continue;
         auto& childLocal = comp.get<LocalTransform>(child);
 
         float pos = crossPos + marginCrossStart;

@@ -80,6 +80,19 @@ public:
         comp.registerComponent<UISpriteComponent>();
         comp.registerComponent<UITextComponent>();
 
+        StubDataNode colorsRoot;
+        std::vector<std::unique_ptr<DataNode>> segmentsArray;
+        auto segmentNode = std::make_unique<StubDataNode>();
+        auto fillNode = std::make_unique<StubDataNode>();
+        fillNode->setInt("r", 255); fillNode->setInt("g", 0); fillNode->setInt("b", 0); fillNode->setInt("a", 255);
+        auto shadowNode = std::make_unique<StubDataNode>();
+        shadowNode->setInt("r", 120); shadowNode->setInt("g", 0); shadowNode->setInt("b", 0); shadowNode->setInt("a", 255);
+        segmentNode->setObject("fill", std::move(fillNode));
+        segmentNode->setObject("shadow", std::move(shadowNode));
+        segmentsArray.push_back(std::move(segmentNode));
+        colorsRoot.setArray("segments", std::move(segmentsArray));
+        this->parser.registerNode("assets/ui/health_bar_colors.json", std::make_unique<StubDataNode>(colorsRoot));
+
         this->loader.registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(this->factory, this->parser));
         this->loader.registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(this->factory, this->fontFactory));
     }

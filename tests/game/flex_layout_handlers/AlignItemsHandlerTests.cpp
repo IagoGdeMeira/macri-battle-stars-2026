@@ -37,6 +37,7 @@ public:
         auto& comp = this->world.components();
         comp.add<TransformComponent>(e, TransformComponent{{0.f, 0.f}});
         comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{{width, height}});
+        comp.add<LocalTransform>(e, LocalTransform{});
         return e;
     }
 };

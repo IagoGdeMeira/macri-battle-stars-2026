@@ -81,6 +81,20 @@ TEST_CASE("CommandBuffer passes correct World instance", "[unit][command_buffer]
     REQUIRE(received == &world);
 }
 
+TEST_CASE("CommandBuffer can destroy an entity after the update", "[unit][command_buffer]")
+{
+    CommandBuffer buffer;
+    World world;
+    Entity entity = world.entities().create();
+
+    buffer.destroy(entity);
+    REQUIRE(world.entities().isAlive(entity));
+
+    buffer.flush(world);
+
+    REQUIRE_FALSE(world.entities().isAlive(entity));
+}
+
 TEST_CASE("CommandBuffer flush on empty buffer is a no-op", "[unit][command_buffer]")
 {
     CommandBuffer buffer;
@@ -101,6 +115,22 @@ TEST_CASE("CommandBuffer propagates exceptions thrown by commands", "[unit][comm
 
     REQUIRE_THROWS_AS(buffer.flush(world), std::runtime_error);
     REQUIRE(executedBeforeThrow == 1);
+}
+
+TEST_CASE("CommandBuffer preserves commands after a failed command", "[unit][command_buffer]")
+{
+    CommandBuffer buffer;
+    World world;
+    int executed = 0;
+
+    buffer.create([&](World&) { throw std::runtime_error("boom"); });
+    buffer.create([&](World&) { executed++; });
+
+    REQUIRE_THROWS_AS(buffer.flush(world), std::runtime_error);
+    REQUIRE(executed == 0);
+
+    buffer.flush(world);
+    REQUIRE(executed == 1);
 }
 
 TEST_CASE("CommandBuffer command can enqueue another command for next flush", "[unit][command_buffer]")

@@ -17,6 +17,21 @@ TEST_CASE("World can create entities", "[integration][world]")
     REQUIRE(e1.id != e2.id);
 }
 
+TEST_CASE("World destroys entities and their components", "[integration][world]")
+{
+    World world;
+    auto& comp = world.components();
+
+    comp.registerComponent<Position>();
+    Entity entity = world.entities().create();
+    comp.add<Position>(entity, Position{1.f, 2.f});
+
+    world.destroy(entity);
+
+    REQUIRE_FALSE(world.entities().isAlive(entity));
+    REQUIRE_FALSE(comp.has<Position>(entity));
+}
+
 TEST_CASE("World can add components to entities", "[integration][world]")
 {
     World world;

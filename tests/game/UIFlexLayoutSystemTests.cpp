@@ -73,6 +73,7 @@ public:
         comp.add<UILayoutMetricsComponent>(child, UILayoutMetricsComponent{{width, height}});
         comp.add<FlexItem>(child, FlexItem{0.f, 0.f, -1.f, alignSelf});
         comp.add<ParentComponent>(child, ParentComponent{parent});
+        comp.add<LocalTransform>(child, LocalTransform{});
         return child;
     }
 

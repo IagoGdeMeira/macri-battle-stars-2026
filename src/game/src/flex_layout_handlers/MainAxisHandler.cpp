@@ -19,7 +19,7 @@ void MainAxisHandler::layout(FlexLayoutContext& ctx)
         float marginEnd = ctx.isColumn ? info.margin.bottom : info.margin.right;
 
         Entity child = info.entity;
-        if (!comp.has<LocalTransform>(child)) comp.add<LocalTransform>(child, LocalTransform{});
+        if (!comp.has<LocalTransform>(child)) continue;
         auto& childLocal = comp.get<LocalTransform>(child);
 
         if (ctx.isColumn) childLocal.position.y = mainPos + marginStart;
