@@ -17,9 +17,9 @@ public:
     class Iterator
     {
     public:
-        struct Params { ComponentManager& manager; const std::vector<Entity>& entities; size_t index, baseIndex; };
+        struct Config { ComponentManager& manager; const std::vector<Entity>& entities; size_t index, baseIndex; };
 
-        Iterator(Params params) : params(params) { this->advance(); }
+        Iterator(Config cfg) : cfg(cfg) { this->advance(); }
 
         Iterator& operator++();
         bool operator==(const Iterator& other) const;
@@ -27,7 +27,7 @@ public:
         auto operator*();
 
     private:
-        Params params;
+        Config cfg;
 
         void advance();
         bool matches(Entity e);

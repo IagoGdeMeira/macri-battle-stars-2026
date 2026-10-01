@@ -26,14 +26,14 @@ template <typename... Components>
 typename View<Components...>::Iterator&
 View<Components...>::Iterator::operator++()
 {
-    this->params.index++;
+    this->cfg.index++;
     this->advance();
     return *this;
 }
 
 template <typename... Components>
 bool View<Components...>::Iterator::operator==(const Iterator& other) const
-{ return this->params.index == other.params.index && &this->params.entities == &other.params.entities; }
+{ return this->cfg.index == other.cfg.index && &this->cfg.entities == &other.cfg.entities; }
 
 template <typename... Components>
 bool View<Components...>::Iterator::operator!=(const Iterator& other) const { return !(*this == other); }
@@ -41,8 +41,8 @@ bool View<Components...>::Iterator::operator!=(const Iterator& other) const { re
 template <typename... Components>
 auto View<Components...>::Iterator::operator*()
 {
-    Entity e = this->params.entities[this->params.index];
-    return std::tuple<Entity, Components&...>(e, this->params.manager.get<Components>(e)...);
+    Entity e = this->cfg.entities[this->cfg.index];
+    return std::tuple<Entity, Components&...>(e, this->cfg.manager.get<Components>(e)...);
 }
 
 template <typename... Components>
@@ -54,19 +54,19 @@ template <size_t... I>
 bool View<Components...>::Iterator::matchesImpl(Entity e, std::index_sequence<I...>)
 {
     return (... && (
-        I == this->params.baseIndex ||
-        this->params.manager.has<std::tuple_element_t<I, std::tuple<Components...>>>(e)
+        I == this->cfg.baseIndex ||
+        this->cfg.manager.has<std::tuple_element_t<I, std::tuple<Components...>>>(e)
     ));
 }
 
 template <typename... Components>
 void View<Components...>::Iterator::advance()
 {
-    while (this->params.index < this->params.entities.size())
+    while (this->cfg.index < this->cfg.entities.size())
     {
-        Entity e = this->params.entities[this->params.index];
+        Entity e = this->cfg.entities[this->cfg.index];
         if (this->matches(e)) break;
-        this->params.index++;
+        this->cfg.index++;
     }
 }
 
