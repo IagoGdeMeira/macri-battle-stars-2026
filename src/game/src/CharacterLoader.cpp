@@ -22,7 +22,7 @@
 
 CharacterLoader::Info CharacterLoader::create(World& world, const std::string& path) const
 {
-    auto def = this->defLoader.load(path);
+    auto def = this->cfg.defLoader.load(path);
     auto& comp = world.components();
 
     Entity entity = world.entities().create();
@@ -56,8 +56,8 @@ CharacterLoader::Info CharacterLoader::create(World& world, const std::string& p
 
 uint32_t CharacterLoader::registerStateMachine(const CharacterDefinition& def, const StateIdMapper& mapper) const
 {
-    StateMachine fsm = this->fsmLoader.load(def.stateMachinePath, mapper);
-    return this->stateMachineRegistry.registerMachine(std::move(fsm));
+    StateMachine fsm = this->cfg.fsmLoader.load(def.stateMachinePath, mapper);
+    return this->cfg.stateMachineRegistry.registerMachine(std::move(fsm));
 }
 
 void CharacterLoader::addStateComponents(World& world, Entity entity, uint32_t machineId) const
@@ -89,7 +89,7 @@ std::shared_ptr<StateIdMapper> CharacterLoader::buildStateMapper(const Character
 AnimationControllerComponent CharacterLoader::buildAnimationController(const CharacterDefinition& def, const StateIdMapper& mapper) const
 {
     AnimationControllerComponent controller;
-    controller.animations = this->animLoader.loadFromIndex(def.animationsPath, mapper);
+    controller.animations = this->cfg.animLoader.loadFromIndex(def.animationsPath, mapper);
     controller.currentState = StateId::Idle;
     return controller;
 }
@@ -123,7 +123,7 @@ void CharacterLoader::loadCollisionControllers(World& world, Entity entity, cons
 {
     if (def.collisionsPath.empty()) return;
 
-    auto root = this->parser.parse(def.collisionsPath);
+    auto root = this->cfg.parser.parse(def.collisionsPath);
     auto& comp = world.components();
 
     HitboxControllerMapComponent hitboxMapComp;
@@ -136,11 +136,11 @@ void CharacterLoader::loadCollisionControllers(World& world, Entity entity, cons
         std::string stateFilePath = entry->getString("path");
         StateId stateId = StateId::fromBaseName(stateName);
 
-        auto stateRoot = this->parser.parse(stateFilePath);
+        auto stateRoot = this->cfg.parser.parse(stateFilePath);
 
-        hitboxMapComp.map[stateId]   = this->hitboxLoader.loadSingleState(*stateRoot, entity);
-        hurtboxMapComp.map[stateId]  = this->hurtboxLoader.loadSingleState(*stateRoot, entity);
-        pushboxMapComp.map[stateId]  = this->pushboxLoader.loadSingleState(*stateRoot, entity);
+        hitboxMapComp.map[stateId]   = this->cfg.hitboxLoader.loadSingleState(*stateRoot, entity);
+        hurtboxMapComp.map[stateId]  = this->cfg.hurtboxLoader.loadSingleState(*stateRoot, entity);
+        pushboxMapComp.map[stateId]  = this->cfg.pushboxLoader.loadSingleState(*stateRoot, entity);
     }
 
     comp.add<HitboxControllerMapComponent>(entity, std::move(hitboxMapComp));

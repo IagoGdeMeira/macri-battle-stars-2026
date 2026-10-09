@@ -36,34 +36,13 @@ public:
         IPlatformFactory* platformFactory = nullptr;
     };
 
-    explicit SceneFactory(Config&& config) : 
-        window(config.window),
-        parser(config.parser),
-        resourceManager(config.resourceManager),
-        textureLoader(config.textureLoader),
-        renderer(config.renderer),
-        eventBus(config.eventBus),
-        settings(config.settings),
-        engine(config.engine),
-        fontFactory(config.fontFactory),
-        textureFactory(config.textureFactory),
-        platformFactory(config.platformFactory) {}
+    explicit SceneFactory(Config&& cfg) : cfg(std::move(cfg)) {}
 
     template <typename SceneType>
     std::unique_ptr<Scene> createScene(typename SceneType::Config cfg, SceneManager* sceneManager);
 
 private:
-    Window& window;
-    DataParser& parser;
-    ResourceManager& resourceManager;
-    TextureLoader& textureLoader;
-    Renderer& renderer;
-    EventBus& eventBus;
-    GameSettings& settings;
-    Engine& engine;
-    IFontFactory& fontFactory;
-    ITextureFactory& textureFactory;
-    IPlatformFactory* platformFactory;
+    Config cfg;
 };
 
 #include "SceneFactory.inl"

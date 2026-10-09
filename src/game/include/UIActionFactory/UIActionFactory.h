@@ -6,18 +6,19 @@
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/SceneManager/SceneManager.h"
 
+#include <utility>
+
 class UIActionFactory
 {
 public:
     struct Config { EventBus& eventBus; SceneManager& sceneManager; };
 
-    explicit UIActionFactory(const Config& config) : eventBus(config.eventBus), sceneManager(config.sceneManager) {}
+    explicit UIActionFactory(Config cfg) : cfg(std::move(cfg)) {}
 
     std::unique_ptr<IUIAction> create(const std::string& type) const;
 
 private:
-    EventBus& eventBus;
-    SceneManager& sceneManager;
+    Config cfg;
 };
 
 #endif // ui_action_factory_h

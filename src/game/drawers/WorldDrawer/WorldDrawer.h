@@ -37,11 +37,7 @@ public:
     void draw(RenderContext& ctx) override;
 
 private:
-    Renderer& renderer;
-    Camera2D& camera;
-    GameSettings& settings;
-    ResourceManager& resourceManager;
-    TextureLoader& textureLoader;
+    Config cfg;
 
     const Dimension2D vSize = GameConstants::VIRTUAL_SIZE;
 

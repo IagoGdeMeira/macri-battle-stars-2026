@@ -22,11 +22,12 @@ class SelectionScene : public Scene
 public:
     struct Config : public Scene::Config {};
 
-    explicit SelectionScene(Config&& cfg);
+    explicit SelectionScene(Config&& cfg) : Scene(*cfg.eventBus), cfg(std::move(cfg)) {};
 
     void update(float deltaTime) override { (void)deltaTime; }
 
 private:
+    Config cfg;
     std::unordered_map<uint32_t, std::string> selections;
     bool confirmed = false;
 };

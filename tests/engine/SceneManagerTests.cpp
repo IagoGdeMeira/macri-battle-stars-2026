@@ -70,7 +70,7 @@ class CounterScene : public Scene
 public:
     struct Config : public Scene::Config { int* counter = nullptr; };
 
-    explicit CounterScene(Config &&cfg) : Scene(*cfg.eventBus), counter(cfg.counter) {}
+    explicit CounterScene(Config&& cfg) : Scene(*cfg.eventBus), counter(cfg.counter) {}
 
     void update(float) override { if (this->counter) ++(*this->counter); }
 

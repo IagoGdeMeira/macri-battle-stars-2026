@@ -23,7 +23,7 @@ void WorldTextureRenderFormat::render(RenderContext& ctx, RenderQueue& queue)
     for (auto [entity, sprite, transform, render] : view)
     {
         if (!sprite.cachedTexture)
-        { sprite.cachedTexture = this->resourceManager.load<Texture>(this->textureLoader, sprite.texturePath); }
+        { sprite.cachedTexture = this->cfg.resourceManager.load<Texture>(this->cfg.textureLoader, sprite.texturePath); }
 
         if (!sprite.cachedTexture) continue;
         DrawTextureCommand cmd = this->buildTextureCommand(entity, ctx.world, order++, sprite.cachedTexture);
@@ -49,7 +49,7 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
     const Position parallax = WorldRenderUtils::resolveParallax(world, entity);
     Position worldPos{transform.position.x, transform.position.y};
 
-    const Position screenPos = WorldRenderUtils::worldToScreen(this->camera, worldPos, parallax);
+    const Position screenPos = WorldRenderUtils::worldToScreen(this->cfg.camera, worldPos, parallax);
     Rectangle spriteConfig = {{transform.scale.x, transform.scale.y}, sprite.size};
 
     DrawTextureCommand cmd;
@@ -77,8 +77,8 @@ DrawTextureCommand WorldTextureRenderFormat::buildTextureCommand(
 
     float oldWidth  = cmd.dest.size.width;
     float oldHeight = cmd.dest.size.height;
-    cmd.dest.size.width  *= this->camera.getZoom();
-    cmd.dest.size.height *= this->camera.getZoom();
+    cmd.dest.size.width  *= this->cfg.camera.getZoom();
+    cmd.dest.size.height *= this->cfg.camera.getZoom();
     cmd.dest.position.x -= (cmd.dest.size.width  - oldWidth)  * 0.5f;
     cmd.dest.position.y -= (cmd.dest.size.height - oldHeight) * 0.5f;
 

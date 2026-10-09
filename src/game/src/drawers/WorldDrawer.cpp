@@ -8,24 +8,19 @@
 #include "engine/include/ResourceManager/ResourceManager.h"
 #include "engine/include/TextureLoader/TextureLoader.h"
 
-WorldDrawer::WorldDrawer(Config&& cfg) :
-    renderer(cfg.renderer),
-    camera(cfg.camera),
-    settings(cfg.settings),
-    resourceManager(cfg.resourceManager),
-    textureLoader(cfg.textureLoader)
+WorldDrawer::WorldDrawer(Config&& cfg) : cfg(std::move(cfg))
 {
     this->recalculateViewport();
 
     cfg.bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent&) { this->recalculateViewport(); });
 
-    this->addFormat(std::make_unique<WorldRectangleRenderFormat>(renderer, camera));
-    this->addFormat(std::make_unique<WorldCircleRenderFormat>(renderer, camera));
+    this->addFormat(std::make_unique<WorldRectangleRenderFormat>(cfg.renderer, cfg.camera));
+    this->addFormat(std::make_unique<WorldCircleRenderFormat>(cfg.renderer, cfg.camera));
     this->addFormat(std::make_unique<WorldTextureRenderFormat>(WorldTextureRenderFormat::Config{
-        .renderer           = this->renderer,
-        .camera             = this->camera,
-        .resourceManager    = this->resourceManager,
-        .textureLoader      = this->textureLoader
+        .renderer           = this->cfg.renderer,
+        .camera             = this->cfg.camera,
+        .resourceManager    = this->cfg.resourceManager,
+        .textureLoader      = this->cfg.textureLoader
     }));
 }
 
@@ -36,19 +31,19 @@ void WorldDrawer::draw(RenderContext& ctx)
     float viewportScale = static_cast<float>(this->worldViewport.width) / this->vSize.width;
     float totalScale = viewportScale;
 
-    this->renderer.setViewport(this->worldViewport);
-    this->renderer.setScale(Position{totalScale, totalScale});
+    this->cfg.renderer.setViewport(this->worldViewport);
+    this->cfg.renderer.setScale(Position{totalScale, totalScale});
 
     RenderQueue queue;
     for (auto& format : this->formats) format->render(ctx, queue);
-    queue.submit(this->renderer);
+    queue.submit(this->cfg.renderer);
 
-    this->renderer.setScale(Position{1.f, 1.f});
+    this->cfg.renderer.setScale(Position{1.f, 1.f});
 }
 
 void WorldDrawer::recalculateViewport()
 {
-    const Dimension2D& winSize = this->settings.screen.size;
+    const Dimension2D& winSize = this->cfg.settings.screen.size;
 
     const float scale = std::min(winSize.width / this->vSize.width, winSize.height / this->vSize.height);
     const Dimension2D viewSize { this->vSize.width * scale, this->vSize.height * scale };

@@ -45,19 +45,9 @@ public:
     bool allowsUpdateBelow() const override { return true; }
 
 private:
-    float initialRoundTime = 99.f;
-    std::string layoutPath;
-    std::string healthBarWidgetPath;
+    Config cfg;
 
     std::vector<PlayerSpawnedEvent> pendingSpawns;
-
-    EventBus& eventBus;
-    SceneManager& sceneManager;
-    DataParser& parser;
-    Renderer& renderer;
-    GameSettings& settings;
-    IFontFactory& fontFactory;
-    ITextureFactory& textureFactory;
 
     std::unique_ptr<UIFactory> uiFactory;
     std::unique_ptr<UIDrawer> uiDrawer;

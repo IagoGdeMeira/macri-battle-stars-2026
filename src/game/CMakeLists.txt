@@ -29,7 +29,6 @@ target_sources(game
 
         src/scenes/GameScene.cpp
         src/scenes/HUDScene.cpp
-        src/scenes/SelectionScene.cpp
 
         src/ui_widget_loaders/HealthBarWidgetLoader.cpp
         src/ui_widget_loaders/ShapeWidgetLoader.cpp

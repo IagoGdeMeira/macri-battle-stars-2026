@@ -7,8 +7,8 @@
 
 std::unique_ptr<IUIAction> UIActionFactory::create(const std::string& type) const
 {
-    if (type == "NavigateToSelection")  return std::make_unique<NavigateToSelectionAction>(this->sceneManager);
-    if (type == "Quit")                 return std::make_unique<QuitAction>(this->eventBus);
+    if (type == "NavigateToSelection")  return std::make_unique<NavigateToSelectionAction>(this->cfg.sceneManager);
+    if (type == "Quit")                 return std::make_unique<QuitAction>(this->cfg.eventBus);
 
     throw std::runtime_error("Unknown UI action type: " + type);
 }

@@ -12,20 +12,8 @@
 #include <algorithm>
 #include <cmath>
 
-CameraControllerSystem::CameraControllerSystem(Config&& cfg) :
-    camera(cfg.camera),
-    window(cfg.window),
-    minZoom(cfg.minZoom),
-    maxZoom(cfg.maxZoom),
-    padding(cfg.padding),
-    verticalOffset(cfg.verticalOffset),
-    epsilon(cfg.epsilon),
-    smoothFactor(cfg.smoothFactor),
-    bounds(cfg.bounds),
-    viewSize(cfg.viewSize),
-    minMargin(cfg.minMargin),
-    favorBigPlayers(cfg.favorBigPlayers)
-{ this->camera.setApplyZoomToSize(cfg.applyZoomToSize); }
+CameraControllerSystem::CameraControllerSystem(Config&& cfg) : cfg(std::move(cfg))
+{ this->cfg.camera.setApplyZoomToSize(cfg.applyZoomToSize); }
 
 void CameraControllerSystem::update(UpdateContext& ctx)
 {
@@ -76,29 +64,29 @@ void CameraControllerSystem::update(UpdateContext& ctx)
     if (count == 0) return;
 
     AABB totalBounds = {leftmost, rightmost, topmost, bottommost};
-    totalBounds.left   -= this->padding;
-    totalBounds.right  += this->padding;
-    totalBounds.top    -= this->padding;
-    totalBounds.bottom += this->padding;
+    totalBounds.left   -= this->cfg.padding;
+    totalBounds.right  += this->cfg.padding;
+    totalBounds.top    -= this->cfg.padding;
+    totalBounds.bottom += this->cfg.padding;
 
     float boxWidth  = std::max(totalBounds.right - totalBounds.left, 1.f);
     float boxHeight = std::max(totalBounds.bottom - totalBounds.top, 1.f);
-    float zoomX = this->viewSize.width  / boxWidth;
-    float zoomY = this->viewSize.height / boxHeight;
+    float zoomX = this->cfg.viewSize.width  / boxWidth;
+    float zoomY = this->cfg.viewSize.height / boxHeight;
     float targetZoom = std::min(zoomX, zoomY);
-    float finalZoom  = std::clamp(targetZoom, this->minZoom, this->maxZoom);
+    float finalZoom  = std::clamp(targetZoom, this->cfg.minZoom, this->cfg.maxZoom);
 
     float geometricCenterX = (totalBounds.left + totalBounds.right) * 0.5f;
     float geometricCenterY = (totalBounds.top + totalBounds.bottom) * 0.5f;
 
-    float halfWorldX = (this->viewSize.width  / finalZoom) * 0.5f;
+    float halfWorldX = (this->cfg.viewSize.width  / finalZoom) * 0.5f;
 
     float minCenterX = limits::lowest();
     float maxCenterX = limits::max();
     for (const auto& b : individualBounds)
     {
-        float minC = b.left + halfWorldX + this->minMargin;
-        float maxC = b.right - halfWorldX - this->minMargin;
+        float minC = b.left + halfWorldX + this->cfg.minMargin;
+        float maxC = b.right - halfWorldX - this->cfg.minMargin;
         minCenterX = std::max(minCenterX, minC);
         maxCenterX = std::min(maxCenterX, maxC);
     }
@@ -111,24 +99,24 @@ void CameraControllerSystem::update(UpdateContext& ctx)
         centerX = std::clamp(idealCenterX, minCenterX, maxCenterX);
     }
 
-    float centerY = geometricCenterY + this->verticalOffset;
+    float centerY = geometricCenterY + this->cfg.verticalOffset;
     Position targetPos = this->computeClampedCameraPosition({centerX, centerY}, finalZoom);
 
-    Position currentPos = this->camera.getPosition();
-    float currentZoom = this->camera.getZoom();
+    Position currentPos = this->cfg.camera.getPosition();
+    float currentZoom = this->cfg.camera.getZoom();
 
-    float newZoom = currentZoom + (finalZoom - currentZoom) * this->smoothFactor;
+    float newZoom = currentZoom + (finalZoom - currentZoom) * this->cfg.smoothFactor;
     Position newPos {
-        currentPos.x + (targetPos.x - currentPos.x) * this->smoothFactor,
-        currentPos.y + (targetPos.y - currentPos.y) * this->smoothFactor
+        currentPos.x + (targetPos.x - currentPos.x) * this->cfg.smoothFactor,
+        currentPos.y + (targetPos.y - currentPos.y) * this->cfg.smoothFactor
     };
 
-    if (std::abs(newZoom - currentZoom) > this->epsilon ||
-        std::abs(newPos.x - currentPos.x) > this->epsilon ||
-        std::abs(newPos.y - currentPos.y) > this->epsilon)
+    if (std::abs(newZoom - currentZoom) > this->cfg.epsilon ||
+        std::abs(newPos.x - currentPos.x) > this->cfg.epsilon ||
+        std::abs(newPos.y - currentPos.y) > this->cfg.epsilon)
     {
-        this->camera.setPosition(newPos.x, newPos.y);
-        this->camera.setZoom(newZoom);
+        this->cfg.camera.setPosition(newPos.x, newPos.y);
+        this->cfg.camera.setZoom(newZoom);
     }
 }
 
@@ -136,22 +124,22 @@ float CameraControllerSystem::selectZoom(const AABB& playerBounds) const
 {
     float boxWidth  = std::max(playerBounds.right - playerBounds.left, 1.f);
     float boxHeight = std::max(playerBounds.bottom - playerBounds.top, 1.f);
-    float zoomX = this->viewSize.width  / boxWidth;
-    float zoomY = this->viewSize.height / boxHeight;
-    return std::clamp(std::min(zoomX, zoomY), this->minZoom, this->maxZoom);
+    float zoomX = this->cfg.viewSize.width  / boxWidth;
+    float zoomY = this->cfg.viewSize.height / boxHeight;
+    return std::clamp(std::min(zoomX, zoomY), this->cfg.minZoom, this->cfg.maxZoom);
 }
 
 Position CameraControllerSystem::computeClampedCameraPosition(const Position& center, float targetZoom)
 {
-    Dimension2D halfScreen {(this->viewSize.width / targetZoom) * 0.5f, (this->viewSize.height / targetZoom) * 0.5f};
+    Dimension2D halfScreen {(this->cfg.viewSize.width / targetZoom) * 0.5f, (this->cfg.viewSize.height / targetZoom) * 0.5f};
     float clampedX = center.x;
-    float minClampX = this->bounds.left + halfScreen.width;
-    float maxClampX = this->bounds.right - halfScreen.width;
+    float minClampX = this->cfg.bounds.left + halfScreen.width;
+    float maxClampX = this->cfg.bounds.right - halfScreen.width;
     if (minClampX <= maxClampX) clampedX = std::clamp(center.x, minClampX, maxClampX);
     
     float clampedY = center.y;
-    float minClampY = this->bounds.top + halfScreen.height;
-    float maxClampY = this->bounds.bottom - halfScreen.height;
+    float minClampY = this->cfg.bounds.top + halfScreen.height;
+    float maxClampY = this->cfg.bounds.bottom - halfScreen.height;
     if (minClampY <= maxClampY) clampedY = std::clamp(center.y, minClampY, maxClampY);
 
     return {clampedX, clampedY};

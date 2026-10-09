@@ -31,15 +31,11 @@ public:
         AnimationLoader& animationLoader;
     };
 
-    EntityFactory(const Config& cfg) :
-        factoryWorld(cfg.world),
-        resourceManager(cfg.resourceManager),
-        textureLoader(cfg.textureLoader),
-        animLoader(cfg.animationLoader) {}
+    EntityFactory(const Config& cfg) : cfg(std::move(cfg)) {}
 
-    ResourceManager& resources() { return this->resourceManager; }
-    TextureLoader& texLoader() { return this->textureLoader; }
-    World& world() { return this->factoryWorld; }
+    ResourceManager& resources() { return this->cfg.resourceManager; }
+    TextureLoader& texLoader() { return this->cfg.textureLoader; }
+    World& world() { return this->cfg.world; }
 
     struct HitboxChildParams
     { Entity parent; const Position& offset; int damage; DebugConfig debug = {false, Color{255, 0, 0, 128}, 0, 20}; };
@@ -69,10 +65,7 @@ public:
     Entity createSimpleBackgroundAnimated(const BackgroundParams& params, const std::string& texturePath, const Animation& animation);
 
 private:
-    World& factoryWorld;
-    ResourceManager& resourceManager;
-    TextureLoader& textureLoader;
-    AnimationLoader& animLoader;
+    Config cfg;
 
     void addParentAndLocal(Entity entity, Entity parent, const Position& localPos);
     void addRender(Entity entity, int layer, int zIndex);

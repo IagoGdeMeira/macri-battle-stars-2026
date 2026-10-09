@@ -20,16 +20,16 @@ void HoldTriggerSystem::update(UpdateContext& ctx)
         bool pressedBefore = this->wasPressed[entity];
 
         bool cond = true;
-        if (this->condition) cond = this->condition(ctx, entity);
+        if (this->cfg.condition) cond = this->cfg.condition(ctx, entity);
 
         if (pressedNow && !pressedBefore && cond)
         {
-            this->bus.emit<TriggerEvent>(TriggerEvent{entity, this->onPress});
+            this->bus.emit<TriggerEvent>(TriggerEvent{entity, this->cfg.onPress});
             this->wasPressed[entity] = true;
         }
-        else if (!pressedNow && pressedBefore && this->onRelease != TriggerId::Unknown)
+        else if (!pressedNow && pressedBefore && this->cfg.onRelease != TriggerId::Unknown)
         {
-            this->bus.emit<TriggerEvent>(TriggerEvent{entity, this->onRelease});
+            this->bus.emit<TriggerEvent>(TriggerEvent{entity, this->cfg.onRelease});
             this->wasPressed[entity] = false;
         }
     }
@@ -37,6 +37,6 @@ void HoldTriggerSystem::update(UpdateContext& ctx)
 
 bool HoldTriggerSystem::hasInputAction(InputComponent& input) const
 {
-    auto it = input.actions.find(this->action);
+    auto it = input.actions.find(this->cfg.action);
     return it != input.actions.end() && it->second.pressed;
 }

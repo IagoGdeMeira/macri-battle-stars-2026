@@ -60,28 +60,13 @@ public:
 private:
     struct PendingSpawn { std::uint32_t playerId; CharacterLoader::Info result; };
 
+    Config cfg;
     std::vector<PendingSpawn> pendingSpawns;
     bool spawnEventsEmitted = false;
 
-    float sweepTimer = 0.f, roundTime = 99.f;
-    
-    EventBus& eventBus;
-    SceneManager& sceneManager;
-    Renderer& renderer;
-    Window& window;
-    DataParser& parser;
-    ResourceManager& resourceManager;
-    TextureLoader& textureLoader;
-    GameSettings& settings;
-    Engine& engine;
-    IFontFactory& fontFactory;
-    ITextureFactory& textureFactory;
-    IPlatformFactory& platformFactory;
-
-    std::vector<PlayerSlot> playerSlots;
+    float sweepTimer = 0.f;
     std::vector<Combo> combos;
     TriggerContext triggerContext;
-    std::string mapPath;
 
     std::unique_ptr<InputContext> inputContext;
     std::unique_ptr<Camera2D> camera;

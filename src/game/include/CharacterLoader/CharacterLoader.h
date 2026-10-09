@@ -46,31 +46,12 @@ public:
         int maxHealth = 100, currentHealth = 100;
     };
 
-    explicit CharacterLoader(Config&& cfg) :
-        parser(cfg.parser),
-        defLoader(cfg.defLoader),
-        animLoader(cfg.animLoader),
-        fsmLoader(cfg.fsmLoader),
-        resourceManager(cfg.resourceManager),
-        textureLoader(cfg.textureLoader),
-        hitboxLoader(cfg.hitboxLoader),
-        hurtboxLoader(cfg.hurtboxLoader),
-        pushboxLoader(cfg.pushboxLoader),
-        stateMachineRegistry(cfg.stateMachineRegistry) {}
+    explicit CharacterLoader(Config&& cfg) : cfg(std::move(cfg)) {}
 
     CharacterLoader::Info create(World& world, const std::string& path) const;
 
 private:
-    DataParser& parser;
-    CharacterDefinitionLoader& defLoader;
-    AnimationLoader& animLoader;
-    StateMachineLoader& fsmLoader;
-    ResourceManager& resourceManager;
-    TextureLoader& textureLoader;
-    HitboxLoader& hitboxLoader;
-    HurtboxLoader& hurtboxLoader;
-    PushboxLoader& pushboxLoader;
-    StateMachineRegistry& stateMachineRegistry;
+    Config cfg;
     
     uint32_t registerStateMachine(const CharacterDefinition& def, const StateIdMapper& mapper) const;
     void addStateComponents(World& world, Entity entity, uint32_t machineId) const;

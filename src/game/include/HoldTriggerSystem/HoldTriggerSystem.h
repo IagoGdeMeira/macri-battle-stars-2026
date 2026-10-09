@@ -24,21 +24,13 @@ public:
         ConditionFunc condition = nullptr;
     };
 
-    HoldTriggerSystem(EventBus& bus, Config cfg) : 
-        bus(bus),
-        action(cfg.action),
-        onPress(cfg.onPress),
-        onRelease(cfg.onRelease),
-        condition(cfg.condition) {}
+    HoldTriggerSystem(EventBus& bus, Config cfg) : bus(bus), cfg(cfg) {}
 
     void update(UpdateContext& ctx) override;
 
 private:
+    Config cfg;
     EventBus& bus;
-
-    InputAction action;
-    TriggerId onPress, onRelease;
-    ConditionFunc condition;
 
     std::unordered_map<Entity, bool, Entity::Hash> wasPressed;
 

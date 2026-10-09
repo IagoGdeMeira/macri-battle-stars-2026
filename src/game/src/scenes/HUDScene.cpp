@@ -26,19 +26,7 @@
 #include "engine/value_objects/GameConstants/GameConstants.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
-HUDScene::HUDScene(Config&& cfg) :
-    Scene(*cfg.eventBus),
-    initialRoundTime(cfg.initialRoundTime),
-    layoutPath(cfg.layoutPath),
-    healthBarWidgetPath(cfg.healthBarWidgetPath),
-    eventBus(*cfg.eventBus),
-    sceneManager(*cfg.sceneManager),
-    parser(*cfg.parser),
-    renderer(*cfg.renderer),
-    settings(*cfg.settings),
-    fontFactory(*cfg.fontFactory),
-    textureFactory(*cfg.textureFactory),
-    hudRoot(Entity{0}) {}
+HUDScene::HUDScene(Config&& cfg) : Scene(*cfg.eventBus), cfg(std::move(cfg)), hudRoot(Entity{0}) {}
 
 HUDScene::~HUDScene() = default;
 
@@ -47,13 +35,13 @@ void HUDScene::init()
     this->registerComponents();
     this->addSystems();
 
-    this->uiFactory = std::make_unique<UIFactory>(this->world(), this->fontFactory, this->textureFactory);
-    this->uiDrawer = std::make_unique<UIDrawer>(this->eventBus, this->renderer, this->settings);
+    this->uiFactory = std::make_unique<UIFactory>(this->world(), *this->cfg.fontFactory, *this->cfg.textureFactory);
+    this->uiDrawer = std::make_unique<UIDrawer>(this->eventBus, *this->cfg.renderer, *this->cfg.settings);
 
     this->actionFactory = std::make_unique<UIActionFactory>(UIActionFactory::Config{
-        .eventBus = this->eventBus, .sceneManager = this->sceneManager });
+        .eventBus = this->eventBus, .sceneManager = *this->cfg.sceneManager });
 
-    this->uiLoader = std::make_unique<UILoader>(this->parser, *this->uiFactory, *this->actionFactory, this->fontFactory);
+    this->uiLoader = std::make_unique<UILoader>(*this->cfg.parser, *this->uiFactory, *this->actionFactory, *this->cfg.fontFactory);
 
     this->registerWidgetLoaders();
     this->loadHUDLayout();
@@ -74,7 +62,7 @@ void HUDScene::update(float deltaTime)
         if (!leftContainerOpt.has_value() || !rightContainerOpt.has_value()) continue;
 
         Entity target = (spawn.playerId == 0) ? *leftContainerOpt : *rightContainerOpt;
-        this->uiLoader->instantiateWidget(this->healthBarWidgetPath, params, target);
+        this->uiLoader->instantiateWidget(this->cfg.healthBarWidgetPath, params, target);
     }
     this->pendingSpawns.clear();
 
@@ -113,14 +101,16 @@ void HUDScene::addSystems()
 
 void HUDScene::loadHUDLayout()
 {
-    auto entities = this->uiLoader->loadLayout(this->layoutPath);
+    auto entities = this->uiLoader->loadLayout(this->cfg.layoutPath);
     if (!entities.empty()) this->hudRoot = entities[0];
 }
 
 void HUDScene::registerWidgetLoaders()
 {
-    this->uiLoader->registerWidgetLoader("healthBar", std::make_unique<HealthBarWidgetLoader>(*this->uiFactory, this->parser));
-    this->uiLoader->registerWidgetLoader("timer", std::make_unique<TimerWidgetLoader>(*this->uiFactory, this->fontFactory));
+    this->uiLoader->registerWidgetLoader(
+        "healthBar", std::make_unique<HealthBarWidgetLoader>(*this->uiFactory, *this->cfg.parser));
+    this->uiLoader->registerWidgetLoader(
+        "timer", std::make_unique<TimerWidgetLoader>(*this->uiFactory, *this->cfg.fontFactory));
     this->uiLoader->registerWidgetLoader("shape", std::make_unique<ShapeWidgetLoader>(*this->uiFactory));
 }
 

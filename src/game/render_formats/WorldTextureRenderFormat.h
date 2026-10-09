@@ -23,19 +23,12 @@ public:
         TextureLoader& textureLoader;
     };
 
-    WorldTextureRenderFormat(Config&& cfg) :
-        renderer(cfg.renderer),
-        camera(cfg.camera),
-        resourceManager(cfg.resourceManager),
-        textureLoader(cfg.textureLoader) {}
+    WorldTextureRenderFormat(Config&& cfg) : cfg(std::move(cfg)) {}
 
     void render(RenderContext& ctx, RenderQueue& queue) override;
 
 private:
-    Renderer& renderer;
-    Camera2D& camera;
-    ResourceManager& resourceManager;
-    TextureLoader& textureLoader;
+    Config cfg;
 
     DrawTextureCommand buildTextureCommand(Entity& entity, World& world, size_t order, std::shared_ptr<Texture> texture) const;
     bool shouldFlipTexture(Entity& entity, World& world) const;

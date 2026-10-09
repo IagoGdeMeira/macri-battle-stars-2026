@@ -31,14 +31,7 @@ public:
     void update(UpdateContext& ctx) override;
 
 private:
-    Camera2D& camera;
-    Window& window;
-
-    float minZoom, maxZoom, padding, verticalOffset, epsilon, smoothFactor;
-    AABB bounds;
-    Dimension2D viewSize;
-    float minMargin;
-    bool favorBigPlayers;
+    Config cfg;
 
     float selectZoom(const AABB& playerBounds) const;
     Position computeClampedCameraPosition(const Position& center, float targetZoom);

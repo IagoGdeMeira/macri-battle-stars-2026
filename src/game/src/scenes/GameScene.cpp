@@ -70,50 +70,33 @@
 #include "engine/value_objects/InputContext/InputContext.h"
 #include "engine/value_objects/RenderContext/RenderContext.h"
 
-GameScene::GameScene(Config&& cfg) :
-    Scene(*cfg.eventBus),
-    roundTime(cfg.roundTime),
-    eventBus(*cfg.eventBus),
-    sceneManager(*cfg.sceneManager),
-    renderer(*cfg.renderer),
-    window(*cfg.window),
-    parser(*cfg.parser),
-    resourceManager(*cfg.resourceManager),
-    textureLoader(*cfg.textureLoader),
-    settings(*cfg.settings),
-    engine(*cfg.engine),
-    fontFactory(*cfg.fontFactory),
-    textureFactory(*cfg.textureFactory),
-    platformFactory(*cfg.platformFactory),
-    playerSlots(std::move(cfg.playerSlots)),
-    mapPath(cfg.mapPath),
-    mapRoot(Entity{0})
+GameScene::GameScene(Config&& cfg) : Scene(*cfg.eventBus), cfg(std::move(cfg)), mapRoot(Entity{0})
 {
-    this->loadInputContext(cfg.inputBindingsPath);
+    this->loadInputContext(this->cfg.inputBindingsPath);
 
-    if (!cfg.combosPath.empty()) this->loadCombos(cfg.combosPath);
-    if (!cfg.triggersPath.empty()) this->loadTriggerBindings(cfg.triggersPath);
-    if (cfg.platformFactory) this->setupInputAdapters();
+    if (!this->cfg.combosPath.empty()) this->loadCombos(this->cfg.combosPath);
+    if (!this->cfg.triggersPath.empty()) this->loadTriggerBindings(this->cfg.triggersPath);
+    if (this->cfg.platformFactory) this->setupInputAdapters();
 
-    this->charDefLoader = std::make_unique<CharacterDefinitionLoader>(this->parser);
-    this->animLoader = std::make_unique<AnimationLoader>(this->parser);
-    this->fsmLoader = std::make_unique<StateMachineLoader>(this->parser);
+    this->charDefLoader = std::make_unique<CharacterDefinitionLoader>(*this->cfg.parser);
+    this->animLoader = std::make_unique<AnimationLoader>(*this->cfg.parser);
+    this->fsmLoader = std::make_unique<StateMachineLoader>(*this->cfg.parser);
     this->stateMachineRegistry = std::make_unique<StateMachineRegistry>();
 
     this->entityFactory = std::make_unique<EntityFactory>(EntityFactory::Config{
-        this->world(), this->resourceManager, this->textureLoader, *this->animLoader });
+        this->world(), *this->cfg.resourceManager, *this->cfg.textureLoader, *this->animLoader });
 
-    this->hitboxLoader = std::make_unique<HitboxLoader>(this->parser, *this->entityFactory);
-    this->hurtboxLoader = std::make_unique<HurtboxLoader>(this->parser, *this->entityFactory);
-    this->pushboxLoader = std::make_unique<PushboxLoader>(this->parser, *this->entityFactory);
+    this->hitboxLoader = std::make_unique<HitboxLoader>(*this->cfg.parser, *this->entityFactory);
+    this->hurtboxLoader = std::make_unique<HurtboxLoader>(*this->cfg.parser, *this->entityFactory);
+    this->pushboxLoader = std::make_unique<PushboxLoader>(*this->cfg.parser, *this->entityFactory);
 
     this->characterLoader = std::make_unique<CharacterLoader>(CharacterLoader::Config{
-        .parser                 = this->parser,
+        .parser                 = *this->cfg.parser,
         .defLoader              = *this->charDefLoader,
         .animLoader             = *this->animLoader,
         .fsmLoader              = *this->fsmLoader,
-        .resourceManager        = this->resourceManager,
-        .textureLoader          = this->textureLoader,
+        .resourceManager        = *this->cfg.resourceManager,
+        .textureLoader          = *this->cfg.textureLoader,
         .hitboxLoader           = *this->hitboxLoader,
         .hurtboxLoader          = *this->hurtboxLoader,
         .pushboxLoader          = *this->pushboxLoader,
@@ -130,11 +113,11 @@ void GameScene::init()
 
     this->worldDrawer = std::make_unique<WorldDrawer>(WorldDrawer::Config{
         .bus                = this->eventBus,
-        .renderer           = this->renderer,
+        .renderer           = *this->cfg.renderer,
         .camera             = *this->camera,
-        .settings           = this->settings,
-        .resourceManager    = this->resourceManager,
-        .textureLoader      = this->textureLoader
+        .settings           = *this->cfg.settings,
+        .resourceManager    = *this->cfg.resourceManager,
+        .textureLoader      = *this->cfg.textureLoader
     });
 }
 
@@ -144,17 +127,13 @@ void GameScene::update(float deltaTime)
 
     if (!this->spawnEventsEmitted)
     {
-        for (const auto& spawn : this->pendingSpawns)
-        {
-            auto& result = spawn.result;
-            this->eventBus.emit<PlayerSpawnedEvent>(PlayerSpawnedEvent{
-                .playerId       = spawn.playerId,
-                .characterName  = result.displayName,
-                .playerEntity   = result.entity,
-                .maxHealth      = result.maxHealth,
-                .currentHealth  = result.currentHealth
-            });
-        }
+        for (const auto& spawn : this->pendingSpawns) this->eventBus.emit<PlayerSpawnedEvent>(PlayerSpawnedEvent{
+            .playerId       = spawn.playerId,
+            .characterName  = spawn.result.displayName,
+            .playerEntity   = spawn.result.entity,
+            .maxHealth      = spawn.result.maxHealth,
+            .currentHealth  = spawn.result.currentHealth
+        });
         this->pendingSpawns.clear();
         this->spawnEventsEmitted = true;
     }
@@ -162,7 +141,7 @@ void GameScene::update(float deltaTime)
     this->sweepTimer += deltaTime;
     if (this->sweepTimer >= 5.f)
     {
-        this->resourceManager.sweep();
+        this->cfg.resourceManager->sweep();
         this->sweepTimer = 0.f;
     }
 }
@@ -192,48 +171,51 @@ void GameScene::onExit()
     this->mapRoot = Entity{0};
     
     this->world().clear();
-    this->resourceManager.sweep();
+    this->cfg.resourceManager->sweep();
 }
 
 void GameScene::loadInputContext(const std::string& path)
 {
-    InputBindingLoader loader(this->parser);
+    InputBindingLoader loader(*this->cfg.parser);
     this->inputContext = std::make_unique<InputContext>(loader.load(path));
 }
 
 void GameScene::setupInputAdapters()
 {
-    auto& inputManager = this->engine.input();
+    auto& inputManager = this->cfg.engine->input();
 
-    inputManager.setProvider(this->platformFactory.createEventProvider());
-    inputManager.addAdapter(this->platformFactory.createKeyboardAdapter(this->eventBus, *this->inputContext));
+    auto& platformFactory = *this->cfg.platformFactory;
+    inputManager.setProvider(platformFactory.createEventProvider());
+    inputManager.addAdapter(platformFactory.createKeyboardAdapter(this->eventBus, *this->inputContext));
 
-    auto gamepadAdapters = this->platformFactory.createGamepadAdapters(this->eventBus, 1);
+    auto gamepadAdapters = platformFactory.createGamepadAdapters(this->eventBus, 1);
     for (auto& adapter : gamepadAdapters) inputManager.addAdapter(std::move(adapter));
 
-    inputManager.addAdapter(this->platformFactory.createSystemAdapter(this->eventBus));
+    inputManager.addAdapter(platformFactory.createSystemAdapter(this->eventBus));
 }
 
 void GameScene::loadMap(const std::string& path)
 {
-    MapLoader mapLoader(this->parser, *this->entityFactory, *this->pushboxLoader);
+    MapLoader mapLoader(*this->cfg.parser, *this->entityFactory, *this->pushboxLoader);
     this->mapRoot = mapLoader.load(this->world(), path);
 }
 
-void GameScene::loadCombos(const std::string& path) { this->combos = ComboLoader(this->parser).load(path); }
+void GameScene::loadCombos(const std::string& path)
+{ this->combos = ComboLoader(*this->cfg.parser).load(path); }
 
-void GameScene::loadTriggerBindings(const std::string& path) { this->triggerContext = TriggerBindingLoader(this->parser).load(path); }
+void GameScene::loadTriggerBindings(const std::string& path)
+{ this->triggerContext = TriggerBindingLoader(*this->cfg.parser).load(path); }
 
 void GameScene::prepareScene()
 {
     this->prepareComponents();
-    this->loadMap(this->mapPath);
+    this->loadMap(this->cfg.mapPath);
     this->preparePlayers();
 }
 
 void GameScene::prepareComponents() { GameComponentRegistry::registerAll(this->world().components()); }
 
-void GameScene::preparePlayers() { for (const auto& slot : this->playerSlots) this->preparePlayer(slot); }
+void GameScene::preparePlayers() { for (const auto& slot : this->cfg.playerSlots) this->preparePlayer(slot); }
 
 void GameScene::preparePlayer(const PlayerSlot& slot)
 {
@@ -260,8 +242,7 @@ void GameScene::preparePlayer(const PlayerSlot& slot)
     const auto& mapComp = comp.get<MapComponent>(this->mapRoot);
 
     float spawnX = 400.f;
-    for (const auto& sp : mapComp.spawnPoints) if (sp.playerId == slot.playerId)
-    { spawnX = sp.x; break; }
+    for (const auto& sp : mapComp.spawnPoints) if (sp.playerId == slot.playerId) { spawnX = sp.x; break; }
 
     auto& transform = comp.get<TransformComponent>(entity);
     transform.position.x = spawnX;
@@ -293,7 +274,7 @@ void GameScene::addSystems()
     systems.addSystem<TriggerGenerationSystem>(events, this->triggerContext);
     systems.addSystem<InputBufferSystem>(events, *this->inputContext);
     systems.addSystem<ComboSystem>(events, this->combos);
-    systems.addSystem<RoundTimerSystem>(events, this->roundTime);
+    systems.addSystem<RoundTimerSystem>(events, this->cfg.roundTime);
 
     systems.addSystem<DirectionTriggerSystem>(events);
     systems.addSystem<HoldTriggerSystem>(events, HoldTriggerSystem::Config{
@@ -351,7 +332,7 @@ void GameScene::addSystems()
 
     systems.addSystem<CameraControllerSystem>(CameraControllerSystem::Config{
         .camera             = *this->camera,
-        .window             = this->window,
+        .window             = *this->cfg.window,
         .minZoom            = 0.85f,
         .maxZoom            = 1.05f,
         .padding            = 30.f,
