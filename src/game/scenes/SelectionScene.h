@@ -24,6 +24,7 @@ public:
 
     explicit SelectionScene(Config&& cfg) : Scene(*cfg.eventBus), cfg(std::move(cfg)) {};
 
+    void init() override {}
     void update(float deltaTime) override { (void)deltaTime; }
 
 private:

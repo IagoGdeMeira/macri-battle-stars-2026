@@ -1,5 +1,7 @@
 #include "game/include/MovementSystem/MovementSystem.h"
 
+#include "StubScene.h"
+
 #include "domain/components/HitstopComponent.h"
 #include "domain/components/TransformComponent.h"
 #include "domain/components/VelocityComponent.h"
@@ -55,7 +57,7 @@ public:
 
 protected:
     EventBus bus;
-    Scene scene;
+    StubScene scene;
 };
 
 TEST_CASE_METHOD(MovementSystemFixture, "MovementSystem updates position", "[integration][movement_system]")

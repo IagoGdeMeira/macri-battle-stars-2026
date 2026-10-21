@@ -1,5 +1,7 @@
 #include "game/include/TriggerGenerationSystem/TriggerGenerationSystem.h"
 
+#include "StubScene.h"
+
 #include "domain/components/InputComponent.h"
 #include "domain/components/PlayerComponent.h"
 
@@ -15,7 +17,7 @@ class TriggerGenerationSystemFixture
 {
 public:
     EventBus bus;
-    Scene scene{this->bus};
+    StubScene scene{this->bus};
 
     TriggerGenerationSystemFixture()
     {

@@ -12,11 +12,19 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+class InputBufferTestScene : public Scene
+{
+public:
+    explicit InputBufferTestScene(EventBus& eventBus) : Scene(eventBus) {}
+
+    void init() override {}
+};
+
 TEST_CASE("InputBufferSystem pushes mapped pressed key to matching player",
     "[integration][input_buffer_system]"
 ) {
     EventBus bus;
-    Scene scene(bus);
+    InputBufferTestScene scene(bus);
 
     auto& comp = scene.world().components();
     comp.registerComponent<InputBufferComponent>();
@@ -44,7 +52,7 @@ TEST_CASE("InputBufferSystem pushes mapped pressed key to matching player",
 TEST_CASE("InputBufferSystem ignores key release events", "[integration][input_buffer_system]")
 {
     EventBus bus;
-    Scene scene(bus);
+    InputBufferTestScene scene(bus);
 
     auto& comp = scene.world().components();
     comp.registerComponent<InputBufferComponent>();
@@ -70,7 +78,7 @@ TEST_CASE("InputBufferSystem ignores key release events", "[integration][input_b
 TEST_CASE("InputBufferSystem increments time and drops expired inputs", "[integration][input_buffer_system]")
 {
     EventBus bus;
-    Scene scene(bus);
+    InputBufferTestScene scene(bus);
 
     auto& comp = scene.world().components();
     comp.registerComponent<InputBufferComponent>();

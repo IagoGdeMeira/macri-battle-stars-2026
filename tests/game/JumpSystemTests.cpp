@@ -1,5 +1,7 @@
 #include "game/include/JumpSystem/JumpSystem.h"
 
+#include "StubScene.h"
+
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/HitstopComponent.h"
 #include "domain/components/InputComponent.h"
@@ -20,7 +22,7 @@ class JumpSystemFixture
 {
 public:
     EventBus bus;
-    Scene scene{this->bus};
+    StubScene scene{this->bus};
 
     static constexpr float UPDATE_DELAY = 0.016f;
 

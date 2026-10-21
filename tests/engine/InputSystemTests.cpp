@@ -13,11 +13,19 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+class InputTestScene : public Scene
+{
+public:
+    explicit InputTestScene(EventBus& eventBus) : Scene(eventBus) {}
+
+    void init() override {}
+};
+
 class InputSystemFixture
 {
 public:
     EventBus bus;
-    Scene scene{this->bus};
+    InputTestScene scene{this->bus};
 
     InputSystemFixture()
     {

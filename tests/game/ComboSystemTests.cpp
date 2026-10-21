@@ -9,10 +9,18 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+class ComboTestScene : public Scene
+{
+public:
+    explicit ComboTestScene(EventBus& eventBus) : Scene(eventBus) {}
+
+    void init() override {}
+};
+
 TEST_CASE("ComboSystem emits best matching combo by priority", "[integration][combo_system]")
 {
     EventBus bus;
-    Scene scene(bus);
+    ComboTestScene scene(bus);
 
     auto& comp = scene.world().components();
 
@@ -53,7 +61,7 @@ TEST_CASE("ComboSystem emits best matching combo by priority", "[integration][co
 TEST_CASE("ComboSystem clears buffer when combo consumes input", "[integration][combo_system]")
 {
     EventBus bus;
-    Scene scene(bus);
+    ComboTestScene scene(bus);
 
     auto& comp = scene.world().components();
 
@@ -82,7 +90,7 @@ TEST_CASE("ComboSystem clears buffer when combo consumes input", "[integration][
 TEST_CASE("ComboSystem keeps buffer when combo does not consume input", "[integration][combo_system]")
 {
     EventBus bus;
-    Scene scene(bus);
+    ComboTestScene scene(bus);
 
     auto& comp = scene.world().components();
 

@@ -5,6 +5,7 @@
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/Scene/Scene.h"
 #include "game/events/TriggerEvent.h"
+#include "StubScene.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
@@ -13,7 +14,7 @@ class DirectionTriggerSystemFixture
 {
 public:
     EventBus bus;
-    Scene scene{this->bus};
+    StubScene scene{this->bus};
 
     static constexpr float UPDATE_DELAY = 0.016f;
 

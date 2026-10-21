@@ -1,5 +1,7 @@
 #include "game/collision_detections/CircleCircleCollisionDetection.h"
 
+#include "StubScene.h"
+
 #include "domain/components/CircleColliderComponent.h"
 #include "domain/components/TransformComponent.h"
 
@@ -29,7 +31,7 @@ public:
 
 protected:
     EventBus bus;
-    Scene scene;
+    StubScene scene;
     std::vector<CollisionEvent> events;
     CircleCircleCollisionDetection detector;
 

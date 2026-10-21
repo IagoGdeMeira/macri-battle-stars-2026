@@ -43,7 +43,7 @@ public:
     Scene(EventBus& eventBus) : eventBus(eventBus) {}
     virtual ~Scene() = default;
 
-    virtual void init() {}
+    virtual void init() = 0;
     virtual void update(float deltaTime);
     virtual void render() {}
 

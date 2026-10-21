@@ -1,5 +1,7 @@
 #include "game/include/FallTriggerSystem/FallTriggerSystem.h"
 
+#include "StubScene.h"
+
 #include "domain/components/GroundedComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/VelocityComponent.h"
@@ -17,7 +19,7 @@ class FallTriggerSystemFixture
 {
 public:
     EventBus bus;
-    Scene scene{this->bus};
+    StubScene scene{this->bus};
 
     static constexpr float UPDATE_DELAY = 0.016f;
 

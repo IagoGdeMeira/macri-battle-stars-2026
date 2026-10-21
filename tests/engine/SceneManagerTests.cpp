@@ -72,6 +72,7 @@ public:
 
     explicit CounterScene(Config&& cfg) : Scene(*cfg.eventBus), counter(cfg.counter) {}
 
+    void init() override {}
     void update(float) override { if (this->counter) ++(*this->counter); }
 
 private:
@@ -92,6 +93,8 @@ public:
         exits(cfg.exits),
         pauses(cfg.pauses),
         resumes(cfg.resumes) {}
+
+    void init() override {}
 
     void update(float) override { if (this->updates) ++(*this->updates); }
     void render() override      { if (this->renders) ++(*this->renders); }

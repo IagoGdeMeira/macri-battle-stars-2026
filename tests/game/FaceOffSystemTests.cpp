@@ -1,5 +1,7 @@
 #include "game/include/FaceOffSystem/FaceOffSystem.h"
 
+#include "StubScene.h"
+
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/PlayerComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -16,7 +18,7 @@ class FaceOffSystemFixture
 {
 public:
     EventBus bus;
-    Scene scene{this->bus};
+    StubScene scene{this->bus};
 
     FaceOffSystemFixture()
     {

@@ -99,6 +99,8 @@ public:
         this->injectedFontFactory       = cfg.fontFactory;
         this->injectedTextureFactory    = cfg.textureFactory;
     }
+
+    void init() override {}
 };
 
 TEST_CASE_METHOD(SceneFactoryFixture, "SceneFactory creates a scene via template",
@@ -159,6 +161,7 @@ TEST_CASE_METHOD(SceneFactoryFixture, "Integration: Engine runs a scene created 
     public:
         struct Config : public Scene::Config {};
         explicit SimpleScene(Config&& cfg) : Scene(*cfg.eventBus) {}
+        void init() override {}
         void update(float) override {}
     };
 

@@ -7,6 +7,14 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+class TestScene : public Scene
+{
+public:
+    explicit TestScene(EventBus& eventBus) : Scene(eventBus) {}
+
+    void init() override {}
+};
+
 TEST_CASE("Scene updates systems", "[unit][scene]")
 {
     struct TestSystem : System
@@ -16,7 +24,7 @@ TEST_CASE("Scene updates systems", "[unit][scene]")
     };
 
     EventBus bus;
-    Scene scene(bus);
+    TestScene scene(bus);
 
     auto& sys = scene.addSystem<TestSystem>();
 
@@ -34,7 +42,7 @@ TEST_CASE("Scene passes deltaTime to systems", "[unit][scene]")
     };
 
     EventBus bus;
-    Scene scene(bus);
+    TestScene scene(bus);
 
     auto& sys = scene.addSystem<TestSystem>();
 
@@ -56,7 +64,7 @@ TEST_CASE("Scene flushes CommandBuffer after systems", "[unit][scene]")
     };
 
     EventBus bus;
-    Scene scene(bus);
+    TestScene scene(bus);
 
     bool executed = false;
 
@@ -85,7 +93,7 @@ TEST_CASE("CommandBuffer executes after system update", "[unit][scene]")
     };
 
     EventBus bus;
-    Scene scene(bus);
+    TestScene scene(bus);
 
     scene.addSystem<TestSystem>(order);
 
@@ -108,7 +116,7 @@ TEST_CASE("Scene shares World between systems and commands", "[unit][scene]")
     };
 
     EventBus bus;
-    Scene scene(bus);
+    TestScene scene(bus);
 
     scene.addSystem<TestSystem>();
 
@@ -127,7 +135,7 @@ TEST_CASE("Scene updates multiple systems", "[unit][scene]")
     };
 
     EventBus bus;
-    Scene scene(bus);
+    TestScene scene(bus);
 
     int counter = 0;
 

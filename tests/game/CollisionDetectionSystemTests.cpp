@@ -1,8 +1,6 @@
 #include "game/include/CollisionDetectionSystem/CollisionDetectionSystem.h"
 
-#include "game/collision_detections/RectRectCollisionDetection.h"
-#include "game/collision_detections/CircleCircleCollisionDetection.h"
-#include "game/collision_detections/RectCircleCollisionDetection.h"
+#include "StubScene.h"
 
 #include "domain/components/CircleColliderComponent.h"
 #include "domain/components/RectangleColliderComponent.h"
@@ -11,6 +9,9 @@
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/Scene/Scene.h"
 
+#include "game/collision_detections/CircleCircleCollisionDetection.h"
+#include "game/collision_detections/RectCircleCollisionDetection.h"
+#include "game/collision_detections/RectRectCollisionDetection.h"
 #include "game/events/CollisionEvent.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -38,7 +39,7 @@ public:
 
 protected:
     EventBus bus;
-    Scene scene;
+    StubScene scene;
     std::vector<CollisionEvent> events;
 
     Entity createRect(float x, float y, float width, float height)
