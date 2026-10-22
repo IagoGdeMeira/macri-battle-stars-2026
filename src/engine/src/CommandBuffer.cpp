@@ -4,15 +4,13 @@
 
 #include <utility>
 
-void CommandBuffer::create(std::function<void(World&)> cmd)
-{ this->commands.push_back(std::move(cmd)); }
+void CommandBuffer::create(Command cmd) { this->commands.push_back(std::move(cmd)); }
 
-void CommandBuffer::destroy(Entity entity)
-{ this->create([entity](World& world) { world.destroy(entity); }); }
+void CommandBuffer::destroy(Entity entity) { this->create([entity](World& world) { world.destroy(entity); }); }
 
 void CommandBuffer::flush(World& world)
 {
-    std::vector<std::function<void(World&)>> current;
+    std::vector<Command> current;
     current.swap(this->commands);
 
     for (size_t i = 0; i < current.size(); ++i)
