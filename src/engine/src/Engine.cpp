@@ -10,10 +10,7 @@
 #include <thread>
 
 Engine::Engine(Window& window, GameSettings& settings) : window(window), gameSettings(settings)
-{
-    this->eventBus.subscribe<QuitEvent>([this](const QuitEvent&)
-    { this->stop(); });
-}
+{ this->eventBus.subscribe<QuitEvent>([this](const QuitEvent&) { this->stop(); }); }
 
 SceneManager& Engine::scenes()
 {

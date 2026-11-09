@@ -20,8 +20,10 @@ public:
     virtual void setViewport(const Viewport&) = 0;
     virtual void setScale(const Position&) = 0;
 
+    using Handler = std::unique_ptr<IDrawCommandHandler>;
+
     template<typename CommandType>
-    void registerHandler(std::unique_ptr<IDrawCommandHandler> handler)
+    void registerHandler(Handler handler)
     { this->handlers[std::type_index(typeid(CommandType))] = std::move(handler); }
 
     virtual void draw(const DrawCommand& command)
@@ -31,7 +33,7 @@ public:
     }
 
 protected:
-    std::unordered_map<std::type_index, std::unique_ptr<IDrawCommandHandler>> handlers;
+    std::unordered_map<std::type_index, Handler> handlers;
 };
 
 #endif // renderer_h
