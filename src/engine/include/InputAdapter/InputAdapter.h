@@ -9,8 +9,10 @@
 class InputAdapter
 {
 public:
+    using Event = std::unique_ptr<PlatformEvent>;
+
     virtual ~InputAdapter() = default;
-    virtual void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events) = 0;
+    virtual void processEvents(const std::vector<Event>& events) = 0;
 };
 
 #endif // input_adapter_h

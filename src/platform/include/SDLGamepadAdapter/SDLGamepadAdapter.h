@@ -15,7 +15,7 @@ public:
     SDLGamepadAdapter(EventBus& eventBus, uint32_t assignedPlayer, int joystickIndex);
     ~SDLGamepadAdapter() override;
 
-    void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events) override;
+    void processEvents(const std::vector<InputAdapter::Event>& events) override;
 
 private:
     EventBus& eventBus;

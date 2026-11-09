@@ -15,7 +15,7 @@ class SDLKeyboardAdapter : public InputAdapter
 {
 public:
     SDLKeyboardAdapter(EventBus& eventBus, const InputContext& inputContext);
-    void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events) override;
+    void processEvents(const std::vector<InputAdapter::Event>& events) override;
 
 private:
     EventBus& eventBus;

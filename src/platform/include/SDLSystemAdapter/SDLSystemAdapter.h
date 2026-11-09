@@ -9,7 +9,7 @@ class SDLSystemAdapter : public InputAdapter
 {
 public:
     explicit SDLSystemAdapter(EventBus& bus) : eventBus(bus) {}
-    void processEvents(const std::vector<std::unique_ptr<PlatformEvent>>& events) override;
+    void processEvents(const std::vector<InputAdapter::Event>& events) override;
 
 private:
     EventBus& eventBus;
