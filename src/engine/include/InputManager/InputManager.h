@@ -12,13 +12,16 @@ class InputManager
 public:
     InputManager() = default;
 
-    void setProvider(std::unique_ptr<IPlatformEventProvider> provider);
-    void addAdapter(std::unique_ptr<InputAdapter> adapter);
+    using Provider = std::unique_ptr<IPlatformEventProvider>;
+    using Adapter = std::unique_ptr<InputAdapter>;
+
+    void setProvider(Provider provider);
+    void addAdapter(Adapter adapter);
     void poll();
 
 private:
-    std::unique_ptr<IPlatformEventProvider> provider;
-    std::vector<std::unique_ptr<InputAdapter>> adapters;
+    Provider provider;
+    std::vector<Adapter> adapters;
 };
 
 #endif // input_manager_h

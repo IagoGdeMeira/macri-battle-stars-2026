@@ -1,10 +1,8 @@
 #include "InputManager/InputManager.h"
 
-void InputManager::setProvider(std::unique_ptr<IPlatformEventProvider> newProvider)
-{ this->provider = std::move(newProvider); }
+void InputManager::setProvider(Provider newProvider) { this->provider = std::move(newProvider); }
 
-void InputManager::addAdapter(std::unique_ptr<InputAdapter> adapter)
-{ this->adapters.push_back(std::move(adapter)); }
+void InputManager::addAdapter(Adapter adapter) { this->adapters.push_back(std::move(adapter)); }
 
 void InputManager::poll()
 {
