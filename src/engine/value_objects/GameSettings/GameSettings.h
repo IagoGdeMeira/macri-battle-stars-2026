@@ -6,9 +6,8 @@
 
 #include "domain/value_objects/Geometry/Geometry.h"
 
-class GameSettings
+struct GameSettings
 {
-public:
     struct Volume { int master = 100, music = 80, sfx = 100; };
     struct Screen { bool fullscreen = false; Dimension2D size {800.f, 600.f}; };
 

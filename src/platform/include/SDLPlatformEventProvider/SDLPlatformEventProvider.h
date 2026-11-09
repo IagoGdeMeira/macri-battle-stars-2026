@@ -6,7 +6,7 @@
 class SDLPlatformEventProvider : public IPlatformEventProvider
 {
 public:
-    std::vector<std::unique_ptr<PlatformEvent>> pollEvents() override;
+    std::vector<IPlatformEventProvider::Event> pollEvents() override;
 };
 
 #endif // sdl_platform_event_provider_h

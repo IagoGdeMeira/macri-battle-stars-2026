@@ -9,8 +9,10 @@
 class IPlatformEventProvider
 {
 public:
-    virtual ~IPlatformEventProvider() = default;  
-    virtual std::vector<std::unique_ptr<PlatformEvent>> pollEvents() = 0;
+    using Event = std::unique_ptr<PlatformEvent>;
+
+    virtual ~IPlatformEventProvider() = default;
+    virtual std::vector<Event> pollEvents() = 0;
 };
 
 #endif // i_platform_event_provider_h

@@ -11,7 +11,6 @@
 class DataParser;
 class Engine;
 class EventBus;
-class GameSettings;
 class IFontFactory;
 class IPlatformFactory;
 class ITextureFactory;
@@ -20,6 +19,8 @@ class ResourceManager;
 class SceneManager;
 class TextureLoader;
 class Window;
+
+struct GameSettings;
 
 class Scene
 {

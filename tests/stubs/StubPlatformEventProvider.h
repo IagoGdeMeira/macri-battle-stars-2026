@@ -10,12 +10,12 @@ class StubPlatformEventProvider : public IPlatformEventProvider
 {
 public:
     int pollCalls = 0;
-    std::vector<std::unique_ptr<PlatformEvent>> platformEvents;
+    std::vector<IPlatformEventProvider::Event> platformEvents;
 
-    std::vector<std::unique_ptr<PlatformEvent>> pollEvents() override
+    std::vector<IPlatformEventProvider::Event> pollEvents() override
     {
         ++this->pollCalls;
-        std::vector<std::unique_ptr<PlatformEvent>> result;
+        std::vector<IPlatformEventProvider::Event> result;
         for (auto& e : this->platformEvents) result.push_back(e->clone());
         
         return result;

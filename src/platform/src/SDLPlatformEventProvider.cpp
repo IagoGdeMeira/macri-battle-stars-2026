@@ -10,9 +10,9 @@
 
 #include <SDL.h>
 
-std::vector<std::unique_ptr<PlatformEvent>> SDLPlatformEventProvider::pollEvents()
+std::vector<IPlatformEventProvider::Event> SDLPlatformEventProvider::pollEvents()
 {
-    std::vector<std::unique_ptr<PlatformEvent>> events;
+    std::vector<IPlatformEventProvider::Event> events;
     SDL_Event sdlEvent;
 
     while (SDL_PollEvent(&sdlEvent)) switch (sdlEvent.type)

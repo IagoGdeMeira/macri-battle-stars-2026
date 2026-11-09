@@ -11,7 +11,6 @@
 
 class DataParser;
 class EventBus;
-class GameSettings;
 class HUDVisibilitySystem;
 class IFontFactory;
 class ITextureFactory;
@@ -21,6 +20,8 @@ class UIActionFactory;
 class UIDrawer;
 class UIFactory;
 class UILoader;
+
+struct GameSettings;
 
 class HUDScene : public Scene
 {
