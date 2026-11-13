@@ -15,6 +15,7 @@
 #include "domain/components/LocalTransform.h"
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/PolygonShapeComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -43,6 +44,7 @@ void HUDComponentRegistry::registerAll(ComponentManager& comp)
     comp.registerComponent<LocalTransform>();
     comp.registerComponent<OrientationComponent>();
     comp.registerComponent<ParentComponent>();
+    comp.registerComponent<PolygonShapeComponent>();
     comp.registerComponent<RectangleEffectsComponent>();
     comp.registerComponent<RectangleShapeComponent>();
     comp.registerComponent<RenderComponent>();

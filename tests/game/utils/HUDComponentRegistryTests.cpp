@@ -15,6 +15,7 @@
 #include "domain/components/LocalTransform.h"
 #include "domain/components/OrientationComponent.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/PolygonShapeComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -49,6 +50,7 @@ TEST_CASE("HUDComponentRegistry registers every HUD component", "[unit][hud_comp
     REQUIRE(comp.storage<LocalTransform>() != nullptr);
     REQUIRE(comp.storage<OrientationComponent>() != nullptr);
     REQUIRE(comp.storage<ParentComponent>() != nullptr);
+    REQUIRE(comp.storage<PolygonShapeComponent>() != nullptr);
     REQUIRE(comp.storage<RectangleEffectsComponent>() != nullptr);
     REQUIRE(comp.storage<RectangleShapeComponent>() != nullptr);
     REQUIRE(comp.storage<RenderComponent>() != nullptr);

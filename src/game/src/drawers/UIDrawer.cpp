@@ -2,21 +2,20 @@
 
 #include "UICircleRenderFormat.h"
 #include "UIFontRenderFormat.h"
+#include "UIPolygonRenderFormat.h"
 #include "UIRectangleRenderFormat.h"
 #include "UITextureRenderFormat.h"
 
 #include "engine/events/WindowResizedEvent.h"
 
-UIDrawer::UIDrawer(EventBus& bus, Renderer& renderer, GameSettings& settings) :
-    renderer(renderer), settings(settings)
+UIDrawer::UIDrawer(EventBus& bus, Renderer& renderer, GameSettings& settings) : renderer(renderer), settings(settings)
 {
     this->recalculateViewport();
-
-    bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent&)
-    { this->recalculateViewport(); });
+    bus.subscribe<WindowResizedEvent>([this](const WindowResizedEvent&) { this->recalculateViewport(); });
     
     this->addFormat(std::make_unique<UICircleRenderFormat>(this->renderer));
     this->addFormat(std::make_unique<UIFontRenderFormat>(this->renderer));
+    this->addFormat(std::make_unique<UIPolygonRenderFormat>(this->renderer));
     this->addFormat(std::make_unique<UIRectangleRenderFormat>(this->renderer));
     this->addFormat(std::make_unique<UITextureRenderFormat>(this->renderer));
 }

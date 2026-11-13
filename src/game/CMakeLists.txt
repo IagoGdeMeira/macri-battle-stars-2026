@@ -21,6 +21,7 @@ target_sources(game
 
         src/render_formats/UICircleRenderFormat.cpp
         src/render_formats/UIFontRenderFormat.cpp
+        src/render_formats/UIPolygonRenderFormat.cpp
         src/render_formats/UIRectangleRenderFormat.cpp
         src/render_formats/UITextureRenderFormat.cpp
         src/render_formats/WorldCircleRenderFormat.cpp

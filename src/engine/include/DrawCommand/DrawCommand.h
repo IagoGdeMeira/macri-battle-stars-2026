@@ -3,11 +3,9 @@
 
 #include <tuple>
 #include <typeindex>
-#include <cstddef>
 
-class DrawCommand
+struct DrawCommand
 {
-public:
     int layer = 0, zIndex = 0;
     std::size_t order = 0;
 

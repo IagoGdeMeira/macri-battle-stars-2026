@@ -65,6 +65,34 @@ Entity ShapeWidgetLoader::load(const DataNode& node)
         this->applyRenderComponent(entity, zIndex, layer);
         return entity;
     }
+    if (shape == "polygon")
+    {
+        std::vector<Position> vertices;
+        if (node.has("vertices")) for (auto& vNode : node.getArray("vertices"))
+        {
+            Position p;
+            p.x = vNode->getFloat("x", 0.f);
+            p.y = vNode->getFloat("y", 0.f);
+            vertices.push_back(p);
+        }
+
+        if (vertices.size() < 3) throw std::runtime_error("ShapeWidgetLoader: polygon needs at least 3 vertices");
+
+        Polygon polygon{vertices};
+        Entity entity = this->factory.createPolygonShape(UIFactory::ShapeParams{fillColor, filled}, polygon);
+
+        if (borderColor.a > 0)
+        {
+            Entity border = this->factory.createPolygonShape(UIFactory::ShapeParams{borderColor, false}, polygon);
+            this->factory.attachChild(entity, border, {0.f, 0.f});
+            auto& borderRender = comp.get<RenderComponent>(border);
+            borderRender.zIndex = zIndex + 1;
+            borderRender.layer = layer;
+        }
+
+        this->applyRenderComponent(entity, zIndex, layer);
+        return entity;
+    }
     throw std::runtime_error("ShapeWidgetLoader: unknown shape type");
 }
 

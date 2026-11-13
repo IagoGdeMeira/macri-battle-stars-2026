@@ -8,6 +8,7 @@
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/PolygonShapeComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -39,6 +40,7 @@ public:
         comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<LocalTransform>();
         comp.registerComponent<ParentComponent>();
+        comp.registerComponent<PolygonShapeComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
@@ -181,4 +183,48 @@ TEST_CASE_METHOD(ShapeWidgetLoaderFixture, "ShapeWidgetLoader throws on unknown 
     node->setString("shape", "triangle");
 
     REQUIRE_THROWS_AS(this->loader.load(*node), std::runtime_error);
+}
+
+TEST_CASE_METHOD(ShapeWidgetLoaderFixture, "ShapeWidgetLoader creates polygon with border",
+    "[integration][shape_widget_loader]")
+{
+    auto node = std::make_unique<StubDataNode>();
+    node->setString("shape", "polygon");
+    node->setBool("filled", true);
+    node->setInt("zIndex", 3);
+    node->setInt("layer", 1);
+
+    std::vector<std::unique_ptr<DataNode>> verts;
+    auto makeVert = [](float x, float y)
+    {
+        auto v = std::make_unique<StubDataNode>();
+        v->setFloat("x", x);
+        v->setFloat("y", y);
+        return v;
+    };
+    verts.push_back(makeVert(0.f, 0.f));
+    verts.push_back(makeVert(80.f, 10.f));
+    verts.push_back(makeVert(100.f, 30.f));
+    verts.push_back(makeVert(0.f, 30.f));
+    node->setArray("vertices", std::move(verts));
+
+    auto fill = std::make_unique<StubDataNode>();
+    fill->setInt("r", 255); fill->setInt("g", 0); fill->setInt("b", 0); fill->setInt("a", 255);
+    node->setObject("fillColor", std::move(fill));
+
+    auto border = std::make_unique<StubDataNode>();
+    border->setInt("r", 0); border->setInt("g", 0); border->setInt("b", 0); border->setInt("a", 255);
+    node->setObject("borderColor", std::move(border));
+
+    Entity shape = this->loader.load(*node);
+
+    auto& comp = this->world.components();
+    REQUIRE(comp.has<PolygonShapeComponent>(shape));
+    const auto& poly = comp.get<PolygonShapeComponent>(shape);
+    REQUIRE(poly.polygon.vertices.size() == 4);
+    REQUIRE(poly.filled == true);
+
+    const auto& render = comp.get<RenderComponent>(shape);
+    REQUIRE(render.zIndex == 3);
+    REQUIRE(render.layer == 1);
 }

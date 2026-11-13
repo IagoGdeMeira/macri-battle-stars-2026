@@ -10,6 +10,7 @@
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/PolygonShapeComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -20,7 +21,6 @@
 #include "domain/components/UITextComponent.h"
 #include "domain/include/World/World.h"
 #include "domain/resources/Font/Font.h"
-#include "domain/resources/Texture/Texture.h"
 #include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/FlexEnums/FlexEnums.h"
 
@@ -123,6 +123,32 @@ Entity UIFactory::createCircleShape(const ShapeParams& params, const Circle& cir
     comp.add<TransformComponent>(e, TransformComponent{circle.position, {1.f, 1.f}, 0.f});
     comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{{circle.radius * 2.f, circle.radius * 2.f}});
     comp.add<CircleShapeComponent>(e, CircleShapeComponent{circle, params.color, params.filled});
+    comp.add<RenderComponent>(e, RenderComponent{0, 0});
+    return e;
+}
+
+Entity UIFactory::createPolygonShape(const ShapeParams& params, const Polygon& polygon)
+{
+    Entity e = this->factoryWorld.entities().create();
+    auto& comp = this->factoryWorld.components();
+
+    float minX = 0.f, minY = 0.f, maxX = 0.f, maxY = 0.f;
+    if (!polygon.vertices.empty())
+    {
+        minX = maxX = polygon.vertices[0].x;
+        minY = maxY = polygon.vertices[0].y;
+        for (const auto& v : polygon.vertices)
+        {
+            if (v.x < minX) minX = v.x;
+            if (v.x > maxX) maxX = v.x;
+            if (v.y < minY) minY = v.y;
+            if (v.y > maxY) maxY = v.y;
+        }
+    }
+
+    comp.add<TransformComponent>(e, TransformComponent{Position{0.f, 0.f}, {1.f, 1.f}, 0.f});
+    comp.add<UILayoutMetricsComponent>(e, UILayoutMetricsComponent{Dimension2D{maxX - minX, maxY - minY}});
+    comp.add<PolygonShapeComponent>(e, PolygonShapeComponent{polygon, params.color, params.filled});
     comp.add<RenderComponent>(e, RenderComponent{0, 0});
     return e;
 }

@@ -35,6 +35,7 @@ public:
     struct ShapeParams { const Color& color; bool filled = true; };
     Entity createRectangleShape(const ShapeParams& params, const Rectangle& rect);
     Entity createCircleShape(const ShapeParams& params, const Circle& circle);
+    Entity createPolygonShape(const ShapeParams& params, const Polygon& polygon);
 
     struct TextParams { const std::string& text; float fontSize; const Color& color; const Position& position; };
     Entity createText(const TextParams& params);

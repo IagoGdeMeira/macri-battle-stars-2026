@@ -3,6 +3,7 @@
 #include "domain/components/CircleEffectsComponent.h"
 #include "domain/components/CircleShapeComponent.h"
 #include "domain/components/FontEffectsComponent.h"
+#include "domain/components/PolygonShapeComponent.h"
 #include "domain/components/RectangleEffectsComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
@@ -41,6 +42,7 @@ public:
         comp.registerComponent<CircleEffectsComponent>();
         comp.registerComponent<CircleShapeComponent>();
         comp.registerComponent<FontEffectsComponent>();
+        comp.registerComponent<PolygonShapeComponent>();
         comp.registerComponent<RectangleEffectsComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();

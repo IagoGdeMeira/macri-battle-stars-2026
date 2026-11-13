@@ -2,6 +2,7 @@
 
 #include "SDLDrawCircleCommandHandler.h"
 #include "SDLDrawFontCommandHandler.h"
+#include "SDLDrawPolygonCommandHandler.h"
 #include "SDLDrawRectangleCommandHandler.h"
 #include "SDLDrawTextureCommandHandler.h"
 
@@ -14,6 +15,7 @@ SDLRenderer::SDLRenderer(SDL_Window* window)
     this->registerHandler<DrawFontCommand>(std::make_unique<SDLDrawFontCommandHandler>(this->renderer));
     this->registerHandler<DrawRectangleCommand>(std::make_unique<SDLDrawRectangleCommandHandler>(this->renderer));
     this->registerHandler<DrawCircleCommand>(std::make_unique<SDLDrawCircleCommandHandler>(this->renderer));
+    this->registerHandler<DrawPolygonCommand>(std::make_unique<SDLDrawPolygonCommandHandler>(this->renderer));
 }
 
 SDLRenderer::~SDLRenderer() { if (this->renderer) SDL_DestroyRenderer(this->renderer); }
