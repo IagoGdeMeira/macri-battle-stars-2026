@@ -12,11 +12,14 @@
 #include "domain/components/ChildrenComponent.h"
 #include "domain/components/FlexContainer.h"
 #include "domain/components/FlexItem.h"
+#include "domain/components/HealthBarEndCapComponent.h"
+#include "domain/components/HealthBarLayoutComponent.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
 #include "domain/components/LayoutDirtyComponent.h"
 #include "domain/components/LocalTransform.h"
 #include "domain/components/ParentComponent.h"
+#include "domain/components/PolygonShapeComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -53,11 +56,14 @@ public:
         comp.registerComponent<ChildrenComponent>();
         comp.registerComponent<FlexContainer>();
         comp.registerComponent<FlexItem>();
+        comp.registerComponent<HealthBarEndCapComponent>();
+        comp.registerComponent<HealthBarLayoutComponent>();
         comp.registerComponent<HealthBarSegmentComponent>();
         comp.registerComponent<HealthBarTag>();
         comp.registerComponent<LayoutDirtyComponent>();
         comp.registerComponent<LocalTransform>();
         comp.registerComponent<ParentComponent>();
+        comp.registerComponent<PolygonShapeComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
@@ -149,4 +155,52 @@ TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader handles ze
         auto& layout = comp.get<UILayoutMetricsComponent>(e);
         REQUIRE(layout.size.width == 0.f);
     }
+}
+
+TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader creates end cap when configured",
+    "[integration][health_bar_widget_loader]"
+) {
+    auto node = this->makeNode();
+    node->setString("direction", "left");
+    node->setFloat("barHeight", 30.f);
+
+    auto capNode = std::make_unique<StubDataNode>();
+    capNode->setFloat("width", 10.f);
+    std::vector<std::unique_ptr<DataNode>> verts;
+    auto makeVert = [](float x, float y)
+    {
+        auto v = std::make_unique<StubDataNode>();
+        v->setFloat("x", x);
+        v->setFloat("y", y);
+        return v;
+    };
+    verts.push_back(makeVert(0.f, 0.f));
+    verts.push_back(makeVert(10.f, 0.f));
+    verts.push_back(makeVert(0.f, 30.f));
+    capNode->setArray("vertices", std::move(verts));
+    node->setObject("endCap", std::move(capNode));
+
+    auto params = this->makeParams(0, 300, 150);
+    Entity bar = this->loader.load(*node, params);
+
+    auto& comp = this->world.components();
+
+    REQUIRE(comp.has<HealthBarLayoutComponent>(bar));
+    const auto& layout = comp.get<HealthBarLayoutComponent>(bar);
+    REQUIRE(layout.flip == false);
+    REQUIRE(layout.barOffsetX == Catch::Approx(0.f));
+    REQUIRE(layout.barHeight == Catch::Approx(30.f));
+    REQUIRE(layout.capWidth == Catch::Approx(10.f));
+
+    bool capFound = false;
+    auto childrenView = View<ParentComponent>(comp);
+    for (auto [e, parent] : childrenView) if (parent.parent == bar && comp.has<HealthBarEndCapComponent>(e))
+    {
+        capFound = true;
+        REQUIRE(comp.has<PolygonShapeComponent>(e));
+        const auto& poly = comp.get<PolygonShapeComponent>(e);
+        REQUIRE(poly.polygon.vertices.size() == 3);
+        break;
+    }
+    REQUIRE(capFound);
 }

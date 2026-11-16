@@ -2,17 +2,20 @@
 
 #include "UIFactory/UIFactory.h"
 
+#include "domain/components/HealthBarEndCapComponent.h"
+#include "domain/components/HealthBarLayoutComponent.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
+#include "domain/components/PolygonShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/include/World/World.h"
 #include "domain/resources/Font/Font.h"
 #include "domain/utils/Logger/Logger.h"
 #include "domain/value_objects/Color/Color.h"
 
-#include "engine/utils/DataUtils/DataUtils.h"
 #include "engine/include/IFontFactory/IFontFactory.h"
 #include "engine/include/ITextureFactory/ITextureFactory.h"
+#include "engine/utils/DataUtils/DataUtils.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -51,10 +54,32 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const ParamMap& params)
     else
     {
         data.avatarOffset = Position{0.f, (data.fullSize.height - data.avatarSize) * 0.5f};
-        data.barOffset    = Position{data.avatarSize + 10.f, (data.fullSize.height - data.barSize.height) * 0.5f};
+        data.barOffset    = Position{avatarSpace, (data.fullSize.height - data.barSize.height) * 0.5f};
     }
 
     data.nameOffset = Position{data.barOffset.x, data.fullSize.height - data.fontSize * 0.8f};
+
+    if (node.has("endCap"))
+    {
+        auto capNode = node.getObject("endCap");
+        if (capNode)
+        {
+            data.hasEndCap = true;
+            data.capWidth = capNode->getFloat("width", 10.f);
+
+            if (capNode->has("vertices")) for (auto& vNode : capNode->getArray("vertices"))
+            {
+                Position p;
+                p.x = vNode->getFloat("x", 0.f);
+                p.y = vNode->getFloat("y", 0.f);
+                data.capPolygon.vertices.push_back(p);
+            }
+            else data.capPolygon.vertices =
+            { Position{0.f, 0.f}, Position{data.capWidth, 0.f}, Position{0.f, data.barSize.height} };
+
+            if (data.flip) for (auto& v : data.capPolygon.vertices) v.x = data.capWidth - v.x;
+        }
+    }
 
     Entity container = this->createContainer(data);
 
@@ -63,6 +88,7 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const ParamMap& params)
     this->createBarFrameTexture(container, data);
     this->createAvatar(container, data);
     this->createNameLabel(container, data);
+    this->createEndCap(container, data);
 
     return container;
 }
@@ -78,7 +104,8 @@ Entity HealthBarWidgetLoader::createContainer(const BarData& data) const
 void HealthBarWidgetLoader::createBackground(Entity container, const BarData& data) const
 {
     auto& comp = this->factory.world().components();
-    Entity background = this->factory.createRectangleShape(UIFactory::ShapeParams{Color{60, 60, 60, 255}},
+    Entity background = this->factory.createRectangleShape(
+        UIFactory::ShapeParams{Color{60, 60, 60, 255}},
         Rectangle{Position{0.f, 0.f}, data.barSize});
     this->factory.attachChild(container, background, data.barOffset);
     comp.get<RenderComponent>(background).zIndex = 0;
@@ -87,7 +114,8 @@ void HealthBarWidgetLoader::createBackground(Entity container, const BarData& da
 void HealthBarWidgetLoader::createBorder(Entity container, const BarData& data) const
 {
     auto& comp = this->factory.world().components();
-    Entity border = this->factory.createRectangleShape(UIFactory::ShapeParams{Color::TRANSPARENT(), false},
+    Entity border = this->factory.createRectangleShape(
+        UIFactory::ShapeParams{Color::TRANSPARENT(), false},
         Rectangle{Position{0.f, 0.f}, data.barSize});
     this->factory.attachChild(container, border, data.barOffset);
     comp.get<RenderComponent>(border).zIndex = 100;
@@ -116,11 +144,13 @@ void HealthBarWidgetLoader::createSegments(Entity container, const BarData& data
         float posX = data.barOffset.x;
         if (data.flip) posX += barTotalWidth - segmentWidth;
 
-        Entity fillSegment = this->factory.createRectangleShape(UIFactory::ShapeParams{colors.fill},
+        Entity fillSegment = this->factory.createRectangleShape(
+            UIFactory::ShapeParams{colors.fill},
             Rectangle{Position{0.f, 0.f}, Dimension2D{segmentWidth, fillHeight}});
         this->factory.attachChild(container, fillSegment, {posX, data.barOffset.y});
 
-        Entity shadowSegment = this->factory.createRectangleShape(UIFactory::ShapeParams{colors.shadow},
+        Entity shadowSegment = this->factory.createRectangleShape(
+            UIFactory::ShapeParams{colors.shadow},
             Rectangle{Position{0.f, 0.f}, Dimension2D{segmentWidth, shadowHeight}});
         this->factory.attachChild(container, shadowSegment, {posX, data.barOffset.y + fillHeight});
 
@@ -173,8 +203,7 @@ void HealthBarWidgetLoader::createAvatar(Entity container, const BarData& data) 
 
     if (!data.paths.avatarBorder.empty())
     {
-        Entity border = this->factory.createImage(data.paths.avatarBorder,
-            Rectangle{Position{0.f, 0.f}, avatarSize});
+        Entity border = this->factory.createImage(data.paths.avatarBorder, Rectangle{Position{0.f, 0.f}, avatarSize});
         this->factory.attachChild(container, border, data.avatarOffset);
         comp.get<RenderComponent>(border).zIndex = 70;
     }
@@ -199,6 +228,27 @@ void HealthBarWidgetLoader::createNameLabel(Entity container, const BarData& dat
     Entity label = this->factory.createText(textParams, font);
     this->factory.attachChild(container, label, data.nameOffset);
     comp.get<RenderComponent>(label).zIndex = 80;
+}
+
+void HealthBarWidgetLoader::createEndCap(Entity container, const BarData& data) const
+{
+    if (!data.hasEndCap || data.capPolygon.vertices.size() < 3) return;
+
+    auto& comp = this->factory.world().components();
+
+    HealthBarLayoutComponent layout;
+    layout.flip = data.flip;
+    layout.barOffsetX = data.barOffset.x;
+    layout.barHeight = data.barSize.height;
+    layout.capWidth = data.capWidth;
+    comp.add<HealthBarLayoutComponent>(container, layout);
+
+    Entity cap = this->factory.createPolygonShape(
+        UIFactory::ShapeParams{Color::WHITE(), true},
+        data.capPolygon);
+    comp.get<PolygonShapeComponent>(cap).zIndex = 500;
+    this->factory.attachChild(container, cap, Position{data.barOffset.x, data.barOffset.y});
+    comp.add<HealthBarEndCapComponent>(cap, HealthBarEndCapComponent{});
 }
 
 void HealthBarWidgetLoader::loadSegmentColors()

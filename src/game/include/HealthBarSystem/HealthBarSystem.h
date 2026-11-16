@@ -3,6 +3,8 @@
 
 #include "DamageEvent.h"
 
+#include "domain/value_objects/Color/Color.h"
+
 #include "engine/include/System/System.h"
 
 #include <vector>
@@ -23,6 +25,9 @@ private:
     void processDamageEvent(World& world, const DamageEvent& event);
     void updateHealthBarSegments(World& world, Entity container, int currentHealth);
     void updateSegmentWidth(World& world, Entity segment, float newWidth);
+    
+    struct EndCapData { int currentHealth; float barWidth; Color color; };
+    void updateEndCap(World& world, Entity container, Entity endCap, EndCapData data);
 };
 
 #endif // health_bar_system_h

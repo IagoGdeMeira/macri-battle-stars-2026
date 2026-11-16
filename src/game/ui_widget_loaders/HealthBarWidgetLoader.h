@@ -31,6 +31,10 @@ private:
         float avatarSize, fontSize;
         Paths paths;
         bool flip;
+
+        bool hasEndCap = false;
+        float capWidth = 10.f;
+        Polygon capPolygon;
     };
 
     struct SegmentColor { Color fill = Color::WHITE(), shadow = Color::WHITE(); };
@@ -50,6 +54,7 @@ private:
     void createBarFrameTexture(Entity container, const BarData& data) const;
     void createAvatar(Entity container, const BarData& data) const;
     void createNameLabel(Entity container, const BarData& data) const;
+    void createEndCap(Entity container, const BarData& data) const;
 
     void loadSegmentColors();
     SegmentColor getSegmentColor(int index) const;

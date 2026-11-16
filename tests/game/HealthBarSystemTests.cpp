@@ -2,8 +2,12 @@
 
 #include "domain/components/ActiveComponent.h"
 #include "domain/components/ChildrenComponent.h"
+#include "domain/components/HealthBarEndCapComponent.h"
+#include "domain/components/HealthBarLayoutComponent.h"
 #include "domain/components/HealthBarSegmentComponent.h"
 #include "domain/components/HealthBarTag.h"
+#include "domain/components/ParentComponent.h"
+#include "domain/components/PolygonShapeComponent.h"
 #include "domain/components/RectangleShapeComponent.h"
 #include "domain/components/RenderComponent.h"
 #include "domain/components/TransformComponent.h"
@@ -16,6 +20,7 @@
 
 #include "game/events/DamageEvent.h"
 
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
 
@@ -27,8 +32,12 @@ public:
         auto& comp = this->world.components();
         comp.registerComponent<ActiveComponent>();
         comp.registerComponent<ChildrenComponent>();
+        comp.registerComponent<HealthBarEndCapComponent>();
+        comp.registerComponent<HealthBarLayoutComponent>();
         comp.registerComponent<HealthBarSegmentComponent>();
         comp.registerComponent<HealthBarTag>();
+        comp.registerComponent<ParentComponent>();
+        comp.registerComponent<PolygonShapeComponent>();
         comp.registerComponent<RectangleShapeComponent>();
         comp.registerComponent<RenderComponent>();
         comp.registerComponent<TransformComponent>();
@@ -70,13 +79,9 @@ public:
             comp.add<TransformComponent>(segment, TransformComponent{Position{0.f, 0.f}});
             comp.add<UILayoutMetricsComponent>(segment, UILayoutMetricsComponent{Dimension2D{segmentWidth, barHeight}});
             comp.add<ActiveComponent>(segment, ActiveComponent{true});
+            comp.add<ParentComponent>(segment, ParentComponent{container});
             comp.add<HealthBarSegmentComponent>(segment, HealthBarSegmentComponent{
-                .maxHP          = maxSegmentHP,
-                .maxWidth       = totalWidth,
-                .fill           = Color::WHITE(),
-                .shadow         = Color::WHITE(),
-                .segmentIndex   = i
-            });
+                maxSegmentHP, totalWidth, Color::WHITE(), Color::WHITE(), i});
             children.children.push_back(segment);
         }
         return container;
@@ -187,4 +192,58 @@ TEST_CASE_METHOD(HealthBarSystemFixture, "HealthBarSystem clamps negative health
     auto& comp = this->world.components();
     auto view = View<HealthBarTag>(comp);
     for (auto [entity, tag] : view) REQUIRE(tag.currentHealth == 0);
+}
+
+TEST_CASE_METHOD(HealthBarSystemFixture, "HealthBarSystem positions end cap at filled edge",
+    "[unit][health_bar_system]")
+{
+    auto& comp = this->world.components();
+
+    Entity bar = this->createHealthBar(0, 200, 100);
+
+    comp.add<HealthBarLayoutComponent>(bar, HealthBarLayoutComponent{
+        .flip = false,
+        .barOffsetX = 0.f,
+        .barHeight = 30.f,
+        .capWidth = 10.f
+    });
+
+    Entity cap = this->world.entities().create();
+    comp.add<TransformComponent>(cap, TransformComponent{Position{0.f, 0.f}});
+    comp.add<ParentComponent>(cap, ParentComponent{bar});
+    comp.add<PolygonShapeComponent>(cap, PolygonShapeComponent{});
+    comp.add<HealthBarEndCapComponent>(cap, HealthBarEndCapComponent{});
+    comp.get<ChildrenComponent>(bar).children.push_back(cap);
+
+    this->system.update(this->ctx);
+
+    const auto& capT = comp.get<TransformComponent>(cap);
+    REQUIRE(capT.position.x == Catch::Approx(140.f));
+}
+
+TEST_CASE_METHOD(HealthBarSystemFixture, "HealthBarSystem mirrors end cap when flipped",
+    "[unit][health_bar_system]")
+{
+    auto& comp = this->world.components();
+
+    Entity bar = this->createHealthBar(0, 200, 100);
+
+    comp.add<HealthBarLayoutComponent>(bar, HealthBarLayoutComponent{
+        .flip = true,
+        .barOffsetX = 0.f,
+        .barHeight = 30.f,
+        .capWidth = 10.f
+    });
+
+    Entity cap = this->world.entities().create();
+    comp.add<TransformComponent>(cap, TransformComponent{Position{0.f, 0.f}});
+    comp.add<ParentComponent>(cap, ParentComponent{bar});
+    comp.add<PolygonShapeComponent>(cap, PolygonShapeComponent{});
+    comp.add<HealthBarEndCapComponent>(cap, HealthBarEndCapComponent{});
+    comp.get<ChildrenComponent>(bar).children.push_back(cap);
+
+    this->system.update(this->ctx);
+
+    const auto& capT = comp.get<TransformComponent>(cap);
+    REQUIRE(capT.position.x == Catch::Approx(150.f));
 }
