@@ -8,7 +8,6 @@
 #include "engine/include/EventBus/EventBus.h"
 #include "engine/include/System/System.h"
 
-#include <unordered_map>
 #include <vector>
 
 class StateSystem : public System

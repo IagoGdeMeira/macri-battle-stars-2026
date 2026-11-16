@@ -1,7 +1,6 @@
 #ifndef state_id_h
 #define state_id_h
 
-#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <string>
