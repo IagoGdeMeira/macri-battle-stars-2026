@@ -105,12 +105,33 @@ public:
         node->setFloat("avatarSize", 0.f);
         return node;
     }
+
+    std::unique_ptr<StubDataNode> makeLayeredNode(float width = 300.f, float height = 30.f)
+    {
+        auto node = this->makeNode(width, height);
+
+        auto barNode = std::make_unique<StubDataNode>();
+        std::vector<std::unique_ptr<DataNode>> layers;
+
+        auto bgLayer = std::make_unique<StubDataNode>();
+        bgLayer->setString("type", "rectangle");
+        auto bgColor = std::make_unique<StubDataNode>();
+        bgColor->setInt("r", 60); bgColor->setInt("g", 60); bgColor->setInt("b", 60); bgColor->setInt("a", 255);
+        bgLayer->setObject("color", std::move(bgColor));
+        bgLayer->setInt("zIndex", 0);
+        layers.push_back(std::move(bgLayer));
+
+        barNode->setArray("layers", std::move(layers));
+        node->setObject("bar", std::move(barNode));
+
+        return node;
+    }
 };
 
 TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader creates container with HealthBarTag and segments",
     "[integration][health_bar_widget_loader]"
 ) {
-    auto node = this->makeNode();
+    auto node = this->makeLayeredNode();
     auto params = this->makeParams(0, 300, 250);
 
     Entity bar = this->loader.load(*node, params);
@@ -203,4 +224,145 @@ TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader creates en
         break;
     }
     REQUIRE(capFound);
+}
+
+TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader supports polygon layers",
+    "[integration][health_bar_widget_loader]"
+) {
+    auto node = this->makeNode();
+
+    auto barNode = std::make_unique<StubDataNode>();
+    std::vector<std::unique_ptr<DataNode>> layers;
+
+    auto polyLayer = std::make_unique<StubDataNode>();
+    polyLayer->setString("type", "polygon");
+    polyLayer->setInt("zIndex", 150);
+
+    std::vector<std::unique_ptr<DataNode>> verts;
+    auto makeVert = [](float x, float y)
+    {
+        auto v = std::make_unique<StubDataNode>();
+        v->setFloat("x", x);
+        v->setFloat("y", y);
+        return v;
+    };
+    verts.push_back(makeVert(0.f, 0.f));
+    verts.push_back(makeVert(20.f, 0.f));
+    verts.push_back(makeVert(0.f, 10.f));
+    polyLayer->setArray("vertices", std::move(verts));
+
+    auto colorNode = std::make_unique<StubDataNode>();
+    colorNode->setInt("r", 255); colorNode->setInt("g", 0); colorNode->setInt("b", 0); colorNode->setInt("a", 255);
+    polyLayer->setObject("color", std::move(colorNode));
+
+    layers.push_back(std::move(polyLayer));
+    barNode->setArray("layers", std::move(layers));
+    node->setObject("bar", std::move(barNode));
+
+    auto params = this->makeParams(0, 100, 100);
+    Entity bar = this->loader.load(*node, params);
+
+    auto& comp = this->world.components();
+
+    bool found = false;
+    auto childrenView = View<ParentComponent>(comp);
+    for (auto [e, parent] : childrenView)
+    {
+        if (parent.parent != bar) continue;
+        if (!comp.has<PolygonShapeComponent>(e)) continue;
+
+        found = true;
+        const auto& poly = comp.get<PolygonShapeComponent>(e);
+        REQUIRE(poly.polygon.vertices.size() == 3);
+        const auto& render = comp.get<RenderComponent>(e);
+        REQUIRE(render.zIndex == 150);
+        break;
+    }
+    REQUIRE(found);
+}
+
+TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader supports texture layers in bar",
+    "[integration][health_bar_widget_loader]"
+) {
+    auto node = this->makeNode();
+
+    auto barNode = std::make_unique<StubDataNode>();
+    std::vector<std::unique_ptr<DataNode>> layers;
+
+    auto texLayer = std::make_unique<StubDataNode>();
+    texLayer->setString("type", "texture");
+    texLayer->setString("texture", "assets/ui/frame.png");
+    texLayer->setInt("zIndex", 200);
+    layers.push_back(std::move(texLayer));
+
+    barNode->setArray("layers", std::move(layers));
+    node->setObject("bar", std::move(barNode));
+
+    auto params = this->makeParams(0, 100, 100);
+    Entity bar = this->loader.load(*node, params);
+
+    auto& comp = this->world.components();
+
+    bool found = false;
+    auto childrenView = View<ParentComponent>(comp);
+    for (auto [e, parent] : childrenView)
+    {
+        if (parent.parent != bar) continue;
+        if (!comp.has<UISpriteComponent>(e)) continue;
+
+        const auto& render = comp.get<RenderComponent>(e);
+        if (render.zIndex == 200) { found = true; break; }
+    }
+    REQUIRE(found);
+
+    REQUIRE(this->textureFactory.createTextureCalls >= 1);
+    REQUIRE(this->textureFactory.lastPath == "assets/ui/frame.png");
+}
+
+TEST_CASE_METHOD(HealthBarWidgetLoaderFixture, "HealthBarWidgetLoader creates avatar layers and photo",
+    "[integration][health_bar_widget_loader]"
+) {
+    auto node = this->makeNode();
+    node->setFloat("avatarSize", 60.f);
+
+    auto avatarNode = std::make_unique<StubDataNode>();
+
+    auto photoNode = std::make_unique<StubDataNode>();
+    photoNode->setFloat("scale", 0.7f);
+    photoNode->setInt("zIndex", 65);
+    avatarNode->setObject("photo", std::move(photoNode));
+
+    std::vector<std::unique_ptr<DataNode>> layers;
+    auto bgLayer = std::make_unique<StubDataNode>();
+    bgLayer->setString("type", "texture");
+    bgLayer->setString("texture", "assets/ui/avatar_bg.png");
+    bgLayer->setInt("zIndex", 50);
+    layers.push_back(std::move(bgLayer));
+    avatarNode->setArray("layers", std::move(layers));
+
+    node->setObject("avatar", std::move(avatarNode));
+
+    auto params = this->makeParams(0, 100, 100);
+    params["avatarTexturePath"] = "assets/ui/avatar.png";
+
+    Entity bar = this->loader.load(*node, params);
+
+    auto& comp = this->world.components();
+
+    bool bgFound = false;
+    bool photoFound = false;
+    auto childrenView = View<ParentComponent>(comp);
+    for (auto [e, parent] : childrenView)
+    {
+        if (parent.parent != bar) continue;
+        if (!comp.has<UISpriteComponent>(e)) continue;
+
+        const auto& render = comp.get<RenderComponent>(e);
+        if (render.zIndex == 50) bgFound = true;
+        if (render.zIndex == 65) photoFound = true;
+    }
+
+    REQUIRE(bgFound);
+    REQUIRE(photoFound);
+    REQUIRE(this->textureFactory.createTextureCalls >= 2);
 }

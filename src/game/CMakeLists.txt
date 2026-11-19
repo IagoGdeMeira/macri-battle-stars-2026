@@ -98,6 +98,7 @@ target_sources(game
         src/UIFactory.cpp
         src/UIFlexLayoutSystem.cpp
         src/UIInputSystem.cpp
+        src/UILayerBuilder.cpp
         src/UILoader.cpp
         src/UIStyleLoader.cpp
 )

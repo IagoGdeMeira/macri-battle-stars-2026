@@ -11,15 +11,11 @@
 #include "domain/include/World/World.h"
 #include "domain/resources/Font/Font.h"
 #include "domain/utils/Logger/Logger.h"
-#include "domain/value_objects/Color/Color.h"
 
 #include "engine/include/IFontFactory/IFontFactory.h"
-#include "engine/include/ITextureFactory/ITextureFactory.h"
 #include "engine/utils/DataUtils/DataUtils.h"
 
 #include <algorithm>
-#include <cstdlib>
-#include <vector>
 
 Entity HealthBarWidgetLoader::load(const DataNode& node, const ParamMap& params)
 {
@@ -34,10 +30,9 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const ParamMap& params)
     data.paths.characterName    = params.count("characterName") ? params.at("characterName") : "";
     data.paths.font             = node.getString("fontPath", "assets/fonts/default.ttf");
     data.paths.avatar           = params.count("avatarTexturePath") ? params.at("avatarTexturePath") : "";
-    data.paths.barFrame         = node.getString("barFrameTexture", "");
-    data.paths.avatarFrame      = node.getString("avatarBackgroundTexture", "");
-    data.paths.avatarBorder     = node.getString("avatarBorderTexture", "");
     data.flip                   = (node.getString("direction", "left") == "right");
+    data.photoScale             = 0.8f;
+    data.photoZIndex            = 60;
 
     if (node.has("size")) data.fullSize = DataUtils::parseSize(node);
     else data.fullSize = Dimension2D{node.getFloat("width", 300.f), node.getFloat("height", 30.f)};
@@ -59,6 +54,20 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const ParamMap& params)
 
     data.nameOffset = Position{data.barOffset.x, data.fullSize.height - data.fontSize * 0.8f};
 
+    if (node.has("avatar"))
+    {
+        auto avatarNode = node.getObject("avatar");
+        if (avatarNode && avatarNode->has("photo"))
+        {
+            auto photoNode = avatarNode->getObject("photo");
+            if (photoNode)
+            {
+                data.photoScale  = photoNode->getFloat("scale", 0.8f);
+                data.photoZIndex = photoNode->getInt("zIndex", 60);
+            }
+        }
+    }
+
     if (node.has("endCap"))
     {
         auto capNode = node.getObject("endCap");
@@ -74,21 +83,47 @@ Entity HealthBarWidgetLoader::load(const DataNode& node, const ParamMap& params)
                 p.y = vNode->getFloat("y", 0.f);
                 data.capPolygon.vertices.push_back(p);
             }
-            else data.capPolygon.vertices =
-            { Position{0.f, 0.f}, Position{data.capWidth, 0.f}, Position{0.f, data.barSize.height} };
+            else data.capPolygon.vertices = {Position{0.f, 0.f}, Position{data.capWidth, 0.f}, Position{0.f, data.barSize.height}};
 
             if (data.flip) for (auto& v : data.capPolygon.vertices) v.x = data.capWidth - v.x;
         }
     }
 
     Entity container = this->createContainer(data);
+    Context ctx{container, data};
 
-    this->createBackground(container, data);
-    this->createSegments(container, data);
-    this->createBarFrameTexture(container, data);
-    this->createAvatar(container, data);
-    this->createNameLabel(container, data);
-    this->createEndCap(container, data);
+    if (node.has("bar"))
+    {
+        auto barNode = node.getObject("bar");
+        if (barNode) this->layerBuilder.build(container, *barNode, data.barOffset, data.barSize);
+    }
+
+    this->createSegments(ctx);
+
+    if (node.has("avatar"))
+    {
+        auto avatarNode = node.getObject("avatar");
+        if (avatarNode)
+        {
+            Dimension2D avatarSize{data.avatarSize, data.avatarSize};
+            this->layerBuilder.build(container, *avatarNode, data.avatarOffset, avatarSize);
+        }
+    }
+    if (!data.paths.avatar.empty())
+    {
+        float innerSize = data.avatarSize * data.photoScale;
+        Position innerOffset = {
+            data.avatarOffset.x + (data.avatarSize - innerSize) * 0.5f,
+            data.avatarOffset.y + (data.avatarSize - innerSize) * 0.5f
+        };
+        Entity photo = this->factory.createImage(data.paths.avatar,
+            Rectangle{Position{0.f, 0.f}, Dimension2D{innerSize, innerSize}});
+        this->factory.attachChild(container, photo, innerOffset);
+        this->factory.world().components().get<RenderComponent>(photo).zIndex = data.photoZIndex;
+    }
+
+    this->createNameLabel(ctx);
+    this->createEndCap(ctx);
 
     return container;
 }
@@ -101,28 +136,9 @@ Entity HealthBarWidgetLoader::createContainer(const BarData& data) const
     return container;
 }
 
-void HealthBarWidgetLoader::createBackground(Entity container, const BarData& data) const
+void HealthBarWidgetLoader::createSegments(const Context& ctx) const
 {
-    auto& comp = this->factory.world().components();
-    Entity background = this->factory.createRectangleShape(
-        UIFactory::ShapeParams{Color{60, 60, 60, 255}},
-        Rectangle{Position{0.f, 0.f}, data.barSize});
-    this->factory.attachChild(container, background, data.barOffset);
-    comp.get<RenderComponent>(background).zIndex = 0;
-}
-
-void HealthBarWidgetLoader::createBorder(Entity container, const BarData& data) const
-{
-    auto& comp = this->factory.world().components();
-    Entity border = this->factory.createRectangleShape(
-        UIFactory::ShapeParams{Color::TRANSPARENT(), false},
-        Rectangle{Position{0.f, 0.f}, data.barSize});
-    this->factory.attachChild(container, border, data.barOffset);
-    comp.get<RenderComponent>(border).zIndex = 100;
-}
-
-void HealthBarWidgetLoader::createSegments(Entity container, const BarData& data) const
-{
+    const BarData& data = ctx.data;
     const float maxSegmentHP = 100.f;
     const float barTotalWidth = data.barSize.width;
     const float shadowHeight = data.barSize.height * HealthBarWidgetLoader::SHADOW_HEIGHT_RATIO;
@@ -147,12 +163,12 @@ void HealthBarWidgetLoader::createSegments(Entity container, const BarData& data
         Entity fillSegment = this->factory.createRectangleShape(
             UIFactory::ShapeParams{colors.fill},
             Rectangle{Position{0.f, 0.f}, Dimension2D{segmentWidth, fillHeight}});
-        this->factory.attachChild(container, fillSegment, {posX, data.barOffset.y});
+        this->factory.attachChild(ctx.container, fillSegment, {posX, data.barOffset.y});
 
         Entity shadowSegment = this->factory.createRectangleShape(
             UIFactory::ShapeParams{colors.shadow},
             Rectangle{Position{0.f, 0.f}, Dimension2D{segmentWidth, shadowHeight}});
-        this->factory.attachChild(container, shadowSegment, {posX, data.barOffset.y + fillHeight});
+        this->factory.attachChild(ctx.container, shadowSegment, {posX, data.barOffset.y + fillHeight});
 
         auto& comp = this->factory.world().components();
 
@@ -166,88 +182,45 @@ void HealthBarWidgetLoader::createSegments(Entity container, const BarData& data
     }
 }
 
-void HealthBarWidgetLoader::createBarFrameTexture(Entity container, const BarData& data) const
+void HealthBarWidgetLoader::createNameLabel(const Context& ctx) const
 {
-    if (data.paths.barFrame.empty()) return;
-
-    Entity frame = this->factory.createImage(data.paths.barFrame, Rectangle{Position{0.f, 0.f}, data.barSize});
-    this->factory.attachChild(container, frame, data.barOffset);
-    this->factory.world().components().get<RenderComponent>(frame).zIndex = 200;
-}
-
-void HealthBarWidgetLoader::createAvatar(Entity container, const BarData& data) const
-{
-    Dimension2D avatarSize{data.avatarSize, data.avatarSize};
-
-    auto& comp = this->factory.world().components();
-    if (!data.paths.avatarFrame.empty())
-    {
-        Entity bg = this->factory.createImage(data.paths.avatarFrame, Rectangle{Position{0.f, 0.f}, avatarSize});
-        this->factory.attachChild(container, bg, data.avatarOffset);
-        comp.get<RenderComponent>(bg).zIndex = 50;
-    }
-
-    if (!data.paths.avatar.empty())
-    {
-        float innerSize = data.avatarSize * 0.8f;
-        Position innerOffset = {
-            data.avatarOffset.x + (data.avatarSize - innerSize) * 0.5f,
-            data.avatarOffset.y + (data.avatarSize - innerSize) * 0.5f
-        };
-
-        Entity photo = this->factory.createImage(data.paths.avatar,
-            Rectangle{Position{0.f, 0.f}, Dimension2D{innerSize, innerSize}});
-        this->factory.attachChild(container, photo, innerOffset);
-        comp.get<RenderComponent>(photo).zIndex = 60;
-    }
-
-    if (!data.paths.avatarBorder.empty())
-    {
-        Entity border = this->factory.createImage(data.paths.avatarBorder, Rectangle{Position{0.f, 0.f}, avatarSize});
-        this->factory.attachChild(container, border, data.avatarOffset);
-        comp.get<RenderComponent>(border).zIndex = 70;
-    }
-}
-
-void HealthBarWidgetLoader::createNameLabel(Entity container, const BarData& data) const
-{
-    if (data.paths.characterName.empty()) return;
+    if (ctx.data.paths.characterName.empty()) return;
 
     auto& comp = this->factory.world().components();
     std::shared_ptr<Font> font = nullptr;
-    try { font = this->factory.fontFactory().createFont(data.paths.font); }
+    try { font = this->factory.fontFactory().createFont(ctx.data.paths.font); }
     catch (const std::exception& e) { LOG_ERROR("Failed to load font for name: {}", e.what()); }
 
     UIFactory::TextParams textParams{
-        .text       = data.paths.characterName,
-        .fontSize   = data.fontSize,
+        .text       = ctx.data.paths.characterName,
+        .fontSize   = ctx.data.fontSize,
         .color      = Color::WHITE(),
-        .position   = data.nameOffset
+        .position   = ctx.data.nameOffset
     };
 
     Entity label = this->factory.createText(textParams, font);
-    this->factory.attachChild(container, label, data.nameOffset);
+    this->factory.attachChild(ctx.container, label, ctx.data.nameOffset);
     comp.get<RenderComponent>(label).zIndex = 80;
 }
 
-void HealthBarWidgetLoader::createEndCap(Entity container, const BarData& data) const
+void HealthBarWidgetLoader::createEndCap(const Context& ctx) const
 {
-    if (!data.hasEndCap || data.capPolygon.vertices.size() < 3) return;
+    if (!ctx.data.hasEndCap || ctx.data.capPolygon.vertices.size() < 3) return;
 
     auto& comp = this->factory.world().components();
 
     HealthBarLayoutComponent layout;
-    layout.flip = data.flip;
-    layout.barOffsetX = data.barOffset.x;
-    layout.barHeight = data.barSize.height;
-    layout.capWidth = data.capWidth;
-    comp.add<HealthBarLayoutComponent>(container, layout);
+    layout.flip = ctx.data.flip;
+    layout.barOffsetX = ctx.data.barOffset.x;
+    layout.barHeight = ctx.data.barSize.height;
+    layout.capWidth = ctx.data.capWidth;
+    comp.add<HealthBarLayoutComponent>(ctx.container, layout);
 
     Entity cap = this->factory.createPolygonShape(
         UIFactory::ShapeParams{Color::WHITE(), true},
-        data.capPolygon);
+        ctx.data.capPolygon);
     comp.get<PolygonShapeComponent>(cap).zIndex = 500;
-    this->factory.attachChild(container, cap, Position{data.barOffset.x, data.barOffset.y});
+    this->factory.attachChild(ctx.container, cap, Position{ctx.data.barOffset.x, ctx.data.barOffset.y});
     comp.add<HealthBarEndCapComponent>(cap, HealthBarEndCapComponent{});
 }
 

@@ -111,6 +111,7 @@ add_executable(game_tests
     UIFactoryTests.cpp
     UIFlexLayoutSystemTests.cpp
     UIActionFactoryTests.cpp
+    UILayerBuilderTests.cpp
     UIInputSystemTests.cpp
     UILoaderTests.cpp
     UIStyleLoaderTests.cpp
